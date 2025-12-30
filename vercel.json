@@ -1,4 +1,5 @@
 {
+  "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist/oaw/browser",
   "framework": null,
@@ -15,7 +16,7 @@
   ],
   "functions": {
     "api/**/*.js": {
-      "runtime": "@vercel/node@3"
+      "runtime": "vercel/node@20.x"
     }
   }
 }
