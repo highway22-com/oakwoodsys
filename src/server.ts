@@ -13,16 +13,20 @@ const app = express();
 const angularApp = new AngularNodeAppEngine();
 
 /**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
+ * Proxy endpoint to fetch external content (bypasses CORS)
  */
+app.get('/api/home-content', async (req, res) => {
+  try {
+    const response = await fetch('https://oakwoodsys.com/wp-content/uploads/2025/12/home-content.json');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch external content' });
+  }
+});
 
 /**
  * Serve static files from /browser
