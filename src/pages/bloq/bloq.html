@@ -98,13 +98,13 @@
 
                     <!-- Excerpt -->
                     @if (post.excerpt) {
-                    <p class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed line-clamp-3">
+                    <div class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed line-clamp-3">
                         {{ post.excerpt }}
-                    </p>
-                    } @else if (post.content) {
-                    <p class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed line-clamp-3">
-                        {{ post.content | slice:0:150 }}...
-                    </p>
+                    </div>
+                    } @else if (post.sanitizedContent) {
+                    <div class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed line-clamp-3 prose prose-sm max-w-none"
+                        [innerHTML]="post.sanitizedContent">
+                    </div>
                     }
 
                     <!-- Author Info -->
@@ -131,7 +131,7 @@
                     }
 
                     <!-- Read More Link -->
-                    <a routerLink="/bloq/{{ post.slug || $index }}"
+                    <a routerLink="/blog/{{ post.slug || $index }}"
                         class="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 inline-flex items-center mt-auto">
                         Read more <span class="ml-1">→</span>
                     </a>

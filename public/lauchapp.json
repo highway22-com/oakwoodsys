@@ -11,7 +11,7 @@
     {
       "type": "hero",
       "backgroundImage": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1920&q=80",
-      "title": "Only AI",
+      "title": "Turn Everyday Workflows Into AI Powered Experiences",
       "description": "Modernize legacy systems or create new intelligent apps that automate work, streamline processes, and deliver real value for your teams and customers.",
       "cta": {
         "text": "Talk to an Expert",
@@ -19,62 +19,7 @@
       },
       "navigationIndicators": 5
     },
-    {
-      "type": "services",
-      "label": "Services",
-      "title": "Where cloud, data, and AI come together",
-      "description": "Our service lines work together to modernize your environment, streamline your workflows, and power intelligent innovation.",
-      "services": [
-        {
-          "id": 1,
-          "title": "Data & AI Services",
-          "description": "Unify, govern, and activate your data estate to deliver real AI outcomes.",
-          "link": "/services/data-and-ai",
-          "linkText": "Explore",
-          "icon": "/assets/graph.png"
-        },
-        {
-          "id": 2,
-          "title": "Cloud & Infrastructure",
-          "description": "Modernize, secure, and optimize your cloud estate with Oakwood and Microsoft Azure",
-          "link": "/services/cloud-and-infrastructure",
-          "linkText": "Explore",
-          "icon": "/assets/cloud.png"
-        },
-        {
-          "id": 3,
-          "title": "Application Innovation",
-          "description": "Ship faster, run safer, and scale efficiently with modern applications on Azure.",
-          "link": "/services/application-innovation",
-          "linkText": "Explore",
-          "icon": "/assets/app-innovation.png"
-        },
-        {
-          "id": 4,
-          "title": "High-Performance (HPC)",
-          "description": "Scale simulations, AI training, and PLM workloads with the power of Azure (HPC).",
-          "link": "/services/high-performance-computing",
-          "linkText": "Explore",
-          "icon": "/assets/hpc.png"
-        },
-        {
-          "id": 5,
-          "title": "Modern Work",
-          "description": "Boost productivity, protect data, and improve employee experience with Microsoft 365 and Copilot.",
-          "link": "/services/modern-work",
-          "linkText": "Explore",
-          "icon": "/assets/modern-work.png"
-        },
-        {
-          "id": 6,
-          "title": "Managed Services",
-          "description": "Unify, govern, and activate your data estate to deliver real AI outcomes.",
-          "link": "/services/managed-services",
-          "linkText": "Explore",
-          "icon": "/assets/managed-services.png"
-        }
-      ]
-    },
+   
     {
       "type": "featuredCaseStudy",
       "label": "Featured Case Study",

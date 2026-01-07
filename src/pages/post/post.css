@@ -1,3 +1,289 @@
-:host {
+/* Blog Content Styles */
+.blog-content {
+  max-width: none;
+  scroll-margin-top: 100px;
+}
+
+.blog-content h2,
+.blog-content h3 {
+  scroll-margin-top: 100px;
+}
+
+.blog-content p {
+  color: rgb(55 65 81);
+  line-height: 1.75;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+@media (min-width: 640px) {
+  .blog-content p {
+    font-size: 1.125rem;
+  }
+}
+
+.blog-content h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: rgb(17 24 39);
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.25;
+}
+
+@media (min-width: 640px) {
+  .blog-content h1 {
+    font-size: 2.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .blog-content h1 {
+    font-size: 3rem;
+  }
+}
+
+.blog-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgb(17 24 39);
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.25;
+}
+
+@media (min-width: 640px) {
+  .blog-content h2 {
+    font-size: 1.875rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .blog-content h2 {
+    font-size: 2.25rem;
+  }
+}
+
+.blog-content h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: rgb(17 24 39);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.25;
+}
+
+@media (min-width: 640px) {
+  .blog-content h3 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .blog-content h3 {
+    font-size: 1.875rem;
+  }
+}
+
+.blog-content h4 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: rgb(17 24 39);
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.25;
+}
+
+@media (min-width: 640px) {
+  .blog-content h4 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .blog-content h4 {
+    font-size: 1.5rem;
+  }
+}
+
+.blog-content a {
+  color: rgb(37 99 235);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.blog-content a:hover {
+  text-decoration: underline;
+}
+
+.blog-content strong {
+  font-weight: 700;
+  color: rgb(17 24 39);
+}
+
+.blog-content em {
+  font-style: italic;
+  color: rgb(55 65 81);
+}
+
+.blog-content ul,
+.blog-content ol {
+  margin-bottom: 1.5rem;
+  margin-left: 1.5rem;
+}
+
+.blog-content ul {
+  list-style-type: disc;
+}
+
+.blog-content ol {
+  list-style-type: decimal;
+}
+
+.blog-content li {
+  margin-bottom: 0.5rem;
+  color: rgb(55 65 81);
+  line-height: 1.75;
+}
+
+/* WordPress specific list styles */
+.blog-content .wp-block-list {
+  margin-bottom: 1.5rem;
+  margin-left: 1.5rem;
+  list-style-type: disc;
+}
+
+.blog-content .wp-block-list li {
+  margin-bottom: 0.75rem;
+  color: rgb(55 65 81);
+  line-height: 1.75;
+}
+
+.blog-content figure {
+  margin: 2rem 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.blog-content img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  max-width: 100%;
   display: block;
+}
+
+.blog-content figure img {
+  width: 100%;
+  height: auto;
+}
+
+.blog-content blockquote {
+  border-left: 4px solid rgb(37 99 235);
+  padding-left: 1.5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  margin: 2rem 0;
+  font-style: italic;
+  color: rgb(75 85 99);
+  background-color: rgb(249 250 251);
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.blog-content code {
+  background-color: rgb(243 244 246);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  color: rgb(31 41 55);
+}
+
+.blog-content pre {
+  background-color: rgb(17 24 39);
+  color: rgb(243 244 246);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.blog-content pre code {
+  background-color: transparent;
+  padding: 0;
+  color: rgb(243 244 246);
+}
+
+/* WordPress specific classes */
+.blog-content .wp-block-image {
+  margin: 2rem 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.blog-content .wp-block-image.size-large {
+  margin: 2.5rem 0;
+}
+
+.blog-content .wp-block-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  max-width: 100%;
+  display: block;
+}
+
+.blog-content .wp-block-image img[srcset] {
+  width: 100%;
+  height: auto;
+}
+
+.blog-content .wp-block-heading {
+  font-weight: 700;
+  color: rgb(17 24 39);
+}
+
+/* Ensure images with srcset are responsive */
+.blog-content img[srcset] {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+
+/* Ensure images don't overflow */
+.blog-content figure,
+.blog-content .wp-block-image {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Handle empty paragraphs and spacing */
+.blog-content p:empty {
+  display: none;
+}
+
+/* Better spacing for consecutive elements */
+.blog-content p+p {
+  margin-top: 1rem;
+}
+
+.blog-content p+ul,
+.blog-content p+ol {
+  margin-top: 1rem;
+}
+
+.blog-content ul+p,
+.blog-content ol+p {
+  margin-top: 1rem;
+}
+
+.blog-content figure+p {
+  margin-top: 1.5rem;
+}
+
+.blog-content p+figure {
+  margin-top: 1.5rem;
 }
