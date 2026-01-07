@@ -10,399 +10,460 @@
 <script type="application/ld+json" [innerHTML]="sanitizer.bypassSecurityTrustHtml(getStructuredDataJson())"></script>
 }
 
-@for (section of content()!.sections; track section.type) {
-@switch (section.type) {
-@case ('hero') {
-<!-- Hero Section -->
-<section class="relative min-h-screen w-full overflow-hidden" aria-label="Hero section">
-  <div class="absolute inset-0 z-0">
-    <video class="absolute inset-0 w-full h-full object-cover" autoplay muted playsinline preload="auto" #videoElement
-      aria-label="Hero background video">
-      Your browser does not support the video tag.
-    </video>
-    <div class="absolute inset-0 bg-slate-900/70"></div>
-  </div>
-  <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 h-screen flex items-center">
-    <div class="w-full max-w-2xl md:max-w-3xl">
-      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 md:mb-8">
-        {{ section.title }}
-      </h1>
-      <p class="text-base sm:text-lg md:text-xl text-white mb-8 md:mb-10 max-w-xl md:max-w-2xl leading-relaxed">
-        {{ section.description }}
-      </p>
-      <button
-        class="text-white font-semibold px-8 py-4 rounded-lg transition-colors duration-200 mb-12 md:mb-16 hover:opacity-90"
-        [style.background-color]="section.cta.backgroundColor">
-        {{ section.cta.text }}
-      </button>
-      <div class="flex items-center gap-2 md:gap-3">
-        @for (indicator of [].constructor(videoUrls().length); track $index) {
-        <button type="button" (click)="switchToVideo($index)"
-          [class]="$index === currentVideoIndex() ? 'h-0.5 w-8 md:w-10 bg-white rounded-full transition-all duration-300' : 'h-0.5 w-6 md:w-8 bg-white/50 rounded-full hover:bg-white/70 transition-all duration-300 cursor-pointer'"
-          [attr.aria-label]="'Switch to video ' + ($index + 1)">
-        </button>
-        }
-      </div>
-    </div>
-  </div>
-</section>
-}
 
-@case ('services') {
-<!-- Services Section -->
-<section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="services-title">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <div class="text-center mb-10 sm:mb-12 md:mb-16">
-      <p class="text-sm sm:text-base font-semibold uppercase tracking-wider text-blue-600 mb-4 sm:mb-6">
-        {{ section.label }}
-      </p>
-      <h2 id="services-title"
-        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
-        {{ section.title }}
-      </h2>
-      <p class="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-        {{ section.description }}
-      </p>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10">
-      @for (service of section.services; track service.id) {
-      <div class="bg-white border border-gray-200 rounded-lg p-6 sm:p-8 hover:shadow-lg transition-shadow duration-300">
-        <div class="mb-4 sm:mb-6">
-          <!-- Icon Container (Left) -->
-          <div class="">
-            <div
-              class="w-20 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 flex items-start justify-center relative">
-              <img [src]="service.icon" [alt]="service.title + ' service icon'" class=" w-20 h-auto object-cover"
-                loading="lazy" />
-            </div>
-          </div>
-        </div>
-        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-          {{ service.title }}
-        </h3>
-        <p class="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed">
-          {{ service.description }}
-        </p>
-        <a [href]="service.link"
-          class="text-sm sm:text-base text-gray-600 font-medium hover:text-blue-600 transition-colors duration-200 inline-flex items-center">
-          {{ service.linkText }} <span class="ml-1">></span>
-        </a>
+<!-- Admin Editor Layout -->
+@if (isAdmin()) {
+<!-- Toggle Button -->
+<button (click)="togglePanel()"
+  class="fixed right-4 top-4 z-[60] bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center gap-2">
+  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+  </svg>
+  <span>{{ panelVisible() ? 'Ocultar' : 'Mostrar' }} Editor</span>
+</button>
+
+<!-- Right Sidebar: Textarea Editor -->
+@if (panelVisible()) {
+<div class="fixed right-0 top-0 h-full w-1/2 border-l border-gray-300 flex flex-col bg-white z-50 shadow-2xl">
+  <div class="bg-gray-100 border-b border-gray-300 px-4 py-3 flex items-center justify-between pt-20">
+    <h2 class="text-lg font-semibold text-gray-800">Editor JSON</h2>
+    <div class="flex items-center gap-3">
+      @if (saveSuccess()) {
+      <div class="bg-green-500 text-white px-3 py-1 rounded text-sm">
+        ✓ Guardado exitosamente!
       </div>
       }
-    </div>
-  </div>
-</section>
-}
-
-@case ('featuredCaseStudy') {
-<!-- Featured Case Study Section -->
-<section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="case-study-title">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
-      <div class="order-2 lg:order-1">
-        <div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden">
-          <img [src]="section.image.url" [alt]="section.image.alt || section.title + ' - Featured case study image'"
-            class="w-full h-full object-cover" loading="lazy" />
-        </div>
-      </div>
-      <div class="order-1 lg:order-2 relative">
-        <div
-          class="hidden lg:block absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-900 to-blue-300 rounded-full">
-        </div>
-        <div class="pl-0 lg:pl-8">
-          <p class="text-xs sm:text-sm font-semibold uppercase tracking-wider text-blue-600 mb-3 sm:mb-4">
-            {{ section.label }}
-          </p>
-          <span
-            class="inline-block text-xs sm:text-sm font-medium text-white bg-blue-400 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full mb-4 sm:mb-6">
-            {{ section.tag }}
-          </span>
-          <h2 id="case-study-title"
-            class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
-            {{ section.title }}
-          </h2>
-          <p class="text-base sm:text-lg text-gray-700 mb-6 sm:mb-8 leading-relaxed" [innerHTML]="section.description">
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
-            <button
-              class="text-white font-semibold px-6 py-3 sm:px-8 sm:py-4 rounded-lg transition-colors duration-200 hover:opacity-90 whitespace-nowrap"
-              [style.background-color]="section.cta.primary.backgroundColor">
-              {{ section.cta.primary.text }}
-            </button>
-            <a [href]="section.cta.secondary.link"
-              class="text-base sm:text-lg text-gray-700 font-medium hover:text-blue-600 transition-colors duration-200 inline-flex items-center">
-              {{ section.cta.secondary.text }} <span class="ml-1">></span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-}
-
-@case ('trustedBy') {
-<!-- Trusted by Industry Leaders Section -->
-<section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="trusted-by-title">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <h2 id="trusted-by-title"
-      class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 text-center mb-8 sm:mb-12 md:mb-16">
-      {{ section.title }}
-    </h2>
-    <div class="relative">
-      <button
-        class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-8 z-10 w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50 transition-colors duration-200 items-center justify-center shadow-md"
-        aria-label="Previous logos">
-        <svg class="w-5 h-5 lg:w-6 lg:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      <button (click)="saveContent()" [disabled]="saving() || !!jsonError()"
+        class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold px-4 py-2 rounded transition-colors duration-200 flex items-center gap-2">
+        @if (saving()) {
+        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+          </path>
         </svg>
+        <span>Guardando...</span>
+        } @else {
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>Guardar</span>
+        }
       </button>
-      <div class="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide"
-        style="scrollbar-width: none; -ms-overflow-style: none;">
-        <div class="flex items-center justify-center gap-8 md:gap-12 lg:gap-16 min-w-max md:min-w-0">
-          @for (company of section.companies; track company.name) {
-          <div class="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-200"
-            [ngClass]="company.type === 'text' ? 'flex flex-col items-start' : 'flex items-center gap-2'">
-            @if (company.name === 'Microsoft') {
-            <div class="flex gap-0.5">
-              <div class="w-3 h-3 bg-red-500"></div>
-              <div class="w-3 h-3 bg-green-500"></div>
-              <div class="w-3 h-3 bg-blue-500"></div>
-              <div class="w-3 h-3 bg-yellow-500"></div>
-            </div>
-            <span class="text-gray-600 font-medium text-sm md:text-base">{{ company.name }}</span>
-            } @else if (company.name === 'ARCO') {
-            <div class="text-blue-600 font-bold text-lg md:text-xl">{{ company.name }}</div>
-            <div class="text-blue-500 text-xs md:text-sm font-medium">{{ company.subtitle }}</div>
-            <div class="text-blue-400 text-xs">{{ company.tagline }}</div>
-            } @else if (company.name === 'APPLIED MATERIALS') {
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-600 flex items-center justify-center">
-              <svg class="w-6 h-6 md:w-7 md:h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
-              </svg>
-            </div>
-            <span class="text-blue-600 font-semibold text-sm md:text-base">{{ company.name }}<span
-                class="text-xs align-super">{{ company.trademark }}</span></span>
-            } @else if (company.name === 'CLARIOS') {
-            <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
-              <svg class="w-full h-full text-purple-600" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L2 8v8l10 6 10-6V8L12 2zm0 2.5l7.5 4.5v7L12 20.5 4.5 16.5v-7L12 4.5z" />
-              </svg>
-            </div>
-            <span class="text-purple-600 font-bold text-sm md:text-base">{{ company.name }}</span>
-            } @else if (company.name === 'onsemi') {
-            <span class="text-gray-700 font-semibold text-lg md:text-xl">on<span class="text-red-600">s</span>emi</span>
-            } @else if (company.name === 'Duke') {
-            <span class="text-blue-900 font-serif text-xl md:text-2xl font-bold">{{ company.name }}</span>
-            <span class="text-blue-900 font-serif text-xs md:text-sm uppercase tracking-wide">{{ company.subtitle
-              }}</span>
-            } @else if (company.name === 'BJC') {
-            <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-900 flex items-center justify-center rounded">
-              <span class="text-white font-bold text-sm md:text-base">{{ company.name }}</span>
-            </div>
-            <span class="text-gray-700 font-medium text-sm md:text-base">{{ company.subtitle }}</span>
-            }
-          </div>
+    </div>
+  </div>
+  @if (jsonError()) {
+  <div class="bg-red-50 border-b border-red-200 px-4 py-2">
+    <p class="text-red-600 text-sm font-medium">Error de JSON: {{ jsonError() }}</p>
+  </div>
+  }
+  <textarea [(ngModel)]="jsonContent" (input)="onJsonChange($event)"
+    class="flex-1 w-full p-4 font-mono text-sm border-0 resize-none focus:outline-none"
+    placeholder="Edita el contenido JSON aquí..."></textarea>
+</div>
+}
+
+<!-- Right Side: Preview -->
+<div class="relative w-full" [ngClass]="{'pr-[50%]': isAdmin() && panelVisible()}">
+
+  @for (section of content()!.sections; track section.type) {
+  @switch (section.type) {
+  @case ('hero') {
+  <!-- Hero Section -->
+  <section class="relative min-h-screen w-full overflow-hidden" aria-label="Hero section">
+    <div class="absolute inset-0 z-0">
+      <video class="absolute inset-0 w-full h-full object-cover" autoplay muted playsinline preload="auto" #videoElement
+        aria-label="Hero background video">
+        Your browser does not support the video tag.
+      </video>
+      <div class="absolute inset-0 bg-slate-900/70"></div>
+    </div>
+    <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 h-screen flex items-center">
+      <div class="w-full max-w-2xl md:max-w-3xl">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 md:mb-8">
+          {{ section.title }}
+        </h1>
+        <p class="text-base sm:text-lg md:text-xl text-white mb-8 md:mb-10 max-w-xl md:max-w-2xl leading-relaxed">
+          {{ section.description }}
+        </p>
+        <button
+          class="text-white font-semibold px-8 py-4 rounded-lg transition-colors duration-200 mb-12 md:mb-16 hover:opacity-90"
+          [style.background-color]="section.cta.backgroundColor">
+          {{ section.cta.text }}
+        </button>
+        <div class="flex items-center gap-2 md:gap-3">
+          @for (indicator of [].constructor(videoUrls().length); track $index) {
+          <button type="button" (click)="switchToVideo($index)"
+            [class]="$index === currentVideoIndex() ? 'h-0.5 w-8 md:w-10 bg-white rounded-full transition-all duration-300' : 'h-0.5 w-6 md:w-8 bg-white/50 rounded-full hover:bg-white/70 transition-all duration-300 cursor-pointer'"
+            [attr.aria-label]="'Switch to video ' + ($index + 1)">
+          </button>
           }
         </div>
       </div>
-      <button
-        class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-8 z-10 w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50 transition-colors duration-200 items-center justify-center shadow-md"
-        aria-label="Next logos">
-        <svg class="w-5 h-5 lg:w-6 lg:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
     </div>
-  </div>
-</section>
-}
+  </section>
+  }
 
-@case ('structuredEngagements') {
-<!-- Structured Engagements Section -->
-<section
-  class="w-full bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900 py-12 sm:py-16 md:py-20 lg:py-24 relative overflow-hidden"
-  aria-labelledby="structured-engagements-title">
-  <div class="absolute inset-0 opacity-20">
-    <div class="absolute top-0 left-0 w-full h-full">
-      <svg class="w-full h-full" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M0,300 Q300,200 600,300 T1200,300" stroke="rgba(59, 130, 246, 0.3)" fill="none" stroke-width="2" />
-        <path d="M0,400 Q400,300 800,400 T1200,400" stroke="rgba(59, 130, 246, 0.2)" fill="none" stroke-width="2" />
-      </svg>
-    </div>
-  </div>
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative z-10">
-    <div class="text-center mb-8 sm:mb-10 md:mb-12">
-      <p class="text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-400 mb-3 sm:mb-4">
-        {{ section.label }}
-      </p>
-      <h2 id="structured-engagements-title"
-        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 sm:mb-8 md:mb-10 leading-tight">
-        {{ section.title }}
-      </h2>
-      <div class="flex flex-wrap justify-center gap-4 sm:gap-6 mb-8 sm:mb-10 md:mb-12">
-        @for (tab of section.tabs; track tab) {
-        <button
-          [class]="tab === section.activeTab ? 'text-white font-semibold text-sm sm:text-base pb-2 border-b-2 border-blue-500 transition-colors duration-200' : 'text-white/70 font-medium text-sm sm:text-base pb-2 border-b-2 border-transparent hover:text-white hover:border-white/30 transition-colors duration-200'">
-          {{ tab }}
-        </button>
+  @case ('services') {
+  <!-- Services Section -->
+  <section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="services-title">
+    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+      <div class="text-center mb-10 sm:mb-12 md:mb-16">
+        <p class="text-sm sm:text-base font-semibold uppercase tracking-wider text-blue-600 mb-4 sm:mb-6">
+          {{ section.label }}
+        </p>
+        <h2 id="services-title"
+          class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
+          {{ section.title }}
+        </h2>
+        <p class="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          {{ section.description }}
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10">
+        @for (service of section.services; track service.id) {
+        <div
+          class="bg-white border border-gray-200 rounded-lg p-6 sm:p-8 hover:shadow-lg transition-shadow duration-300">
+          <div class="mb-4 sm:mb-6">
+            <!-- Icon Container (Left) -->
+            <div class="">
+              <div
+                class="w-20 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 flex items-start justify-center relative">
+                <img [src]="service.icon" [alt]="service.title + ' service icon'" class=" w-20 h-auto object-cover"
+                  loading="lazy" />
+              </div>
+            </div>
+          </div>
+          <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
+            {{ service.title }}
+          </h3>
+          <p class="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed">
+            {{ service.description }}
+          </p>
+          <a [href]="service.link"
+            class="text-sm sm:text-base text-gray-600 font-medium hover:text-blue-600 transition-colors duration-200 inline-flex items-center">
+            {{ service.linkText }} <span class="ml-1">></span>
+          </a>
+        </div>
         }
       </div>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-10">
-      @for (offer of section.offers; track offer.id) {
-      <div
-        class="relative bg-slate-800/50 backdrop-blur-sm rounded-lg p-6 sm:p-8 hover:shadow-lg transition-all duration-300"
-        [ngClass]="{
+  </section>
+  }
+
+  @case ('featuredCaseStudy') {
+  <!-- Featured Case Study Section -->
+  <section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="case-study-title">
+    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
+        <div class="order-2 lg:order-1">
+          <div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden">
+            <img [src]="section.image.url" [alt]="section.image.alt || section.title + ' - Featured case study image'"
+              class="w-full h-full object-cover" loading="lazy" />
+          </div>
+        </div>
+        <div class="order-1 lg:order-2 relative">
+          <div
+            class="hidden lg:block absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-900 to-blue-300 rounded-full">
+          </div>
+          <div class="pl-0 lg:pl-8">
+            <p class="text-xs sm:text-sm font-semibold uppercase tracking-wider text-blue-600 mb-3 sm:mb-4">
+              {{ section.label }}
+            </p>
+            <span
+              class="inline-block text-xs sm:text-sm font-medium text-white bg-blue-400 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full mb-4 sm:mb-6">
+              {{ section.tag }}
+            </span>
+            <h2 id="case-study-title"
+              class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
+              {{ section.title }}
+            </h2>
+            <p class="text-base sm:text-lg text-gray-700 mb-6 sm:mb-8 leading-relaxed">
+              {{ section.description }}
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
+              <button
+                class="text-white font-semibold px-6 py-3 sm:px-8 sm:py-4 rounded-lg transition-colors duration-200 hover:opacity-90 whitespace-nowrap"
+                [style.background-color]="section.cta.primary.backgroundColor">
+                {{ section.cta.primary.text }}
+              </button>
+              <a [href]="section.cta.secondary.link"
+                class="text-base sm:text-lg text-gray-700 font-medium hover:text-blue-600 transition-colors duration-200 inline-flex items-center">
+                {{ section.cta.secondary.text }} <span class="ml-1">></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  }
+
+  @case ('trustedBy') {
+  <!-- Trusted by Industry Leaders Section -->
+  <section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="trusted-by-title">
+    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+      <h2 id="trusted-by-title"
+        class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 text-center mb-8 sm:mb-12 md:mb-16">
+        {{ section.title }}
+      </h2>
+      <div class="relative">
+        <button
+          class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-8 z-10 w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50 transition-colors duration-200 items-center justify-center shadow-md"
+          aria-label="Previous logos">
+          <svg class="w-5 h-5 lg:w-6 lg:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <div class="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide"
+          style="scrollbar-width: none; -ms-overflow-style: none;">
+          <div class="flex items-center justify-center gap-8 md:gap-12 lg:gap-16 min-w-max md:min-w-0">
+            @for (company of section.companies; track company.name) {
+            <div class="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-200"
+              [ngClass]="company.type === 'text' ? 'flex flex-col items-start' : 'flex items-center gap-2'">
+              @if (company.name === 'Microsoft') {
+              <div class="flex gap-0.5">
+                <div class="w-3 h-3 bg-red-500"></div>
+                <div class="w-3 h-3 bg-green-500"></div>
+                <div class="w-3 h-3 bg-blue-500"></div>
+                <div class="w-3 h-3 bg-yellow-500"></div>
+              </div>
+              <span class="text-gray-600 font-medium text-sm md:text-base">{{ company.name }}</span>
+              } @else if (company.name === 'ARCO') {
+              <div class="text-blue-600 font-bold text-lg md:text-xl">{{ company.name }}</div>
+              <div class="text-blue-500 text-xs md:text-sm font-medium">{{ company.subtitle }}</div>
+              <div class="text-blue-400 text-xs">{{ company.tagline }}</div>
+              } @else if (company.name === 'APPLIED MATERIALS') {
+              <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-600 flex items-center justify-center">
+                <svg class="w-6 h-6 md:w-7 md:h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
+                </svg>
+              </div>
+              <span class="text-blue-600 font-semibold text-sm md:text-base">{{ company.name }}<span
+                  class="text-xs align-super">{{ company.trademark }}</span></span>
+              } @else if (company.name === 'CLARIOS') {
+              <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
+                <svg class="w-full h-full text-purple-600" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L2 8v8l10 6 10-6V8L12 2zm0 2.5l7.5 4.5v7L12 20.5 4.5 16.5v-7L12 4.5z" />
+                </svg>
+              </div>
+              <span class="text-purple-600 font-bold text-sm md:text-base">{{ company.name }}</span>
+              } @else if (company.name === 'onsemi') {
+              <span class="text-gray-700 font-semibold text-lg md:text-xl">on<span
+                  class="text-red-600">s</span>emi</span>
+              } @else if (company.name === 'Duke') {
+              <span class="text-blue-900 font-serif text-xl md:text-2xl font-bold">{{ company.name }}</span>
+              <span class="text-blue-900 font-serif text-xs md:text-sm uppercase tracking-wide">{{ company.subtitle
+                }}</span>
+              } @else if (company.name === 'BJC') {
+              <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-900 flex items-center justify-center rounded">
+                <span class="text-white font-bold text-sm md:text-base">{{ company.name }}</span>
+              </div>
+              <span class="text-gray-700 font-medium text-sm md:text-base">{{ company.subtitle }}</span>
+              }
+            </div>
+            }
+          </div>
+        </div>
+        <button
+          class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-8 z-10 w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50 transition-colors duration-200 items-center justify-center shadow-md"
+          aria-label="Next logos">
+          <svg class="w-5 h-5 lg:w-6 lg:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+  }
+
+  @case ('structuredEngagements') {
+  <!-- Structured Engagements Section -->
+  <section
+    class="w-full bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900 py-12 sm:py-16 md:py-20 lg:py-24 relative overflow-hidden"
+    aria-labelledby="structured-engagements-title">
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute top-0 left-0 w-full h-full">
+        <svg class="w-full h-full" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0,300 Q300,200 600,300 T1200,300" stroke="rgba(59, 130, 246, 0.3)" fill="none" stroke-width="2" />
+          <path d="M0,400 Q400,300 800,400 T1200,400" stroke="rgba(59, 130, 246, 0.2)" fill="none" stroke-width="2" />
+        </svg>
+      </div>
+    </div>
+    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative z-10">
+      <div class="text-center mb-8 sm:mb-10 md:mb-12">
+        <p class="text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-400 mb-3 sm:mb-4">
+          {{ section.label }}
+        </p>
+        <h2 id="structured-engagements-title"
+          class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 sm:mb-8 md:mb-10 leading-tight">
+          {{ section.title }}
+        </h2>
+        <div class="flex flex-wrap justify-center gap-4 sm:gap-6 mb-8 sm:mb-10 md:mb-12">
+          @for (tab of section.tabs; track tab) {
+          <button
+            [class]="tab === section.activeTab ? 'text-white font-semibold text-sm sm:text-base pb-2 border-b-2 border-blue-500 transition-colors duration-200' : 'text-white/70 font-medium text-sm sm:text-base pb-2 border-b-2 border-transparent hover:text-white hover:border-white/30 transition-colors duration-200'">
+            {{ tab }}
+          </button>
+          }
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-10">
+        @for (offer of section.offers; track offer.id) {
+        <div
+          class="relative bg-slate-800/50 backdrop-blur-sm rounded-lg p-6 sm:p-8 hover:shadow-lg transition-all duration-300"
+          [ngClass]="{
                     'border border-blue-500/50 hover:border-blue-500 hover:shadow-blue-500/20': offer.borderColor === 'blue',
                     'border border-orange-500/50 hover:border-orange-500 hover:shadow-orange-500/20': offer.borderColor === 'orange',
                     'border border-green-500/50 hover:border-green-500 hover:shadow-green-500/20': offer.borderColor === 'green',
                     'border border-purple-500/50 hover:border-purple-500 hover:shadow-purple-500/20': offer.borderColor === 'purple'
                   }"
-        [style.background]="offer.borderColor === 'blue' ? 'linear-gradient(135deg, rgba(30, 58, 138, 0.3) 0%, rgba(15, 23, 42, 0.5) 100%)' : offer.borderColor === 'orange' ? 'linear-gradient(135deg, rgba(251, 146, 60, 0.3) 0%, rgba(15, 23, 42, 0.5) 100%)' : offer.borderColor === 'green' ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(15, 23, 42, 0.5) 100%)' : 'linear-gradient(135deg, rgba(168, 85, 247, 0.3) 0%, rgba(15, 23, 42, 0.5) 100%)'">
-        <div class="mb-4 sm:mb-6">
-          <div [ngClass]="{
+          [style.background]="offer.borderColor === 'blue' ? 'linear-gradient(135deg, rgba(30, 58, 138, 0.3) 0%, rgba(15, 23, 42, 0.5) 100%)' : offer.borderColor === 'orange' ? 'linear-gradient(135deg, rgba(251, 146, 60, 0.3) 0%, rgba(15, 23, 42, 0.5) 100%)' : offer.borderColor === 'green' ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(15, 23, 42, 0.5) 100%)' : 'linear-gradient(135deg, rgba(168, 85, 247, 0.3) 0%, rgba(15, 23, 42, 0.5) 100%)'">
+          <div class="mb-4 sm:mb-6">
+            <div [ngClass]="{
                       'w-12 h-12 sm:w-14 sm:h-14 bg-blue-500/20 rounded-lg flex items-center justify-center': offer.borderColor === 'blue',
                       'w-12 h-12 sm:w-14 sm:h-14 bg-orange-500/20 rounded-lg flex items-center justify-center': offer.borderColor === 'orange',
                       'w-12 h-12 sm:w-14 sm:h-14 bg-green-500/20 rounded-lg flex items-center justify-center': offer.borderColor === 'green',
                       'w-12 h-12 sm:w-14 sm:h-14 bg-purple-500/20 rounded-lg flex items-center justify-center': offer.borderColor === 'purple'
                     }">
-            <svg [ngClass]="{
+              <svg [ngClass]="{
                         'w-6 h-6 sm:w-7 sm:h-7 text-blue-400': offer.borderColor === 'blue',
                         'w-6 h-6 sm:w-7 sm:h-7 text-orange-400': offer.borderColor === 'orange',
                         'w-6 h-6 sm:w-7 sm:h-7 text-green-400': offer.borderColor === 'green',
                         'w-6 h-6 sm:w-7 sm:h-7 text-purple-400': offer.borderColor === 'purple'
                       }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="2" fill="none" />
-              <rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="2" fill="none" />
-              <rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="2" fill="none" />
-              <rect x="14" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="2" fill="none" />
-            </svg>
+                <rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="2" fill="none" />
+                <rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="2" fill="none" />
+                <rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="2" fill="none" />
+                <rect x="14" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="2" fill="none" />
+              </svg>
+            </div>
           </div>
+          <h3 class="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">
+            {{ offer.title }}
+          </h3>
+          <p class="text-sm sm:text-base text-gray-300 mb-4 sm:mb-6 leading-relaxed">
+            {{ offer.description }}
+          </p>
+          <a [href]="offer.link"
+            class="text-sm sm:text-base text-gray-300 hover:text-white transition-colors duration-200 inline-flex items-center">
+            {{ offer.linkText }} <span class="ml-1">></span>
+          </a>
         </div>
-        <h3 class="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">
-          {{ offer.title }}
-        </h3>
-        <p class="text-sm sm:text-base text-gray-300 mb-4 sm:mb-6 leading-relaxed">
-          {{ offer.description }}
-        </p>
-        <a [href]="offer.link"
-          class="text-sm sm:text-base text-gray-300 hover:text-white transition-colors duration-200 inline-flex items-center">
-          {{ offer.linkText }} <span class="ml-1">></span>
-        </a>
+        }
       </div>
-      }
+      <div class="text-center">
+        <button class="text-white font-semibold px-8 py-4 rounded-lg transition-colors duration-200 hover:opacity-90"
+          [style.background-color]="section.cta.backgroundColor">
+          {{ section.cta.text }}
+        </button>
+      </div>
     </div>
-    <div class="text-center">
-      <button class="text-white font-semibold px-8 py-4 rounded-lg transition-colors duration-200 hover:opacity-90"
-        [style.background-color]="section.cta.backgroundColor">
-        {{ section.cta.text }}
-      </button>
-    </div>
-  </div>
-</section>
-}
+  </section>
+  }
 
-@case ('microsoftPartner') {
-<!-- Certified Microsoft Solutions Partner Section -->
-<section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="microsoft-partner-title">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <div class="max-w-6xl mx-auto">
-      <div class="mb-8 sm:mb-10 md:mb-12">
-        <h2 id="microsoft-partner-title" class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2">
-          <span class="text-blue-400">{{ section.title.line1 }}</span><br />
-          <span class="text-blue-600">{{ section.title.line2 }}</span>
-        </h2>
+  @case ('microsoftPartner') {
+  <!-- Certified Microsoft Solutions Partner Section -->
+  <section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="microsoft-partner-title">
+    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+      <div class="max-w-6xl mx-auto">
+        <div class="mb-8 sm:mb-10 md:mb-12">
+          <h2 id="microsoft-partner-title" class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2">
+            <span class="text-blue-400">{{ section.title.line1 }}</span><br />
+            <span class="text-blue-600">{{ section.title.line2 }}</span>
+          </h2>
+        </div>
+        <p class="text-sm sm:text-base md:text-lg text-gray-600 mb-8 sm:mb-10 md:mb-12 max-w-3xl leading-relaxed">
+          {{ section.description }}
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          @for (badge of section.badges; track badge.id) {
+          <div
+            class="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
+            <div class="flex items-start gap-3 mb-3">
+              <div class="flex gap-0.5 flex-shrink-0">
+                <div class="w-3 h-3 bg-red-500 rounded-sm"></div>
+                <div class="w-3 h-3 bg-green-500 rounded-sm"></div>
+                <div class="w-3 h-3 bg-blue-500 rounded-sm"></div>
+                <div class="w-3 h-3 bg-yellow-500 rounded-sm"></div>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs sm:text-sm font-semibold text-gray-900 mb-1">
+                  {{ badge.title }}
+                </p>
+                <p class="text-xs text-gray-500">
+                  {{ badge.subtitle }}
+                </p>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
       </div>
-      <p class="text-sm sm:text-base md:text-lg text-gray-600 mb-8 sm:mb-10 md:mb-12 max-w-3xl leading-relaxed">
-        {{ section.description }}
-      </p>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        @for (badge of section.badges; track badge.id) {
+    </div>
+  </section>
+  }
+
+  @case ('latestInsights') {
+  <!-- Latest Insights Section -->
+  <section class="w-full bg-slate-50 py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="latest-insights-title">
+    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+      <div class="text-center md:text-left mb-10 sm:mb-12 md:mb-16">
+        <p class="text-xs sm:text-sm font-semibold uppercase tracking-wider text-blue-600 mb-3 sm:mb-4">
+          {{ section.label }}
+        </p>
+        <h2 id="latest-insights-title"
+          class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
+          {{ section.title }}
+        </h2>
+        <p class="text-base sm:text-lg text-gray-700 max-w-3xl mx-auto md:mx-0 leading-relaxed">
+          {{ section.subtitle }}
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
+        @for (article of section.articles; track article.id) {
         <div
-          class="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
-          <div class="flex items-start gap-3 mb-3">
-            <div class="flex gap-0.5 flex-shrink-0">
-              <div class="w-3 h-3 bg-red-500 rounded-sm"></div>
-              <div class="w-3 h-3 bg-green-500 rounded-sm"></div>
-              <div class="w-3 h-3 bg-blue-500 rounded-sm"></div>
-              <div class="w-3 h-3 bg-yellow-500 rounded-sm"></div>
+          class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+          <div class="relative w-full h-48 sm:h-56 overflow-hidden">
+            <img [src]="article.image.url" [alt]="article.image.alt || article.title + ' article image'"
+              class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="p-5 sm:p-6 flex flex-col flex-grow">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2 flex-wrap">
+                @for (tag of article.tags; track tag) {
+                <span
+                  [ngClass]="tag === 'Cloud' || tag === 'AI' || tag === 'Case Study' ? 'text-xs font-semibold uppercase text-white bg-blue-600 px-3 py-1 rounded-full' : 'text-xs font-medium uppercase text-gray-700 bg-gray-100 px-3 py-1 rounded-full'">
+                  {{ tag }}
+                </span>
+                }
+              </div>
+              <span class="text-xs text-gray-500">{{ article.readingTime }}</span>
             </div>
-            <div class="flex-1">
-              <p class="text-xs sm:text-sm font-semibold text-gray-900 mb-1">
-                {{ badge.title }}
-              </p>
-              <p class="text-xs text-gray-500">
-                {{ badge.subtitle }}
-              </p>
-            </div>
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-4 leading-tight">
+              {{ article.title }}
+            </h3>
+            <a [href]="article.link"
+              class="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 inline-flex items-center mt-auto">
+              {{ article.linkText }} <span class="ml-1">></span>
+            </a>
           </div>
         </div>
         }
       </div>
-    </div>
-  </div>
-</section>
-}
-
-@case ('latestInsights') {
-<!-- Latest Insights Section -->
-<section class="w-full bg-slate-50 py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="latest-insights-title">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <div class="text-center md:text-left mb-10 sm:mb-12 md:mb-16">
-      <p class="text-xs sm:text-sm font-semibold uppercase tracking-wider text-blue-600 mb-3 sm:mb-4">
-        {{ section.label }}
-      </p>
-      <h2 id="latest-insights-title"
-        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
-        {{ section.title }}
-      </h2>
-      <p class="text-base sm:text-lg text-gray-700 max-w-3xl mx-auto md:mx-0 leading-relaxed">
-        {{ section.subtitle }}
-      </p>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
-      @for (article of section.articles; track article.id) {
-      <div
-        class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
-        <div class="relative w-full h-48 sm:h-56 overflow-hidden">
-          <img [src]="article.image.url" [alt]="article.image.alt || article.title + ' article image'"
-            class="w-full h-full object-cover" loading="lazy" />
-        </div>
-        <div class="p-5 sm:p-6 flex flex-col flex-grow">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-2 flex-wrap">
-              @for (tag of article.tags; track tag) {
-              <span
-                [ngClass]="tag === 'Cloud' || tag === 'AI' || tag === 'Case Study' ? 'text-xs font-semibold uppercase text-white bg-blue-600 px-3 py-1 rounded-full' : 'text-xs font-medium uppercase text-gray-700 bg-gray-100 px-3 py-1 rounded-full'">
-                {{ tag }}
-              </span>
-              }
-            </div>
-            <span class="text-xs text-gray-500">{{ article.readingTime }}</span>
-          </div>
-          <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-4 leading-tight">
-            {{ article.title }}
-          </h3>
-          <a [href]="article.link"
-            class="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 inline-flex items-center mt-auto">
-            {{ article.linkText }} <span class="ml-1">></span>
-          </a>
-        </div>
+      <div class="text-center">
+        <button
+          class="bg-transparent border border-gray-300 text-gray-800 font-semibold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+          {{ section.cta.text }}
+        </button>
       </div>
-      }
     </div>
-    <div class="text-center">
-      <button
-        class="bg-transparent border border-gray-300 text-gray-800 font-semibold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-        {{ section.cta.text }}
-      </button>
-    </div>
-  </div>
-</section>
-}
+  </section>
+  }
 
+  }
+  }
+</div>
 
-}
 }
 }

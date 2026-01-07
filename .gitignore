@@ -44,3 +44,8 @@ Thumbs.db
 
 # Local Netlify folder
 .netlify
+
+# Database files
+.netlify/functions/**/data/
+*.db
+*.db-journal

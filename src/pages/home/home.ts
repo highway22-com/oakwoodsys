@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule, NgClass, isPlatformBrowser } from '@angular/common';
 import { Title, Meta, DomSanitizer } from '@angular/platform-browser';
 import { Apollo, gql } from 'apollo-angular';
+import { FormsModule } from '@angular/forms';
 
 interface HomeContent {
   page: string;
@@ -12,7 +13,7 @@ interface HomeContent {
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, NgClass],
+  imports: [CommonModule, NgClass, FormsModule],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,23 +39,44 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   readonly posts = signal<any>(null);
   readonly error = signal<any>(null);
   readonly structuredData = signal<any>(null);
+  readonly isAdmin = signal(false);
+  readonly saving = signal(false);
+  readonly saveSuccess = signal(false);
+  readonly panelVisible = signal(false);
+  jsonContent: string = '';
+  readonly jsonError = signal<string | null>(null);
 
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       document.addEventListener('click', () => this.enableAutoplay(), { once: true });
+
+      // Check if user is admin
+      const token = localStorage.getItem('admin_token');
+      this.isAdmin.set(!!token);
     }
 
     // Try to load from external URL via proxy endpoint (bypasses CORS)
     // The proxy endpoint is defined in server.ts and only works in SSR mode
+    // If admin is logged in, server will serve local file for editing
     // Fallback to local file on error (e.g., during dev with ng serve)
-    this.http.get<HomeContent>('/api/home-content').subscribe({
+    const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('admin_token') : null;
+    const headers: { [key: string]: string } = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    this.http.get<HomeContent>('/api/home-content', { headers }).subscribe({
       //this.http.get<HomeContent>('/home-content.json').subscribe({
       next: (data) => {
         this.content.set(data);
         if (data.videoUrls && data.videoUrls.length > 0) {
           this.videoUrls.set(data.videoUrls);
+        }
+        // Initialize JSON content for admin editor
+        if (this.isAdmin()) {
+          this.jsonContent = JSON.stringify(data, null, 2);
         }
         this.updateMetadata(data);
         this.updateStructuredData(data);
@@ -69,6 +91,10 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
             this.content.set(data);
             if (data.videoUrls && data.videoUrls.length > 0) {
               this.videoUrls.set(data.videoUrls);
+            }
+            // Initialize JSON content for admin editor
+            if (this.isAdmin()) {
+              this.jsonContent = JSON.stringify(data, null, 2);
             }
             this.updateMetadata(data);
             this.updateStructuredData(data);
@@ -263,5 +289,86 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   getStructuredDataJson(): string {
     const data = this.structuredData();
     return data ? JSON.stringify(data) : '';
+  }
+
+  togglePanel() {
+    this.panelVisible.set(!this.panelVisible());
+  }
+
+  onJsonChange(event: Event) {
+    const target = event.target as HTMLTextAreaElement;
+    this.jsonContent = target.value;
+
+    try {
+      const parsed = JSON.parse(this.jsonContent);
+      this.jsonError.set(null);
+
+      // Update content in real-time
+      this.content.set(parsed);
+
+      // Update video URLs if present
+      if (parsed.videoUrls && parsed.videoUrls.length > 0) {
+        this.videoUrls.set(parsed.videoUrls);
+      }
+
+      // Update metadata and structured data
+      this.updateMetadata(parsed);
+      this.updateStructuredData(parsed);
+    } catch (error) {
+      this.jsonError.set('JSON inválido: ' + (error instanceof Error ? error.message : 'Error desconocido'));
+    }
+  }
+
+  saveContent() {
+    if (!this.content() || this.jsonError()) return;
+
+    this.saving.set(true);
+    this.saveSuccess.set(false);
+
+    const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('admin_token') : null;
+    if (!token) {
+      console.error('No admin token found');
+      this.saving.set(false);
+      return;
+    }
+
+    const headers: { [key: string]: string } = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+
+    // Parse JSON content to send
+    let updatedContent: HomeContent;
+    try {
+      updatedContent = JSON.parse(this.jsonContent);
+    } catch (error) {
+      alert('Error: JSON inválido. No se puede guardar.');
+      this.saving.set(false);
+      return;
+    }
+
+    this.http.put<{ success: boolean; message?: string }>('/api/home-content', updatedContent, { headers }).subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Update local content signal
+          this.content.set(updatedContent);
+          this.saveSuccess.set(true);
+
+          // Hide success message after 3 seconds
+          setTimeout(() => {
+            this.saveSuccess.set(false);
+          }, 3000);
+        } else {
+          console.error('Failed to save:', response.message);
+          alert('Error al guardar: ' + (response.message || 'Error desconocido'));
+        }
+        this.saving.set(false);
+      },
+      error: (error) => {
+        console.error('Error saving content:', error);
+        alert('Error al guardar el contenido. Por favor intenta de nuevo.');
+        this.saving.set(false);
+      }
+    });
   }
 }

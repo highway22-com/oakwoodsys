@@ -9,3 +9,7 @@
 # This plugin automatically handles Angular SSR on Netlify
 [[plugins]]
   package = "@netlify/angular-runtime"
+
+# Functions configuration
+[functions]
+  node_bundler = "esbuild"

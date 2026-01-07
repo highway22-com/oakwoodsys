@@ -9,6 +9,7 @@ import { Blog } from '../pages/blog/blog';
 import { Structured } from '../pages/structured/structured';
 import { AboutUs } from '../pages/about-us/about-us';
 import { ContactUs } from '../pages/contact-us/contact-us';
+import { Login } from '../pages/login/login';
 
 export const routes: Routes = [
     {
@@ -68,5 +69,9 @@ export const routes: Routes = [
     {
         path: 'contact-us',
         component: ContactUs
+    },
+    {
+        path: 'admin/login',
+        component: Login
     }
 ];
