@@ -6,8 +6,61 @@ import { join } from 'path'
 const angularAppEngine = new AngularAppEngine()
 
 // Authentication helper functions
+// Helper functions for base64 encoding/decoding (compatible with Deno/Edge Functions)
+function base64Encode(str: string): string {
+  if (typeof btoa !== 'undefined') {
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+  // Fallback for Node.js environments
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(str).toString('base64');
+  }
+  // Manual base64 encoding as last resort
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  let result = '';
+  let i = 0;
+  const input = new TextEncoder().encode(str);
+  while (i < input.length) {
+    const a = input[i++];
+    const b = i < input.length ? input[i++] : 0;
+    const c = i < input.length ? input[i++] : 0;
+    const bitmap = (a << 16) | (b << 8) | c;
+    result += chars.charAt((bitmap >> 18) & 63);
+    result += chars.charAt((bitmap >> 12) & 63);
+    result += i - 2 < input.length ? chars.charAt((bitmap >> 6) & 63) : '=';
+    result += i - 1 < input.length ? chars.charAt(bitmap & 63) : '=';
+  }
+  return result;
+}
+
+function base64Decode(str: string): string {
+  if (typeof atob !== 'undefined') {
+    return decodeURIComponent(escape(atob(str)));
+  }
+  // Fallback for Node.js environments
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(str, 'base64').toString();
+  }
+  // Manual base64 decoding as last resort
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  let result = '';
+  let i = 0;
+  str = str.replace(/[^A-Za-z0-9\+\/]/g, '');
+  while (i < str.length) {
+    const encoded1 = chars.indexOf(str.charAt(i++));
+    const encoded2 = chars.indexOf(str.charAt(i++));
+    const encoded3 = chars.indexOf(str.charAt(i++));
+    const encoded4 = chars.indexOf(str.charAt(i++));
+    const bitmap = (encoded1 << 18) | (encoded2 << 12) | (encoded3 << 6) | encoded4;
+    result += String.fromCharCode((bitmap >> 16) & 255);
+    if (encoded3 !== 64) result += String.fromCharCode((bitmap >> 8) & 255);
+    if (encoded4 !== 64) result += String.fromCharCode(bitmap & 255);
+  }
+  return result;
+}
+
 function hashPassword(password: string): string {
-  return Buffer.from(password).toString('base64');
+  return base64Encode(password);
 }
 
 function verifyPassword(password: string, hash: string): boolean {
@@ -20,12 +73,12 @@ function generateToken(username: string): string {
     username,
     timestamp: Date.now()
   };
-  return Buffer.from(JSON.stringify(payload)).toString('base64');
+  return base64Encode(JSON.stringify(payload));
 }
 
 function verifyToken(token: string): { valid: boolean; username?: string } {
   try {
-    const decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+    const decoded = JSON.parse(base64Decode(token));
     const users = initUsers();
     const user = users.find((u: any) => u.username === decoded.username);
 
