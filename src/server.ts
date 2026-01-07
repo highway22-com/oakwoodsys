@@ -2,6 +2,7 @@ import { AngularAppEngine, createRequestHandler } from '@angular/ssr'
 import { getContext } from '@netlify/angular-runtime/context.mjs'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
+import { getStore } from '@netlify/blobs'
 
 const angularAppEngine = new AngularAppEngine()
 
@@ -258,19 +259,45 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
 
       try {
         const body = await request.json();
-        const localPath = join(process.cwd(), 'public', 'home-content.json');
 
-        // Try to write the file, but handle read-only filesystem gracefully
+        // Try Netlify Blobs first (works in production)
+        if (blobsStore) {
+          try {
+            await blobsStore.set('home-content.json', JSON.stringify(body, null, 2));
+            console.log('[home-content] Successfully saved to Netlify Blobs');
+            return Response.json({ success: true, message: 'Content updated successfully' }, {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+          } catch (blobError: any) {
+            console.error('[home-content] Error saving to Blobs, falling back to file system:', blobError);
+            // Fall through to file system attempt
+          }
+        }
+
+        // Fallback to file system (works in local development)
+        const dataDir = join(process.cwd(), '.netlify', 'data');
+        const localPath = join(dataDir, 'home-content.json');
+
         try {
-          // Ensure directory exists
-          const dir = join(process.cwd(), 'public');
-          if (!existsSync(dir)) {
+          // Ensure .netlify/data directory exists
+          if (!existsSync(dataDir)) {
             try {
-              mkdirSync(dir, { recursive: true });
+              mkdirSync(dataDir, { recursive: true });
+              console.log('[home-content] Created .netlify/data directory:', dataDir);
             } catch (mkdirError: any) {
-              // If we can't create directory (read-only filesystem), that's okay
-              // We'll just try to write the file anyway
-              if (mkdirError.name !== 'NotCapable' && mkdirError.code !== 'EACCES' && mkdirError.code !== 'EROFS') {
+              // If we can't create directory (read-only filesystem), log and continue
+              if (mkdirError.name === 'NotCapable' || mkdirError.code === 'EACCES' || mkdirError.code === 'EROFS') {
+                console.warn('[home-content] Cannot create .netlify/data directory (read-only filesystem):', mkdirError.message);
+                // If Blobs also failed, return error
+                if (!blobsStore) {
+                  return Response.json({
+                    success: false,
+                    message: 'Cannot write to filesystem (read-only) and Blobs not available'
+                  }, { status: 500 });
+                }
+              } else {
                 throw mkdirError;
               }
             }
@@ -278,6 +305,7 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
 
           // Write updated content
           writeFileSync(localPath, JSON.stringify(body, null, 2), 'utf8');
+          console.log('[home-content] Successfully saved to file system:', localPath);
 
           return Response.json({ success: true, message: 'Content updated successfully' }, {
             headers: {
@@ -293,24 +321,20 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
             stack: writeError?.stack
           });
 
-          // If we can't write (read-only filesystem in production), 
-          // still return success but log a warning
+          // If we can't write (read-only filesystem in production)
           if (writeError.name === 'NotCapable' || writeError.code === 'EACCES' || writeError.code === 'EROFS') {
-            console.warn('[home-content] Cannot write to filesystem (read-only), but content update was processed:', {
-              name: writeError.name,
-              code: writeError.code,
-              message: writeError.message
-            });
-            // In production, the content might be stored elsewhere or the write might not be needed
-            // Return success anyway since the content was validated
+            // If Blobs is available but failed, that's a real error
+            if (blobsStore) {
+              return Response.json({
+                success: false,
+                message: 'Failed to save content (both Blobs and filesystem failed)'
+              }, { status: 500 });
+            }
+            // Otherwise, filesystem is read-only but that's expected in production
             return Response.json({
-              success: true,
-              message: 'Content update processed (filesystem is read-only)'
-            }, {
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            });
+              success: false,
+              message: 'Cannot write to filesystem (read-only). Netlify Blobs is required for production.'
+            }, { status: 500 });
           }
           throw writeError;
         }
@@ -330,11 +354,42 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
     }
 
     // Handle GET request
-    // Try to serve local file first, then fallback to external
-    const localPath = join(process.cwd(), 'public', 'home-content.json');
-    console.log('[home-content] GET request - auth.valid:', auth.valid, 'localPath:', localPath);
+    // Try Netlify Blobs first, then file system, then external
+    console.log('[home-content] GET request - auth.valid:', auth.valid);
 
-    // First, try to read local file
+    // Try Netlify Blobs first (works in production)
+    if (blobsStore) {
+      try {
+        const blobData = await blobsStore.get('home-content.json');
+        if (blobData) {
+          const data = JSON.parse(blobData);
+          console.log('[home-content] Successfully read from Netlify Blobs');
+          return Response.json(data, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': auth.valid ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400'
+            }
+          });
+        } else {
+          console.log('[home-content] No data in Blobs, trying file system');
+        }
+      } catch (blobError: any) {
+        console.warn('[home-content] Error reading from Blobs, falling back to file system:', blobError);
+      }
+    }
+
+    // Fallback to file system (works in local development)
+    const dataPath = join(process.cwd(), '.netlify', 'data', 'home-content.json');
+    const publicPath = join(process.cwd(), 'public', 'home-content.json');
+
+    // Try .netlify/data first, then public folder
+    let localPath = dataPath;
+    if (!existsSync(localPath)) {
+      localPath = publicPath;
+    }
+    console.log('[home-content] Trying file system, localPath:', localPath);
+
+    // Try to read local file
     if (existsSync(localPath)) {
       console.log('[home-content] Local file exists, attempting to read');
       try {
