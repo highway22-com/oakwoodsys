@@ -137,6 +137,30 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  onVideoError(event: Event) {
+    const video = event.target as HTMLVideoElement;
+    console.error('[Video] HTML error event:', {
+      networkState: video.networkState,
+      readyState: video.readyState,
+      error: video.error,
+      src: video.src
+    });
+  }
+
+  onVideoLoadStart(event: Event) {
+    const video = event.target as HTMLVideoElement;
+    console.log('[Video] Load started:', video.src);
+  }
+
+  onVideoLoaded(event: Event) {
+    const video = event.target as HTMLVideoElement;
+    console.log('[Video] Loaded:', video.src, {
+      duration: video.duration,
+      videoWidth: video.videoWidth,
+      videoHeight: video.videoHeight
+    });
+  }
+
   private attemptAutoplay() {
     if (!this.videoElement) return;
     const video = this.videoElement.nativeElement;
@@ -207,11 +231,52 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     if (!this.videoElement) return;
 
     const video = this.videoElement.nativeElement;
+
+    // Clear previous error handlers
+    const errorHandler = (e: Event) => {
+      console.error('[Video] Error loading video:', url, {
+        event: e,
+        networkState: video.networkState,
+        readyState: video.readyState,
+        videoError: video.error
+      });
+
+      // Try next video if available
+      const urls = this.videoUrls();
+      const currentIndex = this.currentVideoIndex();
+      if (urls.length > 1) {
+        const nextIndex = (currentIndex + 1) % urls.length;
+        if (nextIndex !== currentIndex) {
+          console.log('[Video] Attempting to load next video:', urls[nextIndex]);
+          this.currentVideoIndex.set(nextIndex);
+          this.loadVideo(urls[nextIndex]);
+        }
+      }
+    };
+
+    const abortHandler = () => {
+      console.warn('[Video] Video load aborted:', url);
+    };
+
+    // Remove old listeners
+    video.removeEventListener('error', errorHandler);
+    video.removeEventListener('abort', abortHandler);
+
+    // Add new listeners
+    video.addEventListener('error', errorHandler, { once: true });
+    video.addEventListener('abort', abortHandler, { once: true });
+
+    console.log('[Video] Loading video:', url);
     video.src = url;
     video.load();
 
     video.addEventListener('loadeddata', () => {
+      console.log('[Video] Video loaded successfully:', url);
       this.attemptAutoplay();
+    }, { once: true });
+
+    video.addEventListener('canplay', () => {
+      console.log('[Video] Video can play:', url);
     }, { once: true });
   }
 

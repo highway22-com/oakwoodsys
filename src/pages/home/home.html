@@ -73,7 +73,8 @@
   <section class="relative min-h-screen w-full overflow-hidden" aria-label="Hero section">
     <div class="absolute inset-0 z-0">
       <video class="absolute inset-0 w-full h-full object-cover" autoplay muted playsinline preload="auto" #videoElement
-        aria-label="Hero background video">
+        aria-label="Hero background video" (error)="onVideoError($event)" (loadstart)="onVideoLoadStart($event)"
+        (loadeddata)="onVideoLoaded($event)">
         Your browser does not support the video tag.
       </video>
       <div class="absolute inset-0 bg-slate-900/70"></div>
