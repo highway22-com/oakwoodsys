@@ -2,7 +2,17 @@ import { AngularAppEngine, createRequestHandler } from '@angular/ssr'
 import { getContext } from '@netlify/angular-runtime/context.mjs'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
-import { getStore } from '@netlify/blobs'
+
+// Helper function to get Netlify Blobs store (optional, requires @netlify/blobs package)
+async function getBlobsStore() {
+  try {
+    const blobsModule = await import('@netlify/blobs');
+    return blobsModule.getStore({ name: 'home-content', consistency: 'strong' });
+  } catch (e) {
+    // Blobs not available, return null
+    return null;
+  }
+}
 
 const angularAppEngine = new AngularAppEngine()
 
@@ -260,7 +270,8 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
       try {
         const body = await request.json();
 
-        // Try Netlify Blobs first (works in production)
+        // Try Netlify Blobs first (works in production) - optional, requires @netlify/blobs package
+        const blobsStore = await getBlobsStore();
         if (blobsStore) {
           try {
             await blobsStore.set('home-content.json', JSON.stringify(body, null, 2));
@@ -357,12 +368,13 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
     // Try Netlify Blobs first, then file system, then external
     console.log('[home-content] GET request - auth.valid:', auth.valid);
 
-    // Try Netlify Blobs first (works in production)
+    // Try Netlify Blobs first (works in production) - optional, requires @netlify/blobs package
+    const blobsStore = await getBlobsStore();
     if (blobsStore) {
       try {
-        const blobData = await blobsStore.get('home-content.json');
+        const blobData = await blobsStore.get('home-content.json', { type: 'text' });
         if (blobData) {
-          const data = JSON.parse(blobData);
+          const data = typeof blobData === 'string' ? JSON.parse(blobData) : JSON.parse(new TextDecoder().decode(blobData as ArrayBuffer));
           console.log('[home-content] Successfully read from Netlify Blobs');
           return Response.json(data, {
             headers: {
