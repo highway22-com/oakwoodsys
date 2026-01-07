@@ -72,10 +72,33 @@ function initUsers() {
   const dbDir = join(process.cwd(), '.netlify/data');
   const usersPath = join(dbDir, 'users.json');
 
+  // Try to create directory if it doesn't exist, but handle read-only filesystem gracefully
   if (!existsSync(dbDir)) {
-    mkdirSync(dbDir, { recursive: true });
+    try {
+      mkdirSync(dbDir, { recursive: true });
+    } catch (error: any) {
+      // If we can't create the directory (e.g., read-only filesystem in Netlify),
+      // check if the file exists anyway (might be in a different location)
+      if (error.name === 'NotCapable' || error.code === 'EACCES' || error.code === 'EROFS') {
+        // In read-only environment, try to read from public directory as fallback
+        const fallbackPath = join(process.cwd(), 'public', 'users.json');
+        if (existsSync(fallbackPath)) {
+          return JSON.parse(readFileSync(fallbackPath, 'utf8'));
+        }
+        // If no file exists, return default users (in-memory only)
+        const defaultPassword = 'password123';
+        const hashedPassword = hashPassword(defaultPassword);
+        return [
+          { id: 1, username: 'admin', password: hashedPassword, created_at: new Date().toISOString() },
+          { id: 2, username: 'luis', password: hashedPassword, created_at: new Date().toISOString() },
+          { id: 3, username: 'jason', password: hashedPassword, created_at: new Date().toISOString() }
+        ];
+      }
+      throw error;
+    }
   }
 
+  // If file doesn't exist, try to create it
   if (!existsSync(usersPath)) {
     const defaultPassword = 'password123';
     const hashedPassword = hashPassword(defaultPassword);
@@ -86,10 +109,30 @@ function initUsers() {
       { id: 3, username: 'jason', password: hashedPassword, created_at: new Date().toISOString() }
     ];
 
-    writeFileSync(usersPath, JSON.stringify(defaultUsers, null, 2));
+    try {
+      writeFileSync(usersPath, JSON.stringify(defaultUsers, null, 2));
+    } catch (error: any) {
+      // If we can't write (read-only filesystem), return in-memory users
+      if (error.name === 'NotCapable' || error.code === 'EACCES' || error.code === 'EROFS') {
+        return defaultUsers;
+      }
+      throw error;
+    }
   }
 
-  return JSON.parse(readFileSync(usersPath, 'utf8'));
+  // Read and return users
+  try {
+    return JSON.parse(readFileSync(usersPath, 'utf8'));
+  } catch (error) {
+    // If we can't read the file, return default users
+    const defaultPassword = 'password123';
+    const hashedPassword = hashPassword(defaultPassword);
+    return [
+      { id: 1, username: 'admin', password: hashedPassword, created_at: new Date().toISOString() },
+      { id: 2, username: 'luis', password: hashedPassword, created_at: new Date().toISOString() },
+      { id: 3, username: 'jason', password: hashedPassword, created_at: new Date().toISOString() }
+    ];
+  }
 }
 
 async function handleAuth(request: Request): Promise<Response> {
