@@ -285,10 +285,22 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
             }
           });
         } catch (writeError: any) {
+          console.error('[home-content] PUT Error writing file:', {
+            error: writeError,
+            name: writeError?.name,
+            message: writeError?.message,
+            code: writeError?.code,
+            stack: writeError?.stack
+          });
+
           // If we can't write (read-only filesystem in production), 
           // still return success but log a warning
           if (writeError.name === 'NotCapable' || writeError.code === 'EACCES' || writeError.code === 'EROFS') {
-            console.warn('Cannot write to filesystem (read-only), but content update was processed:', writeError);
+            console.warn('[home-content] Cannot write to filesystem (read-only), but content update was processed:', {
+              name: writeError.name,
+              code: writeError.code,
+              message: writeError.message
+            });
             // In production, the content might be stored elsewhere or the write might not be needed
             // Return success anyway since the content was validated
             return Response.json({
@@ -302,8 +314,14 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
           }
           throw writeError;
         }
-      } catch (error) {
-        console.error('Error updating home-content.json:', error);
+      } catch (error: any) {
+        console.error('[home-content] PUT Error updating home-content.json:', {
+          error: error,
+          name: error?.name,
+          message: error?.message,
+          stack: error?.stack,
+          code: error?.code
+        });
         return Response.json({
           error: 'Failed to update content',
           message: error instanceof Error ? error.message : 'Unknown error'
@@ -312,92 +330,149 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
     }
 
     // Handle GET request
-    // If admin is logged in, try to serve local file for editing, otherwise use external
-    if (auth.valid) {
+    // Try to serve local file first, then fallback to external
+    const localPath = join(process.cwd(), 'public', 'home-content.json');
+    console.log('[home-content] GET request - auth.valid:', auth.valid, 'localPath:', localPath);
+
+    // First, try to read local file
+    if (existsSync(localPath)) {
+      console.log('[home-content] Local file exists, attempting to read');
       try {
-        const localPath = join(process.cwd(), 'public', 'home-content.json');
-        if (existsSync(localPath)) {
-          try {
-            const data = JSON.parse(readFileSync(localPath, 'utf8'));
-            return Response.json(data, {
-              headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache' // No cache for admin mode
-              }
-            });
-          } catch (readError) {
-            // If we can't read the local file, fall through to external fetch
-            console.warn('Could not read local file, falling back to external:', readError);
-          }
-        }
-        // Fallback to external if local file doesn't exist or can't be read
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-          const response = await fetch('https://oakwoodsys.com/wp-content/uploads/2025/12/home-content.json', {
-            signal: controller.signal
-          });
-          clearTimeout(timeoutId);
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const data = await response.json();
-          return Response.json(data, {
-            headers: {
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
-            }
-          });
-        } catch (fetchError: any) {
-          if (fetchError.name === 'AbortError') {
-            throw new Error('Request timeout: External content fetch took too long');
-          }
-          throw fetchError;
-        }
-      } catch (error) {
-        console.error('Error fetching home-content.json:', error);
-        // Return a more helpful error message
-        return Response.json({
-          error: 'Failed to fetch content',
-          message: error instanceof Error ? error.message : 'Unknown error'
-        }, { status: 500 });
-      }
-    } else {
-      // Not logged in, use external URL
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-        const response = await fetch('https://oakwoodsys.com/wp-content/uploads/2025/12/home-content.json', {
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        const data = JSON.parse(readFileSync(localPath, 'utf8'));
+        console.log('[home-content] Successfully read local file');
         return Response.json(data, {
           headers: {
             'Content-Type': 'application/json',
-            'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400'
+            'Cache-Control': auth.valid ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400'
           }
         });
-      } catch (error: any) {
-        console.error('Error fetching external content:', error);
-        if (error.name === 'AbortError') {
-          return Response.json({
-            error: 'Request timeout',
-            message: 'External content fetch took too long'
-          }, { status: 504 });
-        }
-        return Response.json({
-          error: 'Failed to fetch external content',
-          message: error instanceof Error ? error.message : 'Unknown error'
-        }, { status: 500 });
+      } catch (readError: any) {
+        console.error('[home-content] Error reading local file:', {
+          error: readError,
+          message: readError?.message,
+          name: readError?.name,
+          stack: readError?.stack
+        });
+        console.warn('[home-content] Could not read local file, falling back to external');
       }
+    } else {
+      console.log('[home-content] Local file does not exist, will try external');
+    }
+
+    // Fallback to external URL if local file doesn't exist or can't be read
+    const externalUrl = 'https://oakwoodsys.com/wp-content/uploads/2025/12/home-content.json';
+    console.log('[home-content] Attempting to fetch from external URL:', externalUrl);
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        console.error('[home-content] Fetch timeout after 5 seconds, aborting');
+        controller.abort();
+      }, 5000); // 5 second timeout
+
+      const response = await fetch(externalUrl, {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      console.log('[home-content] External fetch response status:', response.status, response.statusText);
+
+      if (!response.ok) {
+        console.error('[home-content] External fetch failed with status:', response.status, response.statusText);
+        // If external fetch fails, try to return local file as last resort
+        if (existsSync(localPath)) {
+          console.log('[home-content] Attempting to use local file as fallback after external failure');
+          try {
+            const data = JSON.parse(readFileSync(localPath, 'utf8'));
+            console.warn('[home-content] Successfully using local file as fallback');
+            return Response.json(data, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': auth.valid ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400'
+              }
+            });
+          } catch (readError: any) {
+            console.error('[home-content] Failed to read local file as fallback:', {
+              error: readError,
+              message: readError?.message,
+              name: readError?.name
+            });
+            // If we can't read local either, throw the original error
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+        } else {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      }
+      const data = await response.json();
+      console.log('[home-content] Successfully fetched and parsed external content');
+      return Response.json(data, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': auth.valid ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400'
+        }
+      });
+    } catch (error: any) {
+      console.error('[home-content] Error in fetch attempt:', {
+        error: error,
+        name: error?.name,
+        message: error?.message,
+        stack: error?.stack,
+        cause: error?.cause
+      });
+
+      // Last resort: try to return local file if it exists
+      if (existsSync(localPath)) {
+        console.log('[home-content] Attempting to use local file as last resort');
+        try {
+          const data = JSON.parse(readFileSync(localPath, 'utf8'));
+          console.warn('[home-content] Successfully using local file as last resort after fetch error');
+          return Response.json(data, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': auth.valid ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400'
+            }
+          });
+        } catch (readError: any) {
+          // If we can't read local either, return error
+          console.error('[home-content] CRITICAL: Both external and local failed:', {
+            fetchError: {
+              name: error?.name,
+              message: error?.message,
+              stack: error?.stack
+            },
+            readError: {
+              name: readError?.name,
+              message: readError?.message,
+              stack: readError?.stack
+            }
+          });
+          return Response.json({
+            error: 'Failed to fetch content',
+            message: error instanceof Error ? error.message : 'Unknown error'
+          }, { status: 500 });
+        }
+      }
+
+      // No local file and external failed
+      console.error('[home-content] CRITICAL: No local file available and external fetch failed:', {
+        error: error,
+        name: error?.name,
+        message: error?.message,
+        stack: error?.stack
+      });
+
+      if (error.name === 'AbortError') {
+        console.error('[home-content] Request timeout error');
+        return Response.json({
+          error: 'Request timeout',
+          message: 'External content fetch took too long'
+        }, { status: 504 });
+      }
+      return Response.json({
+        error: 'Failed to fetch content',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      }, { status: 500 });
     }
   }
 
