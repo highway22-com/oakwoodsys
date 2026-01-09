@@ -3,6 +3,18 @@ import { getContext } from '@netlify/angular-runtime/context.mjs'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
 
+// Helper function to check if we're in local development environment
+function isLocalEnvironment(): boolean {
+  // Check if we're running locally (not in Netlify production)
+  // In Netlify, CONTEXT is set to 'production', 'deploy-preview', or 'branch-deploy'
+  // In local dev, it's usually undefined or 'dev'
+  const context = process.env['CONTEXT'] || process.env['NETLIFY_DEV'];
+  const isNetlify = process.env['NETLIFY'] === 'true';
+
+  // If we're not in Netlify or context is dev/local, we're in local environment
+  return !isNetlify || context === 'dev' || !context;
+}
+
 // Helper function to get Netlify Blobs store (optional, requires @netlify/blobs package)
 async function getBlobsStore() {
   try {
@@ -269,31 +281,41 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
 
       try {
         const body = await request.json();
+        const isLocal = isLocalEnvironment();
+        console.log('[home-content] PUT request - isLocal:', isLocal);
 
-        // Try Netlify Blobs first (works in production) - optional, requires @netlify/blobs package
-        const blobsStore = await getBlobsStore();
-        if (blobsStore) {
-          try {
-            await blobsStore.set('home-content.json', JSON.stringify(body, null, 2));
-            console.log('[home-content] Successfully saved to Netlify Blobs');
-            return Response.json({ success: true, message: 'Content updated successfully' }, {
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            });
-          } catch (blobError: any) {
-            console.error('[home-content] Error saving to Blobs, falling back to file system:', blobError);
-            // Fall through to file system attempt
+        // In local environment, skip Blobs and go directly to file system
+        let blobsStore = null;
+        if (!isLocal) {
+          // Try Netlify Blobs first (works in production) - optional, requires @netlify/blobs package
+          blobsStore = await getBlobsStore();
+          if (blobsStore) {
+            try {
+              await blobsStore.set('home-content.json', JSON.stringify(body, null, 2));
+              console.log('[home-content] Successfully saved to Netlify Blobs');
+              return Response.json({ success: true, message: 'Content updated successfully' }, {
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              });
+            } catch (blobError: any) {
+              console.error('[home-content] Error saving to Blobs, falling back to file system:', blobError);
+              // Fall through to file system attempt
+            }
           }
         }
 
-        // Fallback to file system (works in local development)
+        // Use file system (works in local development and as fallback in production)
+        // In local, prefer public folder; in production, use .netlify/data
         const dataDir = join(process.cwd(), '.netlify', 'data');
-        const localPath = join(dataDir, 'home-content.json');
+        const publicDir = join(process.cwd(), 'public');
+        const localPath = isLocal
+          ? join(publicDir, 'home-content.json')
+          : join(dataDir, 'home-content.json');
 
         try {
-          // Ensure .netlify/data directory exists
-          if (!existsSync(dataDir)) {
+          // Ensure directory exists (only needed for .netlify/data, public should already exist)
+          if (!isLocal && !existsSync(dataDir)) {
             try {
               mkdirSync(dataDir, { recursive: true });
               console.log('[home-content] Created .netlify/data directory:', dataDir);
@@ -365,32 +387,37 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
     }
 
     // Handle GET request
-    // Try Netlify Blobs first, then file system, then external
-    console.log('[home-content] GET request - auth.valid:', auth.valid);
+    // In local environment, use file system directly
+    // In production, try Netlify Blobs first, then file system, then external
+    const isLocal = isLocalEnvironment();
+    console.log('[home-content] GET request - auth.valid:', auth.valid, 'isLocal:', isLocal);
 
-    // Try Netlify Blobs first (works in production) - optional, requires @netlify/blobs package
-    const blobsStore = await getBlobsStore();
-    if (blobsStore) {
-      try {
-        const blobData = await blobsStore.get('home-content.json', { type: 'text' });
-        if (blobData) {
-          const data = typeof blobData === 'string' ? JSON.parse(blobData) : JSON.parse(new TextDecoder().decode(blobData as ArrayBuffer));
-          console.log('[home-content] Successfully read from Netlify Blobs');
-          return Response.json(data, {
-            headers: {
-              'Content-Type': 'application/json',
-              'Cache-Control': auth.valid ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400'
-            }
-          });
-        } else {
-          console.log('[home-content] No data in Blobs, trying file system');
+    // In local environment, skip Blobs and go directly to file system
+    if (!isLocal) {
+      // Try Netlify Blobs first (works in production) - optional, requires @netlify/blobs package
+      const blobsStore = await getBlobsStore();
+      if (blobsStore) {
+        try {
+          const blobData = await blobsStore.get('home-content.json', { type: 'text' });
+          if (blobData) {
+            const data = typeof blobData === 'string' ? JSON.parse(blobData) : JSON.parse(new TextDecoder().decode(blobData as ArrayBuffer));
+            console.log('[home-content] Successfully read from Netlify Blobs');
+            return Response.json(data, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': auth.valid ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400'
+              }
+            });
+          } else {
+            console.log('[home-content] No data in Blobs, trying file system');
+          }
+        } catch (blobError: any) {
+          console.warn('[home-content] Error reading from Blobs, falling back to file system:', blobError);
         }
-      } catch (blobError: any) {
-        console.warn('[home-content] Error reading from Blobs, falling back to file system:', blobError);
       }
     }
 
-    // Fallback to file system (works in local development)
+    // Use file system (works in local development and as fallback in production)
     const dataPath = join(process.cwd(), '.netlify', 'data', 'home-content.json');
     const publicPath = join(process.cwd(), 'public', 'home-content.json');
 
