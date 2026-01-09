@@ -3,18 +3,6 @@ import { getContext } from '@netlify/angular-runtime/context.mjs'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
 
-// Helper function to check if we're in local development environment
-function isLocalEnvironment(): boolean {
-  // Check if we're running locally (not in Netlify production)
-  // In Netlify, CONTEXT is set to 'production', 'deploy-preview', or 'branch-deploy'
-  // In local dev, it's usually undefined or 'dev'
-  const context = process.env['CONTEXT'] || process.env['NETLIFY_DEV'];
-  const isNetlify = process.env['NETLIFY'] === 'true';
-
-  // If we're not in Netlify or context is dev/local, we're in local environment
-  return !isNetlify || context === 'dev' || !context;
-}
-
 // Helper function to get Netlify Blobs store (optional, requires @netlify/blobs package)
 async function getBlobsStore() {
   try {
@@ -270,303 +258,193 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
 
   // API endpoint for home-content proxy (bypasses CORS)
   if (pathname === '/api/home-content') {
+    // CORS headers for all responses
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, PUT, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Content-Type': 'application/json'
+    };
+
+    // Handle OPTIONS preflight request
+    if (request.method === 'OPTIONS') {
+      return new Response('', { status: 200, headers: corsHeaders });
+    }
+
     const token = getAuthToken(request);
     const auth = token ? verifyToken(token) : { valid: false };
 
     // Handle PUT request (update content - admin only)
     if (request.method === 'PUT') {
       if (!auth.valid) {
-        return Response.json({ error: 'Unauthorized' }, { status: 401 });
+        return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
       }
 
       try {
         const body = await request.json();
-        const isLocal = isLocalEnvironment();
-        console.log('[home-content] PUT request - isLocal:', isLocal);
 
-        // In local environment, skip Blobs and go directly to file system
-        let blobsStore = null;
-        if (!isLocal) {
-          // Try Netlify Blobs first (works in production) - optional, requires @netlify/blobs package
-          blobsStore = await getBlobsStore();
-          if (blobsStore) {
-            try {
-              await blobsStore.set('home-content.json', JSON.stringify(body, null, 2));
-              console.log('[home-content] Successfully saved to Netlify Blobs');
-              return Response.json({ success: true, message: 'Content updated successfully' }, {
-                headers: {
-                  'Content-Type': 'application/json'
-                }
-              });
-            } catch (blobError: any) {
-              console.error('[home-content] Error saving to Blobs, falling back to file system:', blobError);
-              // Fall through to file system attempt
-            }
+        // Try Netlify Blobs first (optional, requires @netlify/blobs package)
+        const blobsStore = await getBlobsStore();
+        if (blobsStore) {
+          try {
+            await blobsStore.set('home-content.json', JSON.stringify(body, null, 2));
+            return Response.json({ success: true, message: 'Content updated successfully' }, {
+              headers: corsHeaders
+            });
+          } catch (blobError: any) {
+            console.error('[home-content] Error saving to Blobs, falling back to file system:', blobError);
           }
         }
 
-        // Use file system (works in local development and as fallback in production)
-        // In local, prefer public folder; in production, use .netlify/data
+        // Fallback to file system
         const dataDir = join(process.cwd(), '.netlify', 'data');
         const publicDir = join(process.cwd(), 'public');
-        const localPath = isLocal
-          ? join(publicDir, 'home-content.json')
-          : join(dataDir, 'home-content.json');
+        const dataPath = join(dataDir, 'home-content.json');
+        const publicPath = join(publicDir, 'home-content.json');
+
+        // Try .netlify/data first, then public folder
+        let localPath = dataPath;
+        if (!existsSync(dataPath)) {
+          localPath = publicPath;
+        }
 
         try {
-          // Ensure directory exists (only needed for .netlify/data, public should already exist)
-          if (!isLocal && !existsSync(dataDir)) {
-            try {
-              mkdirSync(dataDir, { recursive: true });
-              console.log('[home-content] Created .netlify/data directory:', dataDir);
-            } catch (mkdirError: any) {
-              // If we can't create directory (read-only filesystem), log and continue
-              if (mkdirError.name === 'NotCapable' || mkdirError.code === 'EACCES' || mkdirError.code === 'EROFS') {
-                console.warn('[home-content] Cannot create .netlify/data directory (read-only filesystem):', mkdirError.message);
-                // If Blobs also failed, return error
-                if (!blobsStore) {
-                  return Response.json({
-                    success: false,
-                    message: 'Cannot write to filesystem (read-only) and Blobs not available'
-                  }, { status: 500 });
-                }
-              } else {
-                throw mkdirError;
-              }
-            }
+          // Ensure directory exists if using .netlify/data
+          if (localPath === dataPath && !existsSync(dataDir)) {
+            mkdirSync(dataDir, { recursive: true });
           }
 
-          // Write updated content
           writeFileSync(localPath, JSON.stringify(body, null, 2), 'utf8');
-          console.log('[home-content] Successfully saved to file system:', localPath);
-
           return Response.json({ success: true, message: 'Content updated successfully' }, {
-            headers: {
-              'Content-Type': 'application/json'
-            }
+            headers: corsHeaders
           });
         } catch (writeError: any) {
-          console.error('[home-content] PUT Error writing file:', {
-            error: writeError,
-            name: writeError?.name,
-            message: writeError?.message,
-            code: writeError?.code,
-            stack: writeError?.stack
-          });
-
-          // If we can't write (read-only filesystem in production)
+          // If we can't write (read-only filesystem)
           if (writeError.name === 'NotCapable' || writeError.code === 'EACCES' || writeError.code === 'EROFS') {
-            // If Blobs is available but failed, that's a real error
             if (blobsStore) {
               return Response.json({
                 success: false,
                 message: 'Failed to save content (both Blobs and filesystem failed)'
-              }, { status: 500 });
+              }, { status: 500, headers: corsHeaders });
             }
-            // Otherwise, filesystem is read-only but that's expected in production
             return Response.json({
               success: false,
-              message: 'Cannot write to filesystem (read-only). Netlify Blobs is required for production.'
-            }, { status: 500 });
+              message: 'Cannot write to filesystem (read-only). Netlify Blobs is required.'
+            }, { status: 500, headers: corsHeaders });
           }
           throw writeError;
         }
       } catch (error: any) {
-        console.error('[home-content] PUT Error updating home-content.json:', {
-          error: error,
-          name: error?.name,
-          message: error?.message,
-          stack: error?.stack,
-          code: error?.code
-        });
+        console.error('[home-content] PUT Error:', error);
         return Response.json({
           error: 'Failed to update content',
           message: error instanceof Error ? error.message : 'Unknown error'
-        }, { status: 500 });
+        }, { status: 500, headers: corsHeaders });
       }
     }
 
     // Handle GET request
-    // In local environment, use file system directly
-    // In production, try Netlify Blobs first, then file system, then external
-    const isLocal = isLocalEnvironment();
-    console.log('[home-content] GET request - auth.valid:', auth.valid, 'isLocal:', isLocal);
-
-    // In local environment, skip Blobs and go directly to file system
-    if (!isLocal) {
-      // Try Netlify Blobs first (works in production) - optional, requires @netlify/blobs package
-      const blobsStore = await getBlobsStore();
-      if (blobsStore) {
-        try {
-          const blobData = await blobsStore.get('home-content.json', { type: 'text' });
-          if (blobData) {
-            const data = typeof blobData === 'string' ? JSON.parse(blobData) : JSON.parse(new TextDecoder().decode(blobData as ArrayBuffer));
-            console.log('[home-content] Successfully read from Netlify Blobs');
-            return Response.json(data, {
-              headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': auth.valid ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400'
-              }
-            });
-          } else {
-            console.log('[home-content] No data in Blobs, trying file system');
-          }
-        } catch (blobError: any) {
-          console.warn('[home-content] Error reading from Blobs, falling back to file system:', blobError);
+    // Try Netlify Blobs first, then file system, then external URL
+    const blobsStore = await getBlobsStore();
+    if (blobsStore) {
+      try {
+        const blobData = await blobsStore.get('home-content.json', { type: 'text' });
+        if (blobData) {
+          const data = typeof blobData === 'string'
+            ? JSON.parse(blobData)
+            : JSON.parse(new TextDecoder().decode(blobData as ArrayBuffer));
+          return Response.json(data, {
+            headers: {
+              ...corsHeaders,
+              'Cache-Control': auth.valid ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400'
+            }
+          });
         }
+      } catch (blobError: any) {
+        console.warn('[home-content] Error reading from Blobs, falling back to file system:', blobError);
       }
     }
 
-    // Use file system (works in local development and as fallback in production)
+    // Try file system: .netlify/data first, then public folder
     const dataPath = join(process.cwd(), '.netlify', 'data', 'home-content.json');
     const publicPath = join(process.cwd(), 'public', 'home-content.json');
+    const localPath = existsSync(dataPath) ? dataPath : publicPath;
 
-    // Try .netlify/data first, then public folder
-    let localPath = dataPath;
-    if (!existsSync(localPath)) {
-      localPath = publicPath;
-    }
-    console.log('[home-content] Trying file system, localPath:', localPath);
-
-    // Try to read local file
     if (existsSync(localPath)) {
-      console.log('[home-content] Local file exists, attempting to read');
       try {
         const data = JSON.parse(readFileSync(localPath, 'utf8'));
-        console.log('[home-content] Successfully read local file');
         return Response.json(data, {
           headers: {
-            'Content-Type': 'application/json',
+            ...corsHeaders,
             'Cache-Control': auth.valid ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400'
           }
         });
       } catch (readError: any) {
-        console.error('[home-content] Error reading local file:', {
-          error: readError,
-          message: readError?.message,
-          name: readError?.name,
-          stack: readError?.stack
-        });
-        console.warn('[home-content] Could not read local file, falling back to external');
+        console.error('[home-content] Error reading local file:', readError);
       }
-    } else {
-      console.log('[home-content] Local file does not exist, will try external');
     }
 
-    // Fallback to external URL if local file doesn't exist or can't be read
+    // Fallback to external URL
     const externalUrl = 'https://oakwoodsys.com/wp-content/uploads/2025/12/home-content.json';
-    console.log('[home-content] Attempting to fetch from external URL:', externalUrl);
-
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => {
-        console.error('[home-content] Fetch timeout after 5 seconds, aborting');
-        controller.abort();
-      }, 5000); // 5 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      const response = await fetch(externalUrl, {
-        signal: controller.signal
-      });
+      const response = await fetch(externalUrl, { signal: controller.signal });
       clearTimeout(timeoutId);
 
-      console.log('[home-content] External fetch response status:', response.status, response.statusText);
-
       if (!response.ok) {
-        console.error('[home-content] External fetch failed with status:', response.status, response.statusText);
-        // If external fetch fails, try to return local file as last resort
+        // If external fails, try local file as last resort
         if (existsSync(localPath)) {
-          console.log('[home-content] Attempting to use local file as fallback after external failure');
           try {
             const data = JSON.parse(readFileSync(localPath, 'utf8'));
-            console.warn('[home-content] Successfully using local file as fallback');
             return Response.json(data, {
               headers: {
-                'Content-Type': 'application/json',
+                ...corsHeaders,
                 'Cache-Control': auth.valid ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400'
               }
             });
           } catch (readError: any) {
-            console.error('[home-content] Failed to read local file as fallback:', {
-              error: readError,
-              message: readError?.message,
-              name: readError?.name
-            });
-            // If we can't read local either, throw the original error
             throw new Error(`HTTP error! status: ${response.status}`);
           }
-        } else {
-          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const data = await response.json();
-      console.log('[home-content] Successfully fetched and parsed external content');
       return Response.json(data, {
         headers: {
-          'Content-Type': 'application/json',
+          ...corsHeaders,
           'Cache-Control': auth.valid ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400'
         }
       });
     } catch (error: any) {
-      console.error('[home-content] Error in fetch attempt:', {
-        error: error,
-        name: error?.name,
-        message: error?.message,
-        stack: error?.stack,
-        cause: error?.cause
-      });
-
-      // Last resort: try to return local file if it exists
+      // Last resort: try local file if it exists
       if (existsSync(localPath)) {
-        console.log('[home-content] Attempting to use local file as last resort');
         try {
           const data = JSON.parse(readFileSync(localPath, 'utf8'));
-          console.warn('[home-content] Successfully using local file as last resort after fetch error');
           return Response.json(data, {
             headers: {
-              'Content-Type': 'application/json',
+              ...corsHeaders,
               'Cache-Control': auth.valid ? 'no-cache' : 'public, max-age=3600, stale-while-revalidate=86400'
             }
           });
         } catch (readError: any) {
-          // If we can't read local either, return error
-          console.error('[home-content] CRITICAL: Both external and local failed:', {
-            fetchError: {
-              name: error?.name,
-              message: error?.message,
-              stack: error?.stack
-            },
-            readError: {
-              name: readError?.name,
-              message: readError?.message,
-              stack: readError?.stack
-            }
-          });
-          return Response.json({
-            error: 'Failed to fetch content',
-            message: error instanceof Error ? error.message : 'Unknown error'
-          }, { status: 500 });
+          console.error('[home-content] Failed to read local file:', readError);
         }
       }
 
-      // No local file and external failed
-      console.error('[home-content] CRITICAL: No local file available and external fetch failed:', {
-        error: error,
-        name: error?.name,
-        message: error?.message,
-        stack: error?.stack
-      });
-
       if (error.name === 'AbortError') {
-        console.error('[home-content] Request timeout error');
         return Response.json({
           error: 'Request timeout',
           message: 'External content fetch took too long'
-        }, { status: 504 });
+        }, { status: 504, headers: corsHeaders });
       }
+
       return Response.json({
         error: 'Failed to fetch content',
         message: error instanceof Error ? error.message : 'Unknown error'
-      }, { status: 500 });
+      }, { status: 500, headers: corsHeaders });
     }
   }
 

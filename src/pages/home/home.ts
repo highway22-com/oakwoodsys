@@ -58,9 +58,8 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Try to load from external URL via proxy endpoint (bypasses CORS)
-    // The proxy endpoint is defined in server.ts and only works in SSR mode
-    // If admin is logged in, server will serve local file for editing
-    // Fallback to local file on error (e.g., during dev with ng serve)
+    // The proxy endpoint is defined in server.ts and works for all users (admin or not)
+    // If admin is logged in, server will serve with no-cache headers for editing
     const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('admin_token') : null;
     const headers: { [key: string]: string } = {};
     if (token) {
@@ -68,8 +67,8 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.http.get<HomeContent>('/api/home-content', { headers }).subscribe({
-      //this.http.get<HomeContent>('/home-content.json').subscribe({
       next: (data) => {
+        console.log('[Home] Successfully loaded content from /api/home-content');
         this.content.set(data);
         if (data.videoUrls && data.videoUrls.length > 0) {
           this.videoUrls.set(data.videoUrls);
@@ -83,11 +82,19 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
         this.loading.set(false);
       },
       error: (error) => {
+        // Log error details for debugging
+        console.error('[Home] Error loading from /api/home-content:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          error: error.error
+        });
+
         // Fallback to local file if proxy fails (e.g., in dev mode or if proxy is unavailable)
-        console.warn('Error loading external home content via proxy, falling back to local file:', error);
-        // Fallback to local file
+        console.warn('[Home] Falling back to local file /home-content.json');
         this.http.get<HomeContent>('/home-content.json').subscribe({
           next: (data) => {
+            console.log('[Home] Successfully loaded content from local file');
             this.content.set(data);
             if (data.videoUrls && data.videoUrls.length > 0) {
               this.videoUrls.set(data.videoUrls);
@@ -101,7 +108,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
             this.loading.set(false);
           },
           error: (fallbackError) => {
-            console.error('Error loading local home content:', fallbackError);
+            console.error('[Home] Error loading local home content:', fallbackError);
             this.loading.set(false);
           }
         });
