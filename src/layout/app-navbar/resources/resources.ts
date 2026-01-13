@@ -12,23 +12,23 @@ export class Resources {
     {
       id: '01',
       name: 'IT Blog',
-      link: '/blog',
+      link: '/bloq',
       desc: 'Insights and perspectives on business and innovation.',
-      icon: '/assets/resources/blog.png'
+      icon: 'fa-gauge-high'
     },
     {
       id: '02',
       name: 'Case Studies',
       link: '/resources/case-studies',
       desc: 'Discover our impact through realized projects',
-      icon: '/assets/resources/case-studies.png'
+      icon: 'fa-book'
     },
     {
       id: '03',
       name: 'Partners',
       link: '/partners',
       desc: 'In-depth examples of how Oakwood solutions are applied in real-world scenarios.',
-      icon: '/assets/resources/partners.png'
+      icon: 'fa-handshake'
     }
   ];
 
@@ -39,11 +39,11 @@ export class Resources {
       link: '/resources/whitepapers/greentech-urban-development',
       image: '/assets/whitepapers/greentech.jpg'
     },
-    {
-      id: '02',
-      title: 'Innovative strategies: Exploring the future of renewable energy solutions',
-      link: '/resources/whitepapers/renewable-energy',
-      image: '/assets/whitepapers/renewable-energy.jpg'
-    }
+    // {
+    //   id: '02',
+    //   title: 'Innovative strategies: Exploring the future of renewable energy solutions',
+    //   link: '/resources/whitepapers/renewable-energy',
+    //   image: '/assets/whitepapers/renewable-energy.jpg'
+    // }
   ];
 }

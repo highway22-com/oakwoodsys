@@ -1,7 +1,7 @@
 <div class="2xl:max-w-screen-2xl 2xl:mx-auto">
     <div class="flex flex-col lg:flex-row">
         <!-- Left Column: Industries Grid -->
-        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-0">
+        <div class="flex-1 grid grid-cols-3 md:grid-cols-2 gap-0">
             @for (industry of industries; track industry.id) {
             <a [routerLink]="industry.link"
                 class="flex w-full group hover:bg-slate-50 transition-all duration-300 relative overflow-hidden">
@@ -11,7 +11,7 @@
                         <div class="">
                             <div
                                 class="w-20 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 flex items-start justify-center relative">
-                                <img [src]="industry.icon" [alt]="industry.name" class="w-20 h-auto object-cover" />
+                                <i class="fa-solid {{industry.icon}} text-p-500 text-4xl"></i>
                             </div>
                         </div>
                         <!-- Text Content (Right) -->

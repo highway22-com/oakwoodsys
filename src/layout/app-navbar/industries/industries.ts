@@ -14,42 +14,42 @@ export class Industries {
       name: 'Manufacturing',
       link: '/industries/manufacturing',
       desc: 'Unlock innovation, optimize operations, empower workers, and enhance the customer experience.',
-      icon: '/assets/industries/manufacturing.png'
+      icon: 'fa-gauge-high'
     },
     {
       id: '02',
       name: 'Healthcare',
       link: '/industries/healthcare',
       desc: 'We create connected healthcare ecosystems by coordinating data, people, and processes.',
-      icon: '/assets/industries/healthcare.png'
+      icon: 'fa-suitcase-medical'
     },
     {
       id: '03',
       name: 'Financial Services',
       link: '/industries/financial-services',
       desc: 'Unlock the full potential of your banking data in the era of AI.',
-      icon: '/assets/industries/financial-services.png'
+      icon: 'fa-wallet'
     },
     {
       id: '04',
       name: 'Retail',
       link: '/industries/retail',
       desc: 'Helping retailers outperform their competition',
-      icon: '/assets/industries/retail.png'
+      icon: 'fa-cart-minus'
     },
     {
       id: '05',
       name: 'Education / Public Sector',
       link: '/industries/education-public-sector',
       desc: 'Unlock innovation, optimize operations, empower workers, and enhance the customer experience.',
-      icon: '/assets/industries/education.png'
+      icon: 'fa-graduation-cap'
     },
     {
       id: '06',
       name: 'Electronic Design Automation (EDA)',
       link: '/industries/eda',
       desc: 'Explore exciting opportunities to learn and connect with industry experts through our engaging webinars and conferences!',
-      icon: '/assets/industries/eda.png'
+      icon: 'fa-object-ungroup'
     }
   ];
 
@@ -60,11 +60,11 @@ export class Industries {
       link: '/resources/case-studies/clarios-hpc',
       image: '/assets/case-studies/clarios-hpc.jpg'
     },
-    {
-      id: '02',
-      title: 'Seamless data center migration',
-      link: '/resources/case-studies/data-center-migration',
-      image: '/assets/case-studies/data-center-migration.jpg'
-    }
+    // {
+    //   id: '02',
+    //   title: 'Seamless data center migration',
+    //   link: '/resources/case-studies/data-center-migration',
+    //   image: '/assets/case-studies/data-center-migration.jpg'
+    // }
   ];
 }

@@ -1,7 +1,7 @@
 <div class="2xl:max-w-screen-2xl 2xl:mx-auto">
     <div class="flex flex-col lg:flex-row">
         <!-- Left and Middle Columns: Resource Categories -->
-        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
+        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
             @for (category of resourceCategories; track category.id) {
             <a [routerLink]="category.link"
                 class="flex w-full group hover:bg-slate-50 transition-all duration-300 relative overflow-hidden">
@@ -11,18 +11,18 @@
                         <div class="">
                             <div
                                 class="w-20 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 flex items-start justify-center relative">
-                                <img [src]="category.icon" [alt]="category.name" class="w-20 h-auto object-cover" />
+                                <i class="fa-solid {{category.icon}} text-p-500 text-4xl"></i>
                             </div>
                         </div>
                         <!-- Text Content (Right) -->
                         <div class="flex flex-col flex-1 min-w-0 relative">
                             <div class="flex items-start justify-between gap-2">
                                 <h3
-                                    class="text-lg font-semibold leading-6 text-[#454545] group-hover:text-blue-600 pb-2 md:pb-3 flex-1">
-                                    {{category.name}}
+                                    class="text-lg font-semibold leading-6 text-s-800 group-hover:text-p-500 pb-2 md:pb-3 flex-1">
+                                    {{category.name}}{{category.link}}
                                 </h3>
                                 <!-- Arrow icon that appears on hover -->
-                                <svg class="w-5 h-5 text-blue-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 mt-1"
+                                <svg class="w-5 h-5 text-p-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 mt-1"
                                     xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"
                                     fill="none">
                                     <path
@@ -30,7 +30,7 @@
                                         fill="#3D3D3D" />
                                 </svg>
                             </div>
-                            <p class="text-sm font-normal leading-6 text-[#5D5D5D] font-sans">
+                            <p class="text-sm font-normal leading-6 text-s-600 font-sans">
                                 {{category.desc}}
                             </p>
                         </div>
@@ -61,18 +61,18 @@
                     <div class="group">
                         <a [routerLink]="whitepaper.link" class="block">
                             <!-- Image -->
-                            <div class="relative w-full h-32 sm:h-40 md:h-48 mb-3 rounded-lg overflow-hidden">
+                            <div class="relative w-full h-32 sm:h-40 md:h-48  rounded-lg overflow-hidden">
                                 <img [src]="whitepaper.image" [alt]="whitepaper.title"
                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                             </div>
                             <!-- Title -->
                             <h4
-                                class="text-sm font-semibold text-[#454545] mb-2 group-hover:text-blue-600 transition-colors duration-200">
+                                class="text-sm font-semibold text-[#454545]  group-hover:text-p-500 transition-colors duration-200">
                                 {{whitepaper.title}}
                             </h4>
                             <!-- Read More Link -->
                             <div
-                                class="flex items-center text-xs text-[#5D5D5D] group-hover:text-blue-600 transition-colors duration-200">
+                                class="flex items-center text-xs text-[#5D5D5D] group-hover:text-p-500 transition-colors duration-200">
                                 <span>Read more</span>
                                 <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -85,9 +85,9 @@
                 </div>
 
                 <!-- Explore Knowledge Link -->
-                <div class="mt-6 md:mt-8 pt-6 md:pt-8 border-t border-gray-200">
+                <div class="mt-1 md:mt-q pt-q md:pt-8 border-t border-gray-200">
                     <a routerLink="/resources"
-                        class="flex items-center gap-2 text-sm font-semibold text-[#454545] hover:text-blue-600 transition-colors duration-200">
+                        class="flex items-center gap-2 text-sm font-semibold text-[#454545] hover:text-p-500 transition-colors duration-200">
                         <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                             <path
                                 d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
