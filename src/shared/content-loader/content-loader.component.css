@@ -1,0 +1,75 @@
+.content-loader {
+  min-height: 60vh;
+}
+
+/* Skeleton loading */
+.content-loader--skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.content-loader__skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base, #e5e7eb) 25%,
+    var(--skeleton-highlight, #f3f4f6) 50%,
+    var(--skeleton-base, #e5e7eb) 75%
+  );
+  background-size: 200% 100%;
+  animation: content-loader-shimmer 1.5s ease-in-out infinite;
+  border-radius: 0.375rem;
+}
+
+.content-loader__skeleton--header {
+  height: 2rem;
+  width: 70%;
+}
+
+.content-loader__skeleton--line {
+  height: 1rem;
+  width: 100%;
+}
+
+.content-loader__skeleton--short {
+  width: 60%;
+}
+
+.content-loader__skeleton--block {
+  height: 8rem;
+  width: 100%;
+}
+
+@keyframes content-loader-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Empty states (error / not found) */
+.content-loader--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.content-loader__message {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.content-loader__message--error {
+  color: var(--error-text, #b91c1c);
+}
+
+.content-loader__message--not-found {
+  color: var(--muted-text, #6b7280);
+}

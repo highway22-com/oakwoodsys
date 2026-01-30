@@ -1,0 +1,274 @@
+@if (detail) {
+<!-- Hero Section (Figma: full-width image, title, tags) -->
+<section class="relative min-h-[60vh] sm:min-h-[70vh] md:min-h-[80vh] w-full overflow-hidden"
+  aria-label="Case Study Hero">
+  <div class="absolute inset-0 z-0">
+    <img [src]="detail.heroImage" [alt]="detail.title" class="absolute inset-0 w-full h-full object-cover"
+      loading="eager" />
+    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
+  </div>
+  <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-16 sm:py-20 md:py-24">
+    <div class="max-w-4xl mx-auto">
+      <nav class="mb-6" aria-label="Breadcrumb">
+        <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-white/80">
+          <li><a routerLink="/" class="hover:text-white transition-colors">Home</a></li>
+          <li><span class="mx-1">/</span></li>
+          <li><a routerLink="/resources" class="hover:text-white transition-colors">Resources</a></li>
+          <li><span class="mx-1">/</span></li>
+          <li class="text-white">Case Studies</li>
+          <li><span class="mx-1">/</span></li>
+          <li class="text-white truncate max-w-[12rem] sm:max-w-none" [title]="detail.title">{{ detail.title }}</li>
+        </ol>
+      </nav>
+      <h1
+        class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 sm:mb-8 font-sans">
+        {{ detail.title }}
+      </h1>
+      <div class="flex flex-wrap items-center gap-3">
+        @for (tag of detail.tags; track tag) {
+        <span class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg text-sm font-medium text-white">
+          {{ tag }}
+        </span>
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Main Content (Figma: sticky TOC + sections) -->
+<section class="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
+  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+        <aside class="lg:col-span-3">
+          <div class="sticky top-24">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-700 mb-4">Table of contents</h2>
+              <nav class="space-y-2">
+                @for (item of tableOfContents; track item.id) {
+                <button type="button" (click)="scrollToSection(item.id)"
+                  [class.text-blue-600]="activeSection === item.id" [class.text-gray-700]="activeSection !== item.id"
+                  class="block w-full text-left text-sm font-medium hover:text-blue-600 transition-colors cursor-pointer">
+                  {{ item.text }}
+                </button>
+                }
+                <button type="button" (click)="scrollToSection('related-resources')"
+                  [class.text-blue-600]="activeSection === 'related-resources'"
+                  [class.text-gray-700]="activeSection !== 'related-resources'"
+                  class="block w-full text-left text-sm font-medium hover:text-blue-600 transition-colors cursor-pointer">
+                  Related Resources
+                </button>
+              </nav>
+            </div>
+          </div>
+        </aside>
+        <div class="lg:col-span-9">
+          <div class="blog-content prose prose-lg max-w-none">
+            <section id="overview" class="mb-12 sm:mb-16 md:mb-20">
+              <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6 sm:mb-8 font-sans">Overview</h2>
+              <div class="case-study-html text-base sm:text-lg text-gray-700 leading-relaxed font-sans" [innerHTML]="getSafeHtml(detail.overview)"></div>
+            </section>
+            <section id="business-challenge" class="mb-12 sm:mb-16 md:mb-20">
+              <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6 sm:mb-8 font-sans">Business Challenge</h2>
+              <div class="case-study-html text-base sm:text-lg text-gray-700 leading-relaxed font-sans" [innerHTML]="getSafeHtml(detail.businessChallenge)"></div>
+            </section>
+            <section id="solution" class="mb-12 sm:mb-16 md:mb-20">
+              <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6 sm:mb-8 font-sans">Solution</h2>
+              <div class="case-study-html text-base sm:text-lg text-gray-700 leading-relaxed font-sans mb-6 sm:mb-8" [innerHTML]="getSafeHtml(detail.solution)"></div>
+              @if (detail.solutionImage) {
+              <div class="relative w-full aspect-video sm:h-80 md:h-96 rounded-lg overflow-hidden bg-gray-100">
+                <img [src]="detail.solutionImage" alt="Solution" class="w-full h-full object-cover" loading="lazy" />
+              </div>
+              }
+            </section>
+            @if (detail.testimonial) {
+            <section id="testimonial" class="mb-12 sm:mb-16 md:mb-20">
+              <div class="bg-gray-50 rounded-lg p-6 sm:p-8 md:p-10 border-l-4 border-blue-600">
+                @if (detail.testimonial.companyLogo) {
+                <div class="mb-4">
+                  <img [src]="detail.testimonial.companyLogo" [alt]="detail.testimonial.company + ' logo'"
+                    class="h-8 w-auto" />
+                </div>
+                }
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 font-sans">Testimonial</h3>
+                <blockquote class="text-base sm:text-lg text-gray-700 leading-relaxed mb-4 font-sans italic">
+                  "{{ detail.testimonial.quote }}"
+                </blockquote>
+                <div class="text-sm text-gray-600 font-sans">
+                  <p class="font-semibold">{{ detail.testimonial.author }}</p>
+                  <p>{{ detail.testimonial.role }}, {{ detail.testimonial.company }}</p>
+                </div>
+              </div>
+            </section>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Related case studies (Figma: tagline from design) -->
+<section id="related-resources" class="w-full bg-gray-50 py-12 sm:py-16 md:py-20"
+  aria-labelledby="related-case-studies">
+  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+    <div class="max-w-7xl mx-auto">
+      <h2 id="related-case-studies"
+        class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 font-sans">
+        Related case studies
+      </h2>
+      <p class="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 font-sans max-w-3xl">
+        Our proven track record helps to redefine what's possible, enabling your workforce, ecosystem, and global
+        operations.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
+        @for (related of detail.relatedCaseStudies; track related.id) {
+        <article
+          class="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+          <a [routerLink]="related.link" class="block">
+            <div class="relative w-full h-48 sm:h-56 overflow-hidden">
+              <img [src]="related.image" [alt]="related.title"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy" />
+            </div>
+            <div class="p-6">
+              <div class="flex items-center gap-3 mb-2 text-xs sm:text-sm text-gray-500">
+                <span>{{ related.category }}</span>
+                <span>•</span>
+                <span>3 min read</span>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                {{ related.title }}
+              </h3>
+              <p class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed">{{ related.description }}</p>
+              <span
+                class="inline-flex items-center text-sm sm:text-base text-blue-600 group-hover:text-blue-700 font-medium">
+                Read more
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </span>
+            </div>
+          </a>
+        </article>
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Connected services (Figma: same tagline) -->
+<section class="w-full bg-white py-12 sm:py-16 md:py-20" aria-labelledby="connected-services">
+  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+    <div class="max-w-7xl mx-auto">
+      <h2 id="connected-services"
+        class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 font-sans">
+        Explore our connected services
+      </h2>
+      <p class="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 font-sans max-w-3xl">
+        Our proven track record helps to redefine what's possible, enabling your workforce, ecosystem, and global
+        operations.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 mb-8 sm:mb-12">
+        @for (service of detail.connectedServices; track service.id) {
+        <article class="text-center">
+          <div class="mb-4">
+            <i class="fa-solid {{ service.icon }} text-4xl sm:text-5xl text-blue-600" aria-hidden="true"></i>
+          </div>
+          <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 font-sans">{{ service.title }}</h3>
+          <p class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed font-sans">{{ service.description }}</p>
+          <a [routerLink]="service.link"
+            class="inline-flex items-center text-sm sm:text-base text-blue-600 hover:text-blue-700 font-medium">
+            Learn more
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </article>
+        }
+      </div>
+      <div class="text-center">
+        <a routerLink="/services"
+          class="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+          View All Services
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Latest Insights -->
+<section class="w-full bg-gray-50 py-12 sm:py-16 md:py-20" aria-labelledby="latest-insights">
+  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+    <div class="max-w-7xl mx-auto">
+      <h2 id="latest-insights" class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 font-sans">
+        Latest Insights from Oakwood
+      </h2>
+      <p class="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 font-sans">
+        Stay updated with our latest insights, case studies, and industry trends.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 mb-8 sm:mb-12">
+        @for (insight of latestInsights; track insight.id) {
+        <article
+          class="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+          <a [routerLink]="insight.link" class="block">
+            <div class="relative w-full h-48 sm:h-56 overflow-hidden">
+              <img [src]="insight.image" [alt]="insight.title"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy" />
+            </div>
+            <div class="p-6">
+              <div class="flex items-center gap-3 mb-2 text-xs sm:text-sm text-gray-500">
+                <span>{{ insight.category }}</span>
+                <span>•</span>
+                <span>5 min read</span>
+              </div>
+              <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                {{ insight.title }}
+              </h3>
+              <span
+                class="inline-flex items-center text-sm sm:text-base text-blue-600 group-hover:text-blue-700 font-medium mt-4">
+                Read more
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </span>
+            </div>
+          </a>
+        </article>
+        }
+      </div>
+      <div class="text-center">
+        <a routerLink="/resources"
+          class="inline-block px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all">
+          View All Insights
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA (Figma: Talk to an expert + Subscribe to our newsletter) -->
+<section class="w-full bg-gradient-to-r from-blue-50 to-purple-50 py-16 sm:py-20 md:py-24" aria-label="Call to Action">
+  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+    <div class="max-w-3xl mx-auto text-center">
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight font-sans">
+        Let's move your vision forward
+      </h2>
+      <p class="text-base sm:text-lg md:text-xl text-gray-700 mb-8 sm:mb-10 md:mb-12 leading-relaxed font-sans">
+        Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
+        <a routerLink="/contact-us"
+          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all hover:opacity-90 font-sans text-white bg-blue-600">
+          Talk to an expert
+        </a>
+        <a routerLink="/contact-us"
+          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all hover:bg-white/50 font-sans text-blue-600 border-2 border-blue-600">
+          Subscribe to our newsletter
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+}

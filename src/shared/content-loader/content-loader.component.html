@@ -1,0 +1,21 @@
+@if (loading()) {
+  <div class="content-loader content-loader--skeleton" aria-busy="true" aria-label="Cargando">
+    <div class="content-loader__skeleton content-loader__skeleton--header"></div>
+    <div class="content-loader__skeleton content-loader__skeleton--line"></div>
+    <div class="content-loader__skeleton content-loader__skeleton--line content-loader__skeleton--short"></div>
+    <div class="content-loader__skeleton content-loader__skeleton--line"></div>
+    <div class="content-loader__skeleton content-loader__skeleton--block"></div>
+    <div class="content-loader__skeleton content-loader__skeleton--line"></div>
+    <div class="content-loader__skeleton content-loader__skeleton--line content-loader__skeleton--short"></div>
+  </div>
+} @else if (error()) {
+  <div class="content-loader content-loader--empty">
+    <p class="content-loader__message content-loader__message--error">{{ errorMessage() }}</p>
+  </div>
+} @else if (!hasContent()) {
+  <div class="content-loader content-loader--empty">
+    <p class="content-loader__message content-loader__message--not-found">{{ notFoundMessage() }}</p>
+  </div>
+} @else {
+  <ng-content />
+}

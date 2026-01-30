@@ -3,7 +3,8 @@ import { Bloq } from '../pages/bloq/bloq';
 import { Post } from '../pages/post/post';
 import { Home } from '../pages/home/home';
 import { Services } from '../pages/services/services';
-import { Resources } from '../pages/resources/resources';
+import { Resources as ResourcesList } from '../pages/resources/resources-wordpress';
+import { CaseStudyDetailPageComponent } from '../pages/resources/case-study-detail-page/case-study-detail-page.component';
 import { Industries } from '../pages/industries/industries';
 import { Blog } from '../pages/blog/blog';
 import { Structured } from '../pages/structured/structured';
@@ -36,15 +37,15 @@ export const routes: Routes = [
     },
     {
         path: 'resources/case-studies/:slug',
-        component: Resources
+        component: CaseStudyDetailPageComponent
     },
     {
         path: 'resources/case-studies',
-        component: Resources
+        component: ResourcesList
     },
     {
         path: 'resources',
-        component: Resources
+        component: ResourcesList
     },
     {
         path: 'industries/:slug',

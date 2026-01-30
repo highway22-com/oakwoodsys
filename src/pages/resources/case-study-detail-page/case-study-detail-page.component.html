@@ -1,0 +1,7 @@
+<app-content-loader [loading]="loading()" [error]="error()" [hasContent]="!!detail()"
+  notFoundMessage="No data for this page." errorMessage="Error loading case study.">
+  @if (detail(); as d) {
+  <app-case-study-detail [detail]="d" [tableOfContents]="tableOfContents()" [activeSection]="activeSection()"
+    [latestInsights]="latestInsights()" (sectionScroll)="scrollToSection($any($event))" />
+  }
+</app-content-loader>

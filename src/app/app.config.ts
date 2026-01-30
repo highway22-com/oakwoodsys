@@ -17,7 +17,7 @@ export const appConfig: ApplicationConfig = {
 
       return {
         link: httpLink.create({
-          uri: 'http://bit.local/graphql',
+          uri: '/api/graphql', // Usar proxy local para evitar CORS
         }),
         cache: new InMemoryCache(),
       };

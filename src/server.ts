@@ -256,6 +256,70 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
     return handleAuth(request);
   }
 
+  // API endpoint for GraphQL proxy (bypasses CORS)
+  if (pathname === '/api/graphql') {
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Content-Type': 'application/json'
+    };
+
+    // Handle OPTIONS preflight request
+    if (request.method === 'OPTIONS') {
+      return new Response('', { status: 200, headers: corsHeaders });
+    }
+
+    // Handle POST request
+    if (request.method !== 'POST') {
+      return Response.json({ error: 'Method not allowed' }, { status: 405, headers: corsHeaders });
+    }
+
+    try {
+      const body = await request.json();
+      const graphqlUrl = 'https://oakwoodsys.com/graphql';
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+      const response = await fetch(graphqlUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return Response.json({
+          error: 'GraphQL request failed',
+          message: `HTTP ${response.status}: ${errorText}`
+        }, { status: response.status, headers: corsHeaders });
+      }
+
+      const data = await response.json();
+      return Response.json(data, { headers: corsHeaders });
+    } catch (error: any) {
+      console.error('[graphql] Proxy error:', error);
+      
+      if (error.name === 'AbortError') {
+        return Response.json({
+          error: 'Request timeout',
+          message: 'GraphQL request took too long'
+        }, { status: 504, headers: corsHeaders });
+      }
+
+      return Response.json({
+        error: 'GraphQL proxy error',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      }, { status: 500, headers: corsHeaders });
+    }
+  }
+
   // API endpoint for home-content proxy (bypasses CORS)
   if (pathname === '/api/home-content') {
     // CORS headers for all responses

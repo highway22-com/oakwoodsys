@@ -1,8 +1,208 @@
-<div class="min-h-screen py-12 sm:py-16 md:py-20">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-      Resources @if (slug) { - {{ slug }} }
-    </h1>
-    <p class="text-lg text-gray-600">Resources page content coming soon...</p>
+<!-- List View (Resources: lista de case studies; detalle en ruta /resources/case-studies/:slug) -->
+<!-- Hero Section -->
+<section class="relative min-h-[600px] sm:min-h-[700px] md:min-h-[800px] w-full overflow-hidden"
+  aria-label="Resources Hero">
+  <div class="absolute inset-0 z-0">
+    <!-- Background Image -->
+    <img src="/assets/resources/hero-background.jpg" alt="Resources background"
+      class="absolute inset-0 w-full h-full object-cover" loading="eager" />
+    <!-- Dark Overlay -->
+    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
   </div>
-</div>
+
+  <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 h-full flex items-center">
+    <div class="w-full max-w-2xl md:max-w-3xl py-20 sm:py-24 md:py-32">
+      <h1
+        class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4 sm:mb-6 md:mb-8 font-sans">
+        Discover Our Impact Through Realized Projects
+      </h1>
+      <p
+        class="text-base sm:text-lg md:text-xl text-white mb-8 sm:mb-10 md:mb-12 max-w-xl md:max-w-2xl leading-relaxed font-sans">
+        More lorem ipsum and type with you auto built on Azure AI that solve real problems, not theoretical ones.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 sm:gap-6">
+        <a routerLink="/contact-us"
+          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-200 hover:opacity-90 hover:scale-105 font-sans text-white shadow-lg bg-blue-600">
+          Schedule a Consultation
+        </a>
+        <a routerLink="/resources"
+          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-200 hover:bg-white/10 hover:scale-105 font-sans text-white border-2 border-white">
+          View Resources
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Case Study Section -->
+@if (featuredCaseStudy(); as featured) {
+<section class="w-full bg-white py-12 sm:py-16 md:py-20" aria-labelledby="featured-case-study">
+  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+      <!-- Image Column -->
+      <div class="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-lg overflow-hidden">
+        <img [src]="featured.image" [alt]="featured.title" class="w-full h-full object-cover" loading="lazy" />
+      </div>
+
+      <!-- Content Column -->
+      <div class="flex flex-col justify-center">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-xs font-semibold uppercase tracking-wider text-blue-600">
+            FEATURED CASE STUDY
+          </span>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="flex items-center gap-3 mb-6">
+          <button (click)="prevCaseStudy()" class="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+            [disabled]="featured.currentIndex === 1" [class.opacity-50]="featured.currentIndex === 1"
+            [class.cursor-not-allowed]="featured.currentIndex === 1">
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <span class="text-sm font-medium text-gray-700">
+            {{ featured.currentIndex }}/{{ featured.total }}
+          </span>
+          <button (click)="nextCaseStudy()" class="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+            [disabled]="featured.currentIndex === featured.total"
+            [class.opacity-50]="featured.currentIndex === featured.total"
+            [class.cursor-not-allowed]="featured.currentIndex === featured.total">
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        <h2 id="featured-case-study"
+          class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight font-sans">
+          {{ featured.title }}
+        </h2>
+        <p class="text-base sm:text-lg text-gray-700 mb-6 sm:mb-8 leading-relaxed font-sans">
+          {{ featured.description }}
+        </p>
+        <a [routerLink]="featured.link"
+          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-200 hover:opacity-90 hover:scale-105 font-sans text-white bg-blue-600 w-fit">
+          Read More
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+}
+
+<!-- Filter Tabs and Search Section -->
+<section class="w-full bg-white border-t border-gray-200 py-6 sm:py-8" aria-label="Filter and Search">
+  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+      <!-- Filter Tabs -->
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-2">
+        @for (filter of filters; track filter) {
+        <button (click)="selectFilter(filter)" [class.bg-blue-600]="selectedFilter() === filter"
+          [class.text-white]="selectedFilter() === filter" [class.bg-gray-100]="selectedFilter() !== filter"
+          [class.text-gray-700]="selectedFilter() !== filter"
+          class="px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium text-sm sm:text-base transition-all duration-200 hover:opacity-90 whitespace-nowrap">
+          {{ filter }}
+        </button>
+        }
+      </div>
+
+      <!-- Search -->
+      <div class="relative w-full sm:w-auto min-w-[200px] sm:min-w-[300px]">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <input type="text" placeholder="Search" [value]="searchQuery()"
+          (input)="onSearchChange($any($event.target).value)"
+          class="block w-full pl-10 pr-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Resources Grid Section -->
+<section class="w-full bg-white py-12 sm:py-16 md:py-20" aria-label="Resources">
+  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+    @if (filteredResources().length === 0) {
+    <div class="text-center py-12">
+      <p class="text-lg text-gray-600">No resources found matching your criteria.</p>
+    </div>
+    } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-12">
+      @for (card of filteredResources(); track card.id) {
+      <article class="group">
+        <a [routerLink]="card.link" class="block">
+          <!-- Image -->
+          <div class="relative w-full h-48 sm:h-56 md:h-64 rounded-lg overflow-hidden mb-4">
+            <img [src]="card.image" [alt]="card.title"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          </div>
+
+          <!-- Category and Date -->
+          <div class="flex items-center gap-3 mb-2 text-xs sm:text-sm text-gray-500">
+            <span>{{ card.category }}</span>
+            <span>•</span>
+            <span>{{ card.date }}</span>
+          </div>
+
+          <!-- Title -->
+          <h3
+            class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200">
+            {{ card.title }}
+          </h3>
+
+          <!-- Description -->
+          <p class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed">
+            {{ card.description }}
+          </p>
+
+          <!-- Read More Link -->
+          <div
+            class="flex items-center text-sm sm:text-base text-blue-600 group-hover:text-blue-700 transition-colors duration-200">
+            <span>Read More</span>
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </a>
+      </article>
+      }
+    </div>
+
+    <!-- Load More Button -->
+    <div class="text-center mt-12 sm:mt-16">
+      <button
+        class="px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200">
+        Load More
+      </button>
+    </div>
+    }
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="w-full bg-gradient-to-r from-blue-50 to-purple-50 py-16 sm:py-20 md:py-24" aria-label="Call to Action">
+  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+    <div class="max-w-3xl mx-auto text-center">
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight font-sans">
+        Let's move your vision forward
+      </h2>
+      <p class="text-base sm:text-lg md:text-xl text-gray-700 mb-8 sm:mb-10 md:mb-12 leading-relaxed font-sans">
+        Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
+        <a routerLink="/contact-us"
+          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-200 hover:opacity-90 hover:scale-105 font-sans text-white bg-blue-600">
+          Talk to an expert
+        </a>
+        <a routerLink="/contact-us"
+          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-200 hover:bg-white/50 hover:scale-105 font-sans text-blue-600 border-2 border-blue-600">
+          Schedule a call
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
