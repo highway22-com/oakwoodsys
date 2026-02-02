@@ -45,8 +45,9 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     const usePlaceholders = this.loading || !this.videoUrls || this.videoUrls.length === 0;
     const urls = usePlaceholders ? PLACEHOLDER_VIDEO_URLS : this.videoUrls;
     this.videoUrlsSignal.set(urls);
+    // No llamar loadVideo aquí: en SSR o antes de AfterViewInit el video no existe; se carga en ngAfterViewInit.
     if (changes['videoUrls'] || changes['loading']) {
-      if (this.videoElement && this.videoUrlsSignal().length > 0) {
+      if (isPlatformBrowser(this.platformId) && this.videoElement?.nativeElement && typeof this.videoElement.nativeElement.load === 'function') {
         const initialUrl = this.currentVideoUrl();
         if (initialUrl) {
           this.loadVideo(initialUrl);
@@ -159,9 +160,11 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private loadVideo(url: string) {
-    if (!this.videoElement) return;
-
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (!this.videoElement?.nativeElement) return;
     const video = this.videoElement.nativeElement;
+    if (typeof video.load !== 'function') return;
+
     video.src = url;
     video.load();
 
