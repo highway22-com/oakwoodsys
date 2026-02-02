@@ -26,6 +26,8 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   @Input() description: string = '';
   @Input() ctaPrimary?: { text: string; link: string; backgroundColor: string };
   @Input() ctaSecondary?: { text: string; link: string; borderColor: string };
+  /** Centra título, descripción y CTAs (ej. página Contact Us). */
+  @Input() centerContent = false;
 
   private readonly platformId = inject(PLATFORM_ID);
   private videoInterval: any;

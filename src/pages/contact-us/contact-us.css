@@ -2,3 +2,32 @@
   display: block;
   width: 100%;
 }
+
+.contact-section-form {
+  background-color: #f8fafc;
+}
+
+.contact-stat {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.contact-stat:last-of-type {
+  border-bottom: none;
+}
+
+.contact-office-card {
+  transition: box-shadow 0.2s ease;
+}
+
+.contact-office-card:hover {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.contact-office-header {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+}
+
+.contact-cta-banner {
+  background: linear-gradient(to right, rgba(238, 242, 255, 0.9) 0%, rgba(255, 255, 255, 1) 100%);
+}
