@@ -1,1 +1,10 @@
 /* Video Hero Component Styles */
+
+/* Overlay: gradiente solo en esquina inferior izquierda (~30% de la pantalla).
+   El resto es transparente para ver el video de fondo. */
+.video-hero__gradient {
+  background: linear-gradient(to top right,
+      rgba(8, 7, 7, 0.991) 0%,
+      transparent 80%);
+  pointer-events: none;
+}

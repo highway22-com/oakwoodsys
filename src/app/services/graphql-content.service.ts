@@ -5,10 +5,13 @@ import { map, catchError } from 'rxjs/operators';
 import {
   GET_CASE_STUDIES,
   GET_CASE_STUDY_BY_SLUG,
+  GET_CMS_PAGE,
   type CaseStudy,
   type CaseStudyBy,
   type CaseStudiesResponse,
   type CaseStudyByResponse,
+  type CmsPageContent,
+  type CmsPageResponse,
 } from '../api/graphql';
 
 @Injectable({
@@ -66,6 +69,43 @@ export class GraphQLContentService {
           const caseStudy: CaseStudyBy | null = data?.caseStudyBy ?? null;
           this.loading.set(false);
           return caseStudy;
+        }),
+        catchError((error) => {
+          this.errors.set(error);
+          this.loading.set(false);
+          return of(null);
+        })
+      );
+  }
+
+  /**
+   * Contenido de una página CMS por slug (home, services, about-us, bloq, industries).
+   * El plugin Oakwood CMS sirve JSON desde wp-content/uploads/oakwood-cms/<slug>.json vía GraphQL.
+   */
+  getCmsPageBySlug(slug: string): Observable<CmsPageContent | null> {
+    const normalizedSlug = slug.trim();
+    if (!normalizedSlug) return of(null);
+
+    this.loading.set(true);
+    this.errors.set(null);
+
+    return this.apollo
+      .watchQuery<CmsPageResponse>({
+        query: GET_CMS_PAGE,
+        variables: { slug: normalizedSlug },
+        fetchPolicy: 'cache-and-network',
+      })
+      .valueChanges.pipe(
+        map((result) => {
+          const data = result.data as CmsPageResponse | undefined;
+          const raw = data?.cmsPage?.content ?? null;
+          this.loading.set(false);
+          if (raw == null) return null;
+          try {
+            return JSON.parse(raw) as CmsPageContent;
+          } catch {
+            return null;
+          }
         }),
         catchError((error) => {
           this.errors.set(error);

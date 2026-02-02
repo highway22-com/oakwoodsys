@@ -305,7 +305,7 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
       return Response.json(data, { headers: corsHeaders });
     } catch (error: any) {
       console.error('[graphql] Proxy error:', error);
-      
+
       if (error.name === 'AbortError') {
         return Response.json({
           error: 'Request timeout',

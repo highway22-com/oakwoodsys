@@ -2,6 +2,14 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
+/** URLs de video placeholder mientras carga el contenido (se sustituyen por GraphQL). */
+const PLACEHOLDER_VIDEO_URLS: string[] = [
+  'https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4',
+  'https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4',
+  'https://oakwoodsys.com/wp-content/uploads/2025/12/2.mp4',
+  'https://oakwoodsys.com/wp-content/uploads/2025/12/4.mp4',
+];
+
 @Component({
   selector: 'app-video-hero',
   imports: [CommonModule, RouterLink],
@@ -12,6 +20,7 @@ import { RouterLink } from '@angular/router';
 export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChild('videoElement', { static: false }) videoElement!: ElementRef<HTMLVideoElement>;
 
+  @Input() loading = true;
   @Input() videoUrls: string[] = [];
   @Input() title: string = '';
   @Input() description: string = '';
@@ -21,7 +30,8 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   private readonly platformId = inject(PLATFORM_ID);
   private videoInterval: any;
 
-  readonly videoUrlsSignal = signal<string[]>([]);
+  /** Mientras loading o sin URLs del CMS, usar placeholders; si no, URLs de GraphQL. */
+  readonly videoUrlsSignal = signal<string[]>(PLACEHOLDER_VIDEO_URLS);
   readonly currentVideoIndex = signal(0);
   readonly currentVideoUrl = computed(() => {
     const urls = this.videoUrlsSignal();
@@ -30,9 +40,10 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   });
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['videoUrls'] && this.videoUrls.length > 0) {
-      this.videoUrlsSignal.set(this.videoUrls);
-      // Reload video if element is already initialized
+    const usePlaceholders = this.loading || !this.videoUrls || this.videoUrls.length === 0;
+    const urls = usePlaceholders ? PLACEHOLDER_VIDEO_URLS : this.videoUrls;
+    this.videoUrlsSignal.set(urls);
+    if (changes['videoUrls'] || changes['loading']) {
       if (this.videoElement && this.videoUrlsSignal().length > 0) {
         const initialUrl = this.currentVideoUrl();
         if (initialUrl) {
@@ -51,10 +62,9 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
       document.addEventListener('click', () => this.enableAutoplay(), { once: true });
     }
 
-    // Initialize video URLs from input
-    if (this.videoUrls.length > 0) {
-      this.videoUrlsSignal.set(this.videoUrls);
-    }
+    // URLs: placeholders si loading o sin videoUrls; si no, los del input
+    const usePlaceholders = this.loading || !this.videoUrls || this.videoUrls.length === 0;
+    this.videoUrlsSignal.set(usePlaceholders ? PLACEHOLDER_VIDEO_URLS : this.videoUrls);
 
     setTimeout(() => {
       if (this.videoElement && this.videoUrlsSignal().length > 0) {
@@ -125,7 +135,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     // Switch video every 10 seconds
     this.videoInterval = setInterval(() => {
       this.nextVideo();
-    }, 10000);
+    }, 11000);
   }
 
   switchToVideo(index: number) {

@@ -1,37 +1,26 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule, NgClass, isPlatformBrowser } from '@angular/common';
 import { Title, Meta, DomSanitizer } from '@angular/platform-browser';
-import { Apollo, gql } from 'apollo-angular';
 import { FormsModule } from '@angular/forms';
-
-interface HomeContent {
-  page: string;
-  videoUrls?: string[];
-  sections: any[];
-}
+import { VideoHero } from '../../shared/video-hero/video-hero';
+import { GraphQLContentService } from '../../app/services/graphql-content.service';
+import type { CmsPageContent, CmsSection } from '../../app/api/graphql';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, NgClass, FormsModule],
+  imports: [CommonModule, NgClass, FormsModule, VideoHero],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Home implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('videoElement', { static: false }) videoElement!: ElementRef<HTMLVideoElement>;
-  readonly content = signal<HomeContent | null>(null);
+export class Home implements OnInit {
+  readonly content = signal<CmsPageContent | null>(null);
   readonly loading = signal(true);
   readonly videoUrls = signal<string[]>([]);
-  readonly currentVideoIndex = signal(0);
-  readonly currentVideoUrl = computed(() => {
-    const urls = this.videoUrls();
-    const index = this.currentVideoIndex();
-    return urls[index] || urls[0] || '';
-  });
-  private videoInterval: any;
 
-  private readonly apollo = inject(Apollo);
+  private readonly graphql = inject(GraphQLContentService);
+  private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly titleService = inject(Title);
   private readonly metaService = inject(Meta);
@@ -46,282 +35,142 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   jsonContent: string = '';
   readonly jsonError = signal<string | null>(null);
 
-  constructor(private http: HttpClient) { }
+  constructor() { }
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
-      document.addEventListener('click', () => this.enableAutoplay(), { once: true });
-
-      // Check if user is admin
       const token = localStorage.getItem('admin_token');
       this.isAdmin.set(!!token);
     }
 
-    // Try to load from external URL via proxy endpoint (bypasses CORS)
-    // The proxy endpoint is defined in server.ts and works for all users (admin or not)
-    // If admin is logged in, server will serve with no-cache headers for editing
+    // Cargar contenido desde GraphQL (Oakwood CMS: cmsPage(slug: "home"))
+    this.graphql.getCmsPageBySlug('home').subscribe({
+      next: (data) => {
+        console.log('Data from GraphQL:', data);
+        if (data) {
+          console.log('[Home] Content loaded from GraphQL (cmsPage home)');
+          this.applyContent(data);
+        }
+      },
+      error: () => {
+        console.log('Error al cargar el contenido desde GraphQL');
+        this.fallbackToHomeContentApi();
+      }
+    });
+  }
+
+  private applyContent(data: CmsPageContent) {
+    this.content.set(data);
+    if (data.videoUrls && data.videoUrls.length > 0) {
+      const links = data.videoUrls.filter((url): url is string => typeof url === 'string' && url.trim().length > 0);
+      if (links.length > 0) {
+        this.videoUrls.set(links);
+      }
+    }
+    if (this.isAdmin()) {
+      this.jsonContent = JSON.stringify(data, null, 2);
+    }
+    this.updateMetadata(data);
+    this.updateStructuredData(data);
+    this.loading.set(false);
+  }
+
+  private fallbackToHomeContentApi() {
+    console.warn('[Home] GraphQL returned nothing, falling back to /api/home-content');
     const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('admin_token') : null;
     const headers: { [key: string]: string } = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-
-    this.http.get<HomeContent>('/api/home-content', { headers }).subscribe({
+    this.http.get<CmsPageContent>('/api/home-content', { headers }).subscribe({
       next: (data) => {
-        console.log('[Home] Successfully loaded content from /api/home-content');
-        this.content.set(data);
-        if (data.videoUrls && data.videoUrls.length > 0) {
-          this.videoUrls.set(data.videoUrls);
-        }
-        // Initialize JSON content for admin editor
-        if (this.isAdmin()) {
-          this.jsonContent = JSON.stringify(data, null, 2);
-        }
-        this.updateMetadata(data);
-        this.updateStructuredData(data);
-        this.loading.set(false);
+        console.log('[Home] Content loaded from /api/home-content');
+        this.applyContent(data);
       },
-      error: (error) => {
-        // Log error details for debugging
-        console.error('[Home] Error loading from /api/home-content:', {
-          status: error.status,
-          statusText: error.statusText,
-          message: error.message,
-          error: error.error
-        });
-
-        // Fallback to local file if proxy fails (e.g., in dev mode or if proxy is unavailable)
-        console.warn('[Home] Falling back to local file /home-content.json');
-        this.http.get<HomeContent>('/home-content.json').subscribe({
-          next: (data) => {
-            console.log('[Home] Successfully loaded content from local file');
-            this.content.set(data);
-            if (data.videoUrls && data.videoUrls.length > 0) {
-              this.videoUrls.set(data.videoUrls);
-            }
-            // Initialize JSON content for admin editor
-            if (this.isAdmin()) {
-              this.jsonContent = JSON.stringify(data, null, 2);
-            }
-            this.updateMetadata(data);
-            this.updateStructuredData(data);
-            this.loading.set(false);
-          },
-          error: (fallbackError) => {
-            console.error('[Home] Error loading local home content:', fallbackError);
-            this.loading.set(false);
-          }
-        });
+      error: () => {
+        this.loading.set(false);
       }
     });
-  }
-
-  ngAfterViewInit() {
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
-    }
-    setTimeout(() => {
-      if (this.videoElement) {
-        // Load the initial video
-        const initialUrl = this.currentVideoUrl();
-        if (initialUrl) {
-          this.loadVideo(initialUrl);
-        }
-        this.videoElement.nativeElement.addEventListener('loadedmetadata', () => {
-          this.attemptAutoplay();
-          this.startVideoCarousel();
-        });
-        this.videoElement.nativeElement.addEventListener('ended', () => {
-          this.nextVideo();
-        });
-      }
-    }, 100);
-  }
-
-  ngOnDestroy() {
-    if (this.videoInterval) {
-      clearInterval(this.videoInterval);
-    }
-  }
-
-  onVideoError(event: Event) {
-    const video = event.target as HTMLVideoElement;
-    console.error('[Video] HTML error event:', {
-      networkState: video.networkState,
-      readyState: video.readyState,
-      error: video.error,
-      src: video.src
-    });
-  }
-
-  onVideoLoadStart(event: Event) {
-    const video = event.target as HTMLVideoElement;
-    console.log('[Video] Load started:', video.src);
-  }
-
-  onVideoLoaded(event: Event) {
-    const video = event.target as HTMLVideoElement;
-    console.log('[Video] Loaded:', video.src, {
-      duration: video.duration,
-      videoWidth: video.videoWidth,
-      videoHeight: video.videoHeight
-    });
-  }
-
-  private attemptAutoplay() {
-    if (!this.videoElement) return;
-    const video = this.videoElement.nativeElement;
-    if (!video.paused) {
-      return;
-    }
-
-    video.muted = true;
-
-    const playPromise = video.play();
-
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        // Video started playing successfully
-      }).catch((error) => {
-        if (error.name === 'NotAllowedError') {
-          // Autoplay was prevented, will be enabled on user interaction
-        } else if (error.name === 'NotSupportedError') {
-          console.error('Video format not supported');
-        } else if (error.name === 'NotReadableError') {
-          console.error('Video file cannot be read');
-        } else if (error.name === 'AbortError') {
-          console.error('Video playback was aborted');
-        } else {
-          console.error('Unknown error occurred:', error);
-        }
-      });
-    }
-  }
-
-  private enableAutoplay() {
-    if (this.videoElement && this.videoElement.nativeElement.paused) {
-      this.attemptAutoplay();
-    }
-  }
-
-  private startVideoCarousel() {
-    // Clear any existing interval
-    if (this.videoInterval) {
-      clearInterval(this.videoInterval);
-    }
-
-    // Switch video every 10 seconds
-    this.videoInterval = setInterval(() => {
-      this.nextVideo();
-    }, 10000);
-  }
-
-  switchToVideo(index: number) {
-    const urls = this.videoUrls();
-    if (index >= 0 && index < urls.length) {
-      this.currentVideoIndex.set(index);
-      this.loadVideo(urls[index]);
-
-      // Reset the carousel timer
-      this.startVideoCarousel();
-    }
-  }
-
-  private nextVideo() {
-    const urls = this.videoUrls();
-    const currentIndex = this.currentVideoIndex();
-    const nextIndex = (currentIndex + 1) % urls.length;
-    this.switchToVideo(nextIndex);
-  }
-
-  private loadVideo(url: string) {
-    if (!this.videoElement) return;
-
-    const video = this.videoElement.nativeElement;
-
-    // Clear previous error handlers
-    const errorHandler = (e: Event) => {
-      console.error('[Video] Error loading video:', url, {
-        event: e,
-        networkState: video.networkState,
-        readyState: video.readyState,
-        videoError: video.error
-      });
-
-      // Try next video if available
-      const urls = this.videoUrls();
-      const currentIndex = this.currentVideoIndex();
-      if (urls.length > 1) {
-        const nextIndex = (currentIndex + 1) % urls.length;
-        if (nextIndex !== currentIndex) {
-          console.log('[Video] Attempting to load next video:', urls[nextIndex]);
-          this.currentVideoIndex.set(nextIndex);
-          this.loadVideo(urls[nextIndex]);
-        }
-      }
-    };
-
-    const abortHandler = () => {
-      console.warn('[Video] Video load aborted:', url);
-    };
-
-    // Remove old listeners
-    video.removeEventListener('error', errorHandler);
-    video.removeEventListener('abort', abortHandler);
-
-    // Add new listeners
-    video.addEventListener('error', errorHandler, { once: true });
-    video.addEventListener('abort', abortHandler, { once: true });
-
-    console.log('[Video] Loading video:', url);
-    video.src = url;
-    video.load();
-
-    video.addEventListener('loadeddata', () => {
-      console.log('[Video] Video loaded successfully:', url);
-      this.attemptAutoplay();
-    }, { once: true });
-
-    video.addEventListener('canplay', () => {
-      console.log('[Video] Video can play:', url);
-    }, { once: true });
   }
 
   getSection(type: string) {
     return this.content()?.sections.find(s => s.type === type);
   }
 
-  private updateMetadata(content: HomeContent) {
+  /** Título del hero (desde sección hero o vacío). */
+  heroTitle(): string {
+    const section = this.getSection('hero');
+    const t = section?.title;
+    return (typeof t === 'string' ? t : '') || '';
+  }
+
+  /** Descripción del hero (desde sección hero o vacío). */
+  heroDescription(): string {
+    const section = this.getSection('hero');
+    const d = section?.description;
+    return (typeof d === 'string' ? d : '') || '';
+  }
+
+  /** CTA principal del hero (desde sección hero). */
+  heroCtaPrimary(): { text: string; link: string; backgroundColor: string } | undefined {
+    const section = this.getSection('hero');
+    return section ? this.getCtaPrimary(section) : undefined;
+  }
+
+  /** CTA secundario del hero (desde sección hero). */
+  heroCtaSecondary(): { text: string; link: string; borderColor: string } | undefined {
+    const section = this.getSection('hero');
+    return section ? this.getCtaSecondary(section) : undefined;
+  }
+
+  /** Normaliza ctaPrimary para app-video-hero (text, link, backgroundColor requeridos). */
+  getCtaPrimary(section: CmsSection): { text: string; link: string; backgroundColor: string } | undefined {
+    const cta = section.cta;
+    if (!cta) return undefined;
+    return {
+      text: (cta.text ?? ''),
+      link: (cta.link ?? '/contact-us'),
+      backgroundColor: (cta.backgroundColor ?? ''),
+    };
+  }
+
+  /** Normaliza ctaSecondary para app-video-hero (text, link, borderColor requeridos). */
+  getCtaSecondary(section: CmsSection): { text: string; link: string; borderColor: string } | undefined {
+    const cta = section.ctaSecondary;
+    if (!cta) return undefined;
+    return {
+      text: (cta.text ?? ''),
+      link: (cta.link ?? '#'),
+      borderColor: (cta.borderColor ?? ''),
+    };
+  }
+
+  private updateMetadata(content: CmsPageContent) {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
 
-    // Get hero section for title and description
     const heroSection = content.sections?.find(s => s.type === 'hero');
-    const pageTitle = heroSection?.title
-      ? `${heroSection.title} | Oakwood Systems`
-      : 'Oakwood Systems - Microsoft Solutions Partner';
+    const heroTitle = (heroSection?.['title'] ?? '') as string;
+    const heroDesc = (heroSection?.['description'] ?? '') as string;
+    const pageTitle = heroTitle ? `${heroTitle} | Oakwood Systems` : 'Oakwood Systems - Microsoft Solutions Partner';
 
     this.titleService.setTitle(pageTitle);
 
-    // Update meta description
-    const description = heroSection?.description ||
+    const description = heroDesc ||
       'Oakwood Systems is a certified Microsoft Solutions Partner specializing in Data & AI, Cloud Infrastructure, Application Innovation, and Modern Work solutions.';
     this.metaService.updateTag({ name: 'description', content: description });
 
-    // Open Graph tags
-    this.metaService.updateTag({ property: 'og:title', content: heroSection?.title || 'Oakwood Systems' });
+    this.metaService.updateTag({ property: 'og:title', content: heroTitle || 'Oakwood Systems' });
     this.metaService.updateTag({ property: 'og:description', content: description });
     this.metaService.updateTag({ property: 'og:type', content: 'website' });
     this.metaService.updateTag({ property: 'og:url', content: 'https://oakwoodsys.com' });
     if (content.videoUrls && content.videoUrls.length > 0) {
-      // Use first video thumbnail or a default image
       this.metaService.updateTag({ property: 'og:image', content: 'https://oakwoodsys.com/og-image.jpg' });
     }
 
-    // Twitter Card tags
     this.metaService.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
-    this.metaService.updateTag({ name: 'twitter:title', content: heroSection?.title || 'Oakwood Systems' });
+    this.metaService.updateTag({ name: 'twitter:title', content: heroTitle || 'Oakwood Systems' });
     this.metaService.updateTag({ name: 'twitter:description', content: description });
 
     // Canonical URL
@@ -334,16 +183,16 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     linkTag.setAttribute('href', 'https://oakwoodsys.com');
   }
 
-  private updateStructuredData(content: HomeContent) {
+  private updateStructuredData(content: CmsPageContent) {
     const heroSection = content.sections?.find(s => s.type === 'hero');
-    const servicesSection = content.sections?.find(s => s.type === 'services');
+    const heroDesc = (heroSection?.['description'] ?? '') as string;
 
     const structuredDataObj = {
       '@context': 'https://schema.org',
       '@type': 'Organization',
       'name': 'Oakwood Systems',
       'url': 'https://oakwoodsys.com',
-      'description': heroSection?.description || 'Microsoft Solutions Partner',
+      'description': heroDesc || 'Microsoft Solutions Partner',
       'logo': 'https://oakwoodsys.com/logo.png',
       'sameAs': [
         // Add social media links if available
@@ -378,9 +227,10 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
       // Update content in real-time
       this.content.set(parsed);
 
-      // Update video URLs if present
-      if (parsed.videoUrls && parsed.videoUrls.length > 0) {
-        this.videoUrls.set(parsed.videoUrls);
+      // Update video URLs if present (solo enlaces válidos no vacíos)
+      if (parsed.videoUrls && Array.isArray(parsed.videoUrls) && parsed.videoUrls.length > 0) {
+        const links = parsed.videoUrls.filter((url: unknown): url is string => typeof url === 'string' && url.trim().length > 0);
+        this.videoUrls.set(links);
       }
 
       // Update metadata and structured data
@@ -391,56 +241,28 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  saveContent() {
+  /** Copia el contenido JSON del editor al portapapeles. */
+  copyToClipboard() {
     if (!this.content() || this.jsonError()) return;
 
     this.saving.set(true);
     this.saveSuccess.set(false);
 
-    const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('admin_token') : null;
-    if (!token) {
-      console.error('No admin token found');
+    if (!isPlatformBrowser(this.platformId)) {
       this.saving.set(false);
       return;
     }
 
-    const headers: { [key: string]: string } = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    };
-
-    // Parse JSON content to send
-    let updatedContent: HomeContent;
-    try {
-      updatedContent = JSON.parse(this.jsonContent);
-    } catch (error) {
-      alert('Error: JSON inválido. No se puede guardar.');
-      this.saving.set(false);
-      return;
-    }
-
-    this.http.put<{ success: boolean; message?: string }>('/api/home-content', updatedContent, { headers }).subscribe({
-      next: (response) => {
-        if (response.success) {
-          // Update local content signal
-          this.content.set(updatedContent);
-          this.saveSuccess.set(true);
-
-          // Hide success message after 3 seconds
-          setTimeout(() => {
-            this.saveSuccess.set(false);
-          }, 3000);
-        } else {
-          console.error('Failed to save:', response.message);
-          alert('Error al guardar: ' + (response.message || 'Error desconocido'));
-        }
-        this.saving.set(false);
+    navigator.clipboard.writeText(this.jsonContent).then(
+      () => {
+        this.saveSuccess.set(true);
+        setTimeout(() => this.saveSuccess.set(false), 3000);
       },
-      error: (error) => {
-        console.error('Error saving content:', error);
-        alert('Error al guardar el contenido. Por favor intenta de nuevo.');
-        this.saving.set(false);
+      () => {
+        alert('No se pudo copiar al portapapeles.');
       }
+    ).finally(() => {
+      this.saving.set(false);
     });
   }
 }

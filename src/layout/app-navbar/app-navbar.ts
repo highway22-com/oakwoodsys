@@ -29,6 +29,7 @@ interface NavbarContent {
   selector: 'app-navbar',
   imports: [RouterLink, CommonModule, NgClass, MicrosoftServices, Industries, Resources],
   templateUrl: './app-navbar.html',
+  styleUrl: './app-navbar.css',
 })
 export class AppNavbar implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);

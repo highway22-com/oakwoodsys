@@ -4,12 +4,21 @@
 </div>
 }
 
+<!-- Hero con video siempre visible (como en Services): placeholders mientras loading, luego videoUrls de GraphQL -->
+<app-video-hero
+  [loading]="loading()"
+  [videoUrls]="videoUrls()"
+  [title]="heroTitle()"
+  [description]="heroDescription()"
+  [ctaPrimary]="heroCtaPrimary()"
+  [ctaSecondary]="heroCtaSecondary()"
+/>
+
 @if (!loading() && content()) {
 <!-- Structured Data for SEO -->
 @if (structuredData()) {
 <script type="application/ld+json" [innerHTML]="sanitizer.bypassSecurityTrustHtml(getStructuredDataJson())"></script>
 }
-
 
 <!-- Admin Editor Layout -->
 @if (isAdmin() === true) {
@@ -31,10 +40,10 @@
     <div class="flex items-center gap-3">
       @if (saveSuccess()) {
       <div class="bg-green-500 text-white px-3 py-1 rounded text-sm">
-        ✓ Saved!
+        ✓ Copied!
       </div>
       }
-      <button (click)="saveContent()" [disabled]="saving() || !!jsonError()"
+      <button (click)="copyToClipboard()" [disabled]="saving() || !!jsonError()"
         class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold px-4 py-2 rounded transition-colors duration-200 flex items-center gap-2">
         @if (saving()) {
         <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
@@ -43,12 +52,12 @@
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
           </path>
         </svg>
-        <span>Saving...</span>
+        <span>Copying...</span>
         } @else {
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
         </svg>
-        <span>Save</span>
+        <span>Copy to clipboard</span>
         }
       </button>
     </div>
@@ -70,40 +79,7 @@
   @for (section of content()!.sections; track section.type) {
   @switch (section.type) {
   @case ('hero') {
-  <!-- Hero Section -->
-  <section class="relative min-h-screen w-full overflow-hidden" aria-label="Hero section">
-    <div class="absolute inset-0 z-0">
-      <video class="absolute inset-0 w-full h-full object-cover" autoplay muted playsinline preload="auto" #videoElement
-        aria-label="Hero background video" (error)="onVideoError($event)" (loadstart)="onVideoLoadStart($event)"
-        (loadeddata)="onVideoLoaded($event)">
-        Your browser does not support the video tag.
-      </video>
-      <div class="absolute inset-0 bg-slate-900/70"></div>
-    </div>
-    <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 h-screen flex items-center">
-      <div class="w-full max-w-2xl md:max-w-3xl">
-        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 md:mb-8">
-          {{ section.title }}
-        </h1>
-        <p class="text-base sm:text-lg md:text-xl text-white mb-8 md:mb-10 max-w-xl md:max-w-2xl leading-relaxed">
-          {{ section.description }}
-        </p>
-        <button
-          class="text-white font-semibold px-8 py-4 rounded-lg transition-colors duration-200 mb-12 md:mb-16 hover:opacity-90"
-          [style.background-color]="section.cta.backgroundColor">
-          {{ section.cta.text }}
-        </button>
-        <div class="flex items-center gap-2 md:gap-3">
-          @for (indicator of [].constructor(videoUrls().length); track $index) {
-          <button type="button" (click)="switchToVideo($index)"
-            [class]="$index === currentVideoIndex() ? 'h-0.5 w-8 md:w-10 bg-white rounded-full transition-all duration-300' : 'h-0.5 w-6 md:w-8 bg-white/50 rounded-full hover:bg-white/70 transition-all duration-300 cursor-pointer'"
-            [attr.aria-label]="'Switch to video ' + ($index + 1)">
-          </button>
-          }
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- Hero ya mostrado arriba -->
   }
 
   @case ('services') {
@@ -160,7 +136,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
         <div class="order-2 lg:order-1">
           <div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden">
-            <img [src]="section.image.url" [alt]="section.image.alt || section.title + ' - Featured case study image'"
+            <img [src]="section.image?.url ?? ''" [alt]="section.image?.alt ?? (section.title + ' - Featured case study image')"
               class="w-full h-full object-cover" loading="lazy" />
           </div>
         </div>
@@ -174,7 +150,7 @@
             </p>
             <span
               class="inline-block text-xs sm:text-sm font-medium text-white bg-blue-400 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full mb-4 sm:mb-6">
-              {{ section.tag }}
+              {{ section['tag'] }}
             </span>
             <h2 id="case-study-title"
               class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
@@ -186,12 +162,12 @@
             <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
               <button
                 class="text-white font-semibold px-6 py-3 sm:px-8 sm:py-4 rounded-lg transition-colors duration-200 hover:opacity-90 whitespace-nowrap"
-                [style.background-color]="section.cta.primary.backgroundColor">
-                {{ section.cta.primary.text }}
+                [style.background-color]="section?.cta?.primary?.backgroundColor ?? ''">
+                {{ section?.cta?.primary?.text ?? '' }}
               </button>
-              <a [href]="section.cta.secondary.link"
+              <a [href]="section?.cta?.secondary?.link ?? '#'"
                 class="text-base sm:text-lg text-gray-700 font-medium hover:text-blue-600 transition-colors duration-200 inline-flex items-center">
-                {{ section.cta.secondary.text }} <span class="ml-1">></span>
+                {{ section?.cta?.secondary?.text ?? '' }} <span class="ml-1">></span>
               </a>
             </div>
           </div>
@@ -242,7 +218,7 @@
                 </svg>
               </div>
               <span class="text-blue-600 font-semibold text-sm md:text-base">{{ company.name }}<span
-                  class="text-xs align-super">{{ company.trademark }}</span></span>
+                  class="text-xs align-super">{{ $any(company).trademark }}</span></span>
               } @else if (company.name === 'CLARIOS') {
               <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
                 <svg class="w-full h-full text-purple-600" viewBox="0 0 24 24" fill="currentColor">
@@ -356,8 +332,8 @@
       </div>
       <div class="text-center">
         <button class="text-white font-semibold px-8 py-4 rounded-lg transition-colors duration-200 hover:opacity-90"
-          [style.background-color]="section.cta.backgroundColor">
-          {{ section.cta.text }}
+          [style.background-color]="section?.cta?.backgroundColor ?? ''">
+          {{ section?.cta?.text ?? '' }}
         </button>
       </div>
     </div>
@@ -371,8 +347,8 @@
       <div class="max-w-6xl mx-auto">
         <div class="mb-8 sm:mb-10 md:mb-12">
           <h2 id="microsoft-partner-title" class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2">
-            <span class="text-blue-400">{{ section.title.line1 }}</span><br />
-            <span class="text-blue-600">{{ section.title.line2 }}</span>
+            <span class="text-blue-400">{{ $any(section?.title)?.line1 ?? '' }}</span><br />
+            <span class="text-blue-600">{{ $any(section?.title)?.line2 ?? '' }}</span>
           </h2>
         </div>
         <p class="text-sm sm:text-base md:text-lg text-gray-600 mb-8 sm:mb-10 md:mb-12 max-w-3xl leading-relaxed">
@@ -419,7 +395,7 @@
           {{ section.title }}
         </h2>
         <p class="text-base sm:text-lg text-gray-700 max-w-3xl mx-auto md:mx-0 leading-relaxed">
-          {{ section.subtitle }}
+          {{ section['subtitle'] }}
         </p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
@@ -427,7 +403,7 @@
         <div
           class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
           <div class="relative w-full h-48 sm:h-56 overflow-hidden">
-            <img [src]="article.image.url" [alt]="article.image.alt || article.title + ' article image'"
+            <img [src]="article.image?.url ?? ''" [alt]="article.image?.alt || article.title + ' article image'"
               class="w-full h-full object-cover" loading="lazy" />
           </div>
           <div class="p-5 sm:p-6 flex flex-col flex-grow">
@@ -456,7 +432,7 @@
       <div class="text-center">
         <button
           class="bg-transparent border border-gray-300 text-gray-800 font-semibold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-          {{ section.cta.text }}
+          {{ section?.cta?.text ?? '' }}
         </button>
       </div>
     </div>
