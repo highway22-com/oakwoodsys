@@ -2,3 +2,39 @@
   display: block;
   width: 100%;
 }
+
+.about-feature-card {
+  transition: box-shadow 0.2s ease;
+}
+
+.about-partners-scroll {
+  scroll-behavior: smooth;
+}
+
+.about-video-section {
+  min-height: 320px;
+}
+
+.about-play-button {
+  box-shadow: 0 4px 20px rgba(29, 105, 172, 0.4);
+}
+
+.about-team-avatar {
+  transition: transform 0.2s ease;
+}
+
+.about-team-card:hover .about-team-avatar {
+  transform: scale(1.02);
+}
+
+.about-deliver-banner {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+}
+
+.about-cta-banner {
+  background: linear-gradient(to right, rgba(238, 242, 255, 0.95) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.about-insight-card {
+  transition: box-shadow 0.2s ease;
+}
