@@ -2,7 +2,9 @@
 /* @import "tailwindcss"; */
 @import "tailwindcss";
 
-/* Font families */
+/* Font families
+   Inter: se carga en index.html desde Google Fonts (link correcto).
+   Segoe UI: se carga en index.html desde CDN (fonts.cdnfonts.com) para macOS/Linux; en Windows viene con el SO. */
 :root {
     --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     --font-segoe: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -10,6 +12,7 @@
     --color-p-500: #2A7EBF;
     --color-s-800: #454545;
     --color-s-600: #5D5D5D;
+    --color-s-900: #000;
 }
 
 /* Tailwind theme: colors and font Segoe UI */
@@ -18,6 +21,7 @@
     --color-p-500: #2A7EBF;
     --color-s-800: #454545;
     --color-s-600: #5D5D5D;
+    --color-s-900: #000;
     --font-segoe: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
@@ -25,10 +29,24 @@ body {
     font-family: var(--font-inter);
 }
 
+/* Segoe UI: variable directa para que funcione (Tailwind puede no generar font-segoe en todos los contextos) */
+.font-segoe {
+    font-family: var(--font-segoe);
+}
+
 /* Estilo base para todos los h1 (el color se define en cada contexto: text-white, text-gray-900, etc.) */
 @layer base {
     h1 {
-        @apply text-4xl sm:text-5xl md:text-6xl lg:text-[4.2rem] font-light leading-tight mb-6 md:mb-8;
+        @apply text-4xl sm:text-5xl md:text-6xl lg:text-[4.2rem] font-light leading-tight;
+    }
+
+    h2 {
+        @apply text-3xl sm:text-5xl md:text-6xl lg:text-6xl font-light leading-tight;
+    }
+
+    .p-segoe-description {
+        font-family: var(--font-segoe);
+        @apply text-xl font-light;
     }
 }
 

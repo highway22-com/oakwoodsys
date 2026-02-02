@@ -5,14 +5,8 @@
 }
 
 <!-- Hero con video siempre visible (como en Services): placeholders mientras loading, luego videoUrls de GraphQL -->
-<app-video-hero
-  [loading]="loading()"
-  [videoUrls]="videoUrls()"
-  [title]="heroTitle()"
-  [description]="heroDescription()"
-  [ctaPrimary]="heroCtaPrimary()"
-  [ctaSecondary]="heroCtaSecondary()"
-/>
+<app-video-hero [loading]="loading()" [videoUrls]="videoUrls()" [title]="heroTitle()" [description]="heroDescription()"
+  [ctaPrimary]="heroCtaPrimary()" [ctaSecondary]="heroCtaSecondary()" />
 
 @if (!loading() && content()) {
 <!-- Structured Data for SEO -->
@@ -24,11 +18,11 @@
 @if (isAdmin() === true) {
 <!-- Toggle Button -->
 <button (click)="togglePanel()"
-  class="fixed right-4 top-4 z-[60] bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center gap-2">
+  class="fixed right-4 top-4 z-[60] bg-p-500 hover:bg-blue-700 text-white font-semibold px-4 py-[11.5px] mt-[11px] rounded-lg shadow-lg transition-colors duration-200 flex items-center gap-2">
   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
   </svg>
-  <span>{{ panelVisible() ? 'Hide' : 'Show' }} JSON Editor</span>
+  <span>{{ panelVisible() ? 'Hide' : '' }} </span>
 </button>
 }
 
@@ -55,7 +49,8 @@
         <span>Copying...</span>
         } @else {
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
         </svg>
         <span>Copy to clipboard</span>
         }
@@ -87,14 +82,13 @@
   <section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="services-title">
     <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
       <div class="text-center mb-10 sm:mb-12 md:mb-16">
-        <p class="text-sm sm:text-base font-semibold uppercase tracking-wider text-blue-600 mb-4 sm:mb-6">
+        <p class="text-base sm:text-base font-semibold uppercase tracking-wider text-p-500/80 mb-1">
           {{ section.label }}
         </p>
-        <h2 id="services-title"
-          class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
+        <h2 id="services-title" class="mb-1 text-s-900">
           {{ section.title }}
         </h2>
-        <p class="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        <p class="p-segoe-description text-s-800/80">
           {{ section.description }}
         </p>
       </div>
@@ -136,7 +130,8 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
         <div class="order-2 lg:order-1">
           <div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden">
-            <img [src]="section.image?.url ?? ''" [alt]="section.image?.alt ?? (section.title + ' - Featured case study image')"
+            <img [src]="section.image?.url ?? ''"
+              [alt]="section.image?.alt ?? (section.title + ' - Featured case study image')"
               class="w-full h-full object-cover" loading="lazy" />
           </div>
         </div>
