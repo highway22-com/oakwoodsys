@@ -1,38 +1,7 @@
-<!-- List View (Resources: lista de case studies; detalle en ruta /resources/case-studies/:slug) -->
-<!-- Hero Section -->
-<section class="relative min-h-[600px] sm:min-h-[700px] md:min-h-[800px] w-full overflow-hidden"
-  aria-label="Resources Hero">
-  <div class="absolute inset-0 z-0">
-    <!-- Background Image -->
-    <img src="/assets/resources/hero-background.jpg" alt="Resources background"
-      class="absolute inset-0 w-full h-full object-cover" loading="eager" />
-    <!-- Dark Overlay -->
-    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
-  </div>
-
-  <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 h-full flex items-center">
-    <div class="w-full max-w-2xl md:max-w-3xl py-20 sm:py-24 md:py-32">
-      <h1
-        class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4 sm:mb-6 md:mb-8 font-sans">
-        Discover Our Impact Through Realized Projects
-      </h1>
-      <p
-        class="text-base sm:text-lg md:text-xl text-white mb-8 sm:mb-10 md:mb-12 max-w-xl md:max-w-2xl leading-relaxed font-sans">
-        More lorem ipsum and type with you auto built on Azure AI that solve real problems, not theoretical ones.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 sm:gap-6">
-        <a routerLink="/contact-us"
-          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-200 hover:opacity-90 hover:scale-105 font-sans text-white shadow-lg bg-blue-600">
-          Schedule a Consultation
-        </a>
-        <a routerLink="/resources"
-          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-200 hover:bg-white/10 hover:scale-105 font-sans text-white border-2 border-white">
-          View Resources
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- Hero Section (contenido desde resources-content.json) -->
+<app-video-hero [hvh70]="true" [videoUrls]="videoHeroContent().videoUrls" [title]=" heroContent().title"
+  [description]="videoHeroContent().description" [ctaPrimary]="videoHeroContent().ctaPrimary"
+  [ctaSecondary]="videoHeroContent().ctaSecondary" />
 
 <!-- Featured Case Study Section -->
 @if (featuredCaseStudy(); as featured) {
@@ -48,7 +17,7 @@
       <div class="flex flex-col justify-center">
         <div class="flex items-center gap-2 mb-4">
           <span class="text-xs font-semibold uppercase tracking-wider text-blue-600">
-            FEATURED CASE STUDY
+            {{ featuredCaseStudyLabel() }}
           </span>
         </div>
 
@@ -83,7 +52,7 @@
         </p>
         <a [routerLink]="featured.link"
           class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-200 hover:opacity-90 hover:scale-105 font-sans text-white bg-blue-600 w-fit">
-          Read More
+          {{ featuredCaseStudyReadMore() }}
         </a>
       </div>
     </div>
@@ -115,7 +84,7 @@
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <input type="text" placeholder="Search" [value]="searchQuery()"
+        <input type="text" [placeholder]="searchPlaceholder()" [value]="searchQuery()"
           (input)="onSearchChange($any($event.target).value)"
           class="block w-full pl-10 pr-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
       </div>
@@ -128,7 +97,7 @@
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     @if (filteredResources().length === 0) {
     <div class="text-center py-12">
-      <p class="text-lg text-gray-600">No resources found matching your criteria.</p>
+      <p class="text-lg text-gray-600">{{ emptyStateMessage() }}</p>
     </div>
     } @else {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-12">
@@ -162,7 +131,7 @@
           <!-- Read More Link -->
           <div
             class="flex items-center text-sm sm:text-base text-blue-600 group-hover:text-blue-700 transition-colors duration-200">
-            <span>Read More</span>
+            <span>{{ readMoreText() }}</span>
             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
@@ -176,31 +145,31 @@
     <div class="text-center mt-12 sm:mt-16">
       <button
         class="px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200">
-        Load More
+        {{ loadMoreText() }}
       </button>
     </div>
     }
   </div>
 </section>
 
-<!-- CTA Section -->
+<!-- CTA Section (contenido desde resources-content.json) -->
 <section class="w-full bg-gradient-to-r from-blue-50 to-purple-50 py-16 sm:py-20 md:py-24" aria-label="Call to Action">
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     <div class="max-w-3xl mx-auto text-center">
       <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight font-sans">
-        Let's move your vision forward
+        {{ ctaSectionContent().title }}
       </h2>
       <p class="text-base sm:text-lg md:text-xl text-gray-700 mb-8 sm:mb-10 md:mb-12 leading-relaxed font-sans">
-        Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.
+        {{ ctaSectionContent().description }}
       </p>
       <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
-        <a routerLink="/contact-us"
+        <a [routerLink]="ctaSectionContent().ctaPrimary.link"
           class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-200 hover:opacity-90 hover:scale-105 font-sans text-white bg-blue-600">
-          Talk to an expert
+          {{ ctaSectionContent().ctaPrimary.text }}
         </a>
-        <a routerLink="/contact-us"
+        <a [routerLink]="ctaSectionContent().ctaSecondary.link"
           class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-200 hover:bg-white/50 hover:scale-105 font-sans text-blue-600 border-2 border-blue-600">
-          Schedule a call
+          {{ ctaSectionContent().ctaSecondary.text }}
         </a>
       </div>
     </div>

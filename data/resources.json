@@ -1,0 +1,60 @@
+{
+  "page": "resources",
+  "videoHero": {
+    "videoUrls": [
+      "https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4",
+      "https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4",
+      "https://oakwoodsys.com/wp-content/uploads/2025/12/2.mp4",
+      "https://oakwoodsys.com/wp-content/uploads/2025/12/4.mp4"
+    ],
+    "title": "Turn Data and AI Into Real Business Outcomes",
+    "description": "Explore case studies and insights from projects built on Azure that solve real problems.",
+    "ctaPrimary": {
+      "text": "Watch the video",
+      "link": "/",
+      "backgroundColor": "#1A63C9"
+    },
+    "ctaSecondary": {
+      "text": "View Resources",
+      "link": "/resources",
+      "borderColor": "#ffffff"
+    }
+  },
+  "hero": {
+    "title": "Discover Our Impact Through Realized Projects",
+    "description": "Real solutions built on Azure AI that solve real problems, not theoretical ones.",
+    "backgroundImage": "/assets/resources/hero-background.jpg",
+    "ctaPrimary": {
+      "text": "Schedule a Consultation",
+      "link": "/contact-us"
+    },
+    "ctaSecondary": {
+      "text": "View Resources",
+      "link": "/resources"
+    }
+  },
+  "featuredCaseStudy": {
+    "label": "FEATURED CASE STUDY",
+    "readMoreText": "Read More"
+  },
+  "filterAndSearch": {
+    "searchPlaceholder": "Search",
+    "emptyStateMessage": "No resources found matching your criteria."
+  },
+  "resourcesGrid": {
+    "loadMoreText": "Load More",
+    "readMoreText": "Read More"
+  },
+  "ctaSection": {
+    "title": "Let's move your vision forward",
+    "description": "Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.",
+    "ctaPrimary": {
+      "text": "Talk to an expert",
+      "link": "/contact-us"
+    },
+    "ctaSecondary": {
+      "text": "Schedule a call",
+      "link": "/contact-us"
+    }
+  }
+}

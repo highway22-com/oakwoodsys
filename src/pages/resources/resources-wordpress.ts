@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Apollo } from 'apollo-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { getAcfMediaUrl, GET_CASE_STUDIES, GET_CASE_STUDY_BY_SLUG } from '../../app/api/graphql';
@@ -10,6 +11,35 @@ import type {
   CaseStudiesResponse,
   CaseStudyByResponse,
 } from '../../app/api/graphql';
+import { VideoHero } from "../../shared/video-hero/video-hero";
+
+/** Contenido de la página Resources (resources-content.json). */
+export interface ResourcesPageContent {
+  page?: string;
+  videoHero?: {
+    videoUrls?: string[];
+    title?: string;
+    description?: string;
+    ctaPrimary?: { text?: string; link?: string; backgroundColor?: string };
+    ctaSecondary?: { text?: string; link?: string; borderColor?: string };
+  };
+  hero?: {
+    title?: string;
+    description?: string;
+    backgroundImage?: string;
+    ctaPrimary?: { text?: string; link?: string };
+    ctaSecondary?: { text?: string; link?: string };
+  };
+  featuredCaseStudy?: { label?: string; readMoreText?: string };
+  filterAndSearch?: { searchPlaceholder?: string; emptyStateMessage?: string };
+  resourcesGrid?: { loadMoreText?: string; readMoreText?: string };
+  ctaSection?: {
+    title?: string;
+    description?: string;
+    ctaPrimary?: { text?: string; link?: string };
+    ctaSecondary?: { text?: string; link?: string };
+  };
+}
 
 interface ResourceCard {
   id: string;
@@ -61,7 +91,7 @@ interface CaseStudyDetail {
 
 @Component({
   selector: 'app-resources-wordpress',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, VideoHero],
   templateUrl: './resources.html',
   styleUrl: './resources.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -71,8 +101,12 @@ export class Resources implements OnInit {
   selectedFilter = signal<string>('All');
   searchQuery = signal<string>('');
   private readonly apollo = inject(Apollo);
+  private readonly http = inject(HttpClient);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly platformId = inject(PLATFORM_ID);
+
+  /** Contenido estático de la página (hero, CTAs, textos) desde resources-content.json. */
+  readonly pageContent = signal<ResourcesPageContent | null>(null);
 
   /** Filtros derivados de las categorías de los case studies (GraphQL). */
   get filters(): string[] {
@@ -111,9 +145,94 @@ export class Resources implements OnInit {
   }
 
   ngOnInit() {
+    this.loadPageContent();
     if (!this.slug) {
       this.loadCaseStudiesList();
     }
+  }
+
+  private loadPageContent() {
+    this.http.get<ResourcesPageContent>('/resources-content.json').subscribe({
+      next: (data) => this.pageContent.set(data),
+      error: () => this.pageContent.set(null),
+    });
+  }
+
+  /** Video hero: valores por defecto si no hay JSON (tipos requeridos por app-video-hero). */
+  videoHeroContent(): {
+    videoUrls: string[];
+    title: string;
+    description: string;
+    ctaPrimary: { text: string; link: string; backgroundColor: string };
+    ctaSecondary: { text: string; link: string; borderColor: string };
+  } {
+    const c = this.pageContent()?.videoHero;
+    return {
+      videoUrls: c?.videoUrls?.length ? c.videoUrls : [
+        'https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4',
+        'https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4',
+        'https://oakwoodsys.com/wp-content/uploads/2025/12/2.mp4',
+        'https://oakwoodsys.com/wp-content/uploads/2025/12/4.mp4',
+      ],
+      title: c?.title ?? 'Turn Data and AI Into Real Business Outcomes',
+      description: c?.description ?? 'Explore case studies and insights from projects built on Azure.',
+      ctaPrimary: {
+        text: c?.ctaPrimary?.text ?? 'Watch the video',
+        link: c?.ctaPrimary?.link ?? '/',
+        backgroundColor: c?.ctaPrimary?.backgroundColor ?? '#1A63C9',
+      },
+      ctaSecondary: {
+        text: c?.ctaSecondary?.text ?? 'View Resources',
+        link: c?.ctaSecondary?.link ?? '/resources',
+        borderColor: c?.ctaSecondary?.borderColor ?? '#ffffff',
+      },
+    };
+  }
+
+  /** Hero (sección con imagen de fondo): valores por defecto si no hay JSON. */
+  heroContent() {
+    const h = this.pageContent()?.hero;
+    return {
+      title: h?.title ?? 'Discover Our Impact Through Realized Projects',
+      description: h?.description ?? 'Real solutions built on Azure AI that solve real problems, not theoretical ones.',
+      backgroundImage: h?.backgroundImage ?? '/assets/resources/hero-background.jpg',
+      ctaPrimary: h?.ctaPrimary ?? { text: 'Schedule a Consultation', link: '/contact-us' },
+      ctaSecondary: h?.ctaSecondary ?? { text: 'View Resources', link: '/resources', borderColor: '#ffffff' },
+    };
+  }
+
+  featuredCaseStudyLabel(): string {
+    return this.pageContent()?.featuredCaseStudy?.label ?? 'FEATURED CASE STUDY';
+  }
+
+  featuredCaseStudyReadMore(): string {
+    return this.pageContent()?.featuredCaseStudy?.readMoreText ?? 'Read More';
+  }
+
+  searchPlaceholder(): string {
+    return this.pageContent()?.filterAndSearch?.searchPlaceholder ?? 'Search';
+  }
+
+  emptyStateMessage(): string {
+    return this.pageContent()?.filterAndSearch?.emptyStateMessage ?? 'No resources found matching your criteria.';
+  }
+
+  loadMoreText(): string {
+    return this.pageContent()?.resourcesGrid?.loadMoreText ?? 'Load More';
+  }
+
+  readMoreText(): string {
+    return this.pageContent()?.resourcesGrid?.readMoreText ?? 'Read More';
+  }
+
+  ctaSectionContent() {
+    const c = this.pageContent()?.ctaSection;
+    return {
+      title: c?.title ?? "Let's move your vision forward",
+      description: c?.description ?? 'Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.',
+      ctaPrimary: c?.ctaPrimary ?? { text: 'Talk to an expert', link: '/contact-us' },
+      ctaSecondary: c?.ctaSecondary ?? { text: 'Schedule a call', link: '/contact-us' },
+    };
   }
 
   get isDetailView(): boolean {
@@ -192,11 +311,11 @@ export class Resources implements OnInit {
       });
   }
 
-  // Transformar datos de GraphQL a ResourceCard
+  // Transformar datos de GraphQL a ResourceCard (imagen: hero ACF como en featured-case-study, luego featuredImage)
   private transformToResourceCards(nodes: CaseStudy[]): ResourceCard[] {
     return nodes.map((node) => ({
       id: node.id,
-      image: node.featuredImage?.node?.sourceUrl || '/assets/resources/default.jpg',
+      image: getAcfMediaUrl(node.caseStudyDetails?.heroImage) || node.featuredImage?.node?.sourceUrl || '/assets/resources/default.jpg',
       category: node.caseStudyCategories?.nodes?.[0]?.name || 'Uncategorized',
       date: this.formatDate(node.date),
       title: node.title,
@@ -223,10 +342,10 @@ export class Resources implements OnInit {
   private transformToCaseStudyDetail(node: CaseStudyBy): CaseStudyDetail {
     const acf = node.caseStudyDetails || {};
 
-    // Transformar related case studies
+    // Transformar related case studies (imagen: hero ACF como en featured-case-study, luego featuredImage)
     const relatedCaseStudies: ResourceCard[] = (acf.relatedCaseStudies?.nodes || []).map((related: any) => ({
       id: related.id,
-      image: related.featuredImage?.node?.sourceUrl || '/assets/resources/default.jpg',
+      image: getAcfMediaUrl(related.caseStudyDetails?.heroImage) || related.featuredImage?.node?.sourceUrl || '/assets/resources/default.jpg',
       category: related.caseStudyCategories?.nodes?.[0]?.name || 'Uncategorized',
       date: this.formatDate(related.date),
       title: related.title,
