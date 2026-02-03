@@ -68,6 +68,7 @@
   @for (section of content()!.sections; track section.type) {
   @switch (section.type) {
   @case ('hero') {
+
   <!-- Hero ya mostrado arriba -->
   }
 
@@ -121,81 +122,7 @@
   }
 
   @case ('trustedBy') {
-  <!-- Trusted by Industry Leaders Section -->
-  <section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="trusted-by-title">
-    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-      <h2 id="trusted-by-title"
-        class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 text-center mb-8 sm:mb-12 md:mb-16">
-        {{ section.title }}
-      </h2>
-      <div class="relative">
-        <button
-          class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-8 z-10 w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50 transition-colors duration-200 items-center justify-center shadow-md"
-          aria-label="Previous logos">
-          <svg class="w-5 h-5 lg:w-6 lg:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <div class="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide"
-          style="scrollbar-width: none; -ms-overflow-style: none;">
-          <div class="flex items-center justify-center gap-8 md:gap-12 lg:gap-16 min-w-max md:min-w-0">
-            @for (company of section.companies; track company.name) {
-            <div class="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-200"
-              [ngClass]="company.type === 'text' ? 'flex flex-col items-start' : 'flex items-center gap-2'">
-              @if (company.name === 'Microsoft') {
-              <div class="flex gap-0.5">
-                <div class="w-3 h-3 bg-red-500"></div>
-                <div class="w-3 h-3 bg-green-500"></div>
-                <div class="w-3 h-3 bg-blue-500"></div>
-                <div class="w-3 h-3 bg-yellow-500"></div>
-              </div>
-              <span class="text-gray-600 font-medium text-sm md:text-base">{{ company.name }}</span>
-              } @else if (company.name === 'ARCO') {
-              <div class="text-blue-600 font-bold text-lg md:text-xl">{{ company.name }}</div>
-              <div class="text-blue-500 text-xs md:text-sm font-medium">{{ company.subtitle }}</div>
-              <div class="text-blue-400 text-xs">{{ company.tagline }}</div>
-              } @else if (company.name === 'APPLIED MATERIALS') {
-              <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-600 flex items-center justify-center">
-                <svg class="w-6 h-6 md:w-7 md:h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
-                </svg>
-              </div>
-              <span class="text-blue-600 font-semibold text-sm md:text-base">{{ company.name }}<span
-                  class="text-xs align-super">{{ $any(company).trademark }}</span></span>
-              } @else if (company.name === 'CLARIOS') {
-              <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
-                <svg class="w-full h-full text-purple-600" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2L2 8v8l10 6 10-6V8L12 2zm0 2.5l7.5 4.5v7L12 20.5 4.5 16.5v-7L12 4.5z" />
-                </svg>
-              </div>
-              <span class="text-purple-600 font-bold text-sm md:text-base">{{ company.name }}</span>
-              } @else if (company.name === 'onsemi') {
-              <span class="text-gray-700 font-semibold text-lg md:text-xl">on<span
-                  class="text-red-600">s</span>emi</span>
-              } @else if (company.name === 'Duke') {
-              <span class="text-blue-900 font-serif text-xl md:text-2xl font-bold">{{ company.name }}</span>
-              <span class="text-blue-900 font-serif text-xs md:text-sm uppercase tracking-wide">{{ company.subtitle
-                }}</span>
-              } @else if (company.name === 'BJC') {
-              <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-900 flex items-center justify-center rounded">
-                <span class="text-white font-bold text-sm md:text-base">{{ company.name }}</span>
-              </div>
-              <span class="text-gray-700 font-medium text-sm md:text-base">{{ company.subtitle }}</span>
-              }
-            </div>
-            }
-          </div>
-        </div>
-        <button
-          class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-8 z-10 w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50 transition-colors duration-200 items-center justify-center shadow-md"
-          aria-label="Next logos">
-          <svg class="w-5 h-5 lg:w-6 lg:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  </section>
+  <app-trusted-by [title]="getSectionTitle(section)" [companies]="section.companies ?? []" />
   }
 
   @case ('structuredEngagements') {

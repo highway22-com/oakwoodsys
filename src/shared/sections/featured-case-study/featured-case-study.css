@@ -1,1 +1,62 @@
-/* Featured Case Study section - estilos locales si se necesitan */
+/* Featured Case Study section - scroll a la izquierda con colores p-700 / p-100 */
+
+.featured-case-study-image-wrap {
+  position: relative;
+}
+
+.featured-case-study-image-wrap .featured-case-study-image {
+  position: absolute;
+  inset: 0;
+  width: 92%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 1.2s ease;
+}
+
+.featured-case-study-scroll {
+  direction: rtl;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.featured-case-study-scroll-inner {
+  direction: ltr;
+}
+
+/* Firefox */
+.featured-case-study-scroll {
+  scrollbar-color: var(--color-p-700) var(--color-p-100);
+  scrollbar-width: 16px;
+  margin-left: 2rem;
+  margin-right: 0rem;
+}
+
+/* WebKit (Chrome, Safari, Edge) - thumb a ancho completo: Chrome ignora width en thumb, usamos borde del mismo color para rellenar el hueco */
+.featured-case-study-scroll::-webkit-scrollbar {
+  width: 16px;
+  border: none;
+  border-radius: 0;
+}
+
+.featured-case-study-scroll::-webkit-scrollbar-track {
+  background: var(--color-p-100);
+  border: none;
+  border-radius: 0;
+}
+
+/* Bordes del mismo color que el thumb rellenan el hueco que deja Chrome a los lados */
+.featured-case-study-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-p-700);
+  border-left: 2px solid var(--color-p-700);
+  border-right: 2px solid var(--color-p-700);
+  border-radius: 0;
+  background-clip: padding-box;
+}
+
+.featured-case-study-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-p-700);
+  border-left: 2px solid var(--color-p-700);
+  border-right: 2px solid var(--color-p-700);
+  opacity: 0.9;
+  border-radius: 0;
+}

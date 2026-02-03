@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, PLATFORM_ID, signal, DOCUMENT } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule, NgClass, isPlatformBrowser } from '@angular/common';
 import { Title, Meta, DomSanitizer } from '@angular/platform-browser';
@@ -7,10 +7,11 @@ import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import type { CmsPageContent, CmsSection } from '../../app/api/graphql';
+import { TrustedBySectionComponent } from '../../shared/sections/trusted-by/trusted-by';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, NgClass, FormsModule, VideoHero, FeaturedCaseStudySectionComponent],
+  imports: [CommonModule, NgClass, FormsModule, VideoHero, FeaturedCaseStudySectionComponent, TrustedBySectionComponent],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +26,7 @@ export class Home implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly titleService = inject(Title);
   private readonly metaService = inject(Meta);
+  private readonly document = inject(DOCUMENT);
   readonly sanitizer = inject(DomSanitizer);
   readonly posts = signal<any>(null);
   readonly error = signal<any>(null);
@@ -98,14 +100,25 @@ export class Home implements OnInit {
     return this.content()?.sections.find(s => s.type === type);
   }
 
+  /** Título de una sección como string (CMS puede devolver title como string o { line1, line2 }). */
+  getSectionTitle(section: CmsSection): string {
+    const t = section?.title;
+    if (typeof t === 'string') return t;
+    if (t && typeof t === 'object') return [t.line1, t.line2].filter(Boolean).join(' ') || '';
+    return '';
+  }
+
+  /** Misma referencia siempre para evitar que el hijo recargue en cada change detection. */
+  private readonly defaultFeaturedSlugs: string[] = [
+    'secure-azure-research-environment-architecture',
+    'enterprise-reporting-and-data-roadmap-development',
+  ];
+
   /** Slugs para app-featured-case-study (desde la sección del bucle o por defecto). */
   getSlugsForFeaturedSection(section: CmsSection): string[] {
     const slugs = section?.['slugsFeaturedCaseStudies'];
-    if (Array.isArray(slugs) && slugs.length >= 2) return slugs;
-    return [
-      'secure-azure-research-environment-architecture',
-      'enterprise-reporting-and-data-roadmap-development',
-    ];
+    if (Array.isArray(slugs) && slugs.length > 0) return slugs;
+    return this.defaultFeaturedSlugs;
   }
 
   /** Título del hero (desde sección hero o vacío). */
@@ -157,10 +170,6 @@ export class Home implements OnInit {
   }
 
   private updateMetadata(content: CmsPageContent) {
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
-    }
-
     const heroSection = content.sections?.find(s => s.type === 'hero');
     const heroTitle = (heroSection?.['title'] ?? '') as string;
     const heroDesc = (heroSection?.['description'] ?? '') as string;
@@ -184,14 +193,16 @@ export class Home implements OnInit {
     this.metaService.updateTag({ name: 'twitter:title', content: heroTitle || 'Oakwood Systems' });
     this.metaService.updateTag({ name: 'twitter:description', content: description });
 
-    // Canonical URL
-    let linkTag = document.querySelector('link[rel="canonical"]');
-    if (!linkTag) {
-      linkTag = document.createElement('link');
-      linkTag.setAttribute('rel', 'canonical');
-      document.head.appendChild(linkTag);
+    const head = this.document.getElementsByTagName('head')[0];
+    if (head) {
+      let linkEl = this.document.querySelector('link[rel="canonical"]');
+      if (!linkEl) {
+        linkEl = this.document.createElement('link');
+        linkEl.setAttribute('rel', 'canonical');
+        head.appendChild(linkEl);
+      }
+      linkEl.setAttribute('href', 'https://oakwoodsys.com/');
     }
-    linkTag.setAttribute('href', 'https://oakwoodsys.com');
   }
 
   private updateStructuredData(content: CmsPageContent) {
