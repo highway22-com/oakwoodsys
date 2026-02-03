@@ -115,6 +115,8 @@ export interface CaseStudyDetails {
   businessChallenge?: string;
   solution?: string;
   solutionImage?: string | AcfMediaNode;
+  /** HTML para tarjetas/listados (card_description en ACF). */
+  cardDescription?: string;
   testimonial?: CaseStudyTestimonial;
   relatedCaseStudies?: {
     nodes: RelatedCaseStudyNode[];
@@ -185,6 +187,7 @@ export const GET_CASE_STUDIES = gql`
             }
           }
           tags
+          cardDescription
         }
       }
     }
@@ -221,6 +224,7 @@ export const GET_CASE_STUDY_BY_SLUG = gql`
           }
         }
         tags
+        cardDescription
         overview
         businessChallenge
         solution

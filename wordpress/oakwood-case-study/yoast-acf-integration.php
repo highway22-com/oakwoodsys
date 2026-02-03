@@ -36,6 +36,11 @@ function oakwood_cs_yoast_content( $content, $post ) {
 		$acf_content[] = $solution;
 	}
 
+	$card_description = get_field( 'card_description', $post_id );
+	if ( is_string( $card_description ) && $card_description !== '' ) {
+		$acf_content[] = $card_description;
+	}
+
 	$testimonial = get_field( 'testimonial', $post_id );
 	if ( is_array( $testimonial ) && ! empty( $testimonial['testimonial_quote'] ) ) {
 		$acf_content[] = $testimonial['testimonial_quote'];

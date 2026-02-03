@@ -3,7 +3,7 @@
  * Plugin Name: Oakwood Case Study
  * Plugin URI: https://github.com/oakwood/oakwood-case-study
  * Description: Registra el Custom Post Type "Case Study", la taxonomía "Case Study Categories" y el grupo de campos ACF según case-studies-import-data.json.
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: Aetro
  * Author URI: https://torre.ai/luisnoejasso?r=7zLtySsb
  * License: GPL v2 or later

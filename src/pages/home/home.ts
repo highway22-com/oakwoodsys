@@ -4,12 +4,13 @@ import { CommonModule, NgClass, isPlatformBrowser } from '@angular/common';
 import { Title, Meta, DomSanitizer } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { VideoHero } from '../../shared/video-hero/video-hero';
+import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import type { CmsPageContent, CmsSection } from '../../app/api/graphql';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, NgClass, FormsModule, VideoHero],
+  imports: [CommonModule, NgClass, FormsModule, VideoHero, FeaturedCaseStudySectionComponent],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -95,6 +96,16 @@ export class Home implements OnInit {
 
   getSection(type: string) {
     return this.content()?.sections.find(s => s.type === type);
+  }
+
+  /** Slugs para app-featured-case-study (desde la sección del bucle o por defecto). */
+  getSlugsForFeaturedSection(section: CmsSection): string[] {
+    const slugs = section?.['slugsFeaturedCaseStudies'];
+    if (Array.isArray(slugs) && slugs.length >= 2) return slugs;
+    return [
+      'secure-azure-research-environment-architecture',
+      'enterprise-reporting-and-data-roadmap-development',
+    ];
   }
 
   /** Título del hero (desde sección hero o vacío). */

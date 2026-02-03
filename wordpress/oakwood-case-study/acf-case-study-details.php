@@ -13,6 +13,7 @@
  * - testimonial → testimonial (Group)
  * - connectedServices → connected_services (Repeater)
  * - relatedCaseStudies → related_case_studies (Relationship)
+ * - cardDescription → card_description (WYSIWYG, HTML/párrafos)
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -104,6 +105,19 @@ function oakwood_cs_register_acf_field_group() {
 					'toolbar'           => 'full',
 					'media_upload'      => 1,
 					'delay'             => 0,
+				),
+				// Card Description (cardDescription) – WYSIWYG para HTML en tarjetas/listados
+				array(
+					'key'               => 'field_oakwood_card_description',
+					'label'             => 'Card Description',
+					'name'              => 'card_description',
+					'type'              => 'wysiwyg',
+					'required'          => 0,
+					'tabs'              => 'all',
+					'toolbar'           => 'full',
+					'media_upload'      => 1,
+					'delay'             => 0,
+					'instructions'      => 'Texto/HTML que se muestra en la tarjeta del case study (listados, featured, etc.). Si está vacío se usará el excerpt.',
 				),
 				// Testimonial group (testimonial)
 				array(

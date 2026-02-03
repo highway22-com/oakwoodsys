@@ -9,19 +9,33 @@
     --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     --font-segoe: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
     --color-primary-blue: #1D69AC;
+    --color-p-100: #C3DDF4;
+
     --color-p-500: #2A7EBF;
+    --color-p-600: #0D53A2;
+    --color-p-700: #0D53A2;
+
     --color-s-800: #454545;
     --color-s-600: #5D5D5D;
     --color-s-900: #000;
+    --color-gray-200: #888888;
+    --color-white-900: #FBFBFB;
 }
 
 /* Tailwind theme: colors and font Segoe UI */
 @theme {
     --color-primary-blue: #1D69AC;
+
+    --color-p-100: #C3DDF4;
     --color-p-500: #2A7EBF;
+    --color-p-600: #0D53A2;
+    --color-p-700: #0D53A2;
+
     --color-s-800: #454545;
     --color-s-600: #5D5D5D;
     --color-s-900: #000;
+    --color-gray-200: #888888;
+    --color-white-900: #FBFBFB;
     --font-segoe: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
@@ -41,7 +55,7 @@ body {
     }
 
     h2 {
-        @apply text-3xl sm:text-5xl md:text-6xl lg:text-6xl font-light leading-tight;
+        @apply text-3xl sm:text-5xl md:text-6xl lg:text-[3.2rem] font-light leading-tight;
     }
 
     .p-segoe-description {
