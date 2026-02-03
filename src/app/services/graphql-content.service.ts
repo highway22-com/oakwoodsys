@@ -113,6 +113,7 @@ export class GraphQLContentService {
         fetchPolicy: 'cache-and-network',
       })
       .valueChanges.pipe(
+        filter((result) => !result.loading),
         map((result) => {
           const data = result.data as CmsPageResponse | undefined;
           const raw = data?.cmsPage?.content ?? null;

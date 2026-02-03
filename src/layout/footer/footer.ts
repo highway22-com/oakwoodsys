@@ -81,34 +81,32 @@ export class Footer implements OnInit {
         const section = this.extractFooterSection(data);
         if (section) {
           this.footerData.set(section);
-          this.loading.set(false);
-          return;
+        } else {
+          this.loadFooterFromHome();
         }
-        this.loadFooterFromHome();
+        this.loading.set(false);
       },
       error: () => {
         this.loadFooterFromHome();
-      }
+        this.loading.set(false);
+      },
     });
   }
 
   private loadFooterFromHome() {
-    this.graphql.getCmsPageBySlug('home').subscribe({
-      next: (data) => {
-        const section = this.extractFooterSection(data);
-        if (section) {
-          this.footerData.set(section);
-        }
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      }
-    });
+    this.loading.set(false);
+    // Opcional: cargar footer desde home si existe página 'home' con sección footer
+
   }
 
-  private extractFooterSection(data: { sections?: Array<{ type?: string; [key: string]: unknown }> } | null): FooterSection | null {
-    const section = data?.sections?.find(s => s.type === 'footer');
+  private extractFooterSection(data: { type?: string; sections?: Array<{ type?: string;[key: string]: unknown }> } | null): FooterSection | null {
+    if (!data) return null;
+    // Si el contenido de la página es directamente la sección footer (type === 'footer')
+    if ((data as { type?: string }).type === 'footer') {
+      return data as unknown as FooterSection;
+    }
+    // Si viene dentro de sections[] (p. ej. { page: 'footer', sections: [{ type: 'footer', ... }] })
+    const section = data.sections?.find(s => s.type === 'footer');
     return section ? (section as unknown as FooterSection) : null;
   }
 }
