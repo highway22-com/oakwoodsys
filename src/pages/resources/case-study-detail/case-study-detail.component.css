@@ -1,1 +1,14 @@
 /* Case study detail: typography and layout from Figma Oakwood 2026 (node 4375-7412) */
+
+.focus-active {
+    color: #2A7EBF;
+    font-family: Inter;
+    font-size: var(--Text-Sizes-Text-Medium, 18px);
+    font-style: normal;
+    font-weight: 600;
+    line-height: 150%;
+    /* 27px */
+    border-radius: 4px;
+    background: var(--Primary-50, #F2F8FD);
+    padding: 12px 16px 12px 24px;
+}
