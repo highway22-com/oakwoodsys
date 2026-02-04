@@ -28,9 +28,20 @@ add_action( 'plugins_loaded', function () {
 }, 20 );
 
 /**
+ * Template HTML por defecto para el contenido de Gen Content (Overview, Business Challenge, Solution, Testimonial).
+ * Se usa como placeholder cuando el contenido está vacío (nuevo post o Classic Editor).
+ *
+ * @return string
+ */
+function oakwood_bloq_get_default_content_template() {
+	return "<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Overview</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Business Challenge</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Solution</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Testimonial</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p></p>\n<!-- /wp:paragraph -->";
+}
+
+/**
  * Registrar Custom Post Type "Gen Content"
  *
  * WPGraphQL: expone "genContent" / "genContents" en el schema (requiere plugin WPGraphQL).
+ * Template por defecto: h2 Overview, Business Challenge, Solution, Testimonial (Block Editor y contenido vacío).
  */
 function oakwood_bloq_register_post_type() {
 	$labels = array(
@@ -69,11 +80,38 @@ function oakwood_bloq_register_post_type() {
 		'show_in_graphql'       => true,
 		'graphql_single_name'   => 'GenContent',
 		'graphql_plural_name'   => 'GenContents',
+		// Template por defecto en Block Editor: h2 Overview, Business Challenge, Solution, Testimonial.
+		'template'              => array(
+			array( 'core/heading', array( 'level' => 2, 'content' => 'Overview' ) ),
+			array( 'core/paragraph', array( 'content' => '' ) ),
+			array( 'core/heading', array( 'level' => 2, 'content' => 'Business Challenge' ) ),
+			array( 'core/paragraph', array( 'content' => '' ) ),
+			array( 'core/heading', array( 'level' => 2, 'content' => 'Solution' ) ),
+			array( 'core/paragraph', array( 'content' => '' ) ),
+			array( 'core/heading', array( 'level' => 2, 'content' => 'Testimonial' ) ),
+			array( 'core/paragraph', array( 'content' => '' ) ),
+		),
 	);
 
 	register_post_type( 'gen_content', $args );
 }
 add_action( 'init', 'oakwood_bloq_register_post_type' );
+
+/**
+ * Al crear o guardar un Gen Content con contenido vacío, usar el template por defecto (Overview, Business Challenge, Solution, Testimonial).
+ */
+function oakwood_bloq_default_content_on_save( $data, $postarr ) {
+	if ( ( $data['post_type'] ?? '' ) !== 'gen_content' ) {
+		return $data;
+	}
+	$content = isset( $data['post_content'] ) ? trim( $data['post_content'] ) : '';
+	if ( $content !== '' ) {
+		return $data;
+	}
+	$data['post_content'] = oakwood_bloq_get_default_content_template();
+	return $data;
+}
+add_filter( 'wp_insert_post_data', 'oakwood_bloq_default_content_on_save', 10, 2 );
 
 /**
  * Registrar taxonomía para Gen Content.
@@ -151,7 +189,7 @@ function oakwood_bloq_normalize_related_ids( $value ) {
  * WPGraphQL: registrar campos showContactSection + typeContent + relatedBloqs en el tipo GenContent.
  *
  * Permite consultar:
- * genContent(id: "...") { showContactSection typeContent relatedBloqs { id title uri } relatedBloqIds }
+ * genContent(id: "...") { showContactSection typeContent relatedBloqs { id title uri } relatedBloqIds relatedCaseStudies { id title uri } relatedCaseStudyIds }
  */
 function oakwood_bloq_register_graphql_fields() {
 	if ( ! function_exists( 'register_graphql_field' ) ) {
@@ -337,6 +375,79 @@ function oakwood_bloq_register_graphql_fields() {
 					$value = get_field( 'related_bloqs', $post_id );
 				} else {
 					$value = get_post_meta( $post_id, 'related_bloqs', true );
+				}
+
+				return oakwood_bloq_normalize_related_ids( $value );
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'relatedCaseStudies',
+		array(
+			'type'        => array( 'list_of' => 'GenContent' ),
+			'description' => __( 'Gen Content relacionados de categoría Case Study (ACF: related_case_studies).', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = null;
+				if ( is_object( $post ) && isset( $post->ID ) ) {
+					$post_id = (int) $post->ID;
+				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
+					$post_id = (int) $post['databaseId'];
+				}
+				if ( ! $post_id ) {
+					return array();
+				}
+
+				$value = null;
+				if ( function_exists( 'get_field' ) ) {
+					$value = get_field( 'related_case_studies', $post_id );
+				} else {
+					$value = get_post_meta( $post_id, 'related_case_studies', true );
+				}
+
+				$ids = oakwood_bloq_normalize_related_ids( $value );
+				if ( empty( $ids ) ) {
+					return array();
+				}
+
+				$posts = get_posts(
+					array(
+						'post_type'      => 'gen_content',
+						'post__in'       => $ids,
+						'orderby'        => 'post__in',
+						'posts_per_page' => count( $ids ),
+						'post_status'    => 'publish',
+					)
+				);
+
+				return is_array( $posts ) ? $posts : array();
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'relatedCaseStudyIds',
+		array(
+			'type'        => array( 'list_of' => 'Int' ),
+			'description' => __( 'Database IDs de Gen Content relacionados Case Study (ACF: related_case_studies).', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = null;
+				if ( is_object( $post ) && isset( $post->ID ) ) {
+					$post_id = (int) $post->ID;
+				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
+					$post_id = (int) $post['databaseId'];
+				}
+				if ( ! $post_id ) {
+					return array();
+				}
+
+				$value = null;
+				if ( function_exists( 'get_field' ) ) {
+					$value = get_field( 'related_case_studies', $post_id );
+				} else {
+					$value = get_post_meta( $post_id, 'related_case_studies', true );
 				}
 
 				return oakwood_bloq_normalize_related_ids( $value );

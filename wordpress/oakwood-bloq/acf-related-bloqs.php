@@ -5,7 +5,8 @@
  * Estructura JSON → ACF:
  * - showContactSection → show_contact_section (Boolean)
  * - typeContent → type_content (Select)
- * - relatedBloqs → related_bloqs (Relación múltiple a gen_content)
+ * - relatedBloqs → related_bloqs (Relación múltiple a gen_content, filtrado por categoría bloq)
+ * - relatedCaseStudies → related_case_studies (Relación múltiple a gen_content, filtrado por categoría case-study)
  * - tags → tags (Checkbox)
  * - primaryTag → primary_tag (Radio)
  * - authorPerson → author_person (Post Object → person) — editable aquí.
@@ -106,7 +107,20 @@ function oakwood_bloq_register_acf_field_group() {
 			'multiple'      => 1,
 			'allow_null'    => 0,
 			'ui'            => 1,
-			'instructions'  => 'Selecciona Gen Content relacionados que se mostrarán como recomendaciones.',
+			'instructions'  => 'Selecciona Gen Content de categoría Bloq relacionados (solo se listan entradas con categoría bloq).',
+		),
+		array(
+			'key'           => 'field_oakwood_related_case_studies',
+			'label'         => 'Related Case Studies',
+			'name'          => 'related_case_studies',
+			'type'          => 'post_object',
+			'required'      => 0,
+			'post_type'     => array( 'gen_content' ),
+			'return_format' => 'id',
+			'multiple'      => 1,
+			'allow_null'    => 0,
+			'ui'            => 1,
+			'instructions'  => 'Selecciona Gen Content de categoría Case Study relacionados (solo se listan entradas con categoría case-study).',
 		),
 	);
 
@@ -189,3 +203,39 @@ function oakwood_bloq_validate_primary_tag( $valid, $value, $field, $input ) {
 	return $valid;
 }
 add_filter( 'acf/validate_value/key=field_oakwood_gen_content_primary_tag', 'oakwood_bloq_validate_primary_tag', 10, 4 );
+
+/**
+ * Filtra el selector de Related Bloqs: solo Gen Content con categoría "bloq".
+ */
+function oakwood_bloq_filter_related_bloqs_query( $args, $field, $post_id ) {
+	if ( ( $field['key'] ?? '' ) !== 'field_oakwood_related_bloqs' ) {
+		return $args;
+	}
+	$args['tax_query'] = array(
+		array(
+			'taxonomy' => 'gen_content_category',
+			'field'    => 'slug',
+			'terms'    => 'bloq',
+		),
+	);
+	return $args;
+}
+add_filter( 'acf/fields/post_object/query/key=field_oakwood_related_bloqs', 'oakwood_bloq_filter_related_bloqs_query', 10, 3 );
+
+/**
+ * Filtra el selector de Related Case Studies: solo Gen Content con categoría "case-study".
+ */
+function oakwood_bloq_filter_related_case_studies_query( $args, $field, $post_id ) {
+	if ( ( $field['key'] ?? '' ) !== 'field_oakwood_related_case_studies' ) {
+		return $args;
+	}
+	$args['tax_query'] = array(
+		array(
+			'taxonomy' => 'gen_content_category',
+			'field'    => 'slug',
+			'terms'    => 'case-study',
+		),
+	);
+	return $args;
+}
+add_filter( 'acf/fields/post_object/query/key=field_oakwood_related_case_studies', 'oakwood_bloq_filter_related_case_studies_query', 10, 3 );
