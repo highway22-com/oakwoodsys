@@ -79,7 +79,7 @@ export class AppNavbar implements OnInit, OnDestroy {
           sorted.slice(0, 2).map((n) => ({
             id: n.id,
             title: n.title,
-            link: `/bloq/${n.slug}`,
+            link: `/blog/${n.slug}`,
             image: n.featuredImage?.node?.sourceUrl ?? '',
           }))
         );

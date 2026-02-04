@@ -16,7 +16,7 @@ export class Resources {
     {
       id: '01',
       name: 'IT Blog',
-      link: '/bloq',
+      link: '/blog',
       desc: 'Insights and perspectives on business and innovation.',
       icon: '/assets/manu.png'
     },

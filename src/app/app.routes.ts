@@ -6,7 +6,6 @@ import { Services } from '../pages/services/services';
 import { Resources as ResourcesList } from '../pages/resources/resources-wordpress';
 import { CaseStudyDetailPageComponent } from '../pages/resources/case-study-detail-page/case-study-detail-page.component';
 import { Industries } from '../pages/industries/industries';
-import { Blog } from '../pages/blog/blog';
 import { Structured } from '../pages/structured/structured';
 import { AboutUs } from '../pages/about-us/about-us';
 import { ContactUs } from '../pages/contact-us/contact-us';
@@ -25,6 +24,10 @@ export const routes: Routes = [
     {
         path: 'blog/:slug',
         component: Post
+    },
+    {
+        path: 'blog',
+        component: Bloq
     },
     {
         path: 'services/:slug',
@@ -55,10 +58,6 @@ export const routes: Routes = [
         path: 'industries',
         redirectTo: '/industries/healthcare',
         pathMatch: 'full'
-    },
-    {
-        path: 'bloq',
-        component: Bloq
     },
     {
         path: 'structured',
