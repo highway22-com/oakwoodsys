@@ -1,5 +1,5 @@
 <!-- Hero siempre visible: placeholders mientras loading, luego título/descripción/videoUrls de GraphQL -->
-<app-video-hero [loading]="loading()" [videoUrls]="videoUrls()" [title]="heroTitle()" [description]="heroDescription()"
+<app-video-hero [loading]="false" [videoUrls]="videoUrls()" [title]="heroTitle()" [description]="heroDescription()"
   [ctaPrimary]="heroCtaPrimary()" [ctaSecondary]="heroCtaSecondary()" />
 
 @if (!loading() && content()) {

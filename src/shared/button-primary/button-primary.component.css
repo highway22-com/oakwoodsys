@@ -1,0 +1,6 @@
+/* Fuerza el color de fondo con !important para que no lo pise preflight de Tailwind ni estilos del navegador (#080707, etc.). */
+
+
+:host ::ng-deep .button-primary__trigger--transparent {
+  background-color: transparent !important;
+}

@@ -109,43 +109,10 @@
           <div class="text-sm sm:text-lg text-gray-500 mb-6 sm:mb-8 leading-relaxed font-segoe prose prose-p:mb-2"
             [innerHTML]="section[1].description ?? ''"></div>
           <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center pt-16">
-            @if (section[1].cta?.primary?.link) {
-            <a [routerLink]="section[1].cta?.primary?.link ?? ''"
-              class="group  text-white font-normal  transition-all duration-200  whitespace-nowrap shadow-none bg-p-700 ">
-              <span class="flex justify-center items-center py-4 px-8 ">
-                <div class="flex items-center transition-all duration-200 group-hover:-translate-x-2 pl-5">{{
-                  section[1].cta?.primary?.text ?? '' }}</div>
-                <div class="flex flex-1 ">
-                  <svg
-                    class="transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 "
-                    width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true">
-                    <path
-                      d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z"
-                      fill="currentColor" />
-                  </svg>
-                </div>
-              </span>
-            </a>
-            } @else if (section[1].cta?.primary) {
-
-            <button type="button"
-              class="group  text-white font-normal  transition-all duration-200  whitespace-nowrap shadow-none bg-p-700 ">
-              <span class="flex justify-center items-center py-4 px-8 ">
-                <div class="flex items-center transition-all duration-200 group-hover:-translate-x-2 pl-5">{{
-                  section[1].cta?.primary?.text ?? '' }}</div>
-                <div class="flex flex-1 ">
-                  <svg
-                    class="transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 "
-                    width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true">
-                    <path
-                      d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z"
-                      fill="currentColor" />
-                  </svg>
-                </div>
-              </span>
-            </button>
+            @if (section[1].cta?.primary) {
+            <app-button-primary
+              [text]="section[1].cta?.primary?.text ?? ''"
+              [link]="section[1].cta?.primary?.link" />
             }
             @if (section[1].cta?.secondary) {
             <a [routerLink]="section[1].cta?.secondary?.link ?? '/resources/case-studies'"

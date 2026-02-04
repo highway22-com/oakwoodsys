@@ -27,6 +27,8 @@
 .featured-case-study-scroll {
   scrollbar-color: var(--color-p-700) var(--color-p-100);
   scrollbar-width: 16px;
+  scroll-margin: 0;
+  scroll-padding: 0;
   margin-left: 2rem;
   margin-right: 0rem;
 }

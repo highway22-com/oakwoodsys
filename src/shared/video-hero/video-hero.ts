@@ -1,6 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef, inject, Input, OnChanges, OnDestroy, PLATFORM_ID, signal, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { ButtonPrimaryComponent } from "../button-primary/button-primary.component";
 
 /** URLs de video placeholder mientras carga el contenido (se sustituyen por GraphQL). */
 const PLACEHOLDER_VIDEO_URLS: string[] = [
@@ -12,7 +13,7 @@ const PLACEHOLDER_VIDEO_URLS: string[] = [
 
 @Component({
   selector: 'app-video-hero',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, ButtonPrimaryComponent],
   templateUrl: './video-hero.html',
   styleUrl: './video-hero.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +31,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   @Input() centerContent = false;
   /** Si es true, usa altura fija min-h-[600px] sm:min-h-[700px] md:min-h-[800px] en lugar de min-h-screen. */
   @Input() hvh70 = false;
+  @Input() showIndicators = true;
 
   private readonly platformId = inject(PLATFORM_ID);
   private videoInterval: any;

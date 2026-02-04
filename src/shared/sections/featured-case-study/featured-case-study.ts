@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ButtonPrimaryComponent } from '../../button-primary/button-primary.component';
 import { forkJoin, of } from 'rxjs';
 import { take, catchError } from 'rxjs/operators';
 import { GraphQLContentService } from '../../../app/services/graphql-content.service';
@@ -24,7 +25,7 @@ export interface FeaturedCaseStudyView {
 @Component({
   selector: 'app-featured-case-study',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ButtonPrimaryComponent],
   templateUrl: './featured-case-study.html',
   styleUrl: './featured-case-study.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
