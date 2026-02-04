@@ -104,6 +104,17 @@ export class AppNavbar implements OnInit, OnDestroy {
     this.isScrolled = scrollPosition > scrollThreshold;
   }
 
+  /** true cuando la barra debe usar estilo “oscuro” (logo oscuro, texto oscuro): scroll o hover en un dropdown (índice !== 0). */
+  get isNavbarDark(): boolean {
+    const hover = this.hoveredIndex();
+    return this.isScrolled || (hover !== null && hover !== 0);
+  }
+
+  /** true cuando la barra debe mostrar fondo (blanco) o texto de enlaces oscuro: scroll o cualquier hover en menú. */
+  get hasNavbarBackground(): boolean {
+    return this.isScrolled || this.hoveredIndex() !== null;
+  }
+
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }

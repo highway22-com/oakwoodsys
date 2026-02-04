@@ -1,8 +1,11 @@
 /* Navbar: gradiente top → bottom (mismo color que video-hero overlay) cuando no está scrolleado */
 .navbar--gradient {
-  background: linear-gradient(
-    to bottom,
-    rgba(8, 7, 7, 0.991) 0%,
-    transparent 100%
-  ) !important;
+  background: linear-gradient(to bottom,
+      rgba(8, 7, 7, 0.991) 0%,
+      transparent 100%) !important;
+}
+
+.text-reds {
+  color: #242424 !important;
+  background-color: white !important;
 }
