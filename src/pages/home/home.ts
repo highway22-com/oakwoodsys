@@ -10,10 +10,11 @@ import type { CmsPageContent, CmsSection } from '../../app/api/graphql';
 import { TrustedBySectionComponent } from '../../shared/sections/trusted-by/trusted-by';
 import { StructuredEngagementsSectionComponent } from '../../shared/sections/structured-engagements/structured-engagements';
 import { LatestInsightsSectionComponent } from '../../shared/sections/latest-insights/latest-insights';
+import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, NgClass, FormsModule, VideoHero, FeaturedCaseStudySectionComponent, TrustedBySectionComponent, StructuredEngagementsSectionComponent, LatestInsightsSectionComponent],
+  imports: [CommonModule, NgClass, FormsModule, VideoHero, FeaturedCaseStudySectionComponent, TrustedBySectionComponent, StructuredEngagementsSectionComponent, LatestInsightsSectionComponent, ButtonPrimaryComponent],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

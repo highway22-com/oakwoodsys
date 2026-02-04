@@ -132,18 +132,37 @@
 
   @case ('microsoftPartner') {
   <!-- Certified Microsoft Solutions Partner Section -->
-  <section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="microsoft-partner-title">
-    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-      <div class="max-w-6xl mx-auto">
-        <div class="mb-8 sm:mb-10 md:mb-12">
-          <h2 id="microsoft-partner-title" class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2">
-            <span class="text-blue-400">{{ $any(section?.title)?.line1 ?? '' }}</span><br />
-            <span class="text-blue-600">{{ $any(section?.title)?.line2 ?? '' }}</span>
-          </h2>
+  <section class="w-full bg-[#F0F7FF] py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="microsoft-partner-title">
+    <div class=" mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-10">
+      <div class="max-w-6xl mx-auto pb-12">
+        <div class="flex items-center justify-center flex-col text-center md:text-left mb-10 sm:mb-12 md:mb-16">
+          <h3 class="text-[3.2rem] tracking-tigh  text-gray-800 mb-3 sm:mb-4">
+            Talk to our team
+          </h3>
+          <p id="latest-insights-title"
+            class="mx-auto text-[1.1rem] text-center  text-gray-600 mb-4 leading-tight font-segoe px-[26%]">
+            Let’s schedule a discovery call to better understand your goals and shape the right solution together.
+          </p>
+          <div class="bg-p-700 flex mt-6 justify-center">
+            <app-button-primary [text]="'Talk to an expert'" />
+          </div>
+
         </div>
-        <p class="text-sm sm:text-base md:text-lg text-gray-600 mb-8 sm:mb-10 md:mb-12 max-w-3xl leading-relaxed">
-          {{ section.description }}
-        </p>
+      </div>
+      <div class=" px-38 mb-8 sm:mb-10 md:mb-12">
+        <h2 id="microsoft-partner-title" class="relative   mb-2">
+          <span class="text-p-500 sm:text-3xl md:text-4xl lg:text-[9rem]">{{ $any(section?.title)?.line1 ?? ''
+            }}</span><br />
+          <span class="text-p-500 sm:text-3xl md:text-4xl lg:text-[9rem]">{{ $any(section?.title)?.line2 ?? '' }}</span>
+          <span class="absolute pl-6 bottom-[-40px] text-[18px] h-40 font-segoe text-gray-900/80">As a distinguished
+            <span class="text-[#1D69AC]">Microsoft Solutions Partner</span>, Oakwood Systems Group stands out as a
+            premier
+            provider of transformative
+            digital and cloud services.</span>
+        </h2>
+
+      </div>
+      <div class="max-w-6xl mx-auto">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           @for (badge of section.badges; track badge.id) {
           <div
@@ -157,7 +176,7 @@
               </div>
               <div class="flex-1">
                 <p class="text-xs sm:text-sm font-semibold text-gray-900 mb-1">
-                  {{ badge.title }}
+                  {{ badge.title }}sss
                 </p>
                 <p class="text-xs text-gray-500">
                   {{ badge.subtitle }}
