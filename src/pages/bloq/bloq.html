@@ -46,188 +46,190 @@
         }
 
         <!-- Error State -->
-        @if (error() && !loading()) {
-        <div class="text-center py-12 sm:py-16 md:py-20">
-            <div
-                class="inline-block w-16 h-16 sm:w-20 sm:h-20 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                <svg class="w-8 h-8 sm:w-10 sm:h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Error loading posts</h3>
-            <p class="text-gray-600 text-sm sm:text-base">Please try again later.</p>
-        </div>
-        }
 
         <!-- Two Column Layout -->
         @if (!loading() && !error() && posts()?.nodes && posts()!.nodes.length > 0) {
         <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
-            <!-- Left Column: Service Lines -->
+            <!-- Left Column: Service Lines (Figma / case-study-detail sidebar style) -->
             <aside class="lg:w-64 xl:w-80 flex-shrink-0">
-                <div class="sticky top-8">
-                    <h2 class="text-sm font-semibold uppercase tracking-wider text-s-800 mb-6">SERVICE LINES</h2>
-                    <nav class="space-y-2">
-                        <a routerLink="/services/cloud-and-infrastructure"
-                            class="block px-4 py-2 text-sm text-s-800 hover:bg-gray-100 rounded-lg transition-colors duration-200">
-                            Data Center
-                        </a>
-                        <a routerLink="/services/application-innovation"
-                            class="block px-4 py-2 text-sm text-s-800 hover:bg-gray-100 rounded-lg transition-colors duration-200">
-                            Application Innovation
-                        </a>
-                        <a routerLink="/services/high-performance-computing"
-                            class="block px-4 py-2 text-sm text-s-800 hover:bg-gray-100 rounded-lg transition-colors duration-200">
-                            High-Performance Computing (HPC)
-                        </a>
-                        <a routerLink="/services/modern-work"
-                            class="block px-4 py-2 text-sm text-s-800 hover:bg-gray-100 rounded-lg transition-colors duration-200">
-                            Modern Work
-                        </a>
-                        <a routerLink="/services/managed-services"
-                            class="block px-4 py-2 text-sm text-s-800 hover:bg-gray-100 rounded-lg transition-colors duration-200">
-                            Managed Services
-                        </a>
-                    </nav>
+                <div class="sticky top-24">
+                    <div class="rounded-lg p-6">
+                        <h2 class="text-lg font-semibold uppercase tracking-wider text-gray-700/60 mb-4">Service lines</h2>
+                        <nav class="space-y-2" aria-label="Service lines">
+                            <a routerLink="/services/cloud-and-infrastructure" routerLinkActive="text-p-500 font-medium"
+                                [routerLinkActiveOptions]="{ exact: false }"
+                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200 rounded-lg">
+                                Data Center
+                            </a>
+                            <a routerLink="/services/application-innovation" routerLinkActive="text-p-500 font-medium"
+                                [routerLinkActiveOptions]="{ exact: false }"
+                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200 rounded-lg">
+                                Application Innovation
+                            </a>
+                            <a routerLink="/services/high-performance-computing" routerLinkActive="text-p-500 font-medium"
+                                [routerLinkActiveOptions]="{ exact: false }"
+                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200 rounded-lg">
+                                High-Performance Computing (HPC)
+                            </a>
+                            <a routerLink="/services/modern-work" routerLinkActive="text-p-500 font-medium"
+                                [routerLinkActiveOptions]="{ exact: false }"
+                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200 rounded-lg">
+                                Modern Work
+                            </a>
+                            <a routerLink="/services/managed-services" routerLinkActive="text-p-500 font-medium"
+                                [routerLinkActiveOptions]="{ exact: false }"
+                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200 rounded-lg">
+                                Managed Services
+                            </a>
+                        </nav>
+                    </div>
                 </div>
             </aside>
 
             <!-- Right Column: Blog Posts (blog-content = mismos estilos que case-study-detail) -->
             <div class="flex-1">
                 <div class="blog-content prose prose-lg max-w-none">
-                <!-- Featured Post (First Post - Large) -->
-                @if (posts()!.nodes.length > 0) {
-                @let featuredPost = posts()!.nodes[0];
-                <article
-                    class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 mb-8">
-                    <!-- Post Image -->
-                    <div class="relative w-full h-64 sm:h-80 md:h-96 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80"
-                            alt="Blog post image" class="w-full h-full object-cover" />
-                        <!-- Featured Tag -->
-                        <div class="absolute top-4 left-4">
-                            <span class="bg-p-500 text-white text-xs font-semibold uppercase px-3 py-1.5 rounded">
-                                FEATURED BLOG
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Post Content -->
-                    <div class="p-6 sm:p-8">
-                        <!-- Tags and Reading Time -->
-                        <div class="flex items-center gap-4 mb-4">
-                            <span class="text-sm font-medium text-p-500">Data & AI</span>
-                            <span class="text-sm text-s-600">5 min read</span>
-                        </div>
-
-                        <!-- Title -->
-                        <h3 class="text-2xl sm:text-3xl md:text-4xl font-semibold text-s-800 mb-4 leading-tight">
-                            @if (featuredPost.title) {
-                            {{ featuredPost.title }}
-                            } @else {
-                            Blog Post Title
-                            }
-                        </h3>
-
-                        <!-- Excerpt -->
-                        @if (featuredPost.excerpt) {
-                        <p class="text-base sm:text-lg text-s-600 mb-6 leading-relaxed">
-                            {{ featuredPost.excerpt }}
-                        </p>
-                        } @else if (featuredPost.sanitizedContent) {
-                        <div class="text-base sm:text-lg text-s-600 mb-6 leading-relaxed line-clamp-3 prose prose-sm max-w-none"
-                            [innerHTML]="featuredPost.sanitizedContent">
-                        </div>
-                        }
-
-                        <!-- Read More Button -->
-                        <a routerLink="/blog/{{ featuredPost.slug || 0 }}"
-                            class="inline-block bg-p-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-p-500/90 transition-colors duration-200">
-                            Read more
-                        </a>
-                    </div>
-                </article>
-                }
-
-                <!-- Other Posts Grid (2 columns) -->
-                @if (posts()!.nodes.length > 1) {
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                    @for (post of posts()!.nodes.slice(1); track $index) {
+                    <!-- Featured Post (First Post - Large) -->
+                    @if (posts()!.nodes.length > 0) {
+                    @let featuredPost = posts()!.nodes[0];
                     <article
-                        class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+                        class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 mb-8">
                         <!-- Post Image -->
-                        <div class="relative w-full h-48 sm:h-56 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80"
-                                alt="Blog post image" class="w-full h-full object-cover" />
+                        <div class="relative w-full h-64 sm:h-80 md:h-96 overflow-hidden">
+                            <img [src]="featuredPost.featuredImage?.node?.sourceUrl || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80'"
+                                [alt]="featuredPost.featuredImage?.node?.altText || featuredPost.title || 'Blog post'" class="w-full h-full object-cover" />
+                            <!-- Featured Tag -->
+                            <div class="absolute top-4 left-4">
+                                <span class="bg-p-500 text-white text-xs font-semibold uppercase px-3 py-1.5 rounded">
+                                    {{ featuredPost.primaryTag || (featuredPost.tags && featuredPost.tags[0]) || 'FEATURED BLOG' }}
+                                </span>
+                            </div>
                         </div>
 
                         <!-- Post Content -->
-                        <div class="p-5 sm:p-6 flex flex-col flex-grow">
-                            <!-- Tags and Reading Time -->
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <span
-                                        class="text-xs font-semibold uppercase text-white bg-p-500 px-3 py-1 rounded-full">
-                                        Technology
-                                    </span>
-                                </div>
-                                <span class="text-xs text-s-600">5 min read</span>
+                        <div class="p-6 sm:p-8">
+                            <!-- Tags, Author, Reading Time -->
+                            <div class="flex items-center gap-4 mb-4 flex-wrap">
+                                @if (featuredPost.primaryTag || (featuredPost.tags && featuredPost.tags.length > 0)) {
+                                <span class="text-sm font-medium text-p-500">{{ featuredPost.primaryTag || featuredPost.tags[0] }}</span>
+                                }
+                                <span class="text-sm text-s-600">{{ authorDisplayName(featuredPost) }}</span>
+                                <span class="text-sm text-s-600">{{ readingTimeMinutes(featuredPost.content) }} min read</span>
                             </div>
 
                             <!-- Title -->
-                            <h3 class="text-lg sm:text-xl font-semibold text-s-800 mb-3 sm:mb-4 leading-tight">
-                                @if (post.title) {
-                                {{ post.title }}
+                            <h3 class="text-2xl sm:text-3xl md:text-4xl font-semibold text-s-800 mb-4 leading-tight">
+                                @if (featuredPost.title) {
+                                {{ featuredPost.title }}
                                 } @else {
                                 Blog Post Title
                                 }
                             </h3>
 
-                            <!-- Excerpt -->
-                            @if (post.excerpt) {
-                            <div class="text-sm sm:text-base text-s-600 mb-4 leading-relaxed line-clamp-3">
-                                {{ post.excerpt }}
+                            <!-- Excerpt (HTML desde WP; si viene vacío se muestra inicio del contenido) -->
+                            @if (featuredPost.sanitizedExcerpt) {
+                            <div class="text-base sm:text-lg text-s-600 mb-6 leading-relaxed prose prose-sm max-w-none"
+                                [innerHTML]="featuredPost.sanitizedExcerpt">
                             </div>
-                            } @else if (post.sanitizedContent) {
-                            <div class="text-sm sm:text-base text-s-600 mb-4 leading-relaxed line-clamp-3 prose prose-sm max-w-none"
-                                [innerHTML]="post.sanitizedContent">
-                            </div>
-                            }
-
-                            <!-- Author Info -->
-                            @if (post.author?.node) {
-                            <div class="flex items-center gap-3 mb-4">
-                                <div
-                                    class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span class="text-p-500 font-semibold text-sm sm:text-base">
-                                        {{ post.author.node.firstName?.charAt(0) || 'A' }}
-                                    </span>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-s-800">
-                                        {{ post.author.node.firstName || 'Author' }}
-                                    </p>
-                                    <p class="text-xs text-s-600">
-                                        @if (post.date) {
-                                        {{ post.date | date:'MMM d, y' }}
-                                        } @else {
-                                        Recent
-                                        }
-                                    </p>
-                                </div>
+                            } @else if (featuredPost.sanitizedContent) {
+                            <div class="text-base sm:text-lg text-s-600 mb-6 leading-relaxed line-clamp-3 prose prose-sm max-w-none"
+                                [innerHTML]="featuredPost.sanitizedContent">
                             </div>
                             }
 
-                            <!-- Read More Link -->
-                            <a routerLink="/blog/{{ post.slug || ($index + 1) }}"
-                                class="text-sm text-s-600 hover:text-p-500 transition-colors duration-200 inline-flex items-center mt-auto">
-                                Read more <span class="ml-1">→</span>
+                            <!-- Read More Button -->
+                            <a [routerLink]="['/blog', featuredPost.slug || '']"
+                                class="inline-block bg-p-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-p-500/90 transition-colors duration-200">
+                                Read more
                             </a>
                         </div>
                     </article>
                     }
-                </div>
-                }
+
+                    <!-- Other Posts Grid (2 columns) -->
+                    @if (posts()!.nodes.length > 1) {
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                        @for (post of posts()!.nodes.slice(1); track $index) {
+                        <article
+                            class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+                            <!-- Post Image -->
+                            <div class="relative w-full h-48 sm:h-56 overflow-hidden">
+                                <img [src]="post.featuredImage?.node?.sourceUrl || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80'"
+                                    [alt]="post.featuredImage?.node?.altText || post.title || 'Blog post'" class="w-full h-full object-cover" />
+                            </div>
+
+                            <!-- Post Content -->
+                            <div class="p-5 sm:p-6 flex flex-col flex-grow">
+                                <!-- Tags, Author, Reading Time -->
+                                <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        @if (post.primaryTag || (post.tags && post.tags.length > 0)) {
+                                        <span
+                                            class="text-xs font-semibold uppercase text-white bg-p-500 px-3 py-1 rounded-full">
+                                            {{ post.primaryTag || post.tags[0] }}
+                                        </span>
+                                        }
+                                    </div>
+                                    <span class="text-xs text-s-600">{{ readingTimeMinutes(post.content) }} min read</span>
+                                </div>
+
+                                <!-- Title -->
+                                <h3 class="text-lg sm:text-xl font-semibold text-s-800 mb-3 sm:mb-4 leading-tight">
+                                    @if (post.title) {
+                                    {{ post.title }}
+                                    } @else {
+                                    Blog Post Title
+                                    }
+                                </h3>
+
+                                <!-- Excerpt (HTML desde WP; si viene vacío se muestra inicio del contenido) -->
+                                @if (post.sanitizedExcerpt) {
+                                <div class="text-sm sm:text-base text-s-600 mb-4 leading-relaxed line-clamp-3 prose prose-sm max-w-none"
+                                    [innerHTML]="post.sanitizedExcerpt">
+                                </div>
+                                } @else if (post.sanitizedContent) {
+                                <div class="text-sm sm:text-base text-s-600 mb-4 leading-relaxed line-clamp-3 prose prose-sm max-w-none"
+                                    [innerHTML]="post.sanitizedContent">
+                                </div>
+                                }
+
+                                <!-- Author Info -->
+                                @if (post.authorPerson || post.author?.node) {
+                                <div class="flex items-center gap-3 mb-4">
+                                    @if (post.authorPerson?.picture) {
+                                    <img [src]="post.authorPerson?.picture" [alt]="authorDisplayName(post)"
+                                        class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover" />
+                                    } @else {
+                                    <div
+                                        class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <span class="text-p-500 font-semibold text-sm sm:text-base">
+                                            {{ (post.authorPerson?.name || post.authorPerson?.firstName || post.author?.node?.firstName || 'A').charAt(0) }}
+                                        </span>
+                                    </div>
+                                    }
+                                    <div>
+                                        <p class="text-sm font-medium text-s-800">{{ authorDisplayName(post) }}</p>
+                                        <p class="text-xs text-s-600">
+                                            @if (post.date) {
+                                            {{ post.date | date:'MMM d, y' }}
+                                            } @else {
+                                            Recent
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                                }
+
+                                <!-- Read More Link -->
+                                <a [routerLink]="['/blog', post.slug]"
+                                    class="text-sm text-s-600 hover:text-p-500 transition-colors duration-200 inline-flex items-center mt-auto">
+                                    Read more <span class="ml-1">→</span>
+                                </a>
+                            </div>
+                        </article>
+                        }
+                    </div>
+                    }
                 </div>
             </div>
         </div>

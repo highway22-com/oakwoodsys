@@ -15,7 +15,10 @@
 <article class="min-h-screen bg-white">
   <!-- Hero Section -->
   <section class="relative w-full min-h-[60vh] bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900">
-    <!-- Background Image Overlay -->
+    @if (post()!.featuredImage?.node?.sourceUrl) {
+    <img [src]="post()!.featuredImage!.node!.sourceUrl" [alt]="post()!.featuredImage!.node!.altText || post()!.title"
+      class="absolute inset-0 w-full h-full object-cover" />
+    }
     <div class="absolute inset-0 bg-slate-900/70"></div>
 
     <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-16 sm:py-20 md:py-24">
@@ -38,15 +41,20 @@
 
         <!-- Meta Information -->
         <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-white/90">
-          @if (post()!.author?.node) {
+          @if (post()!.authorPerson || post()!.author?.node) {
           <div class="flex items-center gap-3">
+            @if (post()!.authorPerson?.picture) {
+            <img [src]="post()!.authorPerson!.picture!" [alt]="authorDisplayName(post()!)"
+              class="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+            } @else {
             <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
               <span class="text-white font-semibold">
-                {{ post()!.author.node.firstName?.charAt(0) || 'A' }}
+                {{ (post()!.authorPerson?.name || post()!.authorPerson?.firstName || post()!.author?.node?.firstName || 'A').charAt(0) }}
               </span>
             </div>
+            }
             <div>
-              <p class="text-sm font-medium">{{ post()!.author.node.firstName || 'Author' }}</p>
+              <p class="text-sm font-medium">{{ authorDisplayName(post()!) }}</p>
             </div>
           </div>
           }
@@ -117,7 +125,11 @@
           <!-- Right Column: Blog Content -->
           <div class="lg:col-span-9">
             <!-- Excerpt -->
-            @if (post()!.excerpt) {
+            @if (post()!.sanitizedExcerpt) {
+            <div class="mb-8 sm:mb-12 p-6 bg-blue-50 border-l-4 border-blue-600 rounded-r-lg prose prose-sm max-w-none"
+              [innerHTML]="post()!.sanitizedExcerpt">
+            </div>
+            } @else if (post()!.excerpt) {
             <div class="mb-8 sm:mb-12 p-6 bg-blue-50 border-l-4 border-blue-600 rounded-r-lg">
               <p class="text-lg sm:text-xl text-gray-700 leading-relaxed font-medium">
                 {{ post()!.excerpt }}
@@ -131,21 +143,29 @@
             }
 
             <!-- Author Card -->
-            @if (post()!.author?.node) {
+            @if (post()!.authorPerson || post()!.author?.node) {
             <div class="mt-12 sm:mt-16 pt-8 sm:pt-12 border-t border-gray-200">
               <div class="flex items-start gap-4 sm:gap-6">
+                @if (post()!.authorPerson?.picture) {
+                <img [src]="post()!.authorPerson!.picture!" [alt]="authorDisplayName(post()!)"
+                  class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover flex-shrink-0" />
+                } @else {
                 <div
                   class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                   <span class="text-blue-600 font-bold text-xl sm:text-2xl">
-                    {{ post()!.author.node.firstName?.charAt(0) || 'A' }}
+                    {{ (post()!.authorPerson?.name || post()!.authorPerson?.firstName || post()!.author?.node?.firstName || 'A').charAt(0) }}
                   </span>
                 </div>
+                }
                 <div>
                   <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">
-                    {{ post()!.author.node.firstName || 'Author' }}
+                    {{ authorDisplayName(post()!) }}
                   </h3>
-                  @if (post()!.author.node.email) {
+                  @if (post()!.author?.node?.email) {
                   <p class="text-sm text-gray-600 mb-2">{{ post()!.author.node.email }}</p>
+                  }
+                  @if (post()!.authorPerson?.position) {
+                  <p class="text-sm text-gray-600 mb-2">{{ post()!.authorPerson?.position }}</p>
                   }
                   <p class="text-sm text-gray-600">
                     Published on {{ post()!.date | date:'MMMM d, y' }}
@@ -171,7 +191,8 @@
     </div>
   </section>
 
-  <!-- Contact Form Section -->
+  <!-- Contact Form Section (oculta si Gen Content tiene showContactSection = false) -->
+  @if (post()!.showContactSection !== false) {
   <section class="w-full py-16 sm:py-20 md:py-24 bg-gradient-to-r from-purple-50 via-blue-50 to-blue-100">
     <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
       <div class="max-w-7xl mx-auto">
@@ -231,6 +252,7 @@
       </div>
     </div>
   </section>
+  }
 
   <!-- Related Posts Section -->
   <section class="w-full py-16 sm:py-20 md:py-24 bg-white">

@@ -12,7 +12,15 @@ interface PostAuthor {
   };
 }
 
-interface PostDetail {
+export interface AuthorPersonDetail {
+  id: string;
+  name: string | null;
+  firstName: string | null;
+  position: string | null;
+  picture: string | null;
+}
+
+export interface PostDetail {
   id: string;
   title: string;
   content: string;
@@ -21,6 +29,14 @@ interface PostDetail {
   date: string;
   author: PostAuthor;
   sanitizedContent?: SafeHtml;
+  sanitizedExcerpt?: SafeHtml;
+  /** Gen Content: tags, primaryTag, authorPerson, featuredImage, showContactSection */
+  tags?: string[];
+  primaryTag?: string | null;
+  authorPerson?: AuthorPersonDetail | null;
+  featuredImage?: { node: { sourceUrl: string; altText: string | null } } | null;
+  showContactSection?: boolean;
+  relatedBloqs?: PostDetail[];
 }
 
 @Component({
@@ -43,6 +59,14 @@ export class Post implements OnInit, OnDestroy {
   readonly activeSection = signal<string>('');
   readonly tableOfContents = signal<{ id: string; text: string }[]>([]);
 
+  /** Autor a mostrar: authorPerson si existe, sino author WP. */
+  authorDisplayName(p: PostDetail): string {
+    if (p.authorPerson?.name) return p.authorPerson.name;
+    if (p.authorPerson?.firstName) return p.authorPerson.firstName;
+    if (p.author?.node?.firstName) return p.author.node.firstName;
+    return 'Author';
+  }
+
   ngOnInit() {
     const slugValue = this.slug();
     if (!slugValue) {
@@ -54,7 +78,38 @@ export class Post implements OnInit, OnDestroy {
     this.apollo
       .watchQuery({
         query: gql`
-          query GetPostBySlug($slug: String!) {
+          query GetBlogOrPost($slug: String!, $id: ID!) {
+            genContent(id: $id, idType: SLUG) {
+              id
+              title
+              content
+              excerpt
+              slug
+              date
+              tags
+              primaryTag
+              showContactSection
+              featuredImage {
+                node {
+                  sourceUrl
+                  altText
+                }
+              }
+              author {
+                node {
+                  email
+                  firstName
+                  id
+                }
+              }
+              authorPerson {
+                id
+                name
+                firstName
+                position
+                picture
+              }
+            }
             postBy(slug: $slug) {
               id
               title
@@ -72,28 +127,42 @@ export class Post implements OnInit, OnDestroy {
             }
           }
         `,
-        variables: {
-          slug: slugValue
-        },
-        fetchPolicy: 'network-only'
+        variables: { slug: slugValue, id: slugValue },
+        fetchPolicy: 'network-only',
       })
       .valueChanges.subscribe({
         next: (result: any) => {
-          if (result.data?.postBy) {
-            // Clean excerpt HTML tags
-            const cleanExcerpt = result.data.postBy.excerpt
-              ? result.data.postBy.excerpt.replace(/<[^>]*>/g, '').replace(/\[&hellip;\]/g, '...').trim()
-              : '';
-
+          const data = result.data as {
+            genContent?: Record<string, unknown> | null;
+            postBy?: Record<string, unknown> | null;
+          };
+          const raw = data?.genContent ?? data?.postBy;
+          if (raw) {
+            const excerpt = (raw['excerpt'] as string) ?? '';
+            const content = (raw['content'] as string) ?? '';
             const postData: PostDetail = {
-              ...result.data.postBy,
-              excerpt: cleanExcerpt,
-              sanitizedContent: this.sanitizer.bypassSecurityTrustHtml(result.data.postBy.content || '')
+              id: raw['id'] as string,
+              title: (raw['title'] as string) ?? '',
+              content,
+              excerpt: excerpt.replace(/<[^>]*>/g, '').replace(/\[&hellip;\]/g, '...').trim(),
+              slug: (raw['slug'] as string) ?? slugValue,
+              date: (raw['date'] as string) ?? '',
+              author: (raw['author'] as PostAuthor) ?? { node: { email: '', firstName: '', id: '' } },
+              sanitizedContent: this.sanitizer.bypassSecurityTrustHtml(content),
+              sanitizedExcerpt:
+                excerpt.trim() ?
+                  this.sanitizer.bypassSecurityTrustHtml(excerpt.trim()) :
+                  undefined,
+              tags: (raw['tags'] as string[] | undefined) ?? undefined,
+              primaryTag: (raw['primaryTag'] as string | null) ?? undefined,
+              authorPerson: (raw['authorPerson'] as AuthorPersonDetail | null) ?? undefined,
+              featuredImage: (raw['featuredImage'] as PostDetail['featuredImage']) ?? undefined,
+              showContactSection: (raw['showContactSection'] as boolean | undefined) ?? undefined,
             };
             this.post.set(postData);
             if (isPlatformBrowser(this.platformId)) {
               setTimeout(() => {
-                this.extractTableOfContents(result.data.postBy.content || '');
+                this.extractTableOfContents(content);
                 this.setupScrollListener();
               }, 100);
             }
@@ -106,7 +175,7 @@ export class Post implements OnInit, OnDestroy {
           console.error('Error loading post:', error);
           this.error.set(error);
           this.loading.set(false);
-        }
+        },
       });
   }
 

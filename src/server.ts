@@ -284,8 +284,8 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
 
       const signal =
         typeof AbortSignal !== 'undefined' &&
-        typeof AbortSignal.any === 'function' &&
-        request.signal
+          typeof AbortSignal.any === 'function' &&
+          request.signal
           ? AbortSignal.any([timeoutController.signal, request.signal])
           : timeoutController.signal;
 
