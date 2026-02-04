@@ -15,15 +15,19 @@ export interface CaseStudyDetailCard {
   slug: string;
 }
 
-/** Detalle de un case study (GraphQL → transformGraphQLToCaseStudyDetail). */
+/** Detalle de un case study. Mapeado desde GraphQL caseStudyBy.caseStudyDetails (overview, businessChallenge, solution, solutionImage). */
 export interface CaseStudyDetailData {
   slug: string;
   title: string;
   heroImage: string;
   tags: string[];
+  /** HTML desde caseStudyDetails.overview (ACF WYSIWYG). */
   overview: string;
+  /** HTML desde caseStudyDetails.businessChallenge (ACF WYSIWYG). */
   businessChallenge: string;
+  /** HTML desde caseStudyDetails.solution (ACF WYSIWYG). */
   solution: string;
+  /** URL de imagen desde caseStudyDetails.solutionImage (ACF Image). */
   solutionImage?: string;
   testimonial?: {
     company: string;

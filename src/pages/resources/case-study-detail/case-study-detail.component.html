@@ -76,11 +76,7 @@
             <section id="solution" class="mb-12 sm:mb-16 md:mb-20">
               <h2 class="sm:text-4xl md:text-3xl font-medium mb-4 ">Solution</h2>
               <div class="" [innerHTML]="getProcessedContent().processedSolution"></div>
-              @if (detail.solutionImage) {
-              <div class="relative w-full aspect-video sm:h-80 md:h-96 rounded-lg overflow-hidden bg-gray-100">
-                <img [src]="detail.solutionImage" alt="Solution" class="w-full h-full object-cover" loading="lazy" />
-              </div>
-              }
+
             </section>
             @if (detail.testimonial) {
             <section id="testimonial" class="mb-12 sm:mb-16 md:mb-20">

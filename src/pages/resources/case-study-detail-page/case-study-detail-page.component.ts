@@ -147,7 +147,11 @@ export class CaseStudyDetailPageComponent implements OnInit, OnDestroy {
       overview: acf.overview ?? '',
       businessChallenge: acf.businessChallenge ?? '',
       solution: acf.solution ?? '',
-      solutionImage: getAcfMediaUrl(acf.solutionImage),
+      solutionImage:
+        getAcfMediaUrl(acf.solutionImage) ??
+        getAcfMediaUrl(acf.heroImage) ??
+        node.featuredImage?.node?.sourceUrl ??
+        undefined,
       testimonial:
         acf.testimonial?.testimonialQuote
           ? {
