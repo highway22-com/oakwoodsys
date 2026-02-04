@@ -1,0 +1,281 @@
+{
+  "industries": {
+    "healthcare": {
+      "slug": "healthcare",
+      "title": "Modern Care Powered by Intelligent Technology",
+      "description": "Oakwood helps healthcare organizations improve clinical outcomes, reduce operational friction, and prepare for AI-enabled care delivery.",
+      "backgroundImage": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=1920&q=80",
+      "cta": {
+        "primary": {
+          "text": "Schedule a consultation",
+          "link": "/contact-us",
+          "backgroundColor": "#1D69AC"
+        },
+        "secondary": {
+          "text": "View engagement",
+          "link": "/structured",
+          "borderColor": "#1D69AC"
+        }
+      },
+      "trustedLeaders": {
+        "title": "Trusted by industry leaders",
+        "partners": [
+          { "name": "Microsoft", "logo": "/assets/logos/microsoft.png", "alt": "Microsoft" },
+          { "name": "BJC Healthcare", "logo": "/assets/logos/bjc-healthcare.png", "alt": "BJC Healthcare" },
+          { "name": "Clarios", "logo": "/assets/logos/clarios.png", "alt": "Clarios" },
+          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+        ]
+      },
+      "industryChallenges": {
+        "sectionTitle": "INDUSTRY CHALLENGES",
+        "mainHeading": "The critical obstacles healthcare teams face",
+        "subDescription": "Healthcare teams face rising patient expectations, increasing complexity across clinical systems, and growing pressure to deliver safe, coordinated, cost effective care.",
+        "cards": [
+          {
+            "id": "01",
+            "image": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80",
+            "title": "Fragmented clinical workflows",
+            "description": "Disconnected systems slow decision-making and create unnecessary administrative burden."
+          },
+          {
+            "id": "02",
+            "image": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&q=80",
+            "title": "Data locked in silos",
+            "description": "Critical patient and operational data is often scattered across EMRs, imaging, and legacy systems."
+          },
+          {
+            "id": "03",
+            "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800&q=80",
+            "title": "Staff burnout and safety risks",
+            "description": "High workloads and mounting safety concerns impact retention and patient satisfaction."
+          }
+        ]
+      },
+      "howWeImprove": {
+        "sectionTitle": "HEALTHCARE TRANSFORMATION",
+        "mainHeading": "How Oakwood improves healthcare delivery",
+        "subDescription": "Modernizing patient care, unifying data and strengthening collaboration to deliver safe, faster, and more connected patient care.",
+        "cards": [
+          {
+            "icon": "/assets/heal.png",
+            "title": "Unify the data estate",
+            "description": "Oakwood brings clinical, operational, and financial data together to support real-time insights and AI readiness."
+          },
+          {
+            "icon": "/assets/heal.png",
+            "title": "Improve care team collaboration",
+            "description": "Harness modern communication, streamline collaboration, and maximize automation."
+          },
+          {
+            "icon": "/assets/heal.png",
+            "title": "Modernize clinical and operational systems",
+            "description": "Oakwood updates legacy applications, builds new digital tools, and integrates modern cloud solutions."
+          },
+          {
+            "icon": "/assets/heal.png",
+            "title": "Strengthen healthcare security and compliance",
+            "description": "Oakwood protects sensitive patient data with Microsoft security tools designed for regulated environments."
+          }
+        ],
+        "cta": { "text": "Schedule a call", "link": "/contact-us" }
+      },
+      "featuredCaseStudy": {
+        "sectionTitle": "FEATURED CASE STUDY",
+        "subHeading": "REAL WORLD",
+        "title": "Airwatch to Intune Migration for Healthcare Organization",
+        "description": "One of the largest nonprofit healthcare organizations in the United States looked to Oakwood's Cloud Team to assist in moving nearly 11,000 users utilizing 15,000 devices.",
+        "image": "https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&q=80",
+        "ctaPrimary": { "text": "Read More", "link": "/resources/case-studies" },
+        "ctaSecondary": { "text": "View all case studies", "link": "/resources/case-studies" }
+      },
+      "ctaSection": {
+        "heading": "Build a more intelligent health system",
+        "description": "Enhance collaboration, secure sensitive data, and improve patient outcomes with modern cloud solutions.",
+        "primaryCta": { "text": "View all Industries", "link": "/industries" },
+        "secondaryCta": { "text": "View case studies", "link": "/resources/case-studies" }
+      }
+    },
+    "manufacturing": {
+      "slug": "manufacturing",
+      "title": "Build Smarter, Faster, and More Resilient Operations",
+      "description": "Oakwood helps manufacturers modernize production, streamline supply chains, and prepare for the next generation of AI-driven operations.",
+      "backgroundImage": "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=1920&q=80",
+      "cta": {
+        "primary": {
+          "text": "Schedule a Consultation",
+          "link": "/contact-us",
+          "backgroundColor": "#1D69AC"
+        },
+        "secondary": {
+          "text": "View Resources",
+          "link": "/resources",
+          "borderColor": "#FFFFFF"
+        }
+      },
+      "trustedLeaders": {
+        "title": "Trusted by industry leaders",
+        "partners": [
+          { "name": "Applied Materials", "logo": "/assets/logos/applied-materials.png", "alt": "Applied Materials" },
+          { "name": "ARCO", "logo": "/assets/logos/arco.png", "alt": "ARCO" },
+          { "name": "Clarios", "logo": "/assets/logos/clarios.png", "alt": "Clarios" },
+          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+        ]
+      },
+      "industryChallenges": {
+        "sectionTitle": "INDUSTRY CHALLENGES",
+        "mainHeading": "The critical obstacles manufacturing teams face",
+        "subDescription": "Manufacturers are navigating supply chain disruptions, labor shortages, and the need to modernize systems without slowing production.",
+        "cards": [
+          {
+            "id": "01",
+            "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+            "title": "Unpredictable supply chains",
+            "description": "Lack of real-time data makes planning and forecasting difficult."
+          },
+          {
+            "id": "02",
+            "image": "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=800&q=80",
+            "title": "Aging systems and legacy applications",
+            "description": "Critical systems are outdated, costly to maintain, and difficult to integrate with modern tools."
+          },
+          {
+            "id": "03",
+            "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80",
+            "title": "Growing cyber and IP risks",
+            "description": "Manufacturing systems and proprietary data are increasingly targeted by attackers."
+          }
+        ]
+      },
+      "howWeImprove": {
+        "sectionTitle": "MANUFACTURING TRANSFORMATION",
+        "mainHeading": "How Oakwood powers smarter manufacturing operations",
+        "subDescription": "Modernizing patterns, unifying data, and retooling plant floor intelligence to drive safer, faster, and more efficient production.",
+        "cards": [
+          {
+            "icon": "/assets/manu.png",
+            "title": "Modernize and integrate critical applications",
+            "description": "Oakwood optimizes core systems and connects them to modern cloud platforms."
+          },
+          {
+            "icon": "/assets/manu.png",
+            "title": "Enable data driven operations",
+            "description": "Oakwood unifies manufacturing, quality, and IoT sensor data for predictive and AI insights."
+          },
+          {
+            "icon": "/assets/manu.png",
+            "title": "Enhance plant floor visibility",
+            "description": "Oakwood unifies workflows, dashboards, and IoT solutions that provide real-time operational insights."
+          },
+          {
+            "icon": "/assets/manu.png",
+            "title": "Protect intellectual property and operational systems",
+            "description": "Oakwood deploys Microsoft security tools to reduce IoT/OT risk."
+          }
+        ],
+        "cta": { "text": "Schedule a Consultation", "link": "/contact-us" }
+      },
+      "featuredCaseStudy": {
+        "sectionTitle": "FEATURED CASE STUDY",
+        "subHeading": "Manufacturing Case Study",
+        "title": "Clarios accelerates Innovation with AMD-Powered HPC",
+        "description": "See how Clarios slashed HPC workload times by 50% by using the AMD HPC Innovation Lab. What once took 12 hours now runs in just a few — results that speak for themselves.",
+        "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80",
+        "ctaPrimary": { "text": "Read more", "link": "/resources/case-studies" },
+        "ctaSecondary": { "text": "View all case studies", "link": "/resources/case-studies" }
+      },
+      "ctaSection": {
+        "heading": "Transform how you design, build, and deliver",
+        "description": "Enable efficiency, automation, and real-time insights across your manufacturing operations.",
+        "primaryCta": { "text": "View all industries", "link": "/industries" },
+        "secondaryCta": { "text": "View case studies", "link": "/resources/case-studies" }
+      }
+    },
+    "education": {
+      "slug": "education",
+      "title": "Modern Solutions for Learning and Public Services",
+      "description": "Oakwood helps schools, state, and government agencies modernize their systems, secure their environments, and prepare for AI-driven operations.",
+      "backgroundImage": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80",
+      "cta": {
+        "primary": { "text": "Schedule a consultation", "link": "/contact-us", "backgroundColor": "#1D69AC" },
+        "secondary": { "text": "View resources", "link": "/resources", "borderColor": "#FFFFFF" }
+      },
+      "trustedLeaders": {
+        "title": "Trusted by industry leaders",
+        "partners": [
+          { "name": "Microsoft", "logo": "/assets/logos/microsoft.png", "alt": "Microsoft" },
+          { "name": "BJC Healthcare", "logo": "/assets/logos/bjc-healthcare.png", "alt": "BJC Healthcare" },
+          { "name": "Clarios", "logo": "/assets/logos/clarios.png", "alt": "Clarios" },
+          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+        ]
+      },
+      "industryChallenges": {
+        "sectionTitle": "INDUSTRY CHALLENGES",
+        "mainHeading": "Key challenges facing education and public sector organizations",
+        "subDescription": "Aging systems, rising security demands, and limited resources make it difficult to deliver modern, accessible digital services.",
+        "cards": [
+          {
+            "id": "01",
+            "image": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80",
+            "title": "Aging and disconnected systems",
+            "description": "Legacy platforms slow service delivery and hinder modernization."
+          },
+          {
+            "id": "02",
+            "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80",
+            "title": "Growing security and compliance expectations",
+            "description": "Schools and agencies are top targets for cyberattacks."
+          },
+          {
+            "id": "03",
+            "image": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80",
+            "title": "Limited IT resources",
+            "description": "Lean teams struggle to support modern digital services."
+          }
+        ]
+      },
+      "howWeImprove": {
+        "sectionTitle": "LEARNING AND PUBLIC SECTOR TRANSFORMATION",
+        "mainHeading": "How Oakwood strengthens learning and public services",
+        "subDescription": "Oakwood helps organizations modernize systems, enhancing security, and improving data access to deliver more accessible and efficient digital services.",
+        "cards": [
+          {
+            "icon": "/assets/educ.png",
+            "title": "Modernize core systems and applications",
+            "description": "Oakwood optimizes outdated platforms and enables a cloud-first approach."
+          },
+          {
+            "icon": "/assets/educ.png",
+            "title": "Strengthen security and compliance",
+            "description": "Oakwood deploys Microsoft security tools required for public sector accreditation needs."
+          },
+          {
+            "icon": "/assets/educ.png",
+            "title": "Unify and improve access to data",
+            "description": "Oakwood builds data platforms that enable reporting, insights, and AI."
+          },
+          {
+            "icon": "/assets/educ.png",
+            "title": "Enhance digital services for students and citizens",
+            "description": "Oakwood helps create intuitive, accessible user experiences."
+          }
+        ],
+        "cta": { "text": "Schedule a consultation", "link": "/contact-us" }
+      },
+      "featuredCaseStudy": {
+        "sectionTitle": "FEATURED CASE STUDY",
+        "subHeading": "High Performance Computing",
+        "title": "Clarios accelerates Innovation with AMD-Powered HPC",
+        "description": "Clarios slashed global HPC workload times by over 20X using the AMD HPC Innovation Lab. What once took 12 hours now runs in just a few — results that speak for themselves.",
+        "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80",
+        "ctaPrimary": { "text": "Read more", "link": "/resources/case-studies" },
+        "ctaSecondary": { "text": "View all case studies", "link": "/resources/case-studies" }
+      },
+      "ctaSection": {
+        "heading": "Build a stronger future for the public you serve",
+        "description": "Enable better outcomes with modern data, applications, and collaboration platforms.",
+        "primaryCta": { "text": "View all industries", "link": "/industries" },
+        "secondaryCta": { "text": "View case studies", "link": "/resources/case-studies" }
+      }
+    }
+  }
+}

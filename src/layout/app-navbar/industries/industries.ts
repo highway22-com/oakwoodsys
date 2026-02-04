@@ -1,13 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import type { CaseStudy } from '../../../app/api/graphql';
+import { ArticleCardComponent, type ArticleCardArticle } from '../../../shared/article-card/article-card.component';
 
 @Component({
   selector: 'app-industries',
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, ArticleCardComponent],
   templateUrl: './industries.html',
 })
 export class Industries {
+  /** Case studies para "Featured" (inyectados desde el navbar para no depender del ciclo de vida del dropdown). */
+  readonly caseStudies = input<CaseStudy[]>([]);
+
+  get featuredCaseStudiesArticles(): ArticleCardArticle[] {
+    return this.caseStudies().map((c) => this.toArticleCard(c));
+  }
+
   industries = [
     {
       id: '01',
@@ -53,18 +62,22 @@ export class Industries {
     }
   ];
 
-  featuredCaseStudies = [
-    {
-      id: '01',
-      title: 'Recent work: Clarios accelerates Innovation with AMD-powered HPC',
-      link: '/resources/case-studies/clarios-hpc',
-      image: '/assets/case-studies/clarios-hpc.jpg'
-    },
-    // {
-    //   id: '02',
-    //   title: 'Seamless data center migration',
-    //   link: '/resources/case-studies/data-center-migration',
-    //   image: '/assets/case-studies/data-center-migration.jpg'
-    // }
-  ];
+  private toArticleCard(c: CaseStudy): ArticleCardArticle {
+    return {
+      id: parseInt(c.id, 10) || undefined,
+      title: c.title,
+      description: c.caseStudyDetails?.cardDescription ?? c.excerpt ?? undefined,
+      link: `/resources/case-studies/${c.slug}`,
+      linkText: 'Read more',
+      image: {
+        url: c.featuredImage?.node?.sourceUrl,
+        alt: c.featuredImage?.node?.altText ?? c.title,
+      },
+      tags: c.caseStudyDetails?.tags?.length
+        ? c.caseStudyDetails.tags
+        : c.caseStudyCategories?.nodes?.[0]?.name
+          ? [c.caseStudyCategories.nodes[0].name]
+          : [],
+    };
+  }
 }

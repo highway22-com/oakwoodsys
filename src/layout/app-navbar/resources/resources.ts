@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import type { FeaturedBlogItem } from '../app-navbar';
 
 @Component({
   selector: 'app-resources',
@@ -8,6 +9,9 @@ import { CommonModule } from '@angular/common';
   templateUrl: './resources.html',
 })
 export class Resources {
+  /** Dos últimos blogs (desde GraphQL, inyectados desde el navbar). */
+  readonly featuredBlogs = input<FeaturedBlogItem[]>([]);
+
   resourceCategories = [
     {
       id: '01',

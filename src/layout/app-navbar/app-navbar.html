@@ -117,12 +117,12 @@
 @if(hoveredIndex() === 2){
 <div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(2)" (mouseleave)="onNavMouseLeave()" tabindex="0"
     (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
-    <app-industries />
+    <app-industries [caseStudies]="featuredCaseStudies()" />
 </div>
 }
 @if(hoveredIndex() === 3){
 <div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(3)" (mouseleave)="onNavMouseLeave()" tabindex="0"
     (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
-    <app-resources></app-resources>
+    <app-resources [featuredBlogs]="featuredBlogs()" />
 </div>
 }

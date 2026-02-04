@@ -53,7 +53,8 @@ export const routes: Routes = [
     },
     {
         path: 'industries',
-        component: Industries
+        redirectTo: '/industries/healthcare',
+        pathMatch: 'full'
     },
     {
         path: 'bloq',

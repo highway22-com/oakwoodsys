@@ -30,6 +30,34 @@ export class GraphQLContentService {
   readonly loading = signal<boolean>(false);
   readonly errors = signal<Error | null>(null);
 
+  /** Lista de posts de blog (genContent categoría "bloq"). Misma query que case studies, idType SLUG. */
+  getBlogs(): Observable<GenContentListNode[]> {
+    this.loading.set(true);
+    this.errors.set(null);
+
+    return this.apollo
+      .watchQuery<GenContentsByCategoryResponse>({
+        query: GET_GEN_CONTENTS_BY_CATEGORY,
+        variables: { categoryId: 'bloq' },
+        fetchPolicy: 'cache-and-network',
+      })
+      .valueChanges.pipe(
+        filter((result) => !result.loading),
+        map((result) => {
+          const data = result.data as GenContentsByCategoryResponse | undefined;
+          const nodes: GenContentListNode[] =
+            data?.genContentCategory?.genContents?.nodes ?? [];
+          this.loading.set(false);
+          return nodes;
+        }),
+        catchError((error) => {
+          this.errors.set(error);
+          this.loading.set(false);
+          return of([]);
+        })
+      );
+  }
+
   /** Lista de case studies: misma lógica que bloq, filtro categoría "case-study". */
   getCaseStudies(): Observable<CaseStudy[]> {
     this.loading.set(true);
@@ -42,6 +70,7 @@ export class GraphQLContentService {
         fetchPolicy: 'cache-and-network',
       })
       .valueChanges.pipe(
+        filter((result) => !result.loading),
         map((result) => {
           const data = result.data as GenContentsByCategoryResponse | undefined;
           const nodes: GenContentListNode[] =

@@ -5,6 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { MicrosoftServices } from "./microsoft-services/microsoft-services";
 import { Industries } from "./industries/industries";
 import { Resources } from "./resources/resources";
+import { GraphQLContentService } from '../../app/services/graphql-content.service';
+import type { CaseStudy } from '../../app/api/graphql';
 
 interface MenuItem {
   label: string;
@@ -25,6 +27,14 @@ interface NavbarContent {
   services: Service[];
 }
 
+/** Item de blog para el dropdown Resources (2 últimos desde GraphQL). */
+export interface FeaturedBlogItem {
+  id: string;
+  title: string;
+  link: string;
+  image: string;
+}
+
 @Component({
   selector: 'app-navbar',
   imports: [RouterLink, CommonModule, NgClass, MicrosoftServices, Industries, Resources],
@@ -34,6 +44,7 @@ interface NavbarContent {
 export class AppNavbar implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly http = inject(HttpClient);
+  private readonly graphql = inject(GraphQLContentService);
 
   isMobileMenuOpen = false;
   isScrolled = false;
@@ -45,10 +56,34 @@ export class AppNavbar implements OnInit, OnDestroy {
   readonly menuItems = signal<MenuItem[]>([]);
   readonly services = signal<Service[]>([]);
   readonly loading = signal(true);
+  /** Dos case studies más recientes para el dropdown Industries (se cargan al iniciar para que estén listos). */
+  readonly featuredCaseStudies = signal<CaseStudy[]>([]);
+  /** Dos blogs más recientes para el dropdown Resources (genContent categoría bloq). */
+  readonly featuredBlogs = signal<FeaturedBlogItem[]>([]);
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.checkScrollPosition();
+      // Cargar case studies y blogs solo en el cliente (GraphQL puede no estar disponible en SSR)
+      this.graphql.getCaseStudies().subscribe((list) => {
+        const sorted = [...list].sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        this.featuredCaseStudies.set(sorted.slice(0, 2));
+      });
+      this.graphql.getBlogs().subscribe((list) => {
+        const sorted = [...list].sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        this.featuredBlogs.set(
+          sorted.slice(0, 2).map((n) => ({
+            id: n.id,
+            title: n.title,
+            link: `/bloq/${n.slug}`,
+            image: n.featuredImage?.node?.sourceUrl ?? '',
+          }))
+        );
+      });
     }
     this.loadNavbarContent();
   }
