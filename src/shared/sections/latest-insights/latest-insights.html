@@ -1,0 +1,71 @@
+<section class="w-full bg-[#F0F7FF] py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="latest-insights-title">
+  <div class="px-18 sm:px-6 md:px-8 lg:px-32">
+    <div class="text-center md:text-left mb-10 sm:mb-12 md:mb-16">
+      <p class="text-lg font-medium uppercase text-p-500 mb-3 sm:mb-4">
+        {{ section().label }}
+      </p>
+      <h2 id="latest-insights-title"
+        class="text-3xl sm:text-4xl md:text-5xl lg:text-[3.2rem]  text-gray-900 mb-4 leading-tight ">
+        {{ getTitle(section()) }}
+      </h2>
+      @if (section().subtitle) {
+      <p class="text-base sm:text-lg text-gray-700/90  font-segoe">
+        {{ section().subtitle }}
+      </p>
+      }
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
+      @for (article of section().articles; track article.id ?? $index) {
+      <div class="bg-white/50  overflow-hidden  h-full flex flex-col">
+        <div class="relative  h-[53%] overflow-hidden p-6">
+          <img [src]="article.image?.url ?? ''"
+            [alt]="article.image?.alt ?? (article.title ? article.title + ' article image' : '')"
+            class=" aspect-6/5 object-cover" loading="lazy" />
+        </div>
+        <div class="py-5 px-5 flex flex-col grow">
+          <div class="flex items-center  mb-5">
+            <div class="flex items-center gap-2 flex-wrap pr-6">
+              @for (tag of article.tags; track tag) {
+              <span class="text-[15px]  capitalize text-p-500 bg-[#E4EEFA] px-3 py-1 font-segoe">{{ tag
+                }}</span>
+              }
+            </div>
+            @if (article.readingTime) {
+            <span class="text-[15px] text-gray-500 ">{{ article.readingTime }}</span>
+            }
+          </div>
+          <h3 class="text-lg sm:text-[1.6rem] text-gray-900  leading-tight">
+            {{ article.title }}
+          </h3>
+          @if (article.link) {
+          <a [href]="article.link"
+            class="text-base text-gray-800 hover:text-p-500 transition-colors duration-200 inline-flex items-center mt-auto">
+            {{ article.linkText ?? 'Read more' }} <span class="ml-3"><i class="fa-solid fa-chevron-right"></i></span>
+          </a>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    @if (section().cta; as cta) {
+    @if (cta.text) {
+    <div class="flex ">
+      @if (cta.link) {
+      <!-- <a [href]="cta.link"
+        class="inline-block bg-transparent border border-gray-300 text-gray-800 font-semibold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+        {{ cta.text }}
+      </a> -->
+      } @else {
+      <!-- <button type="button"
+        class="bg-transparent border border-gray-300 text-gray-800 font-semibold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+        (click)="ctaClick.emit()">
+        {{ cta.text }}
+      </button> -->
+      <app-button-primary [text]="cta.text" [isTransparent]="true" [borderColor]="'black'" />
+
+      }
+    </div>
+    }
+    }
+  </div>
+</section>

@@ -1,0 +1,69 @@
+<section class="w-full bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900 h-screen overflow-hidden"
+  aria-labelledby="structured-engagements-title">
+  <div class="absolute inset-0 opacity-20" aria-hidden="true">
+    <div class="absolute top-0 left-0 w-full h-full">
+      <svg class="w-full h-full" viewBox="0 0 1200 600" preserveAspectRatio="none">
+        <path d="M0,300 Q300,200 600,300 T1200,300" stroke="rgba(59, 130, 246, 0.3)" fill="none" stroke-width="2" />
+        <path d="M0,400 Q400,300 800,400 T1200,400" stroke="rgba(59, 130, 246, 0.2)" fill="none" stroke-width="2" />
+      </svg>
+    </div>
+  </div>
+  <div class="px-20 sm:px-6 md:px-8 lg:px-18 relative py-12">
+    <div class="text-center mb-8 sm:mb-10 md:mb-12">
+      <p class="text-base font-semibold uppercase tracking-wider text-p-200 pb-4">
+        {{ section().label }}
+      </p>
+      <h2 id="structured-engagements-title"
+        class="text-xl sm:text-4xl md:text-5xl lg:text-5xl  text-white mb-6 sm:mb-8 md:mb-10">
+        {{ getTitle(section()) }}
+      </h2>
+      @if (section().tabs?.length) {
+      <div class="flex flex-wrap justify-center gap-4 sm:gap-6 mb-8 sm:mb-10 md:mb-12">
+        @for (tab of section().tabs; track tab) {
+        <button type="button" [ngClass]="getTabClasses(tab, section().activeTab)+' text-lg text-p-200'"
+          (click)="tabSelect.emit(tab)">
+          {{ tab }}
+        </button>
+        }
+      </div>
+      }
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-10">
+      @for (offer of section().offers; track $index) {
+      <div
+        class=" group cursor-pointer rounded-md pl-[1.01px] pt-[2px] transition-all duration-300 structured-engagements__card-border"
+        [attr.data-border]="normalizeBorderColor(offer.borderColor)"
+        [style.background]="getOfferBorderGradient(offer.borderColor)"
+        [ngClass]="getOfferCardClasses(offer.borderColor)">
+        <div
+          class="relative h-full  bg-slate-800/50 backdrop-blur-sm p-6 sm:p-8 hover:shadow-xl transition-all duration-300 flex flex-col"
+          [style.background]="getOfferBackground(offer.borderColor)">
+          <div class="flex w-[55px] h-[55px] rounded-xl text-3xl items-center justify-center"
+            [ngClass]="getOfferIconBgClass(offer.borderColor)">
+            <i [class]="'fa-solid fa-' + (offer.icon || 'circle-nodes') + ' ' + getIconColor(offer.borderColor)"></i>
+          </div>
+          <h3 class="text-xl  text-white/90 pt-10 pb-4">
+            {{ offer.title }}
+          </h3>
+          <p class="text-[15px] text-gray-300 mb-3 font-segoe pb-2" style="line-height: 140%;">
+            {{ offer.description }}
+          </p>
+          @if (offer.link) {
+          <a [href]="offer.link"
+            class="text-sm sm:text-base text-gray-300 hover:text-white transition-colors duration-200 inline-flex items-center">
+            {{ offer.linkText ?? 'Learn more' }} <span class="ml-1">></span>
+          </a>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    @if (section().cta) {
+    <div class="flex  gap-4 pb-12">
+      <div class="bg-p-700 mb-3">
+        <app-button-primary [text]="section().cta?.text ?? ''" (click)="ctaClick.emit()" />
+      </div>
+    </div>
+    }
+  </div>
+</section>
