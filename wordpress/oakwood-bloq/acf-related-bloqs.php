@@ -10,6 +10,7 @@
  * - tags → tags (Checkbox)
  * - primaryTag → primary_tag (Radio)
  * - authorPerson → author_person (Post Object → person) — editable aquí.
+ * Head (progresivo): oakwood_head_* (title, description, canonical) y oakwood_geo_* (region, placename, position) — para <head> en Headless (nombres propios para no chocar con Yoast/Rank Math).
  *
  * Nota: para compatibilidad con ACF Free, se usa `post_object` con selección múltiple.
  * author_person requiere que el CPT person (Oakwood People) exista.
@@ -121,6 +122,63 @@ function oakwood_bloq_register_acf_field_group() {
 			'allow_null'    => 0,
 			'ui'            => 1,
 			'instructions'  => 'Selecciona Gen Content de categoría Case Study relacionados (solo se listan entradas con categoría case-study).',
+		),
+		// Head progresivo (fase 1): para <head> en Headless — nombres oakwood_* para no chocar con otros plugins SEO
+		array(
+			'key'           => 'field_oakwood_head_title',
+			'label'         => 'Head Title',
+			'name'          => 'oakwood_head_title',
+			'type'          => 'text',
+			'required'      => 0,
+			'placeholder'   => 'Título para <title> (vacío = título del post)',
+			'instructions'  => 'Opcional. Si está vacío se usará el título del post.',
+		),
+		array(
+			'key'           => 'field_oakwood_head_description',
+			'label'         => 'Head Description',
+			'name'          => 'oakwood_head_description',
+			'type'          => 'textarea',
+			'required'      => 0,
+			'rows'          => 3,
+			'placeholder'   => 'Meta description (vacío = extracto del post)',
+			'instructions'  => 'Opcional. Si está vacío se usará el extracto del post.',
+		),
+		array(
+			'key'           => 'field_oakwood_head_canonical',
+			'label'         => 'Head Canonical URL',
+			'name'          => 'oakwood_head_canonical',
+			'type'          => 'url',
+			'required'      => 0,
+			'placeholder'   => 'https://...',
+			'instructions'  => 'Opcional. Si está vacío se usará la URL del post.',
+		),
+		// GEO (para meta geo y JSON-LD en Headless) — nombres oakwood_geo_*
+		array(
+			'key'           => 'field_oakwood_geo_region',
+			'label'         => 'Geo Region',
+			'name'          => 'oakwood_geo_region',
+			'type'          => 'text',
+			'required'      => 0,
+			'placeholder'   => 'US-MO',
+			'instructions'  => 'Región geográfica (ej: US-MO).',
+		),
+		array(
+			'key'           => 'field_oakwood_geo_placename',
+			'label'         => 'Geo Placename',
+			'name'          => 'oakwood_geo_placename',
+			'type'          => 'text',
+			'required'      => 0,
+			'placeholder'   => 'St. Louis',
+			'instructions'  => 'Nombre del lugar (ej: St. Louis).',
+		),
+		array(
+			'key'           => 'field_oakwood_geo_position',
+			'label'         => 'Geo Position',
+			'name'          => 'oakwood_geo_position',
+			'type'          => 'text',
+			'required'      => 0,
+			'placeholder'   => '38.6270;-90.1994',
+			'instructions'  => 'Coordenadas Lat;Long (separadas por punto y coma).',
 		),
 	);
 

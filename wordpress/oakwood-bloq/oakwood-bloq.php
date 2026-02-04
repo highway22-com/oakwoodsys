@@ -3,7 +3,7 @@
  * Plugin Name: Oakwood Bloq
  * Plugin URI: https://oakwoodsys.com
  * Description: Registra el CPT "Gen Content" (gen_content) + taxonomía, agrega campos ACF (show_contact_section, related_bloqs) y los expone en WPGraphQL.
- * Version: 3.0.2
+ * Version: 4.0.0
  * Author: Aetro
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -454,8 +454,260 @@ function oakwood_bloq_register_graphql_fields() {
 			},
 		)
 	);
+
+	// Head progresivo (fase 1): headTitle, headDescription, headCanonicalUrl — nombres propios para no chocar con otros plugins SEO
+	register_graphql_field(
+		'GenContent',
+		'headTitle',
+		array(
+			'type'        => 'String',
+			'description' => __( 'Título para <title>. ACF oakwood_head_title; si vacío: título del post.', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
+				if ( ! $post_id ) {
+					return null;
+				}
+				$v = function_exists( 'get_field' ) ? get_field( 'oakwood_head_title', $post_id ) : get_post_meta( $post_id, 'oakwood_head_title', true );
+				if ( $v !== null && $v !== '' ) {
+					return is_scalar( $v ) ? trim( (string) $v ) : null;
+				}
+				$p = get_post( $post_id );
+				return $p ? get_the_title( $p ) : null;
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'headDescription',
+		array(
+			'type'        => 'String',
+			'description' => __( 'Meta description. ACF oakwood_head_description; si vacío: extracto del post.', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
+				if ( ! $post_id ) {
+					return null;
+				}
+				$v = function_exists( 'get_field' ) ? get_field( 'oakwood_head_description', $post_id ) : get_post_meta( $post_id, 'oakwood_head_description', true );
+				if ( $v !== null && $v !== '' ) {
+					return is_scalar( $v ) ? trim( (string) $v ) : null;
+				}
+				$p = get_post( $post_id );
+				if ( ! $p ) {
+					return null;
+				}
+				$excerpt = has_excerpt( $p ) ? $p->post_excerpt : '';
+				if ( $excerpt !== '' ) {
+					return $excerpt;
+				}
+				return wp_trim_words( wp_strip_all_tags( $p->post_content ), 30 );
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'headCanonicalUrl',
+		array(
+			'type'        => 'String',
+			'description' => __( 'URL canonica para <head>. ACF oakwood_head_canonical; si vacío: permalink del post.', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
+				if ( ! $post_id ) {
+					return null;
+				}
+				$v = function_exists( 'get_field' ) ? get_field( 'oakwood_head_canonical', $post_id ) : get_post_meta( $post_id, 'oakwood_head_canonical', true );
+				if ( $v !== null && $v !== '' ) {
+					return is_scalar( $v ) ? trim( (string) $v ) : null;
+				}
+				$p = get_post( $post_id );
+				if ( ! $p ) {
+					return null;
+				}
+				$permalink = get_permalink( $p );
+				return is_string( $permalink ) ? $permalink : null;
+			},
+		)
+	);
+
+	// GEO (oakwood_geo_*): region, placename, position — para meta geo y JSON-LD
+	register_graphql_field(
+		'GenContent',
+		'headGeoRegion',
+		array(
+			'type'        => 'String',
+			'description' => __( 'Región geográfica (ACF oakwood_geo_region). Ej: US-MO.', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
+				if ( ! $post_id ) {
+					return null;
+				}
+				$v = function_exists( 'get_field' ) ? get_field( 'oakwood_geo_region', $post_id ) : get_post_meta( $post_id, 'oakwood_geo_region', true );
+				return ( $v !== null && $v !== '' && is_scalar( $v ) ) ? trim( (string) $v ) : null;
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'headGeoPlacename',
+		array(
+			'type'        => 'String',
+			'description' => __( 'Nombre del lugar (ACF oakwood_geo_placename). Ej: St. Louis.', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
+				if ( ! $post_id ) {
+					return null;
+				}
+				$v = function_exists( 'get_field' ) ? get_field( 'oakwood_geo_placename', $post_id ) : get_post_meta( $post_id, 'oakwood_geo_placename', true );
+				return ( $v !== null && $v !== '' && is_scalar( $v ) ) ? trim( (string) $v ) : null;
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'headGeoPosition',
+		array(
+			'type'        => 'String',
+			'description' => __( 'Coordenadas Lat;Long (ACF oakwood_geo_position).', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
+				if ( ! $post_id ) {
+					return null;
+				}
+				$v = function_exists( 'get_field' ) ? get_field( 'oakwood_geo_position', $post_id ) : get_post_meta( $post_id, 'oakwood_geo_position', true );
+				return ( $v !== null && $v !== '' && is_scalar( $v ) ) ? trim( (string) $v ) : null;
+			},
+		)
+	);
+
+	// JSON-LD listo para inyectar en <head> (Organization + Article con GEO)
+	register_graphql_field(
+		'GenContent',
+		'headJsonLdData',
+		array(
+			'type'        => 'String',
+			'description' => __( 'JSON-LD listo para <script type="application/ld+json">: Organization (Oakwood) + Article/BlogPosting con datos GEO.', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				return oakwood_bloq_build_head_json_ld( $post );
+			},
+		)
+	);
 }
 add_action( 'graphql_register_types', 'oakwood_bloq_register_graphql_fields' );
+
+/**
+ * Construye JSON-LD para Gen Content: Organization (Oakwood) + Article/BlogPosting con GEO.
+ * Usado por el campo GraphQL headJsonLdData.
+ *
+ * @param mixed $post Objeto del resolver GraphQL.
+ * @return string|null JSON string o null.
+ */
+function oakwood_bloq_build_head_json_ld( $post ) {
+	$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
+	$p       = $post_id ? get_post( $post_id ) : null;
+	if ( ! $p || ! ( $p instanceof WP_Post ) ) {
+		return null;
+	}
+
+	$permalink   = get_permalink( $p );
+	$site_name   = get_bloginfo( 'name' );
+	$site_url    = home_url( '/' );
+	$type_content = function_exists( 'get_field' ) ? get_field( 'type_content', $post_id ) : get_post_meta( $post_id, 'type_content', true );
+	$schema_type  = function_exists( 'oakwood_gc_schema_type' ) ? oakwood_gc_schema_type( $type_content ) : 'Article';
+
+	$description = function_exists( 'get_field' ) ? get_field( 'oakwood_head_description', $post_id ) : get_post_meta( $post_id, 'oakwood_head_description', true );
+	$description = ( $description !== null && $description !== '' ) ? trim( (string) $description ) : '';
+	if ( $description === '' ) {
+		$description = has_excerpt( $p ) ? (string) $p->post_excerpt : '';
+	}
+	if ( $description === '' ) {
+		$description = wp_trim_words( wp_strip_all_tags( $p->post_content ), 30 );
+	}
+
+	$image    = get_the_post_thumbnail_url( $p, 'full' );
+	$image    = ( $image && is_string( $image ) ) ? $image : null;
+	$author   = get_userdata( (int) $p->post_author );
+	$author_name = $author ? (string) $author->display_name : '';
+	$tags     = function_exists( 'oakwood_gc_get_acf_tags_for_post' ) ? oakwood_gc_get_acf_tags_for_post( $post_id ) : array();
+	$primary  = function_exists( 'get_field' ) ? get_field( 'primary_tag', $post_id ) : get_post_meta( $post_id, 'primary_tag', true );
+	$primary  = ( $primary !== null && $primary !== '' ) ? trim( (string) $primary ) : null;
+	if ( $primary ) {
+		$tags = array_values( array_unique( array_merge( array( $primary ), $tags ) ) );
+	}
+
+	$geo_region    = function_exists( 'get_field' ) ? get_field( 'oakwood_geo_region', $post_id ) : get_post_meta( $post_id, 'oakwood_geo_region', true );
+	$geo_placename = function_exists( 'get_field' ) ? get_field( 'oakwood_geo_placename', $post_id ) : get_post_meta( $post_id, 'oakwood_geo_placename', true );
+	$geo_position  = function_exists( 'get_field' ) ? get_field( 'oakwood_geo_position', $post_id ) : get_post_meta( $post_id, 'oakwood_geo_position', true );
+	$geo_region    = ( $geo_region !== null && $geo_region !== '' && is_scalar( $geo_region ) ) ? trim( (string) $geo_region ) : null;
+	$geo_placename = ( $geo_placename !== null && $geo_placename !== '' && is_scalar( $geo_placename ) ) ? trim( (string) $geo_placename ) : null;
+	$geo_position  = ( $geo_position !== null && $geo_position !== '' && is_scalar( $geo_position ) ) ? trim( (string) $geo_position ) : null;
+
+	$organization = array(
+		'@type' => 'Organization',
+		'@id'   => $site_url . '#organization',
+		'name'  => $site_name !== '' ? $site_name : 'Oakwood Systems',
+		'url'   => $site_url,
+	);
+	$place_parts = array();
+	if ( $geo_placename ) {
+		$place_parts['name'] = $geo_placename;
+	}
+	if ( $geo_region ) {
+		$place_parts['containedInPlace'] = array( '@type' => 'AdministrativeArea', 'name' => $geo_region );
+	}
+	if ( $geo_position ) {
+		$parts = array_map( 'trim', explode( ';', $geo_position ) );
+		if ( count( $parts ) >= 2 ) {
+			$place_parts['geo'] = array( '@type' => 'GeoCoordinates', 'latitude' => $parts[0], 'longitude' => $parts[1] );
+		}
+	}
+	if ( ! empty( $place_parts ) ) {
+		$organization['areaServed'] = array_merge( array( '@type' => 'Place' ), $place_parts );
+	}
+
+	$article = array(
+		'@context'        => 'https://schema.org',
+		'@type'           => $schema_type,
+		'@id'             => $permalink ? ( $permalink . '#article' ) : null,
+		'url'             => $permalink,
+		'headline'        => get_the_title( $p ),
+		'description'     => $description !== '' ? $description : null,
+		'datePublished'   => get_the_date( DATE_W3C, $p ),
+		'dateModified'    => get_the_modified_date( DATE_W3C, $p ),
+		'inLanguage'      => get_bloginfo( 'language' ),
+		'keywords'        => ! empty( $tags ) ? $tags : null,
+		'about'           => $primary ? array( '@type' => 'Thing', 'name' => $primary ) : null,
+		'image'           => $image ? array( $image ) : null,
+		'author'          => $author_name !== '' ? array( '@type' => 'Person', 'name' => $author_name ) : null,
+		'publisher'       => array( '@id' => $site_url . '#organization' ),
+		'mainEntityOfPage'=> $permalink ? array( '@type' => 'WebPage', '@id' => $permalink ) : null,
+	);
+	if ( $geo_placename || $geo_region || $geo_position ) {
+		$place = array( '@type' => 'Place' );
+		if ( $geo_placename ) {
+			$place['name'] = $geo_placename;
+		}
+		if ( $geo_region ) {
+			$place['containedInPlace'] = array( '@type' => 'AdministrativeArea', 'name' => $geo_region );
+		}
+		if ( $geo_position ) {
+			$parts = array_map( 'trim', explode( ';', $geo_position ) );
+			if ( count( $parts ) >= 2 ) {
+				$place['geo'] = array( '@type' => 'GeoCoordinates', 'latitude' => $parts[0], 'longitude' => $parts[1] );
+			}
+		}
+		if ( count( $place ) > 1 ) {
+			$article['contentLocation'] = $place;
+		}
+	}
+	$article = array_filter( $article, static function ( $v ) {
+		return $v !== null && $v !== '';
+	} );
+
+	return wp_json_encode( array( '@context' => 'https://schema.org', '@graph' => array( $organization, $article ) ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+}
 
 /**
  * Flush rewrite rules al activar/desactivar.

@@ -17,11 +17,14 @@ function oakwood_gc_schema_type( $type_content ) {
 	$type_content = is_scalar( $type_content ) ? (string) $type_content : '';
 	$type_content = trim( $type_content );
 
-	return match ( $type_content ) {
-		'case_study' => 'CaseStudy',
-		'bloq'       => 'BlogPosting',
-		default      => 'Article',
-	};
+	switch ( $type_content ) {
+		case 'case_study':
+			return 'CaseStudy';
+		case 'bloq':
+			return 'BlogPosting';
+		default:
+			return 'Article';
+	}
 }
 
 function oakwood_gc_get_acf_tags_for_post( $post_id ) {
