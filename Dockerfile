@@ -32,10 +32,11 @@ WORKDIR /app
 
 COPY --from=build --chown=angular:nodejs /app/dist/oaw/server ./server
 COPY --from=build --chown=angular:nodejs /app/dist/oaw/browser ./browser
-COPY --from=build --chown=angular:nodejs /app/package.json ./
+COPY --from=build --chown=angular:nodejs /app/server-runner.mjs ./
+COPY --from=build --chown=angular:nodejs /app/package.json /app/package-lock.json ./
 
-# Dependencias de producción por si server.mjs requiere módulos en runtime
-RUN npm ci --omit=dev --ignore-scripts \
+# Dependencias de producción por si server.mjs requiere módulos en runtime (npm ci exige package-lock.json)
+RUN npm ci --omit=dev --ignore-scripts --no-audit \
   && npm cache clean --force
 
 USER angular
@@ -46,5 +47,5 @@ EXPOSE ${PORT}
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://127.0.0.1:'+process.env.PORT+'/', (r)=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))" || exit 1
 
-# Angular SSR sirve estáticos desde ./browser y SSR desde ./server
-CMD ["node", "server/server.mjs"]
+# server-runner.mjs arranca http.createServer y usa reqHandler del build (server/server.mjs)
+CMD ["node", "server-runner.mjs"]
