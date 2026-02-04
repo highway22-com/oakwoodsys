@@ -14,42 +14,42 @@ export class Industries {
       name: 'Manufacturing',
       link: '/industries/manufacturing',
       desc: 'Unlock innovation, optimize operations, empower workers, and enhance the customer experience.',
-      icon: 'fa-gauge-high'
+      icon: '/assets/manu.png'
     },
     {
       id: '02',
       name: 'Healthcare',
       link: '/industries/healthcare',
       desc: 'We create connected healthcare ecosystems by coordinating data, people, and processes.',
-      icon: 'fa-suitcase-medical'
+      icon: '/assets/heal.png'
     },
     {
       id: '03',
       name: 'Financial Services',
       link: '/industries/financial-services',
       desc: 'Unlock the full potential of your banking data in the era of AI.',
-      icon: 'fa-wallet'
+      icon: '/assets/fina.png'
     },
     {
       id: '04',
       name: 'Retail',
       link: '/industries/retail',
       desc: 'Helping retailers outperform their competition',
-      icon: 'fa-cart-minus'
+      icon: '/assets/reta.png'
     },
     {
       id: '05',
       name: 'Education / Public Sector',
       link: '/industries/education-public-sector',
       desc: 'Unlock innovation, optimize operations, empower workers, and enhance the customer experience.',
-      icon: 'fa-graduation-cap'
+      icon: '/assets/educ.png'
     },
     {
       id: '06',
       name: 'Electronic Design Automation (EDA)',
       link: '/industries/eda',
       desc: 'Explore exciting opportunities to learn and connect with industry experts through our engaging webinars and conferences!',
-      icon: 'fa-object-ungroup'
+      icon: '/assets/elec.png'
     }
   ];
 

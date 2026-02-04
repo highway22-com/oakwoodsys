@@ -9,9 +9,9 @@
                     <div class="flex flex-row items-start gap-4 md:gap-6">
                         <!-- Icon Container (Left) -->
                         <div class="">
-                            <div
-                                class="w-20 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 flex items-start justify-center relative">
-                                <i class="fa-solid {{category.icon}} text-p-500 text-4xl"></i>
+                            <div class="flex items-start justify-center relative">
+                                <img [src]="category.icon" [alt]="category.name"
+                                    class="w-[1.7rem] h-auto object-cover" />
                             </div>
                         </div>
                         <!-- Text Content (Right) -->

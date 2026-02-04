@@ -14,21 +14,22 @@ export class Resources {
       name: 'IT Blog',
       link: '/bloq',
       desc: 'Insights and perspectives on business and innovation.',
-      icon: 'fa-gauge-high'
+      icon: '/assets/manu.png'
     },
     {
       id: '02',
-      name: 'Case Studies',
-      link: '/resources/case-studies',
-      desc: 'Discover our impact through realized projects',
-      icon: 'fa-book'
-    },
-    {
-      id: '03',
       name: 'Partners',
       link: '/partners',
       desc: 'In-depth examples of how Oakwood solutions are applied in real-world scenarios.',
-      icon: 'fa-handshake'
+      icon: '/assets/parn.png'
+    },
+    {
+      id: '03',
+      name: 'Case Studies',
+      link: '/resources/case-studies',
+      desc: 'Discover our impact through realized projects',
+      icon: '/assets/fina.png'
+
     }
   ];
 
