@@ -25,7 +25,7 @@
       </h1>
       <div class="flex flex-wrap items-center gap-3">
         @for (tag of detail.tags; track tag) {
-        <span class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg text-sm font-medium text-white">
+        <span class="px-3 py-1.5 bg-white/20 backdrop-blur-sm    text-sm        text-white">
           {{ tag }}
         </span>
         }
@@ -41,8 +41,8 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
         <aside class="lg:col-span-3">
           <div class="sticky top-24">
-            <div class=" rounded-lg p-6">
-              <h2 class="text-lg font-semibold uppercase tracking-wider text-gray-700/60 mb-4">Table of contents</h2>
+            <div class="    p-6">
+              <h2 class="text-lg       uppercase tracking-wider text-gray-700/60 mb-4">Table of contents</h2>
               <nav class="space-y-2">
                 @for (item of getProcessedContent().tableOfContents; track item.id) {
                 <button type="button" (click)="scrollToSection(item.id)"
@@ -64,22 +64,22 @@
         <div class="lg:col-span-9">
           <div class="blog-content prose prose-lg max-w-none">
             <section id="overview" class="mb-12 sm:mb-16 md:mb-20">
-              <h2 class="sm:text-4xl md:text-3xl font-medium mb-4 ">Overview</h2>
+              <h2 class="sm:text-4xl md:text-3xl        mb-4 ">Overview</h2>
               <div [innerHTML]="getProcessedContent().processedOverview"></div>
             </section>
             <section id="business-challenge" class="mb-12 sm:mb-16 md:mb-20">
-              <h2 class="sm:text-4xl md:text-3xl font-medium mb-4 ">Business
+              <h2 class="sm:text-4xl md:text-3xl        mb-4 ">Business
                 Challenge</h2>
               <div class="" [innerHTML]="getProcessedContent().processedBusinessChallenge"></div>
             </section>
             <section id="solution" class="mb-12 sm:mb-16 md:mb-20">
-              <h2 class="sm:text-4xl md:text-3xl font-medium mb-4 ">Solution</h2>
+              <h2 class="sm:text-4xl md:text-3xl        mb-4 ">Solution</h2>
               <div class="" [innerHTML]="getProcessedContent().processedSolution"></div>
 
             </section>
             @if (detail.testimonial) {
             <section id="testimonial" class="mb-12 sm:mb-16 md:mb-20">
-              <div class="bg-gray-50 rounded-lg p-6 sm:p-8 md:p-10 border-l-4 border-blue-600">
+              <div class="bg-gray-50    p-6 sm:p-8 md:p-10 border-l-4 border-blue-600">
                 @if (detail.testimonial.companyLogo) {
                 <div class="mb-4">
                   <img [src]="detail.testimonial.companyLogo" [alt]="detail.testimonial.company + ' logo'"
@@ -91,7 +91,7 @@
                   "{{ detail.testimonial.quote }}"
                 </blockquote>
                 <div class="text-sm text-gray-600 ">
-                  <p class="font-semibold">{{ detail.testimonial.author }}</p>
+                  <p class="     ">{{ detail.testimonial.author }}</p>
                   <p>{{ detail.testimonial.role }}, {{ detail.testimonial.company }}</p>
                 </div>
               </div>
@@ -118,8 +118,7 @@
       </p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
         @for (related of detail.relatedCaseStudies; track related.id) {
-        <article
-          class="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+        <article class="group bg-white    overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
           <a [routerLink]="related.link" class="block">
             <div class="relative w-full h-48 sm:h-56 overflow-hidden">
               <img [src]="related.image" [alt]="related.title"
@@ -137,7 +136,7 @@
               </h3>
               <p class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed">{{ related.description }}</p>
               <span
-                class="inline-flex items-center text-sm sm:text-base text-blue-600 group-hover:text-blue-700 font-medium">
+                class="inline-flex items-center text-sm sm:text-base text-blue-600 group-hover:text-blue-700       ">
                 Read more
                 <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -172,7 +171,7 @@
           <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 ">{{ service.title }}</h3>
           <p class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed ">{{ service.description }}</p>
           <a [routerLink]="service.link"
-            class="inline-flex items-center text-sm sm:text-base text-blue-600 hover:text-blue-700 font-medium">
+            class="inline-flex items-center text-sm sm:text-base text-blue-600 hover:text-blue-700       ">
             Learn more
             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -183,7 +182,7 @@
       </div>
       <div class="text-center">
         <a routerLink="/services"
-          class="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+          class="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white           hover:bg-blue-700 transition-colors">
           View All Services
         </a>
       </div>
@@ -208,7 +207,7 @@
       </div>
       <div class="text-center">
         <a routerLink="/resources"
-          class="inline-block px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all">
+          class="inline-block px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300 text-gray-700           hover:border-gray-400 hover:bg-gray-50 transition-all">
           View All Insights
         </a>
       </div>
@@ -228,11 +227,11 @@
       </p>
       <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
         <a routerLink="/contact-us"
-          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all hover:opacity-90  text-white bg-blue-600">
+          class="inline-block text-center        px-6 sm:px-8 py-3 sm:py-4    transition-all hover:opacity-90  text-white bg-blue-600">
           Talk to an expert
         </a>
         <a routerLink="/contact-us"
-          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all hover:bg-white/50  text-blue-600 border-2 border-blue-600">
+          class="inline-block text-center        px-6 sm:px-8 py-3 sm:py-4    transition-all hover:bg-white/50  text-blue-600 border-2 border-blue-600">
           Subscribe to our newsletter
         </a>
       </div>

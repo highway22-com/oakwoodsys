@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { VideoHero } from '../../shared/video-hero/video-hero';
+import { LatestInsightsSectionComponent, type LatestInsightsSection } from '../../shared/sections/latest-insights/latest-insights';
 
 const PLACEHOLDER_VIDEO_URLS = [
   'https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4',
@@ -37,7 +38,7 @@ export interface BlogCard {
 
 @Component({
   selector: 'app-about-us',
-  imports: [RouterLink, VideoHero],
+  imports: [RouterLink, VideoHero, LatestInsightsSectionComponent],
   templateUrl: './about-us.html',
   styleUrl: './about-us.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -69,7 +70,7 @@ export class AboutUs {
       title: 'Our People',
       description:
         'Our team combines deep technical expertise with a collaborative culture focused on understanding your business and delivering outcomes that matter.',
-      image: '/assets/managed-services.png',
+      image: '/assets/a1.png',
       imageAlt: 'Our people at Oakwood',
     },
     {
@@ -77,7 +78,7 @@ export class AboutUs {
       title: 'Our Process',
       description:
         'We follow a proven methodology that balances agility with discipline, ensuring transparency, accountability, and continuous alignment with your goals.',
-      image: '/assets/s-daa-h.jpg',
+      image: '/assets/a2.png',
       imageAlt: 'Our process and methodology',
     },
     {
@@ -85,7 +86,7 @@ export class AboutUs {
       title: 'Our Technology',
       description:
         'We leverage leading platforms and modern architectures to build solutions that scale, integrate, and evolve with your organization.',
-      image: '/assets/cloud.png',
+      image: '/assets/a3.png',
       imageAlt: 'Our technology stack',
     },
   ];
@@ -111,14 +112,13 @@ export class AboutUs {
     "Oakwood's leadership team brings decades of experience, expertise, and a passion for technology to help our clients achieve their goals.";
 
   readonly teamMembers: TeamMember[] = [
-    { name: 'Charles Ruecker', title: 'CEO' },
-    { name: 'Jeff Rudden', title: 'COO' },
-    { name: 'Erica Allen', title: 'VP, Strategic Business Services' },
-    { name: 'Michael Caylor', title: 'VP, Architecture & Engineering' },
-    { name: 'Barry Goodman', title: 'VP, Software Development & Innovation' },
-    { name: 'John Tovar', title: 'Director of App & Analytical Dev' },
-    { name: 'Tom Washatka', title: 'Service Director' },
-    { name: 'Leadership', title: 'Oakwood Leadership' },
+    { name: 'Charles Ruecker', title: 'CEO', image: '/assets/people/charles.png' },
+    { name: 'Jeff Rudden', title: 'VP, Sales', image: '/assets/people/jeff.png' },
+    { name: 'Tonja Hilton', title: 'VP Finance, Administration ', image: '/assets/people/tonja.png' },
+    { name: 'Michael Caylor', title: 'Sr. Director, Cloud & Managed Services', image: '/assets/people/michael.png' },
+    { name: 'Steve Goodman', title: 'Sr. Director, of Managed Services', image: '/assets/people/steve.png' },
+    { name: 'John Trease', title: 'Director of App & AI', image: '/assets/people/john.png' },
+    { name: 'Tim Haaksma', title: 'Director of Marketing', image: '/assets/people/tim.png' }
   ];
 
   readonly deliverBannerTitle =
@@ -169,6 +169,25 @@ export class AboutUs {
       link: '/blog',
     },
   ];
+
+  /** Sección para app-latest-insights (mapeada desde insightsLabel, insightsTitle, insightCards). */
+  get insightsSection(): LatestInsightsSection {
+    return {
+      label: this.insightsLabel,
+      title: this.insightsTitle,
+      subtitle: this.insightsDescription,
+      articles: this.insightCards.map((card, i) => ({
+        id: i,
+        title: card.title,
+        description: card.description,
+        link: card.link,
+        linkText: 'Read more',
+        image: { url: card.image, alt: card.imageAlt },
+        tags: [card.category],
+      })),
+      cta: { text: 'View all', link: '/blog' },
+    };
+  }
 
   readonly ctaBannerTitle = "Let's move your vision forward";
   readonly ctaBannerDescription = 'Contact us today to start a conversation with our team.';

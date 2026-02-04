@@ -39,7 +39,7 @@
         <!-- Loading State -->
         @if (loading()) {
         <div class="text-center py-12 sm:py-16 md:py-20">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-b-2 border-blue-600">
+            <div class="inline-block animate-spin      h-12 w-12 sm:h-16 sm:w-16 border-b-2 border-blue-600">
             </div>
             <p class="mt-4 text-gray-600 text-sm sm:text-base">Loading posts...</p>
         </div>
@@ -53,32 +53,33 @@
             <!-- Left Column: Service Lines (Figma / case-study-detail sidebar style) -->
             <aside class="lg:w-64 xl:w-80 flex-shrink-0">
                 <div class="sticky top-24">
-                    <div class="rounded-lg p-6">
-                        <h2 class="text-lg font-semibold uppercase tracking-wider text-gray-700/60 mb-4">Service lines</h2>
+                    <div class="   p-6">
+                        <h2 class="text-lg       uppercase tracking-wider text-gray-700/60 mb-4">Service lines
+                        </h2>
                         <nav class="space-y-2" aria-label="Service lines">
-                            <a routerLink="/services/cloud-and-infrastructure" routerLinkActive="text-p-500 font-medium"
+                            <a routerLink="/services/cloud-and-infrastructure" routerLinkActive="text-p-500       "
                                 [routerLinkActiveOptions]="{ exact: false }"
-                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200 rounded-lg">
+                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200   ">
                                 Data Center
                             </a>
-                            <a routerLink="/services/application-innovation" routerLinkActive="text-p-500 font-medium"
+                            <a routerLink="/services/application-innovation" routerLinkActive="text-p-500       "
                                 [routerLinkActiveOptions]="{ exact: false }"
-                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200 rounded-lg">
+                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200   ">
                                 Application Innovation
                             </a>
-                            <a routerLink="/services/high-performance-computing" routerLinkActive="text-p-500 font-medium"
+                            <a routerLink="/services/high-performance-computing" routerLinkActive="text-p-500       "
                                 [routerLinkActiveOptions]="{ exact: false }"
-                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200 rounded-lg">
+                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200   ">
                                 High-Performance Computing (HPC)
                             </a>
-                            <a routerLink="/services/modern-work" routerLinkActive="text-p-500 font-medium"
+                            <a routerLink="/services/modern-work" routerLinkActive="text-p-500       "
                                 [routerLinkActiveOptions]="{ exact: false }"
-                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200 rounded-lg">
+                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200   ">
                                 Modern Work
                             </a>
-                            <a routerLink="/services/managed-services" routerLinkActive="text-p-500 font-medium"
+                            <a routerLink="/services/managed-services" routerLinkActive="text-p-500       "
                                 [routerLinkActiveOptions]="{ exact: false }"
-                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200 rounded-lg">
+                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200   ">
                                 Managed Services
                             </a>
                         </nav>
@@ -93,15 +94,17 @@
                     @if (posts()!.nodes.length > 0) {
                     @let featuredPost = posts()!.nodes[0];
                     <article
-                        class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 mb-8">
+                        class="bg-white border border-gray-200    overflow-hidden hover:shadow-lg transition-shadow duration-300 mb-8">
                         <!-- Post Image -->
                         <div class="relative w-full h-64 sm:h-80 md:h-96 overflow-hidden">
                             <img [src]="featuredPost.featuredImage?.node?.sourceUrl || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80'"
-                                [alt]="featuredPost.featuredImage?.node?.altText || featuredPost.title || 'Blog post'" class="w-full h-full object-cover" />
+                                [alt]="featuredPost.featuredImage?.node?.altText || featuredPost.title || 'Blog post'"
+                                class="w-full h-full object-cover" />
                             <!-- Featured Tag -->
                             <div class="absolute top-4 left-4">
-                                <span class="bg-p-500 text-white text-xs font-semibold uppercase px-3 py-1.5 rounded">
-                                    {{ featuredPost.primaryTag || (featuredPost.tags && featuredPost.tags[0]) || 'FEATURED BLOG' }}
+                                <span class="bg-p-500 text-white text-xs       uppercase px-3 py-1.5 rounded">
+                                    {{ featuredPost.primaryTag || (featuredPost.tags && featuredPost.tags[0]) ||
+                                    'FEATURED BLOG' }}
                                 </span>
                             </div>
                         </div>
@@ -111,14 +114,16 @@
                             <!-- Tags, Author, Reading Time -->
                             <div class="flex items-center gap-4 mb-4 flex-wrap">
                                 @if (featuredPost.primaryTag || (featuredPost.tags && featuredPost.tags.length > 0)) {
-                                <span class="text-sm font-medium text-p-500">{{ featuredPost.primaryTag || featuredPost.tags[0] }}</span>
+                                <span class="text-sm        text-p-500">{{ featuredPost.primaryTag ||
+                                    featuredPost.tags[0] }}</span>
                                 }
                                 <span class="text-sm text-s-600">{{ authorDisplayName(featuredPost) }}</span>
-                                <span class="text-sm text-s-600">{{ readingTimeMinutes(featuredPost.content) }} min read</span>
+                                <span class="text-sm text-s-600">{{ readingTimeMinutes(featuredPost.content) }} min
+                                    read</span>
                             </div>
 
                             <!-- Title -->
-                            <h3 class="text-2xl sm:text-3xl md:text-4xl font-semibold text-s-800 mb-4 leading-tight">
+                            <h3 class="text-2xl sm:text-3xl md:text-4xl       text-s-800 mb-4 leading-tight">
                                 @if (featuredPost.title) {
                                 {{ featuredPost.title }}
                                 } @else {
@@ -139,7 +144,7 @@
 
                             <!-- Read More Button -->
                             <a [routerLink]="['/blog', featuredPost.slug || '']"
-                                class="inline-block bg-p-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-p-500/90 transition-colors duration-200">
+                                class="inline-block bg-p-500 text-white px-6 py-3          hover:bg-p-500/90 transition-colors duration-200">
                                 Read more
                             </a>
                         </div>
@@ -151,11 +156,12 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                         @for (post of posts()!.nodes.slice(1); track $index) {
                         <article
-                            class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+                            class="bg-white border border-gray-200    overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
                             <!-- Post Image -->
                             <div class="relative w-full h-48 sm:h-56 overflow-hidden">
                                 <img [src]="post.featuredImage?.node?.sourceUrl || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80'"
-                                    [alt]="post.featuredImage?.node?.altText || post.title || 'Blog post'" class="w-full h-full object-cover" />
+                                    [alt]="post.featuredImage?.node?.altText || post.title || 'Blog post'"
+                                    class="w-full h-full object-cover" />
                             </div>
 
                             <!-- Post Content -->
@@ -164,17 +170,17 @@
                                 <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
                                     <div class="flex items-center gap-2 flex-wrap">
                                         @if (post.primaryTag || (post.tags && post.tags.length > 0)) {
-                                        <span
-                                            class="text-xs font-semibold uppercase text-white bg-p-500 px-3 py-1 rounded-full">
+                                        <span class="text-xs       uppercase text-white bg-p-500 px-3 py-1     ">
                                             {{ post.primaryTag || post.tags[0] }}
                                         </span>
                                         }
                                     </div>
-                                    <span class="text-xs text-s-600">{{ readingTimeMinutes(post.content) }} min read</span>
+                                    <span class="text-xs text-s-600">{{ readingTimeMinutes(post.content) }} min
+                                        read</span>
                                 </div>
 
                                 <!-- Title -->
-                                <h3 class="text-lg sm:text-xl font-semibold text-s-800 mb-3 sm:mb-4 leading-tight">
+                                <h3 class="text-lg sm:text-xl       text-s-800 mb-3 sm:mb-4 leading-tight">
                                     @if (post.title) {
                                     {{ post.title }}
                                     } @else {
@@ -198,17 +204,18 @@
                                 <div class="flex items-center gap-3 mb-4">
                                     @if (post.authorPerson?.picture) {
                                     <img [src]="post.authorPerson?.picture" [alt]="authorDisplayName(post)"
-                                        class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover" />
+                                        class="w-8 h-8 sm:w-10 sm:h-10      object-cover" />
                                     } @else {
                                     <div
-                                        class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                        <span class="text-p-500 font-semibold text-sm sm:text-base">
-                                            {{ (post.authorPerson?.name || post.authorPerson?.firstName || post.author?.node?.firstName || 'A').charAt(0) }}
+                                        class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100      flex items-center justify-center">
+                                        <span class="text-p-500       text-sm sm:text-base">
+                                            {{ (post.authorPerson?.name || post.authorPerson?.firstName ||
+                                            post.author?.node?.firstName || 'A').charAt(0) }}
                                         </span>
                                     </div>
                                     }
                                     <div>
-                                        <p class="text-sm font-medium text-s-800">{{ authorDisplayName(post) }}</p>
+                                        <p class="text-sm        text-s-800">{{ authorDisplayName(post) }}</p>
                                         <p class="text-xs text-s-600">
                                             @if (post.date) {
                                             {{ post.date | date:'MMM d, y' }}
@@ -238,8 +245,7 @@
         <!-- Empty State -->
         @if (!loading() && !error() && (!posts()?.nodes || posts()!.nodes.length === 0)) {
         <div class="text-center py-12 sm:py-16 md:py-20">
-            <div
-                class="inline-block w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+            <div class="inline-block w-16 h-16 sm:w-20 sm:h-20 bg-gray-100      flex items-center justify-center mb-4">
                 <svg class="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -255,12 +261,12 @@
         @if (!loading() && !error() && posts()?.nodes && posts()!.nodes.length > 0) {
         <div class="flex justify-center items-center gap-4 mt-8 sm:mt-10">
             <button
-                class="px-4 py-2 sm:px-6 sm:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                class="px-4 py-2 sm:px-6 sm:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700           transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                 Previous
             </button>
             <span class="text-sm sm:text-base text-gray-600">Page 1 of 1</span>
             <button
-                class="px-4 py-2 sm:px-6 sm:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                class="px-4 py-2 sm:px-6 sm:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700           transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                 Next
             </button>
         </div>

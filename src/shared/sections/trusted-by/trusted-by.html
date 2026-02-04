@@ -5,7 +5,7 @@
     </h2>
     <div class="relative" (mouseenter)="onCarouselMouseEnter()" (mouseleave)="onCarouselMouseLeave()">
       <button type="button"
-        class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-8 z-10 w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50 transition-colors duration-200 items-center justify-center shadow-md"
+        class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-8 z-10 w-10 h-10 lg:w-12 lg:h-12      border-2 border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50 transition-colors duration-200 items-center justify-center shadow-md"
         aria-label="Anterior logos" (click)="scrollPrev()">
         <svg class="w-5 h-5 lg:w-6 lg:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -20,7 +20,7 @@
             <img [src]="logoUrl" [alt]="company.name ?? ''" class="h-8 md:h-10 w-auto object-contain" loading="lazy" />
           </div>
           } @else {
-          <div class="shrink-0 text-gray-600 font-medium text-sm md:text-base">
+          <div class="shrink-0 text-gray-600        text-sm md:text-base">
             {{ company.name }}
           </div>
           }
@@ -28,7 +28,7 @@
         </div>
       </div>
       <button type="button"
-        class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-8 z-10 w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50 transition-colors duration-200 items-center justify-center shadow-md"
+        class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-8 z-10 w-10 h-10 lg:w-12 lg:h-12      border-2 border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50 transition-colors duration-200 items-center justify-center shadow-md"
         aria-label="Siguiente logos" (click)="scrollNext()">
         <svg class="w-5 h-5 lg:w-6 lg:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

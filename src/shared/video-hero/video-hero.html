@@ -50,7 +50,7 @@
         @for (indicator of [].constructor(videoUrlsSignal().length); track $index) {
 
         <button type="button" (click)="switchToVideo($index)"
-          [class]="$index === currentVideoIndex() ? 'h-1.5 w-18 bg-white rounded-full transition-all duration-300' : 'h-1 w-10 bg-white/50 rounded-full hover:bg-white/70 transition-all duration-300 cursor-pointer'"
+          [class]="$index === currentVideoIndex() ? 'h-1.5 w-18 bg-white      transition-all duration-300' : 'h-1 w-10 bg-white/50      hover:bg-white/70 transition-all duration-300 cursor-pointer'"
           [attr.aria-label]="'Switch to video ' + ($index + 1)">
         </button>
         }

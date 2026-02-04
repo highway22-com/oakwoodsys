@@ -12,7 +12,7 @@
 @if (isAdmin() === true) {
 <!-- Toggle Button -->
 <button (click)="togglePanel()"
-  class="fixed right-4 top-4 z-[60] bg-p-500 hover:bg-blue-700 text-white font-semibold px-4 py-[11.5px] mt-[11px] rounded-lg shadow-lg transition-colors duration-200 flex items-center gap-2">
+  class="fixed right-4 top-4 z-[60] bg-p-500 hover:bg-blue-700 text-white       px-4 py-[11.5px] mt-[11px]    shadow-lg transition-colors duration-200 flex items-center gap-2">
   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
   </svg>
@@ -24,7 +24,7 @@
 @if (panelVisible()) {
 <div class="fixed right-0 top-0 h-full w-1/2 border-l border-gray-300 flex flex-col bg-white z-50 shadow-2xl">
   <div class="bg-gray-100 border-b border-gray-300 px-4 py-3 flex items-center justify-between pt-20">
-    <h2 class="text-lg font-semibold text-gray-800">JSON Editor</h2>
+    <h2 class="text-lg       text-gray-800">JSON Editor</h2>
     <div class="flex items-center gap-3">
       @if (saveSuccess()) {
       <div class="bg-green-500 text-white px-3 py-1 rounded text-sm">
@@ -32,7 +32,7 @@
       </div>
       }
       <button (click)="copyToClipboard()" [disabled]="saving() || !!jsonError()"
-        class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold px-4 py-2 rounded transition-colors duration-200 flex items-center gap-2">
+        class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white       px-4 py-2 rounded transition-colors duration-200 flex items-center gap-2">
         @if (saving()) {
         <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -53,7 +53,7 @@
   </div>
   @if (jsonError()) {
   <div class="bg-red-50 border-b border-red-200 px-4 py-2">
-    <p class="text-red-600 text-sm font-medium">Error de JSON: {{ jsonError() }}</p>
+    <p class="text-red-600 text-sm       ">Error de JSON: {{ jsonError() }}</p>
   </div>
   }
   <textarea [(ngModel)]="jsonContent" (input)="onJsonChange($event)"
@@ -77,7 +77,7 @@
   <section class="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-white-900" aria-labelledby="services-title">
     <div class=" mx-auto px-4 sm:px-6 md:px-8 lg:px-30">
       <div class="text-center mb-10 sm:mb-12 md:mb-16">
-        <p class="text-base sm:text-base font-semibold uppercase tracking-wider text-p-500/80 mb-1">
+        <p class="text-base sm:text-base       uppercase tracking-wider text-p-500/80 mb-1">
           {{ section.label }}
         </p>
         <h2 id="services-title" class="mb-1 text-s-900">
@@ -99,14 +99,14 @@
                 loading="lazy" />
             </div>
           </div>
-          <h3 class="text-[2rem] font-medium text-gray-900 w-full text-left leading-tight pb-8 wrap-break-word">
+          <h3 class="text-[2rem]        text-gray-900 w-full text-left leading-tight pb-8 wrap-break-word">
             {{ service.title }}
           </h3>
           <p class="text-lg text-gray-600 mb-4 sm:mb-6 leading-relaxed font-segoe">
             {{ service.description }}
           </p>
           <a [href]="service.link"
-            class="flex items-center  text-xs sm:text-base text-gray-600 font-medium group-hover:text-p-500 transition-colors duration-200 ">
+            class="flex items-center  text-xs sm:text-base text-gray-600        group-hover:text-p-500 transition-colors duration-200 ">
             {{ service.linkText }} <i class="fa-solid fa-chevron-right pl-1.5" style="font-size: 1rem;"
               aria-hidden="true"></i>
           </a>

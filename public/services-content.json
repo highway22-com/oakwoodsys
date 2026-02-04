@@ -219,10 +219,134 @@
     "cloud-and-infrastructure": {
       "slug": "cloud-and-infrastructure",
       "title": "Cloud & Infrastructure",
-      "description": "Modernize, secure, and optimize your cloud estate with Oakwood and Microsoft Azure.",
+      "description": "Future-proof your business with scalable, secure, and optimized cloud solutions.",
       "backgroundImage": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1920&q=80",
       "mainDescription": {
-        "text": "Transform your infrastructure with Microsoft Azure. We help you modernize, secure, and optimize your cloud estate to achieve scalability, reliability, and cost efficiency."
+        "text": "We help you modernize and manage cloud environments with secure, scalable infrastructure built on Azure. Migrate Windows, Linux, SQL, or VMware workloads and unify hybrid resources with Azure Arc, AVD, and ARO to deliver performance, security, and long-term agility."
+      },
+      "serviceAreas": {
+        "tagline": "OUR SERVICES",
+        "title": "Service areas",
+        "description": "We specialize in delivering comprehensive cloud services designed to meet your specific business needs.",
+        "backgroundImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
+        "serviceAreas": [
+          {
+            "icon": "/assets/cloud.png",
+            "badges": ["SERVICE"],
+            "title": "Server & application migration",
+            "subtitle": "Move workloads to Azure with minimal disruption and maximum reliability.",
+            "features": [
+              "Assessment and discovery for Windows, Linux, and SQL workloads",
+              "Lift-and-shift and refactor strategies with Azure Migrate",
+              "Application modernization and containerization on AKS"
+            ]
+          },
+          {
+            "icon": "/assets/cloud.png",
+            "badges": ["SERVICE"],
+            "title": "Hybrid & multi-cloud management",
+            "subtitle": "Unify on-premises and cloud with consistent governance and operations.",
+            "features": [
+              "Azure Arc for unified management across environments",
+              "Multi-cloud visibility, cost management, and policy enforcement",
+              "Automation and DevOps across hybrid estates"
+            ]
+          },
+          {
+            "icon": "/assets/cloud.png",
+            "badges": ["SERVICE"],
+            "title": "Cloud security & governance",
+            "subtitle": "Protect your cloud estate with identity, compliance, and threat detection.",
+            "features": [
+              "Zero Trust and identity with Entra ID and Conditional Access",
+              "Policy as code and compliance with Azure Policy and Defender",
+              "Security posture management and incident response"
+            ]
+          },
+          {
+            "icon": "/assets/cloud.png",
+            "badges": ["SERVICE"],
+            "title": "Virtual desktop & collaboration",
+            "subtitle": "Deliver secure, high-performance virtual desktops and apps from the cloud.",
+            "features": [
+              "Azure Virtual Desktop (AVD) for Windows and Linux desktops",
+              "Optimized for remote work, contractors, and branch offices",
+              "Integration with Microsoft 365 and Teams"
+            ]
+          }
+        ]
+      },
+      "solutionAccelerators": {
+        "title": "Solution accelerators",
+        "description": "Expedite your cloud journey with predefined frameworks and proven methodologies.",
+        "backgroundImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
+        "cards": [
+          {
+            "icon": "/assets/cloud.png",
+            "title": "Accelerating sans blueprint",
+            "description": "Structured assessment and roadmap to accelerate your cloud adoption with clear milestones and best practices."
+          },
+          {
+            "icon": "/assets/cloud.png",
+            "title": "Intelligent migration framework",
+            "description": "Data-driven migration planning and execution to move workloads to Azure with minimal risk and downtime."
+          },
+          {
+            "icon": "/assets/cloud.png",
+            "title": "Cloud governance playbook",
+            "description": "Policies, guardrails, and automation to maintain security and compliance across your cloud estate."
+          },
+          {
+            "icon": "/assets/cloud.png",
+            "title": "Cost optimization toolkit",
+            "description": "Right-sizing, reservations, and FinOps practices to reduce cost while improving performance."
+          }
+        ]
+      },
+      "featuredCaseStudySlugs": ["seamless-data-center-migration", "enterprise-reporting-and-data-roadmap-development"],
+      "featuredCaseStudy": {
+        "featuredLabel": "FEATURED CASE STUDY",
+        "categoryTag": "Cloud & Infrastructure",
+        "title": "VMware to Azure migration",
+        "description": "A major organization needed to migrate critical VMware workloads to Azure while maintaining availability and compliance. Oakwood delivered a phased migration with Azure VMware Solution and hybrid connectivity, enabling a seamless transition and long-term cloud agility.",
+        "imageSrc": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
+        "primaryCta": {
+          "text": "View Case Study",
+          "link": "/resources/case-studies/seamless-data-center-migration"
+        },
+        "secondaryCta": {
+          "text": "Explore All Case Studies",
+          "link": "/resources/case-studies"
+        }
+      },
+      "trustedPartners": {
+        "title": "Trusted by industry leaders",
+        "partners": [
+          { "name": "Microsoft", "logo": "/assets/logos/microsoft.png", "alt": "Microsoft" },
+          { "name": "ARCO", "logo": "/assets/logos/arco.png", "alt": "ARCO" },
+          { "name": "Clarios", "logo": "/assets/logos/clarios.png", "alt": "Clarios" },
+          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+        ]
+      },
+      "whyOakwood": {
+        "tagline": "UNLOCK THE FULL POTENTIAL OF YOUR DATA",
+        "title": "Unlock the full potential of your data",
+        "description": "From data warehousing and analytics to machine learning and AI, we help you leverage your data for competitive advantage.",
+        "imageSrc": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&q=80",
+        "features": [
+          { "icon": "/assets/cloud.png", "title": "Microsoft-centric approach", "description": "Deep expertise in Azure and Microsoft stack for consistent, supported solutions." },
+          { "icon": "/assets/cloud.png", "title": "Security by default", "description": "Identity, encryption, and compliance built into every engagement." },
+          { "icon": "/assets/cloud.png", "title": "Data-driven decisions", "description": "Insights and automation to optimize cost, performance, and governance." },
+          { "icon": "/assets/cloud.png", "title": "Scalability", "description": "Architectures that grow with your business and workload demands." },
+          { "icon": "/assets/cloud.png", "title": "Hybrid-by-design", "description": "Seamless integration between on-premises and cloud with Azure Arc and hybrid services." },
+          { "icon": "/assets/cloud.png", "title": "Compliance-focused", "description": "Frameworks and controls to meet industry and regulatory requirements." }
+        ]
+      },
+      "ctaSection": {
+        "headline": "Modernize your infrastructure with purpose",
+        "subheadline": "Our cloud solutions are designed to deliver real business value, not just technology.",
+        "primaryCta": { "text": "Speak to an expert", "link": "/contact-us" },
+        "secondaryCta": { "text": "View our services", "link": "/services" }
       },
       "cta": {
         "primary": {
@@ -240,10 +364,133 @@
     "application-innovation": {
       "slug": "application-innovation",
       "title": "Application Innovation",
-      "description": "Ship faster, run safer, and scale efficiently with modern applications on Azure.",
+      "description": "We help you modernize existing applications and build new digital solutions using cloud and AI.",
       "backgroundImage": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1920&q=80",
       "mainDescription": {
-        "text": "Build and deploy modern applications on Azure that ship faster, run safer, and scale efficiently. We help you leverage cloud-native technologies to accelerate innovation and deliver exceptional user experiences."
+        "text": "We help you modernize existing applications and build new digital solutions using cloud and AI. Leverage APIs, low-code, and Copilot to deliver secure, high-performance applications that ship faster and scale efficiently."
+      },
+      "serviceAreas": {
+        "tagline": "OUR SERVICES",
+        "title": "Service areas",
+        "description": "We specialize in application modernization, custom development, and integration to accelerate your digital transformation.",
+        "backgroundImage": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1920&q=80",
+        "serviceAreas": [
+          {
+            "icon": "/assets/app-innovation.png",
+            "badges": ["SERVICE"],
+            "title": "Application modernization",
+            "subtitle": "Modernize existing applications, ensuring they are scalable, secure, and cost-effective.",
+            "features": [
+              "Legacy refactoring and cloud-native migration",
+              "Containerization and orchestration with AKS",
+              "Performance, security, and cost optimization"
+            ]
+          },
+          {
+            "icon": "/assets/app-innovation.png",
+            "badges": ["SERVICE"],
+            "title": "Custom app development / APIs",
+            "subtitle": "Build bespoke applications and robust APIs tailored to your business needs.",
+            "features": [
+              "Full-stack development with Azure and modern frameworks",
+              "REST and Graph APIs with governance and versioning",
+              "Microservices and serverless on Azure"
+            ]
+          },
+          {
+            "icon": "/assets/app-innovation.png",
+            "badges": ["SERVICE"],
+            "title": "Power apps / Power platform",
+            "subtitle": "Leverage Microsoft Power Platform for rapid application development and automation.",
+            "features": [
+              "Power Apps, Power Automate, and Power BI integration",
+              "Low-code solutions with custom connectors",
+              "Citizen development and governance"
+            ]
+          },
+          {
+            "icon": "/assets/app-innovation.png",
+            "badges": ["SERVICE"],
+            "title": "Integration services (Azure Integration services)",
+            "subtitle": "Seamlessly connect and unify data across disparate systems and applications.",
+            "features": [
+              "Azure Logic Apps, Service Bus, and Event Grid",
+              "API Management and enterprise integration patterns",
+              "Hybrid and multi-cloud integration"
+            ]
+          }
+        ]
+      },
+      "solutionAccelerators": {
+        "title": "Solution accelerators",
+        "description": "Expedite your application and AI journey with predefined frameworks and proven methodologies.",
+        "backgroundImage": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&q=80",
+        "cards": [
+          {
+            "icon": "/assets/app-innovation.png",
+            "title": "Agenda AI framework",
+            "description": "Our framework leverages Azure AI to provide intelligent solutions that accelerate business outcomes."
+          },
+          {
+            "icon": "/assets/app-innovation.png",
+            "title": "Oakwood AI pattern library",
+            "description": "A comprehensive library of AI patterns and best practices for rapid deployment."
+          },
+          {
+            "icon": "/assets/app-innovation.png",
+            "title": "Oakwood AI application playbooks",
+            "description": "Step-by-step guides to build and deploy AI-powered applications efficiently."
+          },
+          {
+            "icon": "/assets/app-innovation.png",
+            "title": "Oakwood AI copilots playbook",
+            "description": "Our playbook helps you implement and customize AI Copilots for enhanced productivity."
+          }
+        ]
+      },
+      "featuredCaseStudySlugs": ["seamless-data-center-migration", "enterprise-reporting-and-data-roadmap-development"],
+      "featuredCaseStudy": {
+        "featuredLabel": "CUSTOMER INNOVATION",
+        "categoryTag": "Application Innovation",
+        "title": "Modernized payments platform",
+        "description": "We helped transform a leading organization's payment experience with a modernized platform built on Azure. The solution delivers scalability, security, and a seamless experience for customers and operations.",
+        "imageSrc": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1920&q=80",
+        "primaryCta": {
+          "text": "View Project",
+          "link": "/resources/case-studies"
+        },
+        "secondaryCta": {
+          "text": "Read more",
+          "link": "/resources/case-studies"
+        }
+      },
+      "trustedPartners": {
+        "title": "Proud partners",
+        "partners": [
+          { "name": "Microsoft", "logo": "/assets/logos/microsoft.png", "alt": "Microsoft" },
+          { "name": "ARCO", "logo": "/assets/logos/arco.png", "alt": "ARCO" },
+          { "name": "Clarios", "logo": "/assets/logos/clarios.png", "alt": "Clarios" },
+          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+        ]
+      },
+      "whyOakwood": {
+        "tagline": "UNLOCK THE FULL POTENTIAL OF YOUR DATA",
+        "title": "Unlock the full potential of your data",
+        "description": "From modern applications to AI-powered solutions, we help you turn ideas into high-impact outcomes.",
+        "imageSrc": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
+        "features": [
+          { "icon": "/assets/app-innovation.png", "title": "Outcome-driven", "description": "We focus on business results and measurable impact, not just technology delivery." },
+          { "icon": "/assets/app-innovation.png", "title": "Modern platforms", "description": "Azure, Power Platform, and AI services for scalable, secure applications." },
+          { "icon": "/assets/app-innovation.png", "title": "Deeper experience", "description": "Expert teams with deep experience in application development and integration." },
+          { "icon": "/assets/app-innovation.png", "title": "Fast and efficient delivery", "description": "Agile delivery and accelerators to ship faster without compromising quality." },
+          { "icon": "/assets/app-innovation.png", "title": "Lifetime partnership", "description": "Ongoing support and evolution to keep your applications aligned with your goals." }
+        ]
+      },
+      "ctaSection": {
+        "headline": "Turn ideas into high-impact applications",
+        "subheadline": "Our application and AI solutions are designed to deliver real business value and exceptional user experiences.",
+        "primaryCta": { "text": "Schedule a Consultation", "link": "/contact-us" },
+        "secondaryCta": { "text": "View Resources", "link": "/resources" }
       },
       "cta": {
         "primary": {
@@ -260,11 +507,134 @@
     },
     "high-performance-computing": {
       "slug": "high-performance-computing",
-      "title": "High-Performance Computing (HPC)",
+      "title": "High Performance Computing (HPC)",
       "description": "Scale simulations, AI training, and PLM workloads with the power of Azure HPC.",
       "backgroundImage": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1920&q=80",
       "mainDescription": {
-        "text": "Unlock the power of Azure HPC to scale your most demanding workloads. From complex simulations to AI training and PLM, we help you achieve maximum computational performance and efficiency."
+        "text": "Oakwood helps you accelerate AI training, simulations, and engineering workloads by extending your HPC environment into Azure. Our Team enables seamless cloud bursting, targeted performance utilization, and secure, compliant architectures built for scale so you can move faster and innovate without on-prem limitations."
+      },
+      "serviceAreas": {
+        "tagline": "OUR SERVICES",
+        "title": "Service areas",
+        "description": "We specialize in hybrid HPC, performance optimization, migration, and managed HPC services for Azure.",
+        "backgroundImage": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1920&q=80",
+        "serviceAreas": [
+          {
+            "icon": "/assets/hpc.png",
+            "badges": ["SERVICE"],
+            "title": "Hybrid HPC architecture and bursting",
+            "subtitle": "Leverage existing on-prem HPC investments while extending to Azure for scalable, on-demand compute.",
+            "features": [
+              "Seamlessly integrate on-prem and cloud resources",
+              "Achieve infinite scalability for peak workloads",
+              "Optimize cost by only paying for cloud resources when needed"
+            ]
+          },
+          {
+            "icon": "/assets/hpc.png",
+            "badges": ["SERVICE"],
+            "title": "HPC performance benchmarking and tuning",
+            "subtitle": "Optimize overall application performance and cost efficiency across a variety of compute platforms.",
+            "features": [
+              "Assess and compare performance across on-prem and Azure HPC configurations",
+              "Identify bottlenecks and optimize application settings for maximum throughput",
+              "Ensure cost-effective resource utilization for any workload"
+            ]
+          },
+          {
+            "icon": "/assets/hpc.png",
+            "badges": ["SERVICE"],
+            "title": "HPC migration & modernization",
+            "subtitle": "Move your complex HPC workloads to Azure with confidence, leveraging modern tools and best practices.",
+            "features": [
+              "Develop a phased migration strategy to minimize disruption and downtime",
+              "Refactor and containerize applications for cloud-native performance",
+              "Implement robust security and compliance measures for your HPC estate"
+            ]
+          },
+          {
+            "icon": "/assets/hpc.png",
+            "badges": ["SERVICE"],
+            "title": "Managed HPC services",
+            "subtitle": "Ensure full stack HPC service delivery for your business.",
+            "features": [
+              "24/7 monitoring and support for your Azure HPC environment",
+              "Proactive performance tuning and optimization to maximize efficiency",
+              "Cost management and reporting to ensure predictable spending"
+            ]
+          }
+        ]
+      },
+      "solutionAccelerators": {
+        "title": "Solution accelerators",
+        "description": "Our solution accelerators are pre-built modules for various HPC use cases, providing a jumpstart to your Azure HPC environment and reducing time to value.",
+        "backgroundImage": "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=1920&q=80",
+        "cards": [
+          {
+            "icon": "/assets/hpc.png",
+            "title": "Hybrid HPC bursting framework",
+            "description": "Easily extend your on-prem HPC clusters to Azure for peak workloads with a proven bursting framework, reducing infrastructure costs."
+          },
+          {
+            "icon": "/assets/hpc.png",
+            "title": "HPC optimization and benchmarking toolkit",
+            "description": "Leverage our comprehensive toolkit to optimize and benchmark your HPC applications on Azure, ensuring maximum performance and cost-efficiency."
+          },
+          {
+            "icon": "/assets/hpc.png",
+            "title": "HPC compaction and resiliency blueprint",
+            "description": "Implement best practices for data compaction, high-availability, and disaster recovery for your critical HPC data on Azure."
+          },
+          {
+            "icon": "/assets/hpc.png",
+            "title": "HPC operations automation library",
+            "description": "Automate common HPC operational tasks like job scheduling, resource allocation, and monitoring for streamlined management."
+          }
+        ]
+      },
+      "featuredCaseStudySlugs": ["seamless-data-center-migration", "enterprise-reporting-and-data-roadmap-development"],
+      "featuredCaseStudy": {
+        "featuredLabel": "FEATURED USE CASE",
+        "categoryTag": "HPC",
+        "title": "CFD simulation acceleration",
+        "description": "Utilize Azure HPC to run CFD simulations more efficiently than ever before. Our tailored solutions optimize your workflow, enabling faster iterations and more accurate results for fluid dynamics.",
+        "imageSrc": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1920&q=80",
+        "primaryCta": {
+          "text": "Learn More",
+          "link": "/resources/case-studies"
+        },
+        "secondaryCta": {
+          "text": "View all use cases",
+          "link": "/resources/case-studies"
+        }
+      },
+      "trustedPartners": {
+        "title": "Trusted by industry leaders",
+        "partners": [
+          { "name": "Microsoft", "logo": "/assets/logos/microsoft.png", "alt": "Microsoft" },
+          { "name": "ARCO", "logo": "/assets/logos/arco.png", "alt": "ARCO" },
+          { "name": "Clarios", "logo": "/assets/logos/clarios.png", "alt": "Clarios" },
+          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+        ]
+      },
+      "whyOakwood": {
+        "tagline": "UNLOCK THE FULL POTENTIAL OF YOUR DATA",
+        "title": "Unlock the full potential of your data",
+        "description": "We help you transform raw data into actionable insights through innovative data platforms, delivering a competitive edge.",
+        "imageSrc": "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=1920&q=80",
+        "features": [
+          { "icon": "/assets/hpc.png", "title": "Parallel throughput", "description": "Achieve unprecedented data processing speeds." },
+          { "icon": "/assets/hpc.png", "title": "Transparent scale", "description": "Scale data platforms effortlessly on demand." },
+          { "icon": "/assets/hpc.png", "title": "Cost-efficiency", "description": "Optimize costs with flexible, usage-based pricing." },
+          { "icon": "/assets/hpc.png", "title": "Performance enhanced", "description": "Boost application performance across the board." },
+          { "icon": "/assets/hpc.png", "title": "Hybrid flexibility", "description": "Seamlessly integrate on-prem and cloud data sources." }
+        ]
+      },
+      "ctaSection": {
+        "headline": "Move faster with modern compute",
+        "subheadline": "Ready to accelerate your HPC workloads and transform your business? Let's connect.",
+        "primaryCta": { "text": "Get started", "link": "/contact-us" },
+        "secondaryCta": { "text": "Contact us", "link": "/contact-us" }
       },
       "cta": {
         "primary": {
@@ -285,7 +655,129 @@
       "description": "Boost productivity, protect data, and improve employee experience with Microsoft 365 and Copilot.",
       "backgroundImage": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1920&q=80",
       "mainDescription": {
-        "text": "Empower your workforce with Microsoft 365 and Copilot. We help you boost productivity, protect sensitive data, and create exceptional employee experiences that drive collaboration and innovation."
+        "text": "Oakwood helps organizations get real value from Microsoft 365 by aligning identity, devices, collaboration tools, and data protection with business goals. We prepare your environment for Copilot, strengthen security with Intune and Entra ID, and improve Teams and SharePoint to create a secure, productive, and AI ready workplace."
+      },
+      "serviceAreas": {
+        "tagline": "OUR SERVICES",
+        "title": "Service areas",
+        "description": "We specialize in Copilot readiness, Teams and SharePoint, endpoint security, and adoption to maximize your Microsoft 365 investment.",
+        "backgroundImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
+        "serviceAreas": [
+          {
+            "icon": "/assets/modern-work.png",
+            "badges": ["SERVICE"],
+            "title": "Copilot readiness and deployment",
+            "subtitle": "Prepare your environment and deploy Microsoft Copilot for secure, productive AI in the flow of work.",
+            "features": [
+              "Assess readiness for Copilot for M365 and role-based deployment",
+              "Identity, licensing, and data governance alignment",
+              "Change management and adoption support"
+            ]
+          },
+          {
+            "icon": "/assets/modern-work.png",
+            "badges": ["SERVICE"],
+            "title": "Teams and SharePoint modernization",
+            "subtitle": "Modernize collaboration with Teams and SharePoint for better communication and content management.",
+            "features": [
+              "Teams rollout, channels, and meeting experiences",
+              "SharePoint sites, permissions, and migration",
+              "Integration with Power Platform and Viva"
+            ]
+          },
+          {
+            "icon": "/assets/modern-work.png",
+            "badges": ["SERVICE"],
+            "title": "Endpoint management and security",
+            "subtitle": "Protect devices and data with Intune, Entra ID, and conditional access.",
+            "features": [
+              "Microsoft Intune for device management and compliance",
+              "Entra ID and Conditional Access for identity and zero trust",
+              "Data loss prevention and information protection"
+            ]
+          },
+          {
+            "icon": "/assets/modern-work.png",
+            "badges": ["SERVICE"],
+            "title": "Adoption and change management",
+            "subtitle": "Drive adoption and ensure your workforce gets value from Microsoft 365 and Copilot.",
+            "features": [
+              "Adoption planning and success metrics",
+              "Training, champions, and change communications",
+              "Ongoing optimization and feedback loops"
+            ]
+          }
+        ]
+      },
+      "solutionAccelerators": {
+        "title": "Solution accelerators",
+        "description": "Pre-built frameworks and playbooks to accelerate your Modern Work and Copilot journey.",
+        "backgroundImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
+        "cards": [
+          {
+            "icon": "/assets/modern-work.png",
+            "title": "Copilot deployment accelerator",
+            "description": "Structured approach to assess, prepare, and deploy Copilot for Microsoft 365 with governance and adoption in mind."
+          },
+          {
+            "icon": "/assets/modern-work.png",
+            "title": "Secure power platform framework",
+            "description": "Govern and secure Power Platform environments alongside Microsoft 365 for low-code and automation."
+          },
+          {
+            "icon": "/assets/modern-work.png",
+            "title": "Microsoft 365 license optimization playbook",
+            "description": "Right-size licensing and usage to maximize value and control costs across M365 workloads."
+          },
+          {
+            "icon": "/assets/modern-work.png",
+            "title": "Zero trust baseline configuration",
+            "description": "Implement zero trust principles with Entra ID, Intune, and Defender for a secure modern workplace."
+          }
+        ]
+      },
+      "featuredCaseStudySlugs": ["seamless-data-center-migration", "enterprise-reporting-and-data-roadmap-development"],
+      "featuredCaseStudy": {
+        "featuredLabel": "FEATURED CASE STUDY",
+        "categoryTag": "Modern Work",
+        "title": "Copilot rollout",
+        "description": "A manufacturing company needed to deploy Microsoft Copilot for 12,000 employees while maintaining security and driving adoption. Oakwood delivered a phased rollout with readiness assessment, governance, and change management, enabling a successful enterprise-wide Copilot deployment.",
+        "imageSrc": "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1920&q=80",
+        "primaryCta": {
+          "text": "See full case study",
+          "link": "/resources/case-studies"
+        },
+        "secondaryCta": {
+          "text": "View all case studies",
+          "link": "/resources/case-studies"
+        }
+      },
+      "trustedPartners": {
+        "title": "Trusted advisors partners",
+        "partners": [
+          { "name": "Microsoft", "logo": "/assets/logos/microsoft.png", "alt": "Microsoft" },
+          { "name": "ARCO", "logo": "/assets/logos/arco.png", "alt": "ARCO" },
+          { "name": "Clarios", "logo": "/assets/logos/clarios.png", "alt": "Clarios" },
+          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+        ]
+      },
+      "whyOakwood": {
+        "tagline": "UNLOCK THE FULL POTENTIAL OF YOUR DATA",
+        "title": "Unlock the full potential of your data",
+        "description": "From data warehousing to AI readiness, we help you leverage your data and platforms for competitive advantage.",
+        "imageSrc": "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1920&q=80",
+        "features": [
+          { "icon": "/assets/modern-work.png", "title": "Data warehouse modernization", "description": "Modernize legacy data estates for analytics and AI." },
+          { "icon": "/assets/modern-work.png", "title": "Azure for startups", "description": "Cloud foundations and scale for growing organizations." },
+          { "icon": "/assets/modern-work.png", "title": "AI ready foundations", "description": "Prepare data and governance for Copilot and AI workloads." },
+          { "icon": "/assets/modern-work.png", "title": "Adoption expertise", "description": "Drive adoption and value from Microsoft 365 and Copilot." }
+        ]
+      },
+      "ctaSection": {
+        "headline": "Redefine how your organization works",
+        "subheadline": "Our Modern Work and Copilot solutions are designed to deliver a secure, productive, and AI ready workplace.",
+        "primaryCta": { "text": "Learn More", "link": "/resources" },
+        "secondaryCta": { "text": "Request a Quote", "link": "/contact-us" }
       },
       "cta": {
         "primary": {
@@ -294,7 +786,7 @@
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "View Resources",
+          "text": "Learn More",
           "link": "/resources",
           "borderColor": "#FFFFFF"
         }
@@ -306,7 +798,129 @@
       "description": "Keep your Microsoft cloud running fast, secure, and cost effective with Oakwood.",
       "backgroundImage": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1920&q=80",
       "mainDescription": {
-        "text": "Keep your Microsoft cloud environment running at peak performance with Oakwood's managed services. We provide expert support, proactive monitoring, and cost optimization to ensure your cloud infrastructure stays fast, secure, and efficient."
+        "text": "Oakwood delivers scalable managed services that keep your IT environment secure, reliable, and cost-efficient. Our Team provides continuous monitoring, proactive security, and expert support across Azure, Microsoft 365, SQL, SharePoint, and Intune so your staff can focus on strategic work instead of daily issues."
+      },
+      "serviceAreas": {
+        "tagline": "OUR SERVICES",
+        "title": "Service areas",
+        "description": "We specialize in Azure, M365, Intune, and end-to-end managed services to keep your cloud running at peak performance.",
+        "backgroundImage": "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1920&q=80",
+        "serviceAreas": [
+          {
+            "icon": "/assets/managed-services.png",
+            "badges": ["SERVICE"],
+            "title": "Azure and Microsoft 365",
+            "subtitle": "Optimize and scale your cloud infrastructure, reduce operational costs, and enhance security with expert support across Azure, Microsoft 365, SQL, and SharePoint. We help you:",
+            "features": [
+              "Implement best practices for Azure and M365 governance",
+              "Proactive monitoring and cost optimization",
+              "Ongoing support for SQL, SharePoint, and workloads"
+            ]
+          },
+          {
+            "icon": "/assets/managed-services.png",
+            "badges": ["SERVICE"],
+            "title": "M365 managed services (Intune / Endpoint)",
+            "subtitle": "Ensure your M365 environment is secure, compliant, and performing optimally. We provide comprehensive management for your Intune and Endpoint solutions, including:",
+            "features": [
+              "Device management and compliance policies",
+              "Application deployment and updates",
+              "Proactive monitoring and incident response"
+            ]
+          },
+          {
+            "icon": "/assets/managed-services.png",
+            "badges": ["SERVICE"],
+            "title": "Essential support",
+            "subtitle": "Timely support and expert guidance for critical issues. We offer:",
+            "features": [
+              "24/7 monitoring and alerting",
+              "Help desk and tiered support",
+              "Regular maintenance and patching"
+            ]
+          },
+          {
+            "icon": "/assets/managed-services.png",
+            "badges": ["SERVICE"],
+            "title": "Managed services complete",
+            "subtitle": "Comprehensive managed services designed to proactively optimize your IT environment. Our services include:",
+            "features": [
+              "Strategic consulting and roadmap",
+              "Vendor and license management",
+              "Security assessments and compliance"
+            ]
+          }
+        ]
+      },
+      "solutionAccelerators": {
+        "title": "Solution accelerators",
+        "description": "Our proven methodologies, tools, and expertise accelerate your path to success. We help you unlock the full potential of your Microsoft investments, ensuring rapid deployment and optimal performance.",
+        "backgroundImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
+        "cards": [
+          {
+            "icon": "/assets/managed-services.png",
+            "title": "Proactive monitoring & alerting (Continuous optimization)",
+            "description": "Continuous monitoring, alerting, and optimization to keep your cloud and M365 environment healthy and cost-effective."
+          },
+          {
+            "icon": "/assets/managed-services.png",
+            "title": "Optimization toolkit",
+            "description": "Tools and playbooks to right-size resources, optimize licensing, and improve performance across Azure and M365."
+          },
+          {
+            "icon": "/assets/managed-services.png",
+            "title": "Automation foundry",
+            "description": "Automate routine operations, provisioning, and remediation to reduce manual effort and improve consistency."
+          },
+          {
+            "icon": "/assets/managed-services.png",
+            "title": "Service continuity (BDR / DR accelerator)",
+            "description": "Backup, disaster recovery, and business continuity frameworks to protect your critical workloads and data."
+          }
+        ]
+      },
+      "featuredCaseStudySlugs": ["seamless-data-center-migration", "enterprise-reporting-and-data-roadmap-development"],
+      "featuredCaseStudy": {
+        "featuredLabel": "FEATURED SERVICES",
+        "categoryTag": "Managed Services",
+        "title": "Copilot rollout",
+        "description": "We help you plan, implement, and optimize Microsoft Copilot across your organization. Our approach includes readiness assessments, pilot programs, and full-scale deployment to maximize the value of Copilot.",
+        "imageSrc": "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1920&q=80",
+        "primaryCta": {
+          "text": "Learn More",
+          "link": "/resources/case-studies"
+        },
+        "secondaryCta": {
+          "text": "View all case studies",
+          "link": "/resources/case-studies"
+        }
+      },
+      "trustedPartners": {
+        "title": "Trusted partners",
+        "partners": [
+          { "name": "Microsoft", "logo": "/assets/logos/microsoft.png", "alt": "Microsoft" },
+          { "name": "ARCO", "logo": "/assets/logos/arco.png", "alt": "ARCO" },
+          { "name": "Clarios", "logo": "/assets/logos/clarios.png", "alt": "Clarios" },
+          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+        ]
+      },
+      "whyOakwood": {
+        "tagline": "UNLOCK THE FULL POTENTIAL OF YOUR DATA",
+        "title": "Unlock the full potential of your data",
+        "description": "Our expert services and solutions empower your organization to leverage data for informed decisions and competitive advantage.",
+        "imageSrc": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
+        "features": [
+          { "icon": "/assets/managed-services.png", "title": "Proactive threat hunting", "description": "Identify and mitigate threats before they impact your environment." },
+          { "icon": "/assets/managed-services.png", "title": "Security automation", "description": "Automate security policies, compliance checks, and response playbooks." },
+          { "icon": "/assets/managed-services.png", "title": "Continuous improvement", "description": "Ongoing optimization and recommendations to improve performance and cost." },
+          { "icon": "/assets/managed-services.png", "title": "Cloud stability", "description": "Reliable, highly available operations so your business can run without interruption." }
+        ]
+      },
+      "ctaSection": {
+        "headline": "Stay focused on growth while we manage the rest",
+        "subheadline": "Let our experts handle your cloud and M365 operations, so you can concentrate on strategic initiatives.",
+        "primaryCta": { "text": "View Our Services", "link": "/services" },
+        "secondaryCta": { "text": "Contact Us", "link": "/contact-us" }
       },
       "cta": {
         "primary": {
@@ -315,7 +929,7 @@
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "View Resources",
+          "text": "Learn More",
           "link": "/resources",
           "borderColor": "#FFFFFF"
         }

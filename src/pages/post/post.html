@@ -2,7 +2,7 @@
 @if (loading()) {
 <div class="min-h-screen flex items-center justify-center">
   <div class="text-center">
-    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    <div class="inline-block animate-spin      h-12 w-12 border-b-2 border-blue-600"></div>
     <p class="mt-4 text-gray-600">Loading post...</p>
   </div>
 </div>
@@ -45,17 +45,17 @@
           <div class="flex items-center gap-3">
             @if (post()!.authorPerson?.picture) {
             <img [src]="post()!.authorPerson!.picture!" [alt]="authorDisplayName(post()!)"
-              class="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+              class="w-10 h-10      object-cover flex-shrink-0" />
             } @else {
-            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <span class="text-white font-semibold">
+            <div class="w-10 h-10 bg-white/20      flex items-center justify-center">
+              <span class="text-white      ">
                 {{ (post()!.authorPerson?.name || post()!.authorPerson?.firstName || post()!.author?.node?.firstName ||
                 'A').charAt(0) }}
               </span>
             </div>
             }
             <div>
-              <p class="text-sm font-medium">{{ authorDisplayName(post()!) }}</p>
+              <p class="text-sm       ">{{ authorDisplayName(post()!) }}</p>
             </div>
           </div>
           }
@@ -114,8 +114,8 @@
                 @for (item of tableOfContents(); track item.id) {
                 <a (click)="scrollToSection(item.id)"
                   [class]="activeSection() === item.id 
-                     ? 'block px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition-colors cursor-pointer' 
-                     : 'block px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer'">
+                     ? 'block px-3 py-2 text-sm        text-blue-600 bg-blue-50    transition-colors cursor-pointer' 
+                     : 'block px-3 py-2 text-sm        text-gray-700 hover:text-blue-600 hover:bg-gray-50    transition-colors cursor-pointer'">
                   {{ item.text }}
                 </a>
                 } @empty {
@@ -134,7 +134,7 @@
             </div>
             } @else if (post()!.excerpt) {
             <div class="mb-8 sm:mb-12 p-6 bg-blue-50 border-l-4 border-blue-600 rounded-r-lg">
-              <p class="text-lg sm:text-xl text-gray-700 leading-relaxed font-medium">
+              <p class="text-lg sm:text-xl text-gray-700 leading-relaxed       ">
                 {{ post()!.excerpt }}
               </p>
             </div>
@@ -151,10 +151,9 @@
               <div class="flex items-start gap-4 sm:gap-6">
                 @if (post()!.authorPerson?.picture) {
                 <img [src]="post()!.authorPerson!.picture!" [alt]="authorDisplayName(post()!)"
-                  class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover flex-shrink-0" />
+                  class="w-16 h-16 sm:w-20 sm:h-20      object-cover flex-shrink-0" />
                 } @else {
-                <div
-                  class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100      flex items-center justify-center flex-shrink-0">
                   <span class="text-blue-600 font-bold text-xl sm:text-2xl">
                     {{ (post()!.authorPerson?.name || post()!.authorPerson?.firstName || post()!.author?.node?.firstName
                     || 'A').charAt(0) }}
@@ -182,7 +181,7 @@
             <!-- Navigation -->
             <div class="mt-12 sm:mt-16 pt-8 sm:pt-12 border-t border-gray-200">
               <a routerLink="/bloq"
-                class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200">
+                class="inline-flex items-center text-blue-600 hover:text-blue-700        transition-colors duration-200">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
@@ -203,7 +202,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <!-- Left Column: Image -->
           <div class="order-2 lg:order-1">
-            <div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden">
+            <div class="relative w-full aspect-[4/3]    overflow-hidden">
               <img src="/assets/contact-hero.jpg" alt="Team collaboration" class="w-full h-full object-cover" />
             </div>
             <div class="flex items-center gap-6 mt-6">
@@ -222,21 +221,21 @@
             </p>
             <form class="space-y-6">
               <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Your email address</label>
+                <label for="email" class="block text-sm        text-gray-700 mb-2">Your email address</label>
                 <input type="email" id="email" name="email"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
+                  class="w-full px-4 py-3 border border-gray-300    focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
                   placeholder="your.email@example.com" />
               </div>
               <div>
-                <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Your company name</label>
+                <label for="company" class="block text-sm        text-gray-700 mb-2">Your company name</label>
                 <input type="text" id="company" name="company"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
+                  class="w-full px-4 py-3 border border-gray-300    focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
                   placeholder="Company Name" />
               </div>
               <div>
-                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Your message</label>
+                <label for="message" class="block text-sm        text-gray-700 mb-2">Your message</label>
                 <textarea id="message" name="message" rows="4"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors resize-none"
+                  class="w-full px-4 py-3 border border-gray-300    focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors resize-none"
                   placeholder="Tell us about your project..."></textarea>
               </div>
               <div class="flex items-start">
@@ -247,7 +246,7 @@
                 </label>
               </div>
               <button type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-200">
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white       px-6 py-3    transition-colors duration-200">
                 Send Message
               </button>
             </form>
@@ -274,14 +273,14 @@
           <!-- Related Post Cards - Placeholder -->
           @for (item of [1, 2, 3]; track $index) {
           <article
-            class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            class="bg-white border border-gray-200    overflow-hidden hover:shadow-lg transition-shadow duration-300">
             <div class="relative w-full h-48 overflow-hidden">
               <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80" alt="Related post"
                 class="w-full h-full object-cover" />
             </div>
             <div class="p-6">
               <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-semibold uppercase text-white bg-blue-600 px-3 py-1 rounded-full">
+                <span class="text-xs       uppercase text-white bg-blue-600 px-3 py-1     ">
                   Technology
                 </span>
                 <span class="text-xs text-gray-500">Dec 1, 2025</span>
@@ -292,7 +291,7 @@
               <p class="text-sm text-gray-600 mb-4 line-clamp-2">
                 Brief description of the related blog post content...
               </p>
-              <a href="#" class="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center">
+              <a href="#" class="text-sm text-blue-600 hover:text-blue-700        inline-flex items-center">
                 Read more
                 <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -318,11 +317,11 @@
         </p>
         <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
           <a routerLink="/contact-us"
-            class="inline-block px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200">
+            class="inline-block px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white          transition-colors duration-200">
             Let's talk project
           </a>
           <a href="#"
-            class="inline-block px-8 py-3 bg-white hover:bg-gray-50 text-blue-600 font-semibold rounded-lg border-2 border-blue-600 transition-colors duration-200">
+            class="inline-block px-8 py-3 bg-white hover:bg-gray-50 text-blue-600          border-2 border-blue-600 transition-colors duration-200">
             Schedule a call
           </a>
         </div>

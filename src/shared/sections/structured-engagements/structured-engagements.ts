@@ -100,7 +100,7 @@ export class StructuredEngagementsSectionComponent {
     }
   }
 
-  /** Solo la clase de fondo del contenedor del icono (para combinar con w-[50px] rounded-xl, etc.). */
+  /** Solo la clase de fondo del contenedor del icono (para combinar con w-[50px]      , etc.). */
   getOfferIconBgClass(borderColor?: string): string {
     switch (this.normalizeBorderColor(borderColor)) {
       case 'blue': return 'bg-blue-500/20';
@@ -114,10 +114,10 @@ export class StructuredEngagementsSectionComponent {
   getOfferIconContainerClasses(borderColor?: string): Record<string, boolean> {
     const c = this.normalizeBorderColor(borderColor);
     return {
-      'w-12 h-12 sm:w-14 sm:h-14 bg-blue-500/20 rounded-lg flex items-center justify-center': c === 'blue',
-      'w-12 h-12 sm:w-14 sm:h-14 bg-orange-500/20 rounded-lg flex items-center justify-center': c === 'orange',
-      'w-12 h-12 sm:w-14 sm:h-14 bg-green-500/20 rounded-lg flex items-center justify-center': c === 'green',
-      'w-12 h-12 sm:w-14 sm:h-14 bg-purple-500/20 rounded-lg flex items-center justify-center': c === 'purple',
+      'w-12 h-12 sm:w-14 sm:h-14 bg-blue-500/20    flex items-center justify-center': c === 'blue',
+      'w-12 h-12 sm:w-14 sm:h-14 bg-orange-500/20    flex items-center justify-center': c === 'orange',
+      'w-12 h-12 sm:w-14 sm:h-14 bg-green-500/20    flex items-center justify-center': c === 'green',
+      'w-12 h-12 sm:w-14 sm:h-14 bg-purple-500/20    flex items-center justify-center': c === 'purple',
     };
   }
 
@@ -134,8 +134,8 @@ export class StructuredEngagementsSectionComponent {
   getTabClasses(tab: string, activeTab?: string): string {
     const isActive = tab === activeTab;
     return isActive
-      ? 'font-semibold text-p-200 pb-2 border-b-2 border-blue-500 transition-colors duration-200'
-      : 'text-white/70 font-medium  text-p-200 pb-2 border-b-2 border-transparent hover:text-white hover:border-white/30 transition-colors duration-200';
+      ? '      text-p-200 pb-2 border-b-2 border-blue-500 transition-colors duration-200'
+      : 'text-white/70         text-p-200 pb-2 border-b-2 border-transparent hover:text-white hover:border-white/30 transition-colors duration-200';
   }
 
   /** Título para mostrar (string o line1 + line2). */

@@ -19,7 +19,7 @@
         <button (click)="selectFilter(filter)" [class.bg-blue-600]="selectedFilter() === filter"
           [class.text-white]="selectedFilter() === filter" [class.bg-gray-100]="selectedFilter() !== filter"
           [class.text-gray-700]="selectedFilter() !== filter"
-          class="px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium text-sm sm:text-base transition-all duration-200 hover:opacity-90 whitespace-nowrap">
+          class="px-4 sm:px-6 py-2 sm:py-3           text-sm sm:text-base transition-all duration-200 hover:opacity-90 whitespace-nowrap">
           {{ filter }}
         </button>
         }
@@ -35,7 +35,7 @@
         </div>
         <input type="text" [placeholder]="searchPlaceholder()" [value]="searchQuery()"
           (input)="onSearchChange($any($event.target).value)"
-          class="block w-full pl-10 pr-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
+          class="block w-full pl-10 pr-3 py-2 sm:py-3 border border-gray-300    focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
       </div>
     </div>
   </div>
@@ -58,7 +58,7 @@
     <!-- Load More Button -->
     <div class="text-center mt-12 sm:mt-16">
       <button
-        class="px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300 rounded-lg font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200">
+        class="px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300           text-gray-700 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200">
         {{ loadMoreText() }}
       </button>
     </div>
@@ -78,11 +78,11 @@
       </p>
       <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
         <a [routerLink]="ctaSectionContent().ctaPrimary.link"
-          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-200 hover:opacity-90 hover:scale-105    text-white bg-blue-600">
+          class="inline-block text-center        px-6 sm:px-8 py-3 sm:py-4    transition-all duration-200 hover:opacity-90 hover:scale-105    text-white bg-blue-600">
           {{ ctaSectionContent().ctaPrimary.text }}
         </a>
         <a [routerLink]="ctaSectionContent().ctaSecondary.link"
-          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all duration-200 hover:bg-white/50 hover:scale-105    text-blue-600 border-2 border-blue-600">
+          class="inline-block text-center        px-6 sm:px-8 py-3 sm:py-4    transition-all duration-200 hover:bg-white/50 hover:scale-105    text-blue-600 border-2 border-blue-600">
           {{ ctaSectionContent().ctaSecondary.text }}
         </a>
       </div>

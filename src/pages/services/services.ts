@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Title, Meta, DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { VideoHero } from '../../shared/video-hero/video-hero';
+import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
 
 interface ServiceArea {
   icon: string;
@@ -100,6 +101,8 @@ interface ServiceContent {
     text: string;
   };
   serviceAreas?: ServiceAreasSection;
+  /** Slugs para app-featured-case-study (carga case studies desde GraphQL). */
+  featuredCaseStudySlugs?: string[];
   solutionAccelerators?: SolutionAcceleratorsSection;
   featuredCaseStudy?: FeaturedCaseStudy;
   trustedPartners?: TrustedPartnersSection;
@@ -127,7 +130,7 @@ interface ServicesContent {
 
 @Component({
   selector: 'app-services',
-  imports: [CommonModule, RouterLink, VideoHero],
+  imports: [CommonModule, RouterLink, VideoHero, FeaturedCaseStudySectionComponent],
   templateUrl: './services.html',
   styleUrl: './services.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -250,6 +253,16 @@ export class Services implements OnInit, OnDestroy {
     } else {
       carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
+  }
+
+  /** Slugs para app-featured-case-study (desde contenido del servicio o por defecto). */
+  getSlugsForFeaturedSection(): string[] {
+    const slugs = this.content()?.featuredCaseStudySlugs;
+    if (Array.isArray(slugs) && slugs.length > 0) return slugs;
+    return [
+      'secure-azure-research-environment-architecture',
+      'enterprise-reporting-and-data-roadmap-development',
+    ];
   }
 
   private loadContent() {
