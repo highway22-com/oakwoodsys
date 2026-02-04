@@ -12,6 +12,7 @@ import type {
   CaseStudyByResponse,
 } from '../../app/api/graphql';
 import { VideoHero } from "../../shared/video-hero/video-hero";
+import { FeaturedCaseStudyCardsSectionComponent } from "../../shared/sections/featured-case-study-cards/featured-case-study";
 
 /** Contenido de la página Resources (resources-content.json). */
 export interface ResourcesPageContent {
@@ -91,7 +92,7 @@ interface CaseStudyDetail {
 
 @Component({
   selector: 'app-resources-wordpress',
-  imports: [CommonModule, RouterLink, VideoHero],
+  imports: [CommonModule, RouterLink, VideoHero, FeaturedCaseStudyCardsSectionComponent],
   templateUrl: './resources.html',
   styleUrl: './resources.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -187,6 +188,19 @@ export class Resources implements OnInit {
         borderColor: c?.ctaSecondary?.borderColor ?? '#ffffff',
       },
     };
+  }
+
+  /** Misma referencia siempre para evitar que el hijo recargue en cada change detection. */
+  private readonly defaultFeaturedSlugs: string[] = [
+    'secure-azure-research-environment-architecture',
+    'enterprise-reporting-and-data-roadmap-development',
+  ];
+
+  /** Slugs para app-featured-case-study (desde la sección del bucle o por defecto). */
+  getSlugsForFeaturedSection(): string[] {
+    // const slugs = section?.['slugsFeaturedCaseStudies'];
+    // if (Array.isArray(slugs) && slugs.length > 0) return slugs;
+    return this.defaultFeaturedSlugs;
   }
 
   /** Hero (sección con imagen de fondo): valores por defecto si no hay JSON. */

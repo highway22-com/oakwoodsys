@@ -45,7 +45,7 @@
             <div class="bg-gray-50 rounded-lg p-6">
               <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-700 mb-4">Table of contents</h2>
               <nav class="space-y-2">
-                @for (item of tableOfContents; track item.id) {
+                @for (item of getProcessedContent().tableOfContents; track item.id) {
                 <button type="button" (click)="scrollToSection(item.id)"
                   [class.text-blue-600]="activeSection === item.id" [class.text-gray-700]="activeSection !== item.id"
                   class="block w-full text-left text-sm font-medium hover:text-blue-600 transition-colors cursor-pointer">
@@ -65,16 +65,17 @@
         <div class="lg:col-span-9">
           <div class="blog-content prose prose-lg max-w-none">
             <section id="overview" class="mb-12 sm:mb-16 md:mb-20">
-              <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6 sm:mb-8 font-sans">Overview</h2>
-              <div class="case-study-html text-base sm:text-lg text-gray-700 leading-relaxed font-sans" [innerHTML]="getSafeHtml(detail.overview)"></div>
+              <h2 class="sm:text-4xl md:text-3xl font-medium mb-4 ">Overview</h2>
+              <div [innerHTML]="getProcessedContent().processedOverview"></div>
             </section>
             <section id="business-challenge" class="mb-12 sm:mb-16 md:mb-20">
-              <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6 sm:mb-8 font-sans">Business Challenge</h2>
-              <div class="case-study-html text-base sm:text-lg text-gray-700 leading-relaxed font-sans" [innerHTML]="getSafeHtml(detail.businessChallenge)"></div>
+              <h2 class="sm:text-4xl md:text-3xl font-medium mb-4 ">Business
+                Challenge</h2>
+              <div class="" [innerHTML]="getProcessedContent().processedBusinessChallenge"></div>
             </section>
             <section id="solution" class="mb-12 sm:mb-16 md:mb-20">
-              <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6 sm:mb-8 font-sans">Solution</h2>
-              <div class="case-study-html text-base sm:text-lg text-gray-700 leading-relaxed font-sans mb-6 sm:mb-8" [innerHTML]="getSafeHtml(detail.solution)"></div>
+              <h2 class="sm:text-4xl md:text-3xl font-medium mb-4 ">Solution</h2>
+              <div class="" [innerHTML]="getProcessedContent().processedSolution"></div>
               @if (detail.solutionImage) {
               <div class="relative w-full aspect-video sm:h-80 md:h-96 rounded-lg overflow-hidden bg-gray-100">
                 <img [src]="detail.solutionImage" alt="Solution" class="w-full h-full object-cover" loading="lazy" />

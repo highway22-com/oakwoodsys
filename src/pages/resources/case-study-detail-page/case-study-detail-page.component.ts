@@ -74,6 +74,11 @@ export class CaseStudyDetailPageComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** Recibe el TOC calculado por el hijo (secciones + h1–h5 del HTML) para el scroll listener. */
+  onTableOfContentsReady(toc: { id: string; text: string }[]): void {
+    this.tableOfContents.set([...toc, { id: 'related-resources', text: 'Related Resources' }]);
+  }
+
   private loadCaseStudy(slug: string): void {
     this.loading.set(true);
     this.error.set(null);
@@ -167,7 +172,7 @@ export class CaseStudyDetailPageComponent implements OnInit, OnDestroy {
     if (!isPlatformBrowser(this.platformId)) return;
     this.removeScrollListener();
     const listener = (): void => {
-      const toc = CaseStudyDetailPageComponent.TOC;
+      const toc = this.tableOfContents();
       const y = window.scrollY + 200;
       for (let i = toc.length - 1; i >= 0; i--) {
         const el = document.getElementById(toc[i].id);
