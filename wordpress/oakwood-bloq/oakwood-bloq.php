@@ -3,7 +3,7 @@
  * Plugin Name: Oakwood Bloq
  * Plugin URI: https://oakwoodsys.com
  * Description: Registra el CPT "Gen Content" (gen_content) + taxonomía, agrega campos ACF (show_contact_section, related_bloqs) y los expone en WPGraphQL.
- * Version: 3.0.0
+ * Version: 3.0.1
  * Author: Aetro
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -183,6 +183,59 @@ function oakwood_bloq_register_graphql_fields() {
 				}
 
 				return (bool) $value;
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'tags',
+		array(
+			'type'        => array( 'list_of' => 'String' ),
+			'description' => __( 'Tags (ACF: tags).', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = null;
+				if ( is_object( $post ) && isset( $post->ID ) ) {
+					$post_id = (int) $post->ID;
+				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
+					$post_id = (int) $post['databaseId'];
+				}
+				if ( ! $post_id ) {
+					return array();
+				}
+				$value = function_exists( 'get_field' ) ? get_field( 'tags', $post_id ) : get_post_meta( $post_id, 'tags', true );
+				if ( ! is_array( $value ) ) {
+					return array();
+				}
+				$value = array_map( function ( $t ) {
+					return is_scalar( $t ) ? (string) $t : '';
+				}, $value );
+				return array_values( array_filter( $value, function ( $t ) {
+					return $t !== '';
+				} ) );
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'primaryTag',
+		array(
+			'type'        => 'String',
+			'description' => __( 'Tag principal (ACF: primary_tag).', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = null;
+				if ( is_object( $post ) && isset( $post->ID ) ) {
+					$post_id = (int) $post->ID;
+				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
+					$post_id = (int) $post['databaseId'];
+				}
+				if ( ! $post_id ) {
+					return null;
+				}
+				$value = function_exists( 'get_field' ) ? get_field( 'primary_tag', $post_id ) : get_post_meta( $post_id, 'primary_tag', true );
+				$value = is_scalar( $value ) ? (string) $value : '';
+				return $value !== '' ? $value : null;
 			},
 		)
 	);
