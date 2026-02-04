@@ -92,8 +92,9 @@
                 </div>
             </aside>
 
-            <!-- Right Column: Blog Posts -->
+            <!-- Right Column: Blog Posts (blog-content = mismos estilos que case-study-detail) -->
             <div class="flex-1">
+                <div class="blog-content prose prose-lg max-w-none">
                 <!-- Featured Post (First Post - Large) -->
                 @if (posts()!.nodes.length > 0) {
                 @let featuredPost = posts()!.nodes[0];
@@ -227,6 +228,7 @@
                     }
                 </div>
                 }
+                </div>
             </div>
         </div>
         }
