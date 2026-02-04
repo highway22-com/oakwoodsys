@@ -5,6 +5,13 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Proxy GraphQL to WordPress backend (evita CORS y fallos de /api/graphql en Netlify)
+[[redirects]]
+  from = "/api/graphql"
+  to = "https://oakwoodsys.com/graphql"
+  status = 200
+  force = true
+
 # Angular SSR plugin configuration
 # This plugin automatically handles Angular SSR on Netlify
 [[plugins]]
