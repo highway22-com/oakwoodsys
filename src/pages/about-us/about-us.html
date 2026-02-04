@@ -1,19 +1,14 @@
 <!-- Hero -->
-<app-video-hero
-  [loading]="false"
-  [videoUrls]="videoUrls"
-  [title]="heroTitle"
-  [description]="heroDescription"
-  [ctaPrimary]="heroCtaPrimary"
-  [ctaSecondary]="heroCtaSecondary"
-/>
+<app-video-hero [loading]="false" [videoUrls]="videoUrls" [title]="heroTitle" [description]="heroDescription"
+  [ctaPrimary]="heroCtaPrimary" [ctaSecondary]="heroCtaSecondary" />
 
 <!-- About Oakwood: 3 columnas -->
-<section class="about-section py-12 sm:py-16 md:py-20 lg:py-24 bg-white" id="about-oakwood" aria-labelledby="about-title">
+<section class="about-section py-12 sm:py-16 md:py-20 lg:py-24 bg-white" id="about-oakwood"
+  aria-labelledby="about-title">
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     <div class="text-center mb-12 sm:mb-16">
       <p class="text-primary-blue font-semibold uppercase tracking-wider text-sm mb-2">{{ aboutLabel }}</p>
-      <h2 id="about-title" class="text-3xl sm:text-4xl md:text-5xl font-light text-s-900 mb-4 font-sans max-w-4xl mx-auto">
+      <h2 id="about-title" class="text-3xl sm:text-4xl md:text-5xl font-light text-s-900 mb-4    max-w-4xl mx-auto">
         {{ aboutTitle }}
       </h2>
       <p class="text-s-600 font-segoe font-light max-w-2xl mx-auto">
@@ -22,32 +17,41 @@
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
       @for (feature of aboutFeatures; track feature.title) {
-        <article class="about-feature-card bg-white border border-gray-100 rounded-xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-shadow">
-          <div class="about-feature-icon mb-6">
-            @switch (feature.icon) {
-              @case ('people') {
-                <svg class="w-12 h-12 text-primary-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              }
-              @case ('process') {
-                <svg class="w-12 h-12 text-primary-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              }
-              @case ('technology') {
-                <svg class="w-12 h-12 text-primary-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              }
-              @default {}
-            }
-          </div>
-          <h3 class="text-xl font-semibold text-s-900 mb-3 font-sans">{{ feature.title }}</h3>
-          <p class="text-s-600 font-segoe font-light mb-6">{{ feature.description }}</p>
-          <img [src]="feature.image" [alt]="feature.imageAlt" class="w-full aspect-video object-cover rounded-lg" loading="lazy" />
-        </article>
+      <article
+        class="about-feature-card bg-white border border-gray-100 rounded-xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-shadow">
+        <div class="about-feature-icon mb-6">
+          @switch (feature.icon) {
+          @case ('people') {
+          <svg class="w-12 h-12 text-primary-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          }
+          @case ('process') {
+          <svg class="w-12 h-12 text-primary-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          }
+          @case ('technology') {
+          <svg class="w-12 h-12 text-primary-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          }
+          @default {}
+          }
+        </div>
+        <h3 class="text-xl font-semibold text-s-900 mb-3   ">{{ feature.title }}</h3>
+        <p class="text-s-600 font-segoe font-light mb-6">{{ feature.description }}</p>
+        <img [src]="feature.image" [alt]="feature.imageAlt" class="w-full aspect-video object-cover rounded-lg"
+          loading="lazy" />
+      </article>
       }
     </div>
   </div>
@@ -59,9 +63,12 @@
     <p id="partners-label" class="text-primary-blue font-semibold uppercase tracking-wider text-sm text-center mb-8">
       SELECT PARTNERS
     </p>
-    <div class="about-partners-scroll flex items-center justify-center gap-10 lg:gap-16 overflow-x-auto scrollbar-hide py-4">
+    <div
+      class="about-partners-scroll flex items-center justify-center gap-10 lg:gap-16 overflow-x-auto scrollbar-hide py-4">
       @for (logo of partnerLogos; track logo.alt) {
-        <img [src]="logo.src" [alt]="logo.alt" class="h-10 sm:h-12 w-auto object-contain flex-shrink-0 opacity-80 hover:opacity-100 transition" loading="lazy" />
+      <img [src]="logo.src" [alt]="logo.alt"
+        class="h-10 sm:h-12 w-auto object-contain flex-shrink-0 opacity-80 hover:opacity-100 transition"
+        loading="lazy" />
       }
     </div>
   </div>
@@ -74,12 +81,14 @@
     <div class="absolute inset-0 bg-slate-900/60 z-0" aria-hidden="true"></div>
   </div>
   <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 flex flex-col items-center text-center">
-    <a href="#" class="about-play-button w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary-blue/90 hover:bg-primary-blue flex items-center justify-center text-white mb-6 transition" aria-label="Play About Oakwood video">
+    <a href="#"
+      class="about-play-button w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary-blue/90 hover:bg-primary-blue flex items-center justify-center text-white mb-6 transition"
+      aria-label="Play About Oakwood video">
       <svg class="w-8 h-8 sm:w-10 sm:h-10 ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M8 5v14l11-7z" />
       </svg>
     </a>
-    <h2 id="video-section-title" class="text-2xl sm:text-3xl md:text-4xl font-light text-white mb-3 font-sans">
+    <h2 id="video-section-title" class="text-2xl sm:text-3xl md:text-4xl font-light text-white mb-3   ">
       {{ videoSectionTitle }}
     </h2>
     <p class="text-white/90 font-segoe font-light max-w-xl">
@@ -93,7 +102,7 @@
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     <div class="text-center mb-12 sm:mb-16">
       <p class="text-primary-blue font-semibold uppercase tracking-wider text-sm mb-2">{{ teamLabel }}</p>
-      <h2 id="team-title" class="text-3xl sm:text-4xl md:text-5xl font-light text-s-900 mb-4 font-sans max-w-4xl mx-auto">
+      <h2 id="team-title" class="text-3xl sm:text-4xl md:text-5xl font-light text-s-900 mb-4    max-w-4xl mx-auto">
         {{ teamTitle }}
       </h2>
       <p class="text-s-600 font-segoe font-light max-w-2xl mx-auto">
@@ -102,22 +111,27 @@
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 sm:gap-8">
       @for (member of teamMembers; track member.name) {
-        <article class="about-team-card text-center">
-          <div class="about-team-avatar w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-full bg-slate-200 flex items-center justify-center text-2xl sm:text-3xl font-semibold text-s-800 mb-4 overflow-hidden">
-            @if (member.image) {
-              <img [src]="member.image" [alt]="member.name" class="w-full h-full object-cover" />
-            } @else {
-              {{ member.name.charAt(0) }}
-            }
-          </div>
-          <h3 class="text-base font-semibold text-s-900 font-sans">{{ member.name }}</h3>
-          <p class="text-sm text-s-600 font-segoe font-light">{{ member.title }}</p>
-          @if (member.linkedIn) {
-            <a [href]="member.linkedIn" target="_blank" rel="noopener noreferrer" class="inline-flex mt-2 text-primary-blue hover:underline" aria-label="{{ member.name }} on LinkedIn">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-            </a>
+      <article class="about-team-card text-center">
+        <div
+          class="about-team-avatar w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-full bg-slate-200 flex items-center justify-center text-2xl sm:text-3xl font-semibold text-s-800 mb-4 overflow-hidden">
+          @if (member.image) {
+          <img [src]="member.image" [alt]="member.name" class="w-full h-full object-cover" />
+          } @else {
+          {{ member.name.charAt(0) }}
           }
-        </article>
+        </div>
+        <h3 class="text-base font-semibold text-s-900   ">{{ member.name }}</h3>
+        <p class="text-sm text-s-600 font-segoe font-light">{{ member.title }}</p>
+        @if (member.linkedIn) {
+        <a [href]="member.linkedIn" target="_blank" rel="noopener noreferrer"
+          class="inline-flex mt-2 text-primary-blue hover:underline" aria-label="{{ member.name }} on LinkedIn">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+          </svg>
+        </a>
+        }
+      </article>
       }
     </div>
   </div>
@@ -126,7 +140,7 @@
 <!-- Banner: Deliver technology solutions -->
 <section class="about-deliver-banner py-12 sm:py-16 md:py-20 bg-slate-800">
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center">
-    <h2 class="text-2xl sm:text-3xl md:text-4xl font-light text-white mb-4 font-sans max-w-4xl mx-auto">
+    <h2 class="text-2xl sm:text-3xl md:text-4xl font-light text-white mb-4    max-w-4xl mx-auto">
       {{ deliverBannerTitle }}
     </h2>
     <p class="text-white/90 font-segoe font-light max-w-2xl mx-auto">
@@ -141,7 +155,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
       <div>
         <p class="text-primary-blue font-semibold uppercase tracking-wider text-sm mb-2">{{ approachLabel }}</p>
-        <h2 id="approach-title" class="text-3xl sm:text-4xl md:text-5xl font-light text-s-900 mb-4 font-sans">
+        <h2 id="approach-title" class="text-3xl sm:text-4xl md:text-5xl font-light text-s-900 mb-4   ">
           {{ approachTitle }}
         </h2>
         <p class="text-s-600 font-segoe font-light">
@@ -150,13 +164,18 @@
       </div>
       <ul class="space-y-4">
         @for (item of howWeWorkItems; track item.title) {
-          <li class="flex items-center gap-4 p-4 rounded-lg border border-gray-100 hover:border-primary-blue/30 hover:bg-slate-50/50 transition">
-            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-blue/10 flex items-center justify-center">
-              <svg class="w-4 h-4 text-primary-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-            </span>
-            <span class="text-s-800 font-segoe font-light">{{ item.title }}</span>
-            <svg class="w-5 h-5 text-s-600 ml-auto flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-          </li>
+        <li
+          class="flex items-center gap-4 p-4 rounded-lg border border-gray-100 hover:border-primary-blue/30 hover:bg-slate-50/50 transition">
+          <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-blue/10 flex items-center justify-center">
+            <svg class="w-4 h-4 text-primary-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </span>
+          <span class="text-s-800 font-segoe font-light">{{ item.title }}</span>
+          <svg class="w-5 h-5 text-s-600 ml-auto flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </li>
         }
       </ul>
     </div>
@@ -167,8 +186,8 @@
 <section class="py-12 sm:py-16 bg-slate-50" aria-hidden="true">
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-primary-blue/70">
-      <span class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light font-sans">Microsoft</span>
-      <span class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light font-sans">Solutions Partner</span>
+      <span class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light   ">Microsoft</span>
+      <span class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light   ">Solutions Partner</span>
     </div>
   </div>
 </section>
@@ -178,7 +197,7 @@
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     <div class="text-center mb-12 sm:mb-16">
       <p class="text-primary-blue font-semibold uppercase tracking-wider text-sm mb-2">{{ insightsLabel }}</p>
-      <h2 id="insights-title" class="text-3xl sm:text-4xl md:text-5xl font-light text-s-900 mb-4 font-sans">
+      <h2 id="insights-title" class="text-3xl sm:text-4xl md:text-5xl font-light text-s-900 mb-4   ">
         {{ insightsTitle }}
       </h2>
       <p class="text-s-600 font-segoe font-light max-w-2xl mx-auto">
@@ -187,21 +206,23 @@
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       @for (card of insightCards; track card.title) {
-        <article class="about-insight-card rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-          <a [routerLink]="card.link" class="block">
-            <img [src]="card.image" [alt]="card.imageAlt" class="w-full aspect-video object-cover" loading="lazy" />
-            <div class="p-6">
-              <p class="text-xs font-medium text-s-600 mb-2">{{ card.category }}</p>
-              <h3 class="text-lg font-semibold text-s-900 mb-2 font-sans">{{ card.title }}</h3>
-              <p class="text-s-600 font-segoe font-light text-sm mb-4">{{ card.description }}</p>
-              <span class="text-primary-blue font-medium text-sm hover:underline">Read more &gt;</span>
-            </div>
-          </a>
-        </article>
+      <article
+        class="about-insight-card rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+        <a [routerLink]="card.link" class="block">
+          <img [src]="card.image" [alt]="card.imageAlt" class="w-full aspect-video object-cover" loading="lazy" />
+          <div class="p-6">
+            <p class="text-xs font-medium text-s-600 mb-2">{{ card.category }}</p>
+            <h3 class="text-lg font-semibold text-s-900 mb-2   ">{{ card.title }}</h3>
+            <p class="text-s-600 font-segoe font-light text-sm mb-4">{{ card.description }}</p>
+            <span class="text-primary-blue font-medium text-sm hover:underline">Read more &gt;</span>
+          </div>
+        </a>
+      </article>
       }
     </div>
     <div class="text-center mt-10">
-      <a routerLink="/blog" class="inline-block px-6 py-3 rounded-lg font-medium border-2 border-primary-blue text-primary-blue hover:bg-primary-blue hover:text-white transition">
+      <a routerLink="/blog"
+        class="inline-block px-6 py-3 rounded-lg font-medium border-2 border-primary-blue text-primary-blue hover:bg-primary-blue hover:text-white transition">
         View all
       </a>
     </div>
@@ -211,17 +232,19 @@
 <!-- CTA Banner: Let's move your vision forward -->
 <section class="about-cta-banner py-12 sm:py-16 md:py-20 bg-gradient-to-r from-indigo-50/90 to-white">
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center">
-    <h2 class="text-2xl sm:text-3xl md:text-4xl font-light text-s-900 mb-4 font-sans">
+    <h2 class="text-2xl sm:text-3xl md:text-4xl font-light text-s-900 mb-4   ">
       {{ ctaBannerTitle }}
     </h2>
     <p class="text-s-600 font-segoe font-light max-w-xl mx-auto mb-8">
       {{ ctaBannerDescription }}
     </p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <a routerLink="/contact-us" class="inline-block text-center font-medium px-6 py-3 rounded-lg text-white bg-primary-blue hover:opacity-90 transition">
+      <a routerLink="/contact-us"
+        class="inline-block text-center font-medium px-6 py-3 rounded-lg text-white bg-primary-blue hover:opacity-90 transition">
         LET'S TALK
       </a>
-      <a routerLink="/resources" class="inline-block text-center font-medium px-6 py-3 rounded-lg border-2 border-primary-blue text-primary-blue hover:bg-primary-blue hover:text-white transition">
+      <a routerLink="/resources"
+        class="inline-block text-center font-medium px-6 py-3 rounded-lg border-2 border-primary-blue text-primary-blue hover:bg-primary-blue hover:text-white transition">
         LEARN MORE
       </a>
     </div>

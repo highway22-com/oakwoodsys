@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ButtonPrimaryComponent } from "../../button-primary/button-primary.component";
+import { ButtonPrimaryComponent } from '../../button-primary/button-primary.component';
+import { ArticleCardComponent } from '../../article-card/article-card.component';
 
 export interface LatestInsightsArticle {
   id?: number;
@@ -23,7 +24,7 @@ export interface LatestInsightsSection {
 @Component({
   selector: 'app-latest-insights',
   standalone: true,
-  imports: [CommonModule, ButtonPrimaryComponent],
+  imports: [CommonModule, ButtonPrimaryComponent, ArticleCardComponent],
   templateUrl: './latest-insights.html',
   styleUrl: './latest-insights.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

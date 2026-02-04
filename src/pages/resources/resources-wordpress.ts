@@ -11,8 +11,9 @@ import type {
   GenContentListNode,
   GenContentsByCategoryResponse,
 } from '../../app/api/graphql';
-import { VideoHero } from "../../shared/video-hero/video-hero";
-import { FeaturedCaseStudyCardsSectionComponent } from "../../shared/sections/featured-case-study-cards/featured-case-study";
+import { VideoHero } from '../../shared/video-hero/video-hero';
+import { FeaturedCaseStudyCardsSectionComponent } from '../../shared/sections/featured-case-study-cards/featured-case-study';
+import { ArticleCardComponent, type ArticleCardArticle } from '../../shared/article-card/article-card.component';
 
 /** Contenido de la página Resources (resources-content.json). */
 export interface ResourcesPageContent {
@@ -92,7 +93,7 @@ interface CaseStudyDetail {
 
 @Component({
   selector: 'app-resources-wordpress',
-  imports: [CommonModule, RouterLink, VideoHero, FeaturedCaseStudyCardsSectionComponent],
+  imports: [CommonModule, RouterLink, VideoHero, FeaturedCaseStudyCardsSectionComponent, ArticleCardComponent],
   templateUrl: './resources.html',
   styleUrl: './resources.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -237,6 +238,20 @@ export class Resources implements OnInit {
 
   readMoreText(): string {
     return this.pageContent()?.resourcesGrid?.readMoreText ?? 'Read More';
+  }
+
+  /** Mapea ResourceCard a ArticleCardArticle para usar app-article-card. */
+  toArticleCard(card: ResourceCard): ArticleCardArticle {
+    return {
+      id: Number(card.id) || undefined,
+      title: card.title,
+      description: card.description,
+      link: card.link,
+      linkText: this.readMoreText(),
+      readingTime: card.date,
+      image: { url: card.image, alt: card.title },
+      tags: card.category ? [card.category] : [],
+    };
   }
 
   ctaSectionContent() {

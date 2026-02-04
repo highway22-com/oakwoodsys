@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChan
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
+import { ArticleCardComponent, type ArticleCardArticle } from '../../../shared/article-card/article-card.component';
 
 /** Card para lista de recursos / related case studies / latest insights. */
 export interface CaseStudyDetailCard {
@@ -78,7 +79,7 @@ function parseHtmlAndExtractHeadings(html: string): { processedHtml: string; hea
 @Component({
   selector: 'app-case-study-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ArticleCardComponent],
   templateUrl: './case-study-detail.component.html',
   styleUrl: './case-study-detail.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -145,5 +146,19 @@ export class CaseStudyDetailComponent implements OnChanges {
 
   scrollToSection(sectionId: string): void {
     this.sectionScroll.emit(sectionId);
+  }
+
+  /** Mapea CaseStudyDetailCard a ArticleCardArticle para app-article-card. */
+  toArticleCard(insight: CaseStudyDetailCard): ArticleCardArticle {
+    return {
+      id: Number(insight.id) || undefined,
+      title: insight.title,
+      description: insight.description,
+      link: insight.link,
+      linkText: 'Read more',
+      readingTime: insight.date ?? '5 min read',
+      image: { url: insight.image, alt: insight.title },
+      tags: insight.category ? [insight.category] : [],
+    };
   }
 }

@@ -20,8 +20,7 @@
           <li class="text-white truncate max-w-[12rem] sm:max-w-none" [title]="detail.title">{{ detail.title }}</li>
         </ol>
       </nav>
-      <h1
-        class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 sm:mb-8 font-sans">
+      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 sm:mb-8 ">
         {{ detail.title }}
       </h1>
       <div class="flex flex-wrap items-center gap-3">
@@ -87,11 +86,11 @@
                     class="h-8 w-auto" />
                 </div>
                 }
-                <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 font-sans">Testimonial</h3>
-                <blockquote class="text-base sm:text-lg text-gray-700 leading-relaxed mb-4 font-sans italic">
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 ">Testimonial</h3>
+                <blockquote class="text-base sm:text-lg text-gray-700 leading-relaxed mb-4  italic">
                   "{{ detail.testimonial.quote }}"
                 </blockquote>
-                <div class="text-sm text-gray-600 font-sans">
+                <div class="text-sm text-gray-600 ">
                   <p class="font-semibold">{{ detail.testimonial.author }}</p>
                   <p>{{ detail.testimonial.role }}, {{ detail.testimonial.company }}</p>
                 </div>
@@ -110,11 +109,10 @@
   aria-labelledby="related-case-studies">
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     <div class="max-w-7xl mx-auto">
-      <h2 id="related-case-studies"
-        class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 font-sans">
+      <h2 id="related-case-studies" class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
         Related case studies
       </h2>
-      <p class="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 font-sans max-w-3xl">
+      <p class="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 max-w-3xl">
         Our proven track record helps to redefine what's possible, enabling your workforce, ecosystem, and global
         operations.
       </p>
@@ -158,11 +156,10 @@
 <section class="w-full bg-white py-12 sm:py-16 md:py-20" aria-labelledby="connected-services">
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     <div class="max-w-7xl mx-auto">
-      <h2 id="connected-services"
-        class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 font-sans">
+      <h2 id="connected-services" class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 ">
         Explore our connected services
       </h2>
-      <p class="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 font-sans max-w-3xl">
+      <p class="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10  max-w-3xl">
         Our proven track record helps to redefine what's possible, enabling your workforce, ecosystem, and global
         operations.
       </p>
@@ -172,8 +169,8 @@
           <div class="mb-4">
             <i class="fa-solid {{ service.icon }} text-4xl sm:text-5xl text-blue-600" aria-hidden="true"></i>
           </div>
-          <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 font-sans">{{ service.title }}</h3>
-          <p class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed font-sans">{{ service.description }}</p>
+          <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 ">{{ service.title }}</h3>
+          <p class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed ">{{ service.description }}</p>
           <a [routerLink]="service.link"
             class="inline-flex items-center text-sm sm:text-base text-blue-600 hover:text-blue-700 font-medium">
             Learn more
@@ -198,41 +195,15 @@
 <section class="w-full bg-gray-50 py-12 sm:py-16 md:py-20" aria-labelledby="latest-insights">
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     <div class="max-w-7xl mx-auto">
-      <h2 id="latest-insights" class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 font-sans">
+      <h2 id="latest-insights" class="text-3xl sm:text-4xl md:text-5xl  text-gray-900 mb-4 sm:mb-6 ">
         Latest Insights from Oakwood
       </h2>
-      <p class="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 font-sans">
+      <p class="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 ">
         Stay updated with our latest insights, case studies, and industry trends.
       </p>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 mb-8 sm:mb-12">
         @for (insight of latestInsights; track insight.id) {
-        <article
-          class="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-          <a [routerLink]="insight.link" class="block">
-            <div class="relative w-full h-48 sm:h-56 overflow-hidden">
-              <img [src]="insight.image" [alt]="insight.title"
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                loading="lazy" />
-            </div>
-            <div class="p-6">
-              <div class="flex items-center gap-3 mb-2 text-xs sm:text-sm text-gray-500">
-                <span>{{ insight.category }}</span>
-                <span>•</span>
-                <span>5 min read</span>
-              </div>
-              <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                {{ insight.title }}
-              </h3>
-              <span
-                class="inline-flex items-center text-sm sm:text-base text-blue-600 group-hover:text-blue-700 font-medium mt-4">
-                Read more
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </span>
-            </div>
-          </a>
-        </article>
+        <app-article-card [article]="toArticleCard(insight)" />
         }
       </div>
       <div class="text-center">
@@ -249,19 +220,19 @@
 <section class="w-full bg-gradient-to-r from-blue-50 to-purple-50 py-16 sm:py-20 md:py-24" aria-label="Call to Action">
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     <div class="max-w-3xl mx-auto text-center">
-      <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight font-sans">
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight ">
         Let's move your vision forward
       </h2>
-      <p class="text-base sm:text-lg md:text-xl text-gray-700 mb-8 sm:mb-10 md:mb-12 leading-relaxed font-sans">
+      <p class="text-base sm:text-lg md:text-xl text-gray-700 mb-8 sm:mb-10 md:mb-12 leading-relaxed ">
         Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
         <a routerLink="/contact-us"
-          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all hover:opacity-90 font-sans text-white bg-blue-600">
+          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all hover:opacity-90  text-white bg-blue-600">
           Talk to an expert
         </a>
         <a routerLink="/contact-us"
-          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all hover:bg-white/50 font-sans text-blue-600 border-2 border-blue-600">
+          class="inline-block text-center font-medium px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all hover:bg-white/50  text-blue-600 border-2 border-blue-600">
           Subscribe to our newsletter
         </a>
       </div>
