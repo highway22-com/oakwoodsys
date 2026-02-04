@@ -248,7 +248,13 @@ async function handleAuth(request: Request): Promise<Response> {
 }
 
 export async function netlifyAppEngineHandler(request: Request): Promise<Response> {
-  const context = getContext()
+  // En Netlify existe getContext(); en Docker/Azure/Node no, usamos objeto vacío
+  let context: unknown;
+  try {
+    context = getContext();
+  } catch {
+    context = {};
+  }
   const pathname = new URL(request.url).pathname;
 
   // API endpoint for authentication

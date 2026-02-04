@@ -5,6 +5,26 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Redirección de dominio: www y HTTP → HTTPS en dominio principal
+# Ajusta "oakwoodsys.com" si tu dominio es otro (ej. oakwoodsys.netlify.app no aplica)
+[[redirects]]
+  from = "https://www.oakwoodsys.com/*"
+  to = "https://oakwoodsys.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://oakwoodsys.com/*"
+  to = "https://oakwoodsys.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.oakwoodsys.com/*"
+  to = "https://oakwoodsys.com/:splat"
+  status = 301
+  force = true
+
 # Proxy GraphQL to WordPress backend (evita CORS y fallos de /api/graphql en Netlify)
 [[redirects]]
   from = "/api/graphql"
