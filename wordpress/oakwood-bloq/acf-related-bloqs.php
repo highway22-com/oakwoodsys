@@ -18,17 +18,24 @@ defined( 'ABSPATH' ) || exit;
 
 function oakwood_bloq_get_tag_choices() {
 	return array(
-		'Case Study'             => 'Case Study',
-		'HPC'                    => 'HPC',
-		'Featured'               => 'Featured',
-		'Application Innovation' => 'Application Innovation',
-		'Data & AI'              => 'Data & AI',
-		'Data Center'            => 'Data Center',
-		'Modern Work'             => 'Modern Work',
-		'Managed Services'       => 'Managed Services',
-		'IoT'                    => 'IoT',
-		'Healthcare'             => 'Healthcare',
-		'Data Governance'        => 'Data Governance',
+		'Case Study'                   => 'Case Study',
+		'HPC'                          => 'HPC',
+		'Featured'                    => 'Featured',
+		'Application Innovation'       => 'Application Innovation',
+		'Data & AI'                    => 'Data & AI',
+		'Data Center'                  => 'Data Center',
+		'Modern Work'                  => 'Modern Work',
+		'Managed Services'             => 'Managed Services',
+		'IoT'                          => 'IoT',
+		'Healthcare'                  => 'Healthcare',
+		'Data Governance'             => 'Data Governance',
+		'Security Blog'                => 'Security Blog',
+		'Application Modernization Blog' => 'Application Modernization Blog',
+		'Cloud and Infrastructure Blog' => 'Cloud and Infrastructure Blog',
+		'Data and AI Blog'             => 'Data and AI Blog',
+		'Microsoft 365 Blog'          => 'Microsoft 365 Blog',
+		'Modern Work Blog'            => 'Modern Work Blog',
+		'Uncategorized'               => 'Uncategorized',
 	);
 }
 
