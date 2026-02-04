@@ -279,8 +279,15 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
       const body = await request.json();
       const graphqlUrl = 'https://oakwoodsys.com/graphql';
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      const timeoutController = new AbortController();
+      const timeoutId = setTimeout(() => timeoutController.abort(), 30000); // 30 second timeout
+
+      const signal =
+        typeof AbortSignal !== 'undefined' &&
+        typeof AbortSignal.any === 'function' &&
+        request.signal
+          ? AbortSignal.any([timeoutController.signal, request.signal])
+          : timeoutController.signal;
 
       const response = await fetch(graphqlUrl, {
         method: 'POST',
@@ -288,7 +295,7 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
-        signal: controller.signal
+        signal
       });
 
       clearTimeout(timeoutId);
@@ -304,14 +311,14 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
       const data = await response.json();
       return Response.json(data, { headers: corsHeaders });
     } catch (error: any) {
-      console.error('[graphql] Proxy error:', error);
-
-      if (error.name === 'AbortError') {
+      if (error?.name === 'AbortError') {
+        // Timeout o cancelación del cliente (navegación, SSR); no loguear como error
         return Response.json({
           error: 'Request timeout',
-          message: 'GraphQL request took too long'
+          message: 'GraphQL request took too long or was cancelled'
         }, { status: 504, headers: corsHeaders });
       }
+      console.error('[graphql] Proxy error:', error);
 
       return Response.json({
         error: 'GraphQL proxy error',

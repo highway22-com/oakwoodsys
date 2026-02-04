@@ -1,0 +1,310 @@
+<?php
+/**
+ * Plugin Name: Oakwood Bloq
+ * Plugin URI: https://oakwoodsys.com
+ * Description: Registra el CPT "Gen Content" (gen_content) + taxonomía, agrega campos ACF (show_contact_section, related_bloqs) y los expone en WPGraphQL.
+ * Version: 3.0.0
+ * Author: Aetro
+ * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain: oakwood-bloq
+ *
+ * Requiere: Advanced Custom Fields (ACF). Para GraphQL: WPGraphQL.
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+// Definición del grupo ACF (Related Bloqs).
+require_once __DIR__ . '/acf-related-bloqs.php';
+
+// GEO: schema + meta desde ACF (frontend).
+require_once __DIR__ . '/geo-integration.php';
+
+// Integración Yoast SEO: que analice campos ACF (solo si Yoast + ACF están activos)
+add_action( 'plugins_loaded', function () {
+	if ( defined( 'WPSEO_VERSION' ) && function_exists( 'get_field' ) ) {
+		require_once __DIR__ . '/yoast-acf-integration.php';
+	}
+}, 20 );
+
+/**
+ * Registrar Custom Post Type "Gen Content"
+ *
+ * WPGraphQL: expone "genContent" / "genContents" en el schema (requiere plugin WPGraphQL).
+ */
+function oakwood_bloq_register_post_type() {
+	$labels = array(
+		'name'                  => _x( 'Gen Contents', 'post type general name', 'oakwood-bloq' ),
+		'singular_name'         => _x( 'Gen Content', 'post type singular name', 'oakwood-bloq' ),
+		'menu_name'             => _x( 'Gen Content', 'admin menu', 'oakwood-bloq' ),
+		'add_new'               => _x( 'Add New', 'gen content', 'oakwood-bloq' ),
+		'add_new_item'          => __( 'Add New Gen Content', 'oakwood-bloq' ),
+		'edit_item'             => __( 'Edit Gen Content', 'oakwood-bloq' ),
+		'new_item'              => __( 'New Gen Content', 'oakwood-bloq' ),
+		'view_item'             => __( 'View Gen Content', 'oakwood-bloq' ),
+		'search_items'          => __( 'Search Gen Contents', 'oakwood-bloq' ),
+		'not_found'             => __( 'No gen content found', 'oakwood-bloq' ),
+		'not_found_in_trash'    => __( 'No gen content found in trash', 'oakwood-bloq' ),
+	);
+
+	$args = array(
+		'label'                 => __( 'Gen Content', 'oakwood-bloq' ),
+		'labels'                => $labels,
+		// Incluir 'author' para poder asignar autor y exponerlo en WPGraphQL.
+		'supports'              => array( 'title', 'editor', 'thumbnail', 'excerpt', 'custom-fields', 'author' ),
+		'public'                => true,
+		'show_ui'               => true,
+		'show_in_menu'          => true,
+		'menu_position'         => 6,
+		'menu_icon'             => 'dashicons-media-document',
+		'show_in_admin_bar'     => true,
+		'show_in_nav_menus'     => true,
+		'can_export'            => true,
+		'has_archive'           => true,
+		'exclude_from_search'   => false,
+		'publicly_queryable'    => true,
+		'capability_type'       => 'post',
+		'show_in_rest'          => true,
+		'rewrite'               => array( 'slug' => 'gen-content' ),
+		'show_in_graphql'       => true,
+		'graphql_single_name'   => 'GenContent',
+		'graphql_plural_name'   => 'GenContents',
+	);
+
+	register_post_type( 'gen_content', $args );
+}
+add_action( 'init', 'oakwood_bloq_register_post_type' );
+
+/**
+ * Registrar taxonomía para Gen Content.
+ */
+function oakwood_bloq_register_taxonomy() {
+	$labels = array(
+		'name'              => _x( 'Gen Content Categories', 'taxonomy general name', 'oakwood-bloq' ),
+		'singular_name'     => _x( 'Gen Content Category', 'taxonomy singular name', 'oakwood-bloq' ),
+		'search_items'      => __( 'Search Categories', 'oakwood-bloq' ),
+		'all_items'         => __( 'All Categories', 'oakwood-bloq' ),
+		'edit_item'         => __( 'Edit Category', 'oakwood-bloq' ),
+		'update_item'       => __( 'Update Category', 'oakwood-bloq' ),
+		'add_new_item'      => __( 'Add New Category', 'oakwood-bloq' ),
+		'new_item_name'     => __( 'New Category Name', 'oakwood-bloq' ),
+		'menu_name'         => __( 'Categories', 'oakwood-bloq' ),
+	);
+
+	$args = array(
+		'hierarchical'      => true,
+		'labels'            => $labels,
+		'show_ui'           => true,
+		'show_admin_column' => true,
+		'query_var'         => true,
+		'rewrite'           => array( 'slug' => 'gen-content-category' ),
+		'show_in_rest'      => true,
+		'show_in_graphql'       => true,
+		'graphql_single_name'   => 'GenContentCategory',
+		'graphql_plural_name'   => 'GenContentCategories',
+	);
+
+	register_taxonomy( 'gen_content_category', array( 'gen_content' ), $args );
+}
+add_action( 'init', 'oakwood_bloq_register_taxonomy' );
+
+/**
+ * Helpers: normalizar valores ACF de relación a IDs (database IDs).
+ */
+function oakwood_bloq_normalize_related_ids( $value ) {
+	if ( empty( $value ) ) {
+		return array();
+	}
+
+	// ACF post_object (multiple) con return_format=id devuelve array de ints.
+	if ( is_numeric( $value ) ) {
+		return array( (int) $value );
+	}
+
+	if ( $value instanceof WP_Post ) {
+		return array( (int) $value->ID );
+	}
+
+	if ( is_array( $value ) ) {
+		$ids = array();
+		foreach ( $value as $item ) {
+			if ( $item instanceof WP_Post ) {
+				$ids[] = (int) $item->ID;
+				continue;
+			}
+			if ( is_numeric( $item ) ) {
+				$ids[] = (int) $item;
+				continue;
+			}
+			if ( is_array( $item ) && isset( $item['ID'] ) ) {
+				$ids[] = (int) $item['ID'];
+				continue;
+			}
+		}
+		return array_values( array_unique( array_filter( $ids ) ) );
+	}
+
+	return array();
+}
+
+/**
+ * WPGraphQL: registrar campos showContactSection + typeContent + relatedBloqs en el tipo GenContent.
+ *
+ * Permite consultar:
+ * genContent(id: "...") { showContactSection typeContent relatedBloqs { id title uri } relatedBloqIds }
+ */
+function oakwood_bloq_register_graphql_fields() {
+	if ( ! function_exists( 'register_graphql_field' ) ) {
+		return;
+	}
+
+	register_graphql_field(
+		'GenContent',
+		'showContactSection',
+		array(
+			'type'        => 'Boolean',
+			'description' => __( 'Mostrar sección de contacto (ACF: show_contact_section).', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = null;
+				if ( is_object( $post ) && isset( $post->ID ) ) {
+					$post_id = (int) $post->ID;
+				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
+					$post_id = (int) $post['databaseId'];
+				}
+				if ( ! $post_id ) {
+					return false;
+				}
+
+				$value = null;
+				if ( function_exists( 'get_field' ) ) {
+					$value = get_field( 'show_contact_section', $post_id );
+				} else {
+					$value = get_post_meta( $post_id, 'show_contact_section', true );
+				}
+
+				return (bool) $value;
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'typeContent',
+		array(
+			'type'        => 'String',
+			'description' => __( 'Tipo de contenido (ACF: type_content).', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = null;
+				if ( is_object( $post ) && isset( $post->ID ) ) {
+					$post_id = (int) $post->ID;
+				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
+					$post_id = (int) $post['databaseId'];
+				}
+				if ( ! $post_id ) {
+					return null;
+				}
+
+				$value = null;
+				if ( function_exists( 'get_field' ) ) {
+					$value = get_field( 'type_content', $post_id );
+				} else {
+					$value = get_post_meta( $post_id, 'type_content', true );
+				}
+
+				$value = is_scalar( $value ) ? (string) $value : '';
+				return $value !== '' ? $value : null;
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'relatedBloqs',
+		array(
+			'type'        => array( 'list_of' => 'GenContent' ),
+			'description' => __( 'Gen Content relacionados (ACF: related_bloqs).', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = null;
+				if ( is_object( $post ) && isset( $post->ID ) ) {
+					$post_id = (int) $post->ID;
+				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
+					$post_id = (int) $post['databaseId'];
+				}
+				if ( ! $post_id ) {
+					return array();
+				}
+
+				$value = null;
+				if ( function_exists( 'get_field' ) ) {
+					$value = get_field( 'related_bloqs', $post_id );
+				} else {
+					$value = get_post_meta( $post_id, 'related_bloqs', true );
+				}
+
+				$ids = oakwood_bloq_normalize_related_ids( $value );
+				if ( empty( $ids ) ) {
+					return array();
+				}
+
+				// Devolver posts (preservar orden del ACF).
+				$posts = get_posts(
+					array(
+						'post_type'      => 'gen_content',
+						'post__in'       => $ids,
+						'orderby'        => 'post__in',
+						'posts_per_page' => count( $ids ),
+						'post_status'    => 'publish',
+					)
+				);
+
+				return is_array( $posts ) ? $posts : array();
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'relatedBloqIds',
+		array(
+			'type'        => array( 'list_of' => 'Int' ),
+			'description' => __( 'Database IDs relacionados (ACF: related_bloqs).', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = null;
+				if ( is_object( $post ) && isset( $post->ID ) ) {
+					$post_id = (int) $post->ID;
+				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
+					$post_id = (int) $post['databaseId'];
+				}
+				if ( ! $post_id ) {
+					return array();
+				}
+
+				$value = null;
+				if ( function_exists( 'get_field' ) ) {
+					$value = get_field( 'related_bloqs', $post_id );
+				} else {
+					$value = get_post_meta( $post_id, 'related_bloqs', true );
+				}
+
+				return oakwood_bloq_normalize_related_ids( $value );
+			},
+		)
+	);
+}
+add_action( 'graphql_register_types', 'oakwood_bloq_register_graphql_fields' );
+
+/**
+ * Flush rewrite rules al activar/desactivar.
+ */
+function oakwood_bloq_activate() {
+	oakwood_bloq_register_post_type();
+	oakwood_bloq_register_taxonomy();
+	flush_rewrite_rules();
+}
+register_activation_hook( __FILE__, 'oakwood_bloq_activate' );
+
+function oakwood_bloq_deactivate() {
+	flush_rewrite_rules();
+}
+register_deactivation_hook( __FILE__, 'oakwood_bloq_deactivate' );
+
