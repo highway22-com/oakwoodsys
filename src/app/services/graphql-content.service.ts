@@ -4,12 +4,13 @@ import { Observable, of } from 'rxjs';
 import { map, catchError, tap, filter } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import {
-  GET_CASE_STUDIES,
+  GET_GEN_CONTENTS_BY_CATEGORY,
   GET_CASE_STUDY_BY_SLUG,
   GET_CMS_PAGE,
   type CaseStudy,
   type CaseStudyBy,
-  type CaseStudiesResponse,
+  type GenContentListNode,
+  type GenContentsByCategoryResponse,
   type CaseStudyByResponse,
   type CmsPageContent,
   type CmsPageResponse,
@@ -29,22 +30,28 @@ export class GraphQLContentService {
   readonly loading = signal<boolean>(false);
   readonly errors = signal<Error | null>(null);
 
+  /** Lista de case studies: misma lógica que bloq, filtro categoría "case-study". */
   getCaseStudies(): Observable<CaseStudy[]> {
     this.loading.set(true);
     this.errors.set(null);
 
     return this.apollo
-      .watchQuery<CaseStudiesResponse>({
-        query: GET_CASE_STUDIES,
+      .watchQuery<GenContentsByCategoryResponse>({
+        query: GET_GEN_CONTENTS_BY_CATEGORY,
+        variables: { categoryId: 'case-study' },
         fetchPolicy: 'cache-and-network',
       })
       .valueChanges.pipe(
         map((result) => {
-          const data = result.data as CaseStudiesResponse | undefined;
-          const nodes: CaseStudy[] = (data?.caseStudies?.nodes ?? []) as CaseStudy[];
-          this.caseStudies.set(nodes);
+          const data = result.data as GenContentsByCategoryResponse | undefined;
+          const nodes: GenContentListNode[] =
+            data?.genContentCategory?.genContents?.nodes ?? [];
+          const caseStudies: CaseStudy[] = nodes.map((n) =>
+            this.genContentNodeToCaseStudy(n)
+          );
+          this.caseStudies.set(caseStudies);
           this.loading.set(false);
-          return nodes;
+          return caseStudies;
         }),
         catchError((error) => {
           this.errors.set(error);
@@ -52,6 +59,35 @@ export class GraphQLContentService {
           return of([]);
         })
       );
+  }
+
+  private genContentNodeToCaseStudy(n: GenContentListNode): CaseStudy {
+    const categoryName =
+      n.genContentCategories?.nodes?.[0]?.name ?? 'Case Study';
+    const categorySlug =
+      n.genContentCategories?.nodes?.[0]?.slug ?? 'case-study';
+    return {
+      id: n.id,
+      title: n.title,
+      slug: n.slug,
+      date: n.date,
+      excerpt: n.excerpt ?? '',
+      featuredImage: n.featuredImage
+        ? {
+            node: {
+              sourceUrl: n.featuredImage.node.sourceUrl,
+              altText: n.featuredImage.node.altText ?? undefined,
+            },
+          }
+        : undefined,
+      caseStudyCategories: {
+        nodes: [{ name: categoryName, slug: categorySlug }],
+      },
+      caseStudyDetails: {
+        tags: n.tags ?? undefined,
+        cardDescription: n.excerpt ?? undefined,
+      },
+    };
   }
 
   /** Siempre pide el detalle por slug para tener overview, businessChallenge, solution, testimonial, etc. (la lista no incluye esos campos). */

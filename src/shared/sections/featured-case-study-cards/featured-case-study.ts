@@ -142,9 +142,12 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
 
   private mapCaseStudyToView(cs: CaseStudyBy): FeaturedCaseStudyCardsView {
     const heroImage = cs.caseStudyDetails?.heroImage;
-    const imageUrl = getAcfMediaUrl(heroImage);
+    const imageUrl =
+      getAcfMediaUrl(heroImage) || cs.featuredImage?.node?.sourceUrl;
     const imageAlt =
-      heroImage != null && typeof heroImage === 'object' ? heroImage.node?.altText : undefined;
+      heroImage != null && typeof heroImage === 'object'
+        ? heroImage.node?.altText
+        : cs.featuredImage?.node?.altText;
     const tag = cs.caseStudyDetails?.tags?.[0] ?? 'Case Study';
 
     return {

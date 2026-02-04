@@ -140,15 +140,16 @@ export class Post implements OnInit, OnDestroy {
           if (raw) {
             const excerpt = (raw['excerpt'] as string) ?? '';
             const content = (raw['content'] as string) ?? '';
+            const { content: contentWithIds, toc } = this.extractTocAndInjectIds(content);
             const postData: PostDetail = {
               id: raw['id'] as string,
               title: (raw['title'] as string) ?? '',
-              content,
+              content: contentWithIds,
               excerpt: excerpt.replace(/<[^>]*>/g, '').replace(/\[&hellip;\]/g, '...').trim(),
               slug: (raw['slug'] as string) ?? slugValue,
               date: (raw['date'] as string) ?? '',
               author: (raw['author'] as PostAuthor) ?? { node: { email: '', firstName: '', id: '' } },
-              sanitizedContent: this.sanitizer.bypassSecurityTrustHtml(content),
+              sanitizedContent: this.sanitizer.bypassSecurityTrustHtml(contentWithIds),
               sanitizedExcerpt:
                 excerpt.trim() ?
                   this.sanitizer.bypassSecurityTrustHtml(excerpt.trim()) :
@@ -159,12 +160,10 @@ export class Post implements OnInit, OnDestroy {
               featuredImage: (raw['featuredImage'] as PostDetail['featuredImage']) ?? undefined,
               showContactSection: (raw['showContactSection'] as boolean | undefined) ?? undefined,
             };
+            this.tableOfContents.set(toc);
             this.post.set(postData);
             if (isPlatformBrowser(this.platformId)) {
-              setTimeout(() => {
-                this.extractTableOfContents(content);
-                this.setupScrollListener();
-              }, 100);
+              setTimeout(() => this.setupScrollListener(), 150);
             }
           } else {
             this.error.set('Post not found');
@@ -185,25 +184,23 @@ export class Post implements OnInit, OnDestroy {
     }
   }
 
-  private extractTableOfContents(content: string): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    setTimeout(() => {
-      const blogContent = document.querySelector('.blog-content');
-      if (!blogContent) return;
-
-      const headings = blogContent.querySelectorAll('h2, h3');
-      const toc: { id: string; text: string }[] = [];
-
-      headings.forEach((heading, index) => {
-        const text = heading.textContent || '';
-        const id = `section-${index}`;
-        heading.id = id;
-        toc.push({ id, text: text.trim() });
-      });
-
-      this.tableOfContents.set(toc);
-    }, 200);
+  /**
+   * Extrae el TOC del HTML del contenido e inyecta IDs en los h2/h3.
+   * Así el TOC está listo de inmediato y no depende del DOM.
+   */
+  private extractTocAndInjectIds(html: string): { content: string; toc: { id: string; text: string }[] } {
+    const toc: { id: string; text: string }[] = [];
+    let index = 0;
+    const content = html.replace(/<(h[23])([^>]*)>([\s\S]*?)<\/\1>/gi, (match, tag: string, attrs: string, inner: string) => {
+      const text = inner.replace(/<[^>]+>/g, '').trim();
+      const id = `section-${index}`;
+      index++;
+      toc.push({ id, text });
+      const attrsWithoutId = attrs.replace(/\s*id="[^"]*"/i, '').trim();
+      const newAttrs = attrsWithoutId ? ` id="${id}" ${attrsWithoutId}` : ` id="${id}"`;
+      return `<${tag}${newAttrs}>${inner}</${tag}>`;
+    });
+    return { content, toc };
   }
 
   private setupScrollListener(): void {

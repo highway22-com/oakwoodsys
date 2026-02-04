@@ -2,9 +2,45 @@ import { gql } from 'apollo-angular';
 
 /**
  * Modelos y queries GraphQL para oakwoodsys.com/graphql (WPGraphQL + ACF).
- * Case Studies: caseStudies (lista), caseStudyBy(slug) (detalle).
+ * Bloqs y Case Studies (lista): misma lógica genContentCategory(id: $categoryId, idType: SLUG) — filtro "bloq" o "case-study".
+ * Case Studies (detalle): caseStudyBy(slug).
  * Oakwood CMS: cmsPage(slug) devuelve el JSON de la página (home, services, about-us, bloq, industries).
  */
+
+/** Nodo Gen Content en lista por categoría (bloq o case-study). */
+export interface GenContentListNode {
+  id: string;
+  title: string;
+  content?: string;
+  excerpt: string;
+  slug: string;
+  date: string;
+  tags?: string[] | null;
+  primaryTag?: string | null;
+  featuredImage?: {
+    node: { sourceUrl: string; altText?: string | null };
+  } | null;
+  author?: {
+    node: { email?: string; firstName?: string; id: string };
+  };
+  authorPerson?: {
+    id: string;
+    name?: string | null;
+    firstName?: string | null;
+    position?: string | null;
+    picture?: string | null;
+    socialLinks?: Array<{ platform: string; url: string }>;
+  } | null;
+  genContentCategories?: {
+    nodes: Array<{ name: string; slug: string }>;
+  };
+}
+
+export interface GenContentsByCategoryResponse {
+  genContentCategory?: {
+    genContents?: { nodes: GenContentListNode[] };
+  } | null;
+}
 
 /** Sección de una página CMS (propiedades comunes para el template; el resto es dinámico). */
 export interface CmsSection {
@@ -157,7 +193,57 @@ export interface CaseStudyByResponse {
   caseStudyBy?: CaseStudyBy | null;
 }
 
-/** Lista de case studies (para recursos / featured). */
+/** Lista por categoría Gen Content: mismo patrón para bloq (categoryId: "bloq") y case study (categoryId: "case-study"). id espera ID! en WPGraphQL. */
+export const GET_GEN_CONTENTS_BY_CATEGORY = gql`
+  query GetGenContentsByCategory($categoryId: ID!) {
+    genContentCategory(id: $categoryId, idType: SLUG) {
+      genContents(first: 100) {
+        nodes {
+          id
+          title
+          content
+          excerpt
+          slug
+          date
+          tags
+          primaryTag
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+          author {
+            node {
+              email
+              firstName
+              id
+            }
+          }
+          authorPerson {
+            id
+            name
+            firstName
+            position
+            picture
+            socialLinks {
+              platform
+              url
+            }
+          }
+          genContentCategories {
+            nodes {
+              name
+              slug
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+/** Lista de case studies (legacy: preferir GET_GEN_CONTENTS_BY_CATEGORY con categoryId: "case-study"). */
 export const GET_CASE_STUDIES = gql`
   query GetCaseStudies {
     caseStudies(first: 100) {

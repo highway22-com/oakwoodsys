@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Apollo, gql } from 'apollo-angular';
+import { Apollo } from 'apollo-angular';
+import { GET_GEN_CONTENTS_BY_CATEGORY } from '../../app/api/graphql';
 
 interface PostAuthor {
   node: {
@@ -80,48 +81,9 @@ export class Bloq implements OnInit {
   ngOnInit() {
     this.apollo
       .watchQuery({
-        query: gql`
-          query GenContentBloq {
-            genContentCategory(id: "bloq", idType: SLUG) {
-              genContents(first: 100) {
-                nodes {
-                  id
-                  title
-                  content
-                  excerpt
-                  slug
-                  date
-                  tags
-                  primaryTag
-                  featuredImage {
-                    node {
-                      sourceUrl
-                      altText
-                    }
-                  }
-                  author {
-                    node {
-                      email
-                      firstName
-                      id
-                    }
-                  }
-                  authorPerson {
-                    id
-                    name
-                    firstName
-                    position
-                    picture
-                    socialLinks {
-                      platform
-                      url
-                    }
-                  }
-                }
-              }
-            }
-          }
-        `,
+        query: GET_GEN_CONTENTS_BY_CATEGORY,
+        variables: { categoryId: 'bloq' },
+        fetchPolicy: 'network-only',
       })
       .valueChanges.subscribe((result: any) => {
         const nodes = result.data?.genContentCategory?.genContents?.nodes;

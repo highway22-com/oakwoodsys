@@ -49,7 +49,8 @@
             } @else {
             <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
               <span class="text-white font-semibold">
-                {{ (post()!.authorPerson?.name || post()!.authorPerson?.firstName || post()!.author?.node?.firstName || 'A').charAt(0) }}
+                {{ (post()!.authorPerson?.name || post()!.authorPerson?.firstName || post()!.author?.node?.firstName ||
+                'A').charAt(0) }}
               </span>
             </div>
             }
@@ -105,7 +106,7 @@
     <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
       <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-          <!-- Left Column: Table of Contents -->
+          <!-- Left Column: Table of Contents (siempre visible) -->
           <aside class="lg:col-span-3">
             <div class="sticky top-24">
               <h2 class="text-lg font-bold text-gray-900 mb-4">Table of Contents</h2>
@@ -117,6 +118,8 @@
                      : 'block px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer'">
                   {{ item.text }}
                 </a>
+                } @empty {
+                <p class="text-sm text-gray-500 px-3 py-2">No sections in this post.</p>
                 }
               </nav>
             </div>
@@ -153,7 +156,8 @@
                 <div
                   class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                   <span class="text-blue-600 font-bold text-xl sm:text-2xl">
-                    {{ (post()!.authorPerson?.name || post()!.authorPerson?.firstName || post()!.author?.node?.firstName || 'A').charAt(0) }}
+                    {{ (post()!.authorPerson?.name || post()!.authorPerson?.firstName || post()!.author?.node?.firstName
+                    || 'A').charAt(0) }}
                   </span>
                 </div>
                 }

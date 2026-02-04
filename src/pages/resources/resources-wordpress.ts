@@ -4,12 +4,12 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Apollo } from 'apollo-angular';
 import { DomSanitizer } from '@angular/platform-browser';
-import { getAcfMediaUrl, GET_CASE_STUDIES, GET_CASE_STUDY_BY_SLUG } from '../../app/api/graphql';
+import { getAcfMediaUrl, GET_GEN_CONTENTS_BY_CATEGORY, GET_CASE_STUDY_BY_SLUG } from '../../app/api/graphql';
 import type {
-  CaseStudy,
   CaseStudyBy,
-  CaseStudiesResponse,
   CaseStudyByResponse,
+  GenContentListNode,
+  GenContentsByCategoryResponse,
 } from '../../app/api/graphql';
 import { VideoHero } from "../../shared/video-hero/video-hero";
 import { FeaturedCaseStudyCardsSectionComponent } from "../../shared/sections/featured-case-study-cards/featured-case-study";
@@ -253,29 +253,31 @@ export class Resources implements OnInit {
     return this.slug !== null && this.caseStudyDetail() !== null;
   }
 
-  // Query GraphQL para lista de casos de estudio (query centralizada en api/graphql.ts)
+  // Lista por categoría Gen Content "case-study" (misma lógica que bloq con "bloq")
   private loadCaseStudiesList() {
     this.loading.set(true);
 
     this.apollo
-      .watchQuery<CaseStudiesResponse>({
-        query: GET_CASE_STUDIES,
+      .watchQuery<GenContentsByCategoryResponse>({
+        query: GET_GEN_CONTENTS_BY_CATEGORY,
+        variables: { categoryId: 'case-study' },
         fetchPolicy: 'network-only',
       })
       .valueChanges.subscribe({
         next: (result) => {
-          const data = result.data as CaseStudiesResponse | undefined;
-          const nodes = (data?.caseStudies?.nodes ?? []) as CaseStudy[];
+          const data = result.data as GenContentsByCategoryResponse | undefined;
+          const nodes: GenContentListNode[] =
+            data?.genContentCategory?.genContents?.nodes ?? [];
           if (nodes.length) {
-            const cards = this.transformToResourceCards(nodes);
+            const cards = this.transformGenContentToResourceCards(nodes);
             this.resourceCards.set(cards);
             this.filteredResources.set(cards);
 
             const featured =
-              nodes.find((cs) => cs?.caseStudyDetails?.tags?.includes('Featured')) ?? nodes[0];
+              nodes.find((n) => n.tags?.includes('Featured')) ?? nodes[0];
             if (featured) {
               this.featuredCaseStudy.set(
-                this.transformToFeaturedCaseStudy(featured, nodes.length)
+                this.transformGenContentToFeaturedCaseStudy(featured, nodes.length)
               );
             }
           }
@@ -325,12 +327,12 @@ export class Resources implements OnInit {
       });
   }
 
-  // Transformar datos de GraphQL a ResourceCard (imagen: hero ACF como en featured-case-study, luego featuredImage)
-  private transformToResourceCards(nodes: CaseStudy[]): ResourceCard[] {
+  // Transformar Gen Content (categoría case-study) a ResourceCard
+  private transformGenContentToResourceCards(nodes: GenContentListNode[]): ResourceCard[] {
     return nodes.map((node) => ({
       id: node.id,
-      image: getAcfMediaUrl(node.caseStudyDetails?.heroImage) || node.featuredImage?.node?.sourceUrl || '/assets/resources/default.jpg',
-      category: node.caseStudyCategories?.nodes?.[0]?.name || 'Uncategorized',
+      image: node.featuredImage?.node?.sourceUrl || '/assets/resources/default.jpg',
+      category: node.genContentCategories?.nodes?.[0]?.name || 'Case Study',
       date: this.formatDate(node.date),
       title: node.title,
       description: this.cleanExcerpt(node.excerpt),
@@ -339,11 +341,13 @@ export class Resources implements OnInit {
     }));
   }
 
-  // Transformar a FeaturedCaseStudy (total desde GraphQL: cantidad de case studies)
-  private transformToFeaturedCaseStudy(node: CaseStudy, total: number): FeaturedCaseStudy {
+  private transformGenContentToFeaturedCaseStudy(
+    node: GenContentListNode,
+    total: number
+  ): FeaturedCaseStudy {
     return {
       id: node.id,
-      image: getAcfMediaUrl(node.caseStudyDetails?.heroImage) || node.featuredImage?.node?.sourceUrl || '/assets/case-studies/default.jpg',
+      image: node.featuredImage?.node?.sourceUrl || '/assets/case-studies/default.jpg',
       title: node.title,
       description: this.cleanExcerpt(node.excerpt),
       link: `/resources/case-studies/${node.slug}`,
