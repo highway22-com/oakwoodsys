@@ -87,6 +87,13 @@ export class GraphQLContentService {
         tags: n.tags ?? undefined,
         cardDescription: n.excerpt ?? undefined,
       },
+      headTitle: n.headTitle ?? undefined,
+      headDescription: n.headDescription ?? undefined,
+      headCanonicalUrl: n.headCanonicalUrl ?? undefined,
+      headGeoRegion: n.headGeoRegion ?? undefined,
+      headGeoPlacename: n.headGeoPlacename ?? undefined,
+      headGeoPosition: n.headGeoPosition ?? undefined,
+      headJsonLdData: n.headJsonLdData ?? undefined,
     };
   }
 

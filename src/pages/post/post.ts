@@ -37,6 +37,14 @@ export interface PostDetail {
   featuredImage?: { node: { sourceUrl: string; altText: string | null } } | null;
   showContactSection?: boolean;
   relatedBloqs?: PostDetail[];
+  /** Head (Gen Content ACF oakwood_* — no chocar con otros plugins SEO). */
+  headTitle?: string | null;
+  headDescription?: string | null;
+  headCanonicalUrl?: string | null;
+  headGeoRegion?: string | null;
+  headGeoPlacename?: string | null;
+  headGeoPosition?: string | null;
+  headJsonLdData?: string | null;
 }
 
 @Component({
@@ -109,6 +117,13 @@ export class Post implements OnInit, OnDestroy {
                 position
                 picture
               }
+              headTitle
+              headDescription
+              headCanonicalUrl
+              headGeoRegion
+              headGeoPlacename
+              headGeoPosition
+              headJsonLdData
             }
             postBy(slug: $slug) {
               id
@@ -159,6 +174,13 @@ export class Post implements OnInit, OnDestroy {
               authorPerson: (raw['authorPerson'] as AuthorPersonDetail | null) ?? undefined,
               featuredImage: (raw['featuredImage'] as PostDetail['featuredImage']) ?? undefined,
               showContactSection: (raw['showContactSection'] as boolean | undefined) ?? undefined,
+              headTitle: (raw['headTitle'] as string | null) ?? undefined,
+              headDescription: (raw['headDescription'] as string | null) ?? undefined,
+              headCanonicalUrl: (raw['headCanonicalUrl'] as string | null) ?? undefined,
+              headGeoRegion: (raw['headGeoRegion'] as string | null) ?? undefined,
+              headGeoPlacename: (raw['headGeoPlacename'] as string | null) ?? undefined,
+              headGeoPosition: (raw['headGeoPosition'] as string | null) ?? undefined,
+              headJsonLdData: (raw['headJsonLdData'] as string | null) ?? undefined,
             };
             this.tableOfContents.set(toc);
             this.post.set(postData);

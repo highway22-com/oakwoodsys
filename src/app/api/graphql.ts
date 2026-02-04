@@ -7,7 +7,7 @@ import { gql } from 'apollo-angular';
  * Oakwood CMS: cmsPage(slug) devuelve el JSON de la página (home, services, about-us, bloq, industries).
  */
 
-/** Nodo Gen Content en lista por categoría (bloq o case-study). */
+/** Nodo Gen Content en lista por categoría (bloq o case-study). Incluye SEO/GEO para Headless. */
 export interface GenContentListNode {
   id: string;
   title: string;
@@ -34,6 +34,16 @@ export interface GenContentListNode {
   genContentCategories?: {
     nodes: Array<{ name: string; slug: string }>;
   };
+  /** Head (Gen Content ACF oakwood_* — no chocar con otros plugins SEO). */
+  headTitle?: string | null;
+  headDescription?: string | null;
+  headCanonicalUrl?: string | null;
+  /** GEO (oakwood_geo_*). */
+  headGeoRegion?: string | null;
+  headGeoPlacename?: string | null;
+  headGeoPosition?: string | null;
+  /** JSON-LD listo para <head>. */
+  headJsonLdData?: string | null;
 }
 
 export interface GenContentsByCategoryResponse {
@@ -160,7 +170,7 @@ export interface CaseStudyDetails {
   connectedServices?: ConnectedServiceItem[];
 }
 
-/** Nodo de case study en la lista (GetCaseStudies). */
+/** Nodo de case study en la lista (GetCaseStudies o Gen Content category case-study). */
 export interface CaseStudy {
   id: string;
   title: string;
@@ -172,6 +182,14 @@ export interface CaseStudy {
     nodes: CaseStudyCategoryNode[];
   };
   caseStudyDetails?: CaseStudyDetails;
+  /** Head cuando la lista viene de Gen Content (GET_GEN_CONTENTS_BY_CATEGORY). */
+  headTitle?: string | null;
+  headDescription?: string | null;
+  headCanonicalUrl?: string | null;
+  headGeoRegion?: string | null;
+  headGeoPlacename?: string | null;
+  headGeoPosition?: string | null;
+  headJsonLdData?: string | null;
 }
 
 /** Case study con contenido completo (GetCaseStudyBySlug). */
@@ -237,6 +255,13 @@ export const GET_GEN_CONTENTS_BY_CATEGORY = gql`
               slug
             }
           }
+          headTitle
+          headDescription
+          headCanonicalUrl
+          headGeoRegion
+          headGeoPlacename
+          headGeoPosition
+          headJsonLdData
         }
       }
     }

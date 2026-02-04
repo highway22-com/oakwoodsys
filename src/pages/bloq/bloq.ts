@@ -32,7 +32,7 @@ export interface FeaturedImageNode {
   altText: string | null;
 }
 
-interface Post {
+export interface Post {
   id: string;
   title: string;
   content: string;
@@ -46,6 +46,14 @@ interface Post {
   featuredImage: { node: FeaturedImageNode } | null;
   sanitizedContent?: SafeHtml;
   sanitizedExcerpt?: SafeHtml;
+  /** Head (Gen Content ACF oakwood_* — no chocar con otros plugins SEO). */
+  headTitle?: string | null;
+  headDescription?: string | null;
+  headCanonicalUrl?: string | null;
+  headGeoRegion?: string | null;
+  headGeoPlacename?: string | null;
+  headGeoPosition?: string | null;
+  headJsonLdData?: string | null;
 }
 
 @Component({
