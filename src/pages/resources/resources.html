@@ -4,10 +4,14 @@
   [ctaSecondary]="videoHeroContent().ctaSecondary" [showIndicators]="false" />
 
 <!-- Featured Case Study Section -->
-@if (featuredCaseStudy(); as featured) {
-<app-featured-case-study-cards [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
+<div class="w-full bg-p-10 p-10">
+  @if (featuredCaseStudy(); as featured) {
 
-}
+  <app-featured-case-study-cards [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
+
+  }
+
+</div>
 
 <!-- Filter Tabs and Search Section -->
 <section class="w-full bg-white border-t border-gray-200 py-6 sm:py-8" aria-label="Filter and Search">
@@ -35,7 +39,7 @@
         </div>
         <input type="text" [placeholder]="searchPlaceholder()" [value]="searchQuery()"
           (input)="onSearchChange($any($event.target).value)"
-          class="block w-full pl-10 pr-3 py-2 sm:py-3 border border-gray-300    focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
+          class="block w-full pl-10 pr-3 py-2 sm:py-3 border border-gray-300    focus:ring-2 focus:ring-p-700 focus:border-p-700 text-sm sm:text-base">
       </div>
     </div>
   </div>
@@ -67,7 +71,7 @@
 </section>
 
 <!-- CTA Section (contenido desde resources-content.json) -->
-<section class="w-full bg-gradient-to-r from-blue-50 to-purple-50 py-16 sm:py-20 md:py-24" aria-label="Call to Action">
+<section class="w-full  from-blue-50 to-purple-50 py-16 sm:py-20 md:py-24" aria-label="Call to Action">
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     <div class="max-w-3xl mx-auto text-center">
       <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight   ">

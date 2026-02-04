@@ -2,11 +2,11 @@ import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import type { CaseStudy } from '../../../app/api/graphql';
-import { ArticleCardComponent, type ArticleCardArticle } from '../../../shared/article-card/article-card.component';
+import type { ArticleCardArticle } from '../../../shared/article-card/article-card.component';
 
 @Component({
   selector: 'app-industries',
-  imports: [RouterLink, CommonModule, ArticleCardComponent],
+  imports: [RouterLink, CommonModule],
   templateUrl: './industries.html',
 })
 export class Industries {

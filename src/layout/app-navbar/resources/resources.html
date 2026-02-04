@@ -44,7 +44,7 @@
         <div class="lg:w-80 xl:w-96 border-t border-gray-200 lg:border-t-0 lg:border-l">
             <div class="px-6 sm:px-8 md:px-10 pt-10 sm:pt-16 md:pt-18 pb-8 sm:pb-10 md:pb-10">
                 <!-- Featured Blogs (2 últimos desde GraphQL / bloq) -->
-                <div class="mb-8 md:mb-10">
+                <div class="mb-8 md:mb-10 max-h-[200px] overflow-y-auto">
                     <div class="flex items-center gap-2 mb-6 md:mb-8">
                         <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
@@ -55,7 +55,7 @@
                             FEATURED BLOGS
                         </h3>
                     </div>
-                    <div class="space-y-6 md:space-y-8">
+                    <div class="space-y-6 md:space-y-8 ">
                         @for (blog of featuredBlogs(); track blog.id) {
                         <div class="group">
                             <a [routerLink]="blog.link" class="block">
@@ -83,46 +83,7 @@
                     </div>
                 </div>
 
-                <!-- Featured Whitepapers -->
-                <div class="flex items-center gap-2 mb-6 md:mb-8">
-                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <h3 class="text-xs       uppercase tracking-wider text-[#454545]">
-                        FEATURED WHITEPAPERS
-                    </h3>
-                </div>
 
-                <!-- Whitepapers List -->
-                <div class="space-y-6 md:space-y-8">
-                    @for (whitepaper of featuredWhitepapers; track whitepaper.id) {
-                    <div class="group">
-                        <a [routerLink]="whitepaper.link" class="block">
-                            <!-- Image -->
-                            <div class="relative w-full h-32 sm:h-40 md:h-48     overflow-hidden">
-                                <img [src]="whitepaper.image" [alt]="whitepaper.title"
-                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                            </div>
-                            <!-- Title -->
-                            <h4
-                                class="text-sm       text-[#454545]  group-hover:text-p-500 transition-colors duration-200">
-                                {{whitepaper.title}}
-                            </h4>
-                            <!-- Read More Link -->
-                            <div
-                                class="flex items-center text-xs text-[#5D5D5D] group-hover:text-p-500 transition-colors duration-200">
-                                <span>Read more</span>
-                                <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7" />
-                                </svg>
-                            </div>
-                        </a>
-                    </div>
-                    }
-                </div>
 
                 <!-- Explore Knowledge Link -->
                 <div class="mt-1 md:mt-q pt-q md:pt-8 border-t border-gray-200">

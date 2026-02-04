@@ -1,4 +1,4 @@
-<section class="w-full bg-white min-h-[80vh] flex flex-col" aria-labelledby="featured-case-study-title">
+<section class="w-full bg-p-10 min-h-[80vh] flex flex-col" aria-labelledby="featured-case-study-title">
   <div class="flex-1 min-h-0">
     @if (currentSection(); as list) {
     @if (list[selectedIndex()]; as item) {
@@ -10,10 +10,10 @@
       </div>
 
       <!-- Right: content -->
-      <div class="flex flex-col justify-center px-6 sm:px-8 md:px-10 lg:px-14 xl:px-20 py-12 lg:py-16">
+      <div class="flex flex-col  px-6 sm:px-8 md:px-10 lg:px-14 xl:px-20 py-12 lg:py-16">
         <!-- Header row: label + pagination -->
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <p class="text-base sm:text-lg       uppercase tracking-wide text-blue-600">
+        <div class="flex flex-wrap  gap-4 mb-6">
+          <p class="text-lg font-semibold   uppercase  text-p-700">
             {{ item.label ?? 'Featured Case Study' }}
           </p>
           <div class="flex items-center gap-3">
@@ -42,13 +42,13 @@
 
         <!-- Tag -->
         <span
-          class="inline-block text-xs sm:text-sm        text-white bg-blue-900 px-3 py-1.5 sm:px-4 sm:py-2 rounded-md mb-4 sm:mb-5 w-fit">
+          class="inline-block text-xs sm:text-sm   text-p-700 bg-p-100/60 px-3 py-1.5 sm:px-4 sm:py-2  mb-4 sm:mb-5 w-fit">
           {{ item.tag }}
         </span>
 
         <!-- Title -->
         <h2 id="featured-case-study-title"
-          class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4 sm:mb-6">
+          class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl  text-gray-900 leading-tight mb-4 sm:mb-6">
           {{ item.title }}
         </h2>
 
@@ -60,18 +60,17 @@
         <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
           @if (item.cta?.primary?.link) {
           <a [routerLink]="item.cta?.primary?.link ?? '#'"
-            class="inline-flex items-center justify-center        px-6 sm:px-8 py-3 sm:py-4    bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200">
+            class="inline-flex items-center justify-center        px-6 sm:px-8 py-3 sm:py-4    bg-p-700 text-white hover:bg-p-700 transition-colors duration-200">
             {{ item.cta?.primary?.text ?? 'Read more' }}
           </a>
           } @else if (item.cta?.primary) {
-          <span
-            class="inline-flex items-center justify-center        px-6 sm:px-8 py-3 sm:py-4    bg-blue-600 text-white">
+          <span class="inline-flex items-center justify-center        px-6 sm:px-8 py-3 sm:py-4    bg-p-700 text-white">
             {{ item.cta?.primary?.text ?? 'Read more' }}
           </span>
           }
           @if (item.cta?.secondary) {
           <a [routerLink]="item.cta?.secondary?.link ?? '/resources/case-studies'"
-            class="text-base text-gray-600 hover:text-blue-600 transition-colors duration-200 inline-flex items-center gap-1">
+            class="text-base text-gray-600  transition-colors duration-200 inline-flex items-center gap-1">
             {{ item.cta?.secondary?.text ?? 'View all case studies' }}
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
