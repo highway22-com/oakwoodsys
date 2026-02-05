@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, PLATFORM_ID, signal, DOCUMENT } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule, NgClass, isPlatformBrowser } from '@angular/common';
 import { Title, Meta, DomSanitizer } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -25,7 +24,6 @@ export class Home implements OnInit {
   readonly videoUrls = signal<string[]>([]);
 
   private readonly graphql = inject(GraphQLContentService);
-  private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly titleService = inject(Title);
   private readonly metaService = inject(Meta);
@@ -49,18 +47,17 @@ export class Home implements OnInit {
       this.isAdmin.set(!!token);
     }
 
-    // Cargar contenido desde GraphQL (Oakwood CMS: cmsPage(slug: "home"))
+    // Contenido solo desde GraphQL (cmsPage(slug: "home")) – sitio estático, sin /api/home-content
     this.graphql.getCmsPageBySlug('home').subscribe({
       next: (data) => {
-        console.log('Data from GraphQL:', data);
         if (data) {
-          console.log('[Home] Content loaded from GraphQL (cmsPage home)');
           this.applyContent(data);
+        } else {
+          this.loading.set(false);
         }
       },
       error: () => {
-        console.log('Error al cargar el contenido desde GraphQL');
-        this.fallbackToHomeContentApi();
+        this.loading.set(false);
       }
     });
   }
@@ -79,24 +76,6 @@ export class Home implements OnInit {
     this.updateMetadata(data);
     this.updateStructuredData(data);
     this.loading.set(false);
-  }
-
-  private fallbackToHomeContentApi() {
-    console.warn('[Home] GraphQL returned nothing, falling back to /api/home-content');
-    const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('admin_token') : null;
-    const headers: { [key: string]: string } = {};
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    this.http.get<CmsPageContent>('/api/home-content', { headers }).subscribe({
-      next: (data) => {
-        console.log('[Home] Content loaded from /api/home-content');
-        this.applyContent(data);
-      },
-      error: () => {
-        this.loading.set(false);
-      }
-    });
   }
 
   getSection(type: string) {
