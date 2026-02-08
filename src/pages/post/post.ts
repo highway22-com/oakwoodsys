@@ -185,7 +185,10 @@ export class Post implements OnInit, OnDestroy {
             this.tableOfContents.set(toc);
             this.post.set(postData);
             if (isPlatformBrowser(this.platformId)) {
-              setTimeout(() => this.setupScrollListener(), 150);
+              setTimeout(() => {
+                this.setupScrollListener();
+                this.scrollToFragmentFromUrl();
+              }, 250);
             }
           } else {
             this.error.set('Post not found');
@@ -262,6 +265,37 @@ export class Post implements OnInit, OnDestroy {
         behavior: 'smooth'
       });
       this.activeSection.set(sectionId);
+    }
+  }
+
+  /**
+   * Si la URL tiene fragment (TOC #section-0 o búsqueda navbar #texto), hace scroll a esa posición.
+   * Usa window.location.hash para evitar dependencia de RouterStateSnapshot.fragment.
+   */
+  private scrollToFragmentFromUrl(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const raw = (window.location.hash || '').replace(/^#/, '');
+    if (!raw) return;
+    const decoded = decodeURIComponent(raw).trim();
+    if (!decoded) return;
+
+    const byId = document.getElementById(decoded);
+    if (byId) {
+      this.scrollToSection(decoded);
+      return;
+    }
+
+    const container = document.querySelector('.blog-content');
+    if (!container) return;
+    const searchText = decoded.toLowerCase();
+    const candidates = container.querySelectorAll('p, li, h2, h3, h4, blockquote');
+    for (const el of candidates) {
+      if ((el.textContent ?? '').toLowerCase().includes(searchText)) {
+        const top = el.getBoundingClientRect().top + window.pageYOffset - 100;
+        window.scrollTo({ top, behavior: 'smooth' });
+        if (el.id) this.activeSection.set(el.id);
+        break;
+      }
     }
   }
 }

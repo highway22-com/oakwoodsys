@@ -211,6 +211,28 @@ export interface CaseStudyByResponse {
   caseStudyBy?: CaseStudyBy | null;
 }
 
+/** Versión ligera para búsqueda en navbar: solo id, title, excerpt, slug, imagen. Sin content ni autor. */
+export const GET_GEN_CONTENTS_FOR_SEARCH = gql`
+  query GetGenContentsForSearch($categoryId: ID!) {
+    genContentCategory(id: $categoryId, idType: SLUG) {
+      genContents(first: 100) {
+        nodes {
+          id
+          title
+          excerpt
+          slug
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 /** Lista por categoría Gen Content: mismo patrón para bloq (categoryId: "bloq") y case study (categoryId: "case-study"). id espera ID! en WPGraphQL. */
 export const GET_GEN_CONTENTS_BY_CATEGORY = gql`
   query GetGenContentsByCategory($categoryId: ID!) {
@@ -398,3 +420,14 @@ export const GET_CMS_PAGE = gql`
     }
   }
 `;
+
+/** Item unificado para búsqueda (blog o case study): link, snippet, imagen. Búsqueda solo en título y excerpt. */
+export interface SearchResultItem {
+  type: 'blog' | 'case-study';
+  id: string;
+  title: string;
+  slug: string;
+  link: string;
+  snippet: string;
+  image: string;
+}

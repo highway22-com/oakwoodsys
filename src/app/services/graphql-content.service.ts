@@ -5,6 +5,7 @@ import { map, catchError, tap, filter } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import {
   GET_GEN_CONTENTS_BY_CATEGORY,
+  GET_GEN_CONTENTS_FOR_SEARCH,
   GET_CASE_STUDY_BY_SLUG,
   GET_CMS_PAGE,
   type CaseStudy,
@@ -14,7 +15,9 @@ import {
   type CaseStudyByResponse,
   type CmsPageContent,
   type CmsPageResponse,
+  type SearchResultItem,
 } from '../api/graphql';
+import { combineLatest } from 'rxjs';
 
 const CMS_PAGE_STATE_KEY = (slug: string) => makeStateKey<CmsPageContent | null>(`cms-page-${slug}`);
 
@@ -208,5 +211,64 @@ export class GraphQLContentService {
           return of(null);
         })
       );
+  }
+
+  /**
+   * Búsqueda rápida: solo blogs y case studies con título + excerpt (query ligera, sin content ni CMS).
+   */
+  getSearchableContent(): Observable<SearchResultItem[]> {
+    return combineLatest({
+      blogs: this.getGenContentsForSearch('bloq'),
+      caseStudies: this.getGenContentsForSearch('case-study'),
+    }).pipe(
+      map(({ blogs, caseStudies }) => {
+        const blogItems: SearchResultItem[] = (blogs ?? []).map((n) => ({
+          type: 'blog' as const,
+          id: n.id,
+          title: n.title ?? '',
+          slug: n.slug ?? '',
+          link: `/blog/${n.slug ?? ''}`,
+          snippet: this.stripHtml((n.excerpt ?? n.title ?? '').slice(0, 160)),
+          image: n.featuredImage?.node?.sourceUrl ?? '',
+        }));
+        const caseItems: SearchResultItem[] = (caseStudies ?? []).map((n) => ({
+          type: 'case-study' as const,
+          id: n.id,
+          title: n.title ?? '',
+          slug: n.slug ?? '',
+          link: `/resources/case-studies/${n.slug ?? ''}`,
+          snippet: this.stripHtml((n.excerpt ?? n.title ?? '').slice(0, 160)),
+          image: n.featuredImage?.node?.sourceUrl ?? '',
+        }));
+        return [...blogItems, ...caseItems];
+      }),
+      catchError(() => of([]))
+    );
+  }
+
+  private getGenContentsForSearch(categoryId: string): Observable<GenContentListNode[]> {
+    return this.apollo
+      .watchQuery<GenContentsByCategoryResponse>({
+        query: GET_GEN_CONTENTS_FOR_SEARCH,
+        variables: { categoryId },
+        fetchPolicy: 'cache-and-network',
+      })
+      .valueChanges.pipe(
+        filter((result) => !result.loading),
+        map((result) => {
+          const data = result.data as GenContentsByCategoryResponse | undefined;
+          return data?.genContentCategory?.genContents?.nodes ?? [];
+        }),
+        catchError(() => of([]))
+      );
+  }
+
+  private stripHtml(html: string): string {
+    if (typeof document === 'undefined') {
+      return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return (div.textContent ?? div.innerText ?? '').replace(/\s+/g, ' ').trim();
   }
 }

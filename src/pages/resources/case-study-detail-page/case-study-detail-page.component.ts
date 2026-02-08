@@ -92,6 +92,7 @@ export class CaseStudyDetailPageComponent implements OnInit, OnDestroy {
           this.tableOfContents.set(CaseStudyDetailPageComponent.TOC);
           this.setupScrollListener();
           if (isPlatformBrowser(this.platformId)) {
+            setTimeout(() => this.scrollToFragmentFromUrl(), 300);
             this.contentService.getCaseStudies().subscribe({
               next: (nodes) => {
                 const cards: CaseStudyDetailCard[] = nodes.slice(0, 3).map((n) => ({
@@ -194,6 +195,34 @@ export class CaseStudyDetailPageComponent implements OnInit, OnDestroy {
     if (this.scrollListener && isPlatformBrowser(this.platformId)) {
       window.removeEventListener('scroll', this.scrollListener);
       this.scrollListener = null;
+    }
+  }
+
+  /** Igual que post: si la URL tiene fragment (TOC o búsqueda navbar), hace scroll a esa posición. */
+  private scrollToFragmentFromUrl(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const raw = (window.location.hash || '').replace(/^#/, '');
+    if (!raw) return;
+    const decoded = decodeURIComponent(raw).trim();
+    if (!decoded) return;
+
+    const byId = document.getElementById(decoded);
+    if (byId) {
+      this.scrollToSection(decoded);
+      return;
+    }
+
+    const container = document.querySelector('.blog-content');
+    if (!container) return;
+    const searchText = decoded.toLowerCase();
+    const candidates = container.querySelectorAll('p, li, h2, h3, h4, blockquote, section');
+    for (const el of candidates) {
+      if ((el.textContent ?? '').toLowerCase().includes(searchText)) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 100;
+        window.scrollTo({ top, behavior: 'smooth' });
+        if (el.id) this.activeSection.set(el.id);
+        break;
+      }
     }
   }
 }
