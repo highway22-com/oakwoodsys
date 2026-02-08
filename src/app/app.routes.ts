@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { Bloq } from '../pages/bloq/bloq';
+import { Blogs } from '../pages/blogs/blogs';
 import { Post } from '../pages/post/post';
 import { Home } from '../pages/home/home';
 import { Services } from '../pages/services/services';
@@ -27,7 +27,7 @@ export const routes: Routes = [
     },
     {
         path: 'blog',
-        component: Bloq
+        component: Blogs
     },
     {
         path: 'services/:slug',

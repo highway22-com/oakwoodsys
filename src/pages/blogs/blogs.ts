@@ -59,11 +59,11 @@ export interface Post {
 @Component({
   selector: 'app-bloq',
   imports: [RouterLink, RouterLinkActive, CommonModule, DatePipe],
-  templateUrl: './bloq.html',
-  styleUrl: './bloq.css',
+  templateUrl: './blogs.html',
+  styleUrl: './blogs.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Bloq implements OnInit {
+export class Blogs implements OnInit {
   private readonly apollo = inject(Apollo);
   private readonly sanitizer = inject(DomSanitizer);
   readonly posts = signal<{ nodes: Post[] } | null>(null);
