@@ -1,6 +1,6 @@
 <nav class="w-full px-4 sm:px-6 md:px-8 lg:px-1 py-4 md:py-5 fixed top-0 left-0 right-0 z-50 transition-all duration-300 "
-    [class.navbar--gradient]="!hasNavbarBackground" [class.bg-white]="hasNavbarBackground"
-    [class.shadow-md]="isScrolled" [class.text-reds]="isNavbarDark">
+    [class.navbar--gradient]="!hasNavbarBackground " [class.bg-white]="hasNavbarBackground "
+    [class.shadow-md]="isScrolled  " [class.text-reds]="isNavbarDark  ">
     <div class="px-4 sm:px-6 md:px-8 lg:px-20 mx-auto flex items-center justify-between">
         <!-- Left Section: Logo -->
         <a [routerLink]="'/home'" class="flex items-center gap-2 sm:gap-3">
@@ -128,7 +128,7 @@
 
 <!-- Panel de búsqueda (click en ícono): input 100 chars, lista con link/snippet/imagen, lazy load al hacer scroll -->
 @if (searchPanelOpen()) {
-<div class="flex flex-col nav--body search-panel-container">
+<div class="flex flex-col nav--body search-panel-container" (mouseleave)="sleepMoveout()">
     <div class="px-4 sm:px-6 md:px-8 lg:px-20 py-6">
         <div class="flex items-center gap-3 border-b border-gray-200 pb-4 mb-4">
             <svg class="w-5 h-5 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,7 +141,7 @@
             <span class="text-xs text-gray-400 shrink-0">{{ searchQuery().length }}/{{ SEARCH_MAX_LENGTH }}</span>
         </div>
         @if (searchLoading()) {
-        <p class="text-gray-500 py-4">Loading…</p>
+        <p class="text-gray-500 py-4">…</p>
         } @else {
         <div class="max-h-[60vh] overflow-y-auto overflow-x-hidden pr-2" (scroll)="onSearchScroll($event)">
             @if (searchFilteredResults().length === 0) {

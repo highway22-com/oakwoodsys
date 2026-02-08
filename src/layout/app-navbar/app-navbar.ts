@@ -164,6 +164,10 @@ export class AppNavbar implements OnInit, OnDestroy {
     }
   }
 
+  sleepMoveout() {
+    this.searchPanelOpen.set(false);
+  }
+
   private checkScrollPosition() {
     if (!isPlatformBrowser(this.platformId)) {
       return;
@@ -176,12 +180,12 @@ export class AppNavbar implements OnInit, OnDestroy {
   /** true cuando la barra debe usar estilo “oscuro” (logo oscuro, texto oscuro): scroll o hover en un dropdown (índice !== 0). */
   get isNavbarDark(): boolean {
     const hover = this.hoveredIndex();
-    return this.isScrolled || (hover !== null);
+    return this.isScrolled || (hover !== null) || this.searchPanelOpen();
   }
 
   /** true cuando la barra debe mostrar fondo (blanco) o texto de enlaces oscuro: scroll o cualquier hover en menú. */
   get hasNavbarBackground(): boolean {
-    return this.isScrolled || this.hoveredIndex() !== null;
+    return this.isScrolled || this.hoveredIndex() !== null || this.searchPanelOpen();
   }
 
   toggleMobileMenu() {
@@ -229,7 +233,10 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   public onNavMouseLeave(): void {
     this.hoveredIndex.set(null);
-    console.log('onNavMouseLeave', this.hoveredIndex());
+    // if (this.searchPanelOpen) {
+    //   this.searchPanelOpen.set(false);
+    // }
+    // console.log('onNavMouseLeave', this.hoveredIndex());
   }
 
   public handleMouseEnter(item: { index: number | null; hasDropdown: boolean }): void {
