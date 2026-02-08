@@ -42,7 +42,7 @@
         <!-- Error State -->
 
         <!-- Two Column Layout -->
-        @if (!loading() && !error() && posts()?.nodes && posts()!.nodes.length > 0) {
+        @if (!loading() && !error() && displayedNodes().length > 0) {
         <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
             <!-- Left Column: Service Lines (Figma / case-study-detail sidebar style) -->
             <aside class="lg:w-64 xl:w-80 flex-shrink-0">
@@ -85,8 +85,8 @@
             <div class="flex-1">
                 <div class="blog-content prose prose-lg max-w-none">
                     <!-- Featured Post (First Post - Large) -->
-                    @if (posts()!.nodes.length > 0) {
-                    @let featuredPost = posts()!.nodes[0];
+                    @if (displayedNodes().length > 0) {
+                    @let featuredPost = displayedNodes()[0];
                     <article class="bg-p-10   overflow-hidden  transition-shadow duration-300 mb-8">
                         <!-- Post Image -->
                         <div class="relative w-full h-64 sm:h-80 md:h-96 overflow-hidden">
@@ -145,9 +145,9 @@
                     }
 
                     <!-- Other Posts Grid (2 columns) -->
-                    @if (posts()!.nodes.length > 1) {
+                    @if (displayedNodes().length > 1) {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                        @for (post of posts()!.nodes.slice(1); track $index) {
+                        @for (post of displayedNodes().slice(1); track post.id) {
                         <article
                             class="bg-white hover:bg-p-10 hover:border-gray-500  overflow-hidden  transition-shadow duration-300 h-full flex flex-col">
                             <!-- Post Image -->
@@ -230,13 +230,24 @@
                         }
                     </div>
                     }
+
+                    <!-- Sentinel para scroll infinito: al llegar aquí se cargan 10 más -->
+                    @if (hasNextPage()) {
+                    <div #scrollSentinel class="h-4 w-full" aria-hidden="true"></div>
+                    }
+                    <!-- Indicador "cargando más" -->
+                    @if (loadingMore()) {
+                    <div class="flex justify-center items-center py-8">
+                        <span class="text-s-600 text-sm">Loading more...</span>
+                    </div>
+                    }
                 </div>
             </div>
         </div>
         }
 
         <!-- Empty State -->
-        @if (!loading() && !error() && (!posts()?.nodes || posts()!.nodes.length === 0)) {
+        @if (!loading() && !error() && displayedNodes().length === 0) {
         <div class="text-center py-12 sm:py-16 md:py-20">
             <div class="inline-block w-16 h-16 sm:w-20 sm:h-20 bg-gray-100      flex items-center justify-center mb-4">
                 <svg class="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" fill="none" stroke="currentColor"
@@ -250,19 +261,5 @@
         </div>
         }
 
-        <!-- Pagination (if needed) -->
-        @if (!loading() && !error() && posts()?.nodes && posts()!.nodes.length > 0) {
-        <div class="flex justify-center items-center gap-4 mt-8 sm:mt-10">
-            <button
-                class="px-4 py-2 sm:px-6 sm:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700           transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                Previous
-            </button>
-            <span class="text-sm sm:text-base text-gray-600">Page 1 of 1</span>
-            <button
-                class="px-4 py-2 sm:px-6 sm:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700           transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                Next
-            </button>
-        </div>
-        }
     </div>
 </section>

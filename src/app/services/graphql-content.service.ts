@@ -1,18 +1,23 @@
 import { inject, Injectable, makeStateKey, PLATFORM_ID, signal, TransferState } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { Observable, of } from 'rxjs';
-import { map, catchError, tap, filter } from 'rxjs/operators';
+import { map, catchError, tap, filter, switchMap, take } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import {
   GET_GEN_CONTENTS_BY_CATEGORY,
   GET_GEN_CONTENTS_FOR_SEARCH,
   GET_CASE_STUDY_BY_SLUG,
+  GET_GEN_CONTENT_BY_SLUG,
+  GET_CASE_STUDY_DETAIL,
   GET_CMS_PAGE,
   type CaseStudy,
   type CaseStudyBy,
+  type GenContentDetailNode,
   type GenContentListNode,
   type GenContentsByCategoryResponse,
   type CaseStudyByResponse,
+  type GenContentBySlugResponse,
+  type CaseStudyDetailResponse,
   type CmsPageContent,
   type CmsPageResponse,
   type SearchResultItem,
@@ -129,7 +134,7 @@ export class GraphQLContentService {
     };
   }
 
-  /** Siempre pide el detalle por slug para tener overview, businessChallenge, solution, testimonial, etc. (la lista no incluye esos campos). */
+  /** Detalle por slug: una sola petición con genContent + caseStudyBy (como GetBlogOrPost). Prioridad genContent. */
   getCaseStudyBySlug(slug: string): Observable<CaseStudyBy | null> {
     const normalizedSlug = slug.trim();
     if (!normalizedSlug) return of(null);
@@ -138,25 +143,63 @@ export class GraphQLContentService {
     this.errors.set(null);
 
     return this.apollo
-      .watchQuery<CaseStudyByResponse>({
-        query: GET_CASE_STUDY_BY_SLUG,
-        variables: { slug: normalizedSlug },
-        fetchPolicy: 'cache-and-network',
+      .query<CaseStudyDetailResponse>({
+        query: GET_CASE_STUDY_DETAIL,
+        variables: { slug: normalizedSlug, id: normalizedSlug },
+        fetchPolicy: 'network-only',
       })
-      .valueChanges.pipe(
-        filter((result) => !result.loading),
-        map((result) => {
-          const data = result.data as CaseStudyByResponse | undefined;
-          const caseStudy: CaseStudyBy | null = data?.caseStudyBy ?? null;
+      .pipe(
+        map((res) => {
+          const data = res.data as CaseStudyDetailResponse | undefined;
+          const gen = data?.genContent;
+          const caseStudy = data?.caseStudyBy ?? null;
           this.loading.set(false);
+          if (gen) return this.genContentToCaseStudyBy(gen);
           return caseStudy;
         }),
-        catchError((error) => {
-          this.errors.set(error);
+        catchError((err) => {
+          this.errors.set(err);
           this.loading.set(false);
           return of(null);
         })
       );
+  }
+
+  /** Mapea un Gen Content (categoría case-study) al formato CaseStudyBy para reutilizar la vista de detalle. */
+  private genContentToCaseStudyBy(g: GenContentDetailNode): CaseStudyBy {
+    const related = (g.relatedCaseStudies ?? []).map((r) => ({
+      id: r.id,
+      title: r.title,
+      slug: r.slug,
+      date: r.date,
+      excerpt: r.excerpt,
+      featuredImage: r.featuredImage ? { node: { sourceUrl: r.featuredImage.node?.sourceUrl ?? '' } } : undefined,
+      caseStudyCategories: r.genContentCategories ? { nodes: r.genContentCategories.nodes } : undefined,
+    }));
+    return {
+      id: g.id,
+      title: g.title,
+      slug: g.slug,
+      date: g.date,
+      content: g.content ?? '',
+      excerpt: g.excerpt ?? '',
+      featuredImage: g.featuredImage
+        ? { node: { sourceUrl: g.featuredImage.node?.sourceUrl ?? '', altText: g.featuredImage.node?.altText ?? undefined } }
+        : undefined,
+      caseStudyCategories: g.genContentCategories ? { nodes: g.genContentCategories.nodes } : undefined,
+      caseStudyDetails: {
+        heroImage: g.featuredImage ? { node: { sourceUrl: g.featuredImage.node?.sourceUrl ?? '', altText: g.featuredImage.node?.altText ?? undefined } } : undefined,
+        tags: g.tags ?? [],
+        cardDescription: g.excerpt ?? undefined,
+        overview: g.content ?? '',
+        businessChallenge: '',
+        solution: '',
+        solutionImage: undefined,
+        testimonial: undefined,
+        relatedCaseStudies: { nodes: related },
+        connectedServices: [],
+      },
+    };
   }
 
   /**

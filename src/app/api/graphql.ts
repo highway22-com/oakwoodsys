@@ -233,57 +233,78 @@ export const GET_GEN_CONTENTS_FOR_SEARCH = gql`
   }
 `;
 
+const GEN_CONTENTS_FIELDS = `
+  id
+  title
+  content
+  excerpt
+  slug
+  date
+  tags
+  primaryTag
+  featuredImage {
+    node {
+      sourceUrl
+      altText
+    }
+  }
+  author {
+    node {
+      email
+      firstName
+      id
+    }
+  }
+  authorPerson {
+    id
+    name
+    firstName
+    position
+    picture
+    socialLinks {
+      platform
+      url
+    }
+  }
+  genContentCategories {
+    nodes {
+      name
+      slug
+    }
+  }
+  headTitle
+  headDescription
+  headCanonicalUrl
+  headGeoRegion
+  headGeoPlacename
+  headGeoPosition
+  headJsonLdData
+`;
+
 /** Lista por categoría Gen Content: mismo patrón para bloq (categoryId: "bloq") y case study (categoryId: "case-study"). id espera ID! en WPGraphQL. */
 export const GET_GEN_CONTENTS_BY_CATEGORY = gql`
   query GetGenContentsByCategory($categoryId: ID!) {
     genContentCategory(id: $categoryId, idType: SLUG) {
-      genContents(first: 100) {
+      genContents(first: 500) {
         nodes {
-          id
-          title
-          content
-          excerpt
-          slug
-          date
-          tags
-          primaryTag
-          featuredImage {
-            node {
-              sourceUrl
-              altText
-            }
-          }
-          author {
-            node {
-              email
-              firstName
-              id
-            }
-          }
-          authorPerson {
-            id
-            name
-            firstName
-            position
-            picture
-            socialLinks {
-              platform
-              url
-            }
-          }
-          genContentCategories {
-            nodes {
-              name
-              slug
-            }
-          }
-          headTitle
-          headDescription
-          headCanonicalUrl
-          headGeoRegion
-          headGeoPlacename
-          headGeoPosition
-          headJsonLdData
+          ${GEN_CONTENTS_FIELDS}
+        }
+      }
+    }
+  }
+`;
+
+/** Lista paginada por categoría (scroll infinito): first + after, pageInfo. */
+export const GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED = gql`
+  query GetGenContentsByCategoryPaginated($categoryId: ID!, $first: Int!, $after: String) {
+    genContentCategory(id: $categoryId, idType: SLUG) {
+      genContents(first: $first, after: $after) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          ${GEN_CONTENTS_FIELDS}
         }
       }
     }
@@ -326,6 +347,221 @@ export const GET_CASE_STUDIES = gql`
     }
   }
 `;
+
+/** Un Gen Content por slug (para case studies que viven en Gen Content categoría case-study). Mismo patrón que GetBlogOrPost: id con idType SLUG. */
+export const GET_GEN_CONTENT_BY_SLUG = gql`
+  query GetGenContentBySlug($id: ID!) {
+    genContent(id: $id, idType: SLUG) {
+      id
+      title
+      slug
+      date
+      content
+      excerpt
+      tags
+      primaryTag
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      genContentCategories {
+        nodes {
+          name
+          slug
+        }
+      }
+      relatedCaseStudies {
+        id
+        title
+        slug
+        date
+        excerpt
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+        genContentCategories {
+          nodes {
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
+/** Una sola petición: genContent + caseStudyBy (mismo patrón que GetBlogOrPost: $slug + $id). Prioridad genContent. */
+export const GET_CASE_STUDY_DETAIL = gql`
+  query GetCaseStudyDetail($slug: String!, $id: ID!) {
+    genContent(id: $id, idType: SLUG) {
+      id
+      title
+      content
+      excerpt
+      slug
+      date
+      tags
+      primaryTag
+      showContactSection
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      author {
+        node {
+          email
+          firstName
+          id
+        }
+      }
+      authorPerson {
+        id
+        name
+        firstName
+        position
+        picture
+      }
+      headTitle
+      headDescription
+      headCanonicalUrl
+      headGeoRegion
+      headGeoPlacename
+      headGeoPosition
+      headJsonLdData
+      genContentCategories {
+        nodes {
+          name
+          slug
+        }
+      }
+      relatedCaseStudies {
+        id
+        title
+        slug
+        date
+        excerpt
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+        genContentCategories {
+          nodes {
+            name
+          }
+        }
+      }
+    }
+    caseStudyBy(slug: $slug) {
+      id
+      title
+      slug
+      date
+      content
+      excerpt
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      caseStudyCategories {
+        nodes {
+          name
+          slug
+        }
+      }
+      caseStudyDetails {
+        heroImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+        tags
+        cardDescription
+        overview
+        businessChallenge
+        solution
+        solutionImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+        testimonial {
+          testimonialCompany
+          testimonialCompanyLogo {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+          testimonialQuote
+          testimonialAuthor
+          testimonialRole
+        }
+        relatedCaseStudies {
+          nodes {
+            ... on CaseStudy {
+              id
+              title
+              slug
+              date
+              excerpt
+              featuredImage {
+                node {
+                  sourceUrl
+                }
+              }
+              caseStudyCategories {
+                nodes {
+                  name
+                }
+              }
+            }
+          }
+        }
+        connectedServices {
+          serviceIcon
+          serviceTitle
+          serviceDescription
+          serviceLink
+          serviceSlug
+        }
+      }
+    }
+  }
+`;
+
+export interface CaseStudyDetailResponse {
+  genContent?: GenContentDetailNode | null;
+  caseStudyBy?: CaseStudyBy | null;
+}
+
+/** Gen Content con relatedCaseStudies (para detalle por slug). */
+export interface GenContentDetailNode extends GenContentListNode {
+  relatedCaseStudies?: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    date: string;
+    excerpt: string;
+    featuredImage?: { node: { sourceUrl: string; altText?: string | null } } | null;
+    genContentCategories?: { nodes: Array<{ name: string }> };
+  }> | null;
+}
+
+export interface GenContentBySlugResponse {
+  genContent?: GenContentDetailNode | null;
+}
 
 /** Detalle de un case study por slug. */
 export const GET_CASE_STUDY_BY_SLUG = gql`

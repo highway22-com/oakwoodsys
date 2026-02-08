@@ -4,7 +4,6 @@ import { Post } from '../pages/post/post';
 import { Home } from '../pages/home/home';
 import { Services } from '../pages/services/services';
 import { Resources as ResourcesList } from '../pages/resources/resources-wordpress';
-import { CaseStudyDetailPageComponent } from '../pages/resources/case-study-detail-page/case-study-detail-page.component';
 import { Industries } from '../pages/industries/industries';
 import { Structured } from '../pages/structured/structured';
 import { AboutUs } from '../pages/about-us/about-us';
@@ -40,7 +39,7 @@ export const routes: Routes = [
     },
     {
         path: 'resources/case-studies/:slug',
-        component: CaseStudyDetailPageComponent
+        component: Post
     },
     {
         path: 'resources/case-studies',

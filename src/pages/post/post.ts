@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal, input, PLATFORM_ID } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Apollo, gql } from 'apollo-angular';
@@ -55,11 +55,13 @@ export interface PostDetail {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Post implements OnInit, OnDestroy {
-  slug = input.required<string>();
+  slug = input<string>('');
+  private readonly route = inject(ActivatedRoute);
   private readonly apollo = inject(Apollo);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly platformId = inject(PLATFORM_ID);
   private scrollListener?: () => void;
+  private routeSub?: { unsubscribe(): void };
 
   readonly post = signal<PostDetail | null>(null);
   readonly loading = signal(true);
@@ -76,15 +78,24 @@ export class Post implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    const slugValue = this.slug();
-    if (!slugValue) {
-      this.loading.set(false);
-      this.error.set('No slug provided');
-      return;
-    }
+    this.routeSub = this.route.paramMap.subscribe((params) => {
+      const slugValue = params.get('slug') || this.slug() || '';
+      if (!slugValue) {
+        this.loading.set(false);
+        this.error.set('No slug provided');
+        return;
+      }
+      this.loadPost(slugValue);
+    });
+  }
+
+  private loadPost(slugValue: string) {
+    this.loading.set(true);
+    this.error.set(null);
+    this.post.set(null);
 
     this.apollo
-      .watchQuery({
+      .query({
         query: gql`
           query GetBlogOrPost($slug: String!, $id: ID!) {
             genContent(id: $id, idType: SLUG) {
@@ -145,9 +156,9 @@ export class Post implements OnInit, OnDestroy {
         variables: { slug: slugValue, id: slugValue },
         fetchPolicy: 'network-only',
       })
-      .valueChanges.subscribe({
+      .subscribe({
         next: (result: any) => {
-          const data = result.data as {
+          const data = result?.data as {
             genContent?: Record<string, unknown> | null;
             postBy?: Record<string, unknown> | null;
           };
@@ -204,6 +215,7 @@ export class Post implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.routeSub?.unsubscribe();
     if (this.scrollListener && isPlatformBrowser(this.platformId)) {
       window.removeEventListener('scroll', this.scrollListener);
     }

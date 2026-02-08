@@ -3,7 +3,7 @@
  * Plugin Name: Oakwood Bloq
  * Plugin URI: https://oakwoodsys.com
  * Description: Registra el CPT "Gen Content" (gen_content) + taxonomía, agrega campos ACF (show_contact_section, related_bloqs) y los expone en WPGraphQL.
- * Version: 4.0.0
+ * Version: 4.0.1
  * Author: Aetro
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -421,7 +421,14 @@ function oakwood_bloq_register_graphql_fields() {
 					)
 				);
 
-				return is_array( $posts ) ? $posts : array();
+				if ( ! is_array( $posts ) ) {
+					return array();
+				}
+
+				// Evitar null en la lista: solo devolver posts con ID válido y tipo gen_content (evita "Cannot return null for non-nullable field GenContent.id").
+				return array_values( array_filter( $posts, function ( $p ) {
+					return $p && isset( $p->ID ) && (int) $p->ID > 0 && ( isset( $p->post_type ) && $p->post_type === 'gen_content' );
+				} ) );
 			},
 		)
 	);
