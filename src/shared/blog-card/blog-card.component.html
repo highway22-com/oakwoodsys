@@ -1,0 +1,61 @@
+<a [routerLink]="['/blog', slug()]"
+    class="group bg-white overflow-hidden transition-shadow duration-300 h-full flex flex-col hover:outline-gray-300 hover:outline hover:bg-p-30">
+    <!-- Post Image -->
+    <div class="relative h-[25rem] w-full overflow-hidden px-6 py-5">
+        <div class="relative w-full aspect-square overflow-hidden">
+            <img [src]="effectiveImageUrl()" [alt]="imageAlt()"
+                class="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-110" />
+        </div>
+    </div>
+
+    <!-- Post Content -->
+    <div class="p-5 sm:p-6 flex flex-col flex-grow">
+        <!-- Tags, Reading Time -->
+        <div class="flex items-center mb-4 flex-wrap gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
+                @if (tag()) {
+                <span class="tag-badge mr-2">{{ tag() }}</span>
+                }
+            </div>
+            <span class="text-xs text-s-600">{{ readingTimeMinutes() }} min read</span>
+        </div>
+
+        <!-- Title -->
+        <h3 class="text-lg sm:text-2xl text-s-900 mb-3 sm:mb-4 leading-tight">
+            {{ title() || 'Blog Post Title' }}
+        </h3>
+
+        <!-- Excerpt -->
+        @if (excerptHtml()) {
+        <div class="text-sm sm:text-base text-s-600 mb-4 leading-relaxed line-clamp-3 prose prose-sm max-w-none"
+            [innerHTML]="excerptHtml()">
+        </div>
+        }
+
+        <!-- Author Info -->
+        <!-- @if (authorDisplayName()) {
+        <div class="flex items-center gap-3 mb-4">
+            @if (authorPicture()) {
+            <img [src]="authorPicture()" [alt]="authorDisplayName()!"
+                class="w-8 h-8 sm:w-10 sm:h-10 object-cover" />
+            } @else {
+            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 flex items-center justify-center">
+                <span class="text-p-500 text-sm sm:text-base">{{ authorInitial() }}</span>
+            </div>
+            }
+            <div>
+                <p class="text-sm text-s-800">{{ authorDisplayName() }}</p>
+                <p class="text-xs text-s-600">
+                    {{ date() ? (date() | date:'MMM d, y') : 'Recent' }}
+                </p>
+            </div>
+        </div>
+        } -->
+
+        <!-- Read More -->
+        <div
+            class="text-sm text-s-600 group-hover:text-p-500 transition-colors duration-200 inline-flex items-center mt-auto">
+            {{ readMoreText() }} <span class="ml-1">→</span>
+        </div>
+    </div>
+</a>

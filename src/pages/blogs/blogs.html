@@ -1,101 +1,49 @@
-<!-- Hero Section -->
-<section
-    class="relative min-h-[50vh] sm:min-h-[60vh] md:min-h-[70vh] w-full overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
-    <!-- Background Image -->
-    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('/bloq_hero.jpg');">
-    </div>
-    <div class="absolute inset-0 bg-gradient-to-br from-slate-900/60 via-blue-900/50 to-slate-800/60"></div>
-
-    <!-- Content Container -->
-    <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-16 sm:py-20 md:py-24">
-        <div class="max-w-4xl">
-            <!-- Breadcrumbs -->
-            <nav class="mb-6 sm:mb-8">
-                <ol class="flex items-center gap-2 text-sm sm:text-base text-white/70">
-                    <li><a routerLink="/" class="hover:text-white transition-colors">Home</a></li>
-                    <li class="text-white/50">></li>
-                    <li><a routerLink="/resources" class="hover:text-white transition-colors">Resources</a></li>
-                    <li class="text-white/50">></li>
-                    <li class="text-white/70">IT Blog</li>
-                </ol>
-            </nav>
-
-            <!-- Main Title -->
-            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4 sm:mb-6">
-                Discover our impact through realized projects
-            </h1>
-
-            <!-- Subtitle -->
-            <p class="text-lg sm:text-xl md:text-2xl text-white/80 leading-relaxed max-w-3xl">
-                Explore Oakwood's case studies, blogs, webinars, and events.
-            </p>
-        </div>
-    </div>
-</section>
+<app-page-hero [breadcrumbs]="blogHeroBreadcrumbs" bgImage="/bloq_hero.jpg"
+    mainText="Discover our impact through realized projects"
+    subtitle="Explore Oakwood's case studies, blogs, webinars, and events." />
 
 <!-- Blog Posts Section -->
 <section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24">
-    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+    <div class="px-4 sm:px-6 md:px-8 lg:px-36">
         <!-- Loading State -->
-
-
-        <!-- Error State -->
 
         <!-- Two Column Layout -->
         @if (!loading() && !error() && displayedNodes().length > 0) {
         <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
             <!-- Left Column: Service Lines (Figma / case-study-detail sidebar style) -->
-            <aside class="lg:w-64 xl:w-80 flex-shrink-0">
+            <aside class="flex-auto lg:w-74 ">
                 <div class="sticky top-24">
-                    <div class="   p-6">
-                        <h2 class="text-lg       uppercase tracking-wider text-gray-700/60 mb-4">Service lines
+                    <div class="relative pl-4">
+                        <h2 class="text-base font-semibold uppercase tracking-wider text-gray-700/60 mb-6">Service
+                            lines
                         </h2>
-                        <nav class="space-y-2" aria-label="Service lines">
-                            <a routerLink="/services/cloud-and-infrastructure" routerLinkActive="text-p-500       "
-                                [routerLinkActiveOptions]="{ exact: false }"
-                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200   ">
-                                Data Center
-                            </a>
-                            <a routerLink="/services/application-innovation" routerLinkActive="text-p-500       "
-                                [routerLinkActiveOptions]="{ exact: false }"
-                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200   ">
-                                Application Innovation
-                            </a>
-                            <a routerLink="/services/high-performance-computing" routerLinkActive="text-p-500       "
-                                [routerLinkActiveOptions]="{ exact: false }"
-                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200   ">
-                                High-Performance Computing (HPC)
-                            </a>
-                            <a routerLink="/services/modern-work" routerLinkActive="text-p-500       "
-                                [routerLinkActiveOptions]="{ exact: false }"
-                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200   ">
-                                Modern Work
-                            </a>
-                            <a routerLink="/services/managed-services" routerLinkActive="text-p-500       "
-                                [routerLinkActiveOptions]="{ exact: false }"
-                                class="p-3 block w-full text-left text-xl font-normal text-s-800 hover:text-p-500 transition-colors duration-200   ">
-                                Managed Services
-                            </a>
-                        </nav>
+                        <div class="flex flex-col gap-3.5 py-2" aria-label="Service lines">
+                            @for (item of serviceLines; track item.link) {
+                            <div class="flex  min-w-auto   text-left text-base  font-medium  ">
+                                <span class="px-3 py-1.5 text-p-500 bg-p-10">{{ item.label }}</span>
+                            </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </aside>
 
             <!-- Right Column: Blog Posts (blog-content = mismos estilos que case-study-detail) -->
-            <div class="flex-1">
-                <div class="blog-content prose prose-lg max-w-none">
+            <div class="flex-8/12">
+                <div class="max-w-none ">
                     <!-- Featured Post (First Post - Large) -->
                     @if (displayedNodes().length > 0) {
                     @let featuredPost = displayedNodes()[0];
-                    <article class="bg-p-10   overflow-hidden  transition-shadow duration-300 mb-8">
+                    <article class="bg-p-30  overflow-hidden p-8 mb-14">
                         <!-- Post Image -->
                         <div class="relative w-full h-64 sm:h-80 md:h-96 overflow-hidden">
                             <img [src]="featuredPost.featuredImage?.node?.sourceUrl || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80'"
                                 [alt]="featuredPost.featuredImage?.node?.altText || featuredPost.title || 'Blog post'"
                                 class="w-full h-full object-cover" />
                             <!-- Featured Tag -->
-                            <div class="absolute top-4 left-4">
-                                <span class="bg-p-500 text-white text-xs       uppercase px-3 py-1.5 rounded">
+                            <div class="absolute top-12 left-4">
+                                <span
+                                    class="bg-[#FFFFFF] text-p-600 text-base  font-medium uppercase px-3 py-1.5 rounded">
                                     {{ featuredPost.primaryTag || (featuredPost.tags && featuredPost.tags[0]) ||
                                     'FEATURED BLOG' }}
                                 </span>
@@ -103,20 +51,19 @@
                         </div>
 
                         <!-- Post Content -->
-                        <div class="p-6 sm:p-8">
+                        <div class="pt-8">
                             <!-- Tags, Author, Reading Time -->
                             <div class="flex items-center gap-4 mb-4 flex-wrap">
                                 @if (featuredPost.primaryTag || (featuredPost.tags && featuredPost.tags.length > 0)) {
-                                <span class="text-sm        text-p-500">{{ featuredPost.primaryTag ||
-                                    featuredPost.tags[0] }}</span>
+                                <span class="tag-badge">{{ featuredPost.primaryTag || featuredPost.tags[0] }}</span>
                                 }
-                                <span class="text-sm text-s-600">{{ authorDisplayName(featuredPost) }}</span>
+                                <!-- <span class="text-sm text-s-600">{{ authorDisplayName(featuredPost) }}</span> -->
                                 <span class="text-sm text-s-600">{{ readingTimeMinutes(featuredPost.content) }} min
                                     read</span>
                             </div>
 
                             <!-- Title -->
-                            <h3 class="text-2xl sm:text-3xl md:text-4xl       text-s-800 mb-4 leading-tight">
+                            <h3 class="text-2xl sm:text-3xl md:text-5xl font-normal text-s-800  mb-6 ">
                                 @if (featuredPost.title) {
                                 {{ featuredPost.title }}
                                 } @else {
@@ -126,20 +73,17 @@
 
                             <!-- Excerpt (HTML desde WP; si viene vacío se muestra inicio del contenido) -->
                             @if (featuredPost.sanitizedExcerpt) {
-                            <div class="text-base sm:text-lg text-s-600 mb-6 leading-relaxed prose prose-sm max-w-none"
+                            <div class="text-base sm:text-lg text-s-600 mb-6 leading-relaxed prose prose-sm max-w-none font-segoe"
                                 [innerHTML]="featuredPost.sanitizedExcerpt">
                             </div>
                             } @else if (featuredPost.sanitizedContent) {
-                            <div class="text-base sm:text-lg text-s-600 mb-6 leading-relaxed line-clamp-3 prose prose-sm max-w-none"
+                            <div class="text-base sm:text-lg text-s-600 mb-6 leading-relaxed line-clamp-3 prose prose-sm max-w-none font-segoe"
                                 [innerHTML]="featuredPost.sanitizedContent">
                             </div>
                             }
 
-                            <!-- Read More Button -->
-                            <a [routerLink]="['/blog', featuredPost.slug || '']"
-                                class="inline-block bg-p-500 text-white px-6 py-3          hover:bg-p-500/90 transition-colors duration-200">
-                                Read more
-                            </a>
+                            <app-button-primary [text]="'Read more'" [link]="'/blog/' + (featuredPost.slug || '')"
+                                [isBgDefault]="true" />
                         </div>
                     </article>
                     }
@@ -148,85 +92,15 @@
                     @if (displayedNodes().length > 1) {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                         @for (post of displayedNodes().slice(1); track post.id) {
-                        <article
-                            class="bg-white hover:bg-p-10 hover:border-gray-500  overflow-hidden  transition-shadow duration-300 h-full flex flex-col">
-                            <!-- Post Image -->
-                            <div class="relative w-full h-48 sm:h-56 overflow-hidden">
-                                <img [src]="post.featuredImage?.node?.sourceUrl || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80'"
-                                    [alt]="post.featuredImage?.node?.altText || post.title || 'Blog post'"
-                                    class="w-full h-full object-cover" />
-                            </div>
-
-                            <!-- Post Content -->
-                            <div class="p-5 sm:p-6 flex flex-col flex-grow">
-                                <!-- Tags, Author, Reading Time -->
-                                <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        @if (post.primaryTag || (post.tags && post.tags.length > 0)) {
-                                        <span class="text-xs       uppercase text-white bg-p-500 px-3 py-1     ">
-                                            {{ post.primaryTag || post.tags[0] }}
-                                        </span>
-                                        }
-                                    </div>
-                                    <span class="text-xs text-s-600">{{ readingTimeMinutes(post.content) }} min
-                                        read</span>
-                                </div>
-
-                                <!-- Title -->
-                                <h3 class="text-lg sm:text-xl       text-s-800 mb-3 sm:mb-4 leading-tight">
-                                    @if (post.title) {
-                                    {{ post.title }}
-                                    } @else {
-                                    Blog Post Title
-                                    }
-                                </h3>
-
-                                <!-- Excerpt (HTML desde WP; si viene vacío se muestra inicio del contenido) -->
-                                @if (post.sanitizedExcerpt) {
-                                <div class="text-sm sm:text-base text-s-600 mb-4 leading-relaxed line-clamp-3 prose prose-sm max-w-none"
-                                    [innerHTML]="post.sanitizedExcerpt">
-                                </div>
-                                } @else if (post.sanitizedContent) {
-                                <div class="text-sm sm:text-base text-s-600 mb-4 leading-relaxed line-clamp-3 prose prose-sm max-w-none"
-                                    [innerHTML]="post.sanitizedContent">
-                                </div>
-                                }
-
-                                <!-- Author Info -->
-                                @if (post.authorPerson || post.author?.node) {
-                                <div class="flex items-center gap-3 mb-4">
-                                    @if (post.authorPerson?.picture) {
-                                    <img [src]="post.authorPerson?.picture" [alt]="authorDisplayName(post)"
-                                        class="w-8 h-8 sm:w-10 sm:h-10      object-cover" />
-                                    } @else {
-                                    <div
-                                        class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100      flex items-center justify-center">
-                                        <span class="text-p-500       text-sm sm:text-base">
-                                            {{ (post.authorPerson?.name || post.authorPerson?.firstName ||
-                                            post.author?.node?.firstName || 'A').charAt(0) }}
-                                        </span>
-                                    </div>
-                                    }
-                                    <div>
-                                        <p class="text-sm        text-s-800">{{ authorDisplayName(post) }}</p>
-                                        <p class="text-xs text-s-600">
-                                            @if (post.date) {
-                                            {{ post.date | date:'MMM d, y' }}
-                                            } @else {
-                                            Recent
-                                            }
-                                        </p>
-                                    </div>
-                                </div>
-                                }
-
-                                <!-- Read More Link -->
-                                <a [routerLink]="['/blog', post.slug]"
-                                    class="text-sm text-s-600 hover:text-p-500 transition-colors duration-200 inline-flex items-center mt-auto">
-                                    Read more <span class="ml-1">→</span>
-                                </a>
-                            </div>
-                        </article>
+                        <app-blog-card [slug]="post.slug" [imageUrl]="post.featuredImage?.node?.sourceUrl ?? ''"
+                            [imageAlt]="post.featuredImage?.node?.altText ?? post.title ?? 'Blog post'"
+                            [tag]="post.primaryTag ?? (post.tags?.length ? post.tags[0] : null)"
+                            [readingTimeMinutes]="readingTimeMinutes(post.content)" [title]="post.title ?? ''"
+                            [excerptHtml]="post.sanitizedExcerpt ?? post.sanitizedContent ?? null"
+                            [authorDisplayName]="(post.authorPerson || post.author?.node) ? authorDisplayName(post) : null"
+                            [authorPicture]="post.authorPerson?.picture ?? null"
+                            [authorInitial]="(post.authorPerson?.name || post.authorPerson?.firstName || post.author?.node?.firstName || 'A').charAt(0)"
+                            [date]="post.date ?? ''" />
                         }
                     </div>
                     }
@@ -263,3 +137,8 @@
 
     </div>
 </section>
+
+<app-cta-section title="Let's move your vision forward"
+    description="Connect with a team committed to helping you modernize, innovate, and achieve meaningful results."
+    primaryText="Talk to an expert" primaryLink="/contact-us" secondaryText="Subscribe to our newsletter"
+    secondaryLink="/contact-us" />

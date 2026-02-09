@@ -156,12 +156,12 @@ export class CaseStudyDetailPageComponent implements OnInit, OnDestroy {
       testimonial:
         acf.testimonial?.testimonialQuote
           ? {
-              company: acf.testimonial.testimonialCompany ?? '',
-              companyLogo: getAcfMediaUrl(acf.testimonial.testimonialCompanyLogo as never),
-              quote: acf.testimonial.testimonialQuote,
-              author: acf.testimonial.testimonialAuthor ?? '',
-              role: acf.testimonial.testimonialRole ?? '',
-            }
+            company: acf.testimonial.testimonialCompany ?? '',
+            companyLogo: getAcfMediaUrl(acf.testimonial.testimonialCompanyLogo as never),
+            quote: acf.testimonial.testimonialQuote,
+            author: acf.testimonial.testimonialAuthor ?? '',
+            role: acf.testimonial.testimonialRole ?? '',
+          }
           : undefined,
       relatedCaseStudies,
       connectedServices,
@@ -212,7 +212,7 @@ export class CaseStudyDetailPageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const container = document.querySelector('.blog-content');
+    const container = document.querySelector('.html-content');
     if (!container) return;
     const searchText = decoded.toLowerCase();
     const candidates = container.querySelectorAll('p, li, h2, h3, h4, blockquote, section');

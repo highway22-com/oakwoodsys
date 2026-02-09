@@ -7,18 +7,23 @@ import {
   ElementRef,
   inject,
   OnInit,
+  PLATFORM_ID,
   signal,
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Apollo } from 'apollo-angular';
 import {
   GET_GEN_CONTENTS_BY_CATEGORY,
   GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED,
 } from '../../app/api/graphql';
+import { PageHeroComponent, type PageHeroBreadcrumb } from '../../shared/page-hero/page-hero.component';
+import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
+import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
+import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 
 interface PostAuthor {
   node: {
@@ -75,7 +80,7 @@ const PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-bloq',
-  imports: [RouterLink, RouterLinkActive, CommonModule, DatePipe],
+  imports: [RouterLink, RouterLinkActive, CommonModule, DatePipe, PageHeroComponent, ButtonPrimaryComponent, CtaSectionComponent, BlogCardComponent],
   templateUrl: './blogs.html',
   styleUrl: './blogs.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -84,6 +89,20 @@ export class Blogs implements OnInit {
   private readonly apollo = inject(Apollo);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly destroyRef = inject(DestroyRef);
+
+  readonly blogHeroBreadcrumbs: PageHeroBreadcrumb[] = [
+    { label: 'Home', routerLink: '/' },
+    { label: 'Resources' },
+    { label: 'IT Blog' },
+  ];
+
+  readonly serviceLines: { label: string; link: string }[] = [
+    { label: 'Data Center', link: '/services/cloud-and-infrastructure' },
+    { label: 'Application Innovation', link: '/services/application-innovation' },
+    { label: 'High-Performance Computing (HPC)', link: '/services/high-performance-computing' },
+    { label: 'Modern Work', link: '/services/modern-work' },
+    { label: 'Managed Services', link: '/services/managed-services' },
+  ];
 
   /** Elemento centinela al final de la lista para activar "cargar más" al hacer scroll. */
   readonly scrollSentinel = viewChild<ElementRef<HTMLElement>>('scrollSentinel');
@@ -137,11 +156,13 @@ export class Blogs implements OnInit {
     }));
   }
 
+  private readonly platformId = inject(PLATFORM_ID);
+
   constructor() {
     effect(() => {
       const sentinel = this.scrollSentinel()?.nativeElement;
       const _ = this.posts();
-      if (sentinel) this.setupScrollObserver(sentinel);
+      if (sentinel && isPlatformBrowser(this.platformId)) this.setupScrollObserver(sentinel);
     });
     this.destroyRef.onDestroy(() => {
       this.observer?.disconnect();
@@ -258,6 +279,7 @@ export class Blogs implements OnInit {
   private observer: IntersectionObserver | null = null;
 
   private setupScrollObserver(sentinel: HTMLElement) {
+    if (!isPlatformBrowser(this.platformId) || typeof IntersectionObserver === 'undefined') return;
     this.observer?.disconnect();
     this.observer = new IntersectionObserver(
       (entries) => {

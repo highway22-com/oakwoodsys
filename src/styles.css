@@ -10,6 +10,8 @@
     --font-segoe: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
     --color-primary-blue: #1D69AC;
     --color-p-10: #F0F7FF;
+    --color-p-30: #F2F8FD;
+    --color-p-50: #E6F1FF;
     --color-p-100: #C3DDF4;
     --color-p-200: #53A2DD;
 
@@ -28,6 +30,8 @@
 @theme {
     --color-primary-blue: #1D69AC;
     --color-p-10: #F0F7FF;
+    --color-p-30: #F2F8FD;
+    --color-p-50: #E6F1FF;
     --color-p-100: #C3DDF4;
     --color-p-200: #53A2DD;
     --color-p-500: #2A7EBF;
@@ -66,10 +70,15 @@ body {
         @apply text-xl font-light;
     }
 
-    /* ----- Blog content wrapper ----- */
-    .blog-content {}
+    /** Badge de etiqueta (ej. tag en blog featured): texto pequeño, fondo p-50, texto p-700. */
+    .tag-badge {
+        @apply text-sm font-medium text-p-700 bg-p-50 py-1.5 px-2;
+    }
 
-    .blog-content p {
+    /* ----- Blog content wrapper ----- */
+    .html-content {}
+
+    .html-content p {
         margin-top: 0;
         margin-bottom: 1.2rem;
         font-size: 1.05rem;
@@ -78,37 +87,17 @@ body {
         text-align: justify;
     }
 
-    .blog-content p:last-child {
+    .html-content p:last-child {
         margin-bottom: 0;
     }
 
-    /* ----- Case study HTML (overview, businessChallenge, solution from WordPress/ACF) ----- */
-
-    /* Paragraphs – Figma: 18px, regular, gray-600, line-height 1.75, espacio entre <p> */
-    .case-study-html p {
-        margin-top: 0;
-        margin-bottom: 2rem;
-        font-size: 1.125rem;
-        font-weight: 400;
-    }
-
-    .case-study-html p:last-child {
-        margin-bottom: 0;
-    }
-
-    /* h1–h6: estilo unificado – Secondary-950, Inter, 28px, 600, 130%, -0.28px (sin :deep en global) */
-    .case-study-html h1,
-    .case-study-html h2,
-    .case-study-html h3,
-    .case-study-html h4,
-    .case-study-html h5,
-    .case-study-html h6,
-    .blog-content h1,
-    .blog-content h2,
-    .blog-content h3,
-    .blog-content h4,
-    .blog-content h5,
-    .blog-content h6 {
+    /* h1–h6: estilo unificado – Secondary-950, Inter, 28px, 600, 130%, -0.28px */
+    .html-content h1,
+    .html-content h2,
+    .html-content h3,
+    .html-content h4,
+    .html-content h5,
+    .html-content h6 {
         color: var(--Secondary-950, #242424);
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
         margin-top: 2rem;
@@ -119,24 +108,17 @@ body {
         font-weight: 500;
     }
 
-    .case-study-html h1:first-child,
-    .case-study-html h2:first-child,
-    .case-study-html h3:first-child,
-    .case-study-html h4:first-child,
-    .case-study-html h5:first-child,
-    .case-study-html h6:first-child,
-    .blog-content h1:first-child,
-    .blog-content h2:first-child,
-    .blog-content h3:first-child,
-    .blog-content h4:first-child,
-    .blog-content h5:first-child,
-    .blog-content h6:first-child {
+    .html-content h1:first-child,
+    .html-content h2:first-child,
+    .html-content h3:first-child,
+    .html-content h4:first-child,
+    .html-content h5:first-child,
+    .html-content h6:first-child {
         margin-top: 0;
     }
 
-    /* Imágenes dentro de .case-study-html y .blog-content – diseño Figma (node 4381-5505) */
-    .case-study-html img,
-    .blog-content img {
+    /* Imágenes dentro de .html-content */
+    .html-content img {
         display: block;
         width: 100%;
         max-width: 100%;
@@ -148,64 +130,54 @@ body {
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     }
 
-    .case-study-html figure img,
-    .blog-content figure img {
+    .html-content figure img {
         margin-top: 0;
         margin-bottom: 0;
     }
 
-    .case-study-html figure,
-    .blog-content figure {
+    .html-content figure {
         margin-top: 1.5rem;
         margin-bottom: 1.5rem;
     }
 
     /* Lists */
-    .case-study-html ul,
-    .case-study-html ol,
-    .blog-content ul,
-    .blog-content ol {
+    .html-content ul,
+    .html-content ol {
         padding-left: 1.5rem;
         font-size: 1.125rem;
         color: #4b5563;
         line-height: 1.75;
     }
 
-    .case-study-html li,
-    .blog-content li {
+    .html-content li {
         margin-bottom: 0.5rem;
     }
 
     /* Strong / bold */
-    .case-study-html strong,
-    .blog-content strong {
+    .html-content strong {
         font-weight: 700;
     }
 
-    /* Links – Figma: blue-600, underline */
-    .case-study-html a,
-    .blog-content a {
+    /* Links – blue-600, underline */
+    .html-content a {
         color: #2563eb;
         text-decoration: underline;
     }
 
-    .case-study-html a:hover,
-    .blog-content a:hover {
+    .html-content a:hover {
         color: #1d4ed8;
     }
 
-    /* Image caption – Figma: small, blue-600 */
-    .case-study-html figcaption,
-    .blog-content figcaption {
+    /* Image caption – small, blue-600 */
+    .html-content figcaption {
         margin-top: 0.5rem;
         font-size: 0.875rem;
         color: #2563eb;
         line-height: 1.5;
     }
 
-    /* Blockquote / testimonial – Figma: dark blue, left border, semi-bold */
-    .case-study-html blockquote,
-    .blog-content blockquote {
+    /* Blockquote / testimonial – dark blue, left border, semi-bold */
+    .html-content blockquote {
         margin: 1.5rem 0;
         padding-left: 1.25rem;
         border-left: 4px solid #3b82f6;

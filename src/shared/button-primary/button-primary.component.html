@@ -1,7 +1,7 @@
 @if (link(); as href) {
 <div class="flex">
   <a [routerLink]="href" [class]="triggerClasses()"
-    [style.--btn-primary-bg]="isTransparent() ? 'transparent' : (backgroundColor() || 'var(--color-p-700)')">
+    [style.background-color]="effectiveBackgroundColor()">
     <span class="flex justify-center items-center py-4 px-8">
       <div class="flex items-center transition-all duration-200 group-hover:-translate-x-2 pl-5">{{ text() }}</div>
       <div class="flex flex-1">
@@ -20,7 +20,7 @@
 } @else {
 <div class="flex">
   <button type="button" [class]="triggerClasses()"
-    [style.--btn-primary-bg]="isTransparent() ? 'transparent' : (backgroundColor() || 'var(--color-p-700)')"
+    [style.background-color]="effectiveBackgroundColor()"
     (click)="buttonClick.emit()">
     <span class="flex justify-center items-center py-4 px-8">
       <div class="flex items-center transition-all duration-200 group-hover:-translate-x-2 pl-5">{{ text() }}</div>
