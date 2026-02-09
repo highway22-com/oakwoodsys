@@ -5,7 +5,7 @@ import { ButtonPrimaryComponent } from "../button-primary/button-primary.compone
 
 /** URLs de video placeholder mientras carga el contenido (se sustituyen por GraphQL). */
 const PLACEHOLDER_VIDEO_URLS: string[] = [
-  'https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4',
+  'https://oakwoodsys.com/wp-content/uploads/2026/02/Home-1a.mp4',
   'https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4',
   'https://oakwoodsys.com/wp-content/uploads/2025/12/2.mp4',
   'https://oakwoodsys.com/wp-content/uploads/2025/12/4.mp4',
@@ -25,7 +25,8 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   @Input() videoUrls: string[] = [];
   /** Imagen de portada mientras carga el primer video (ej. thumbnail desde WordPress). */
   @Input() poster: string | null = null;
-  @Input() title: string = '';
+  /** Título único o uno por video (cambia con el índice del video actual). */
+  @Input() title: string | string[] = '';
   @Input() description: string = '';
   @Input() ctaPrimary?: { text: string; link: string; backgroundColor: string };
   @Input() ctaSecondary?: { text: string; link: string; borderColor?: string };
@@ -40,6 +41,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
 
   /** Mientras loading o sin URLs del CMS, usar placeholders; si no, URLs de GraphQL. */
   readonly videoUrlsSignal = signal<string[]>(PLACEHOLDER_VIDEO_URLS);
+  readonly titleSignal = signal<string | string[]>([]);
   readonly currentVideoIndex = signal(0);
   readonly currentVideoUrl = computed(() => {
     const urls = this.videoUrlsSignal();
@@ -53,11 +55,22 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     const nextIndex = (this.currentVideoIndex() + 1) % urls.length;
     return urls[nextIndex] ?? '';
   });
+  /** Título a mostrar: si title es array, el que corresponde a currentVideoIndex; si no, el string. */
+  readonly currentTitle = computed(() => {
+    const t = this.titleSignal();
+    const idx = this.currentVideoIndex();
+    if (typeof t === 'string') return t;
+    if (Array.isArray(t) && t.length) return t[idx] ?? t[0] ?? '';
+    return '';
+  });
 
   ngOnChanges(changes: SimpleChanges) {
     const usePlaceholders = this.loading || !this.videoUrls || this.videoUrls.length === 0;
     const urls = usePlaceholders ? PLACEHOLDER_VIDEO_URLS : this.videoUrls;
     this.videoUrlsSignal.set(urls);
+    if (changes['title']) {
+      this.titleSignal.set(this.title);
+    }
     // No llamar loadVideo aquí: en SSR o antes de AfterViewInit el video no existe; se carga en ngAfterViewInit.
     if (changes['videoUrls'] || changes['loading']) {
       if (isPlatformBrowser(this.platformId) && this.videoElement?.nativeElement && typeof this.videoElement.nativeElement.load === 'function') {
@@ -81,6 +94,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     // URLs: placeholders si loading o sin videoUrls; si no, los del input
     const usePlaceholders = this.loading || !this.videoUrls || this.videoUrls.length === 0;
     this.videoUrlsSignal.set(usePlaceholders ? PLACEHOLDER_VIDEO_URLS : this.videoUrls);
+    this.titleSignal.set(this.title);
 
     setTimeout(() => {
       if (this.videoElement && this.videoUrlsSignal().length > 0) {

@@ -103,11 +103,14 @@ export class Home implements OnInit {
     return this.defaultFeaturedSlugs;
   }
 
-  /** Título del hero (desde sección hero o vacío). */
-  heroTitle(): string {
+  /** Título del hero: string, array (uno por video) o vacío (desde sección hero). */
+  heroTitle(): string | string[] {
     const section = this.getSection('hero');
     const t = section?.title;
-    return (typeof t === 'string' ? t : '') || '';
+    if (typeof t === 'string') return t || '';
+    if (Array.isArray(t)) return t.filter((s): s is string => typeof s === 'string');
+    if (t && typeof t === 'object' && !Array.isArray(t)) return [t.line1, t.line2].filter(Boolean).join(' ') || '';
+    return '';
   }
 
   /** Descripción del hero (desde sección hero o vacío). */
@@ -153,7 +156,11 @@ export class Home implements OnInit {
 
   private updateMetadata(content: CmsPageContent) {
     const heroSection = content.sections?.find(s => s.type === 'hero');
-    const heroTitle = (heroSection?.['title'] ?? '') as string;
+    const rawTitle = heroSection?.['title'];
+    const heroTitle = typeof rawTitle === 'string' ? rawTitle
+      : Array.isArray(rawTitle) ? (rawTitle[0] ?? '')
+      : rawTitle && typeof rawTitle === 'object' ? [rawTitle.line1, rawTitle.line2].filter(Boolean).join(' ') ?? ''
+      : '';
     const heroDesc = (heroSection?.['description'] ?? '') as string;
     const pageTitle = heroTitle ? `${heroTitle} | Oakwood Systems` : 'Oakwood Systems - Microsoft Solutions Partner';
 
