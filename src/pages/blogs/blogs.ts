@@ -12,8 +12,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Apollo } from 'apollo-angular';
 import {
@@ -24,6 +23,7 @@ import { PageHeroComponent, type PageHeroBreadcrumb } from '../../shared/page-he
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
+import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 
 interface PostAuthor {
   node: {
@@ -80,7 +80,7 @@ const PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-bloq',
-  imports: [RouterLink, RouterLinkActive, CommonModule, DatePipe, PageHeroComponent, ButtonPrimaryComponent, CtaSectionComponent, BlogCardComponent],
+  imports: [CommonModule, PageHeroComponent, ButtonPrimaryComponent, CtaSectionComponent, BlogCardComponent],
   templateUrl: './blogs.html',
   styleUrl: './blogs.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -124,13 +124,8 @@ export class Blogs implements OnInit {
   private endCursor: string | null = null;
   private readonly categoryId = 'bloq';
 
-  /** Tiempo de lectura aproximado (min) desde contenido HTML. ~200 palabras/min. */
-  readingTimeMinutes(content: string | null | undefined): number {
-    if (!content || typeof content !== 'string') return 0;
-    const text = content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-    const words = text ? text.split(/\s+/).length : 0;
-    return Math.max(1, Math.ceil(words / 200));
-  }
+  /** Utilidad de tiempo de lectura (expuesta en template). */
+  readonly readingTimeMinutes = readingTimeMinutes;
 
   /** Autor a mostrar: authorPerson si existe, sino nombre del author WP. */
   authorDisplayName(post: Post): string {

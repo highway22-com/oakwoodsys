@@ -57,6 +57,7 @@
                                 @if (featuredPost.primaryTag || (featuredPost.tags && featuredPost.tags.length > 0)) {
                                 <span class="tag-badge">{{ featuredPost.primaryTag || featuredPost.tags[0] }}</span>
                                 }
+                                <span class="mx-0.5">•</span>
                                 <!-- <span class="text-sm text-s-600">{{ authorDisplayName(featuredPost) }}</span> -->
                                 <span class="text-sm text-s-600">{{ readingTimeMinutes(featuredPost.content) }} min
                                     read</span>

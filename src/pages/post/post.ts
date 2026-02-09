@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal, input, PLATFORM_ID } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal, input, PLATFORM_ID, NgZone } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Apollo, gql } from 'apollo-angular';
-
+import { GET_GEN_CONTENTS_BY_SLUGS } from '../../app/api/graphql';
+import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
+import { readingTimeMinutes } from '../../app/utils/reading-time.util';
+import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 interface PostAuthor {
   node: {
     email: string;
@@ -49,7 +52,7 @@ export interface PostDetail {
 
 @Component({
   selector: 'app-post',
-  imports: [RouterLink, CommonModule, DatePipe],
+  imports: [RouterLink, CommonModule, DatePipe, CtaSectionComponent, BlogCardComponent],
   templateUrl: './post.html',
   styleUrl: './post.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,9 +60,11 @@ export interface PostDetail {
 export class Post implements OnInit, OnDestroy {
   slug = input<string>('');
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly apollo = inject(Apollo);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly ngZone = inject(NgZone);
   private scrollListener?: () => void;
   private routeSub?: { unsubscribe(): void };
 
@@ -68,6 +73,41 @@ export class Post implements OnInit, OnDestroy {
   readonly error = signal<any>(null);
   readonly activeSection = signal<string>('');
   readonly tableOfContents = signal<{ id: string; text: string }[]>([]);
+  readonly readingTimeMinutes = readingTimeMinutes;
+
+  /** Breadcrumbs: Home, (IT Blog | Case Studies), título del post. Basado en app.routes (blog vs resources/case-studies). */
+  getBreadcrumbs(): { label: string; link?: string }[] {
+    const isCaseStudy = this.router.url.startsWith('/resources/case-studies');
+    const parentLabel = isCaseStudy ? 'Case Studies' : 'IT Blog';
+    const parentLink = isCaseStudy ? '/resources/case-studies' : '/blog';
+    const title = this.post()?.title ?? '';
+    return [
+      { label: 'Home', link: '/' },
+      { label: parentLabel, link: parentLink },
+      { label: title || 'Article' },
+    ];
+  }
+
+  private mapRelatedBloqs(raw: Record<string, unknown>[]): PostDetail[] {
+    const defaultAuthor: PostAuthor = { node: { email: '', firstName: '', id: '' } };
+    return raw.map((r) => {
+      const excerpt = (r['excerpt'] as string) ?? '';
+      return {
+        id: (r['id'] as string) ?? '',
+        title: (r['title'] as string) ?? '',
+        content: '',
+        excerpt,
+        slug: (r['slug'] as string) ?? '',
+        date: '',
+        author: defaultAuthor,
+        sanitizedExcerpt: excerpt.trim()
+          ? this.sanitizer.bypassSecurityTrustHtml(excerpt.trim())
+          : undefined,
+        featuredImage: (r['featuredImage'] as PostDetail['featuredImage']) ?? undefined,
+        primaryTag: (r['primaryTag'] as string | null) ?? null,
+      } as PostDetail;
+    });
+  }
 
   /** Autor a mostrar: authorPerson si existe, sino author WP. */
   authorDisplayName(p: PostDetail): string {
@@ -135,6 +175,7 @@ export class Post implements OnInit, OnDestroy {
               headGeoPlacename
               headGeoPosition
               headJsonLdData
+              relatedBloqSlugs
             }
             postBy(slug: $slug) {
               id
@@ -192,9 +233,26 @@ export class Post implements OnInit, OnDestroy {
               headGeoPlacename: (raw['headGeoPlacename'] as string | null) ?? undefined,
               headGeoPosition: (raw['headGeoPosition'] as string | null) ?? undefined,
               headJsonLdData: (raw['headJsonLdData'] as string | null) ?? undefined,
+              relatedBloqs: this.mapRelatedBloqs((raw['relatedBloqs'] as Record<string, unknown>[] | null | undefined) ?? []),
             };
-            this.tableOfContents.set(toc);
-            this.post.set(postData);
+            this.ngZone.run(() => {
+              this.tableOfContents.set(toc);
+              this.post.set(postData);
+              if (toc.length > 0) this.activeSection.set(toc[0].id);
+            });
+            const relatedSlugs = (raw['relatedBloqSlugs'] as string[] | null | undefined) ?? [];
+            if (relatedSlugs.length > 0 && data?.genContent) {
+              this.apollo.query({ query: GET_GEN_CONTENTS_BY_SLUGS, variables: { slugs: relatedSlugs }, fetchPolicy: 'network-only' }).subscribe({
+                next: (res: any) => {
+                  const nodes = (res?.data?.genContents?.nodes ?? []) as Record<string, unknown>[];
+                  const related = this.mapRelatedBloqs(nodes);
+                  this.ngZone.run(() => {
+                    const current = this.post();
+                    if (current) this.post.set({ ...current, relatedBloqs: related });
+                  });
+                },
+              });
+            }
             if (isPlatformBrowser(this.platformId)) {
               setTimeout(() => {
                 this.setupScrollListener();
@@ -243,25 +301,29 @@ export class Post implements OnInit, OnDestroy {
   private setupScrollListener(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    this.scrollListener = () => {
+    const viewportActiveLine = 120; // px desde el top del viewport: debajo de esta línea = "activo"
+
+    const updateActiveSection = (): void => {
       const toc = this.tableOfContents();
       if (toc.length === 0) return;
 
-      const scrollPosition = window.scrollY + 200; // Offset for sticky header
-
-      for (let i = toc.length - 1; i >= 0; i--) {
-        const element = document.getElementById(toc[i].id);
-        if (element) {
-          const elementTop = element.offsetTop;
-          if (scrollPosition >= elementTop) {
-            this.activeSection.set(toc[i].id);
-            break;
-          }
+      let activeId = toc[0].id;
+      for (const item of toc) {
+        const el = document.getElementById(item.id);
+        if (el) {
+          const top = el.getBoundingClientRect().top;
+          if (top <= viewportActiveLine) activeId = item.id;
         }
       }
+      const nextId = activeId;
+      this.ngZone.run(() => {
+        if (this.activeSection() !== nextId) this.activeSection.set(nextId);
+      });
     };
 
+    this.scrollListener = () => updateActiveSection();
     window.addEventListener('scroll', this.scrollListener, { passive: true });
+    setTimeout(() => updateActiveSection(), 200);
   }
 
   scrollToSection(sectionId: string): void {

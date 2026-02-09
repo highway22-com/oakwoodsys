@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { ButtonPrimaryComponent } from "../button-primary/button-primary.component";
 
 /** Lista de 4 gradientes para fondo de la sección CTA. Índice 0 = primero (45° derecha a izquierda). */
@@ -17,7 +16,7 @@ export const CTA_GRADIENTS: readonly string[] = [
 @Component({
   selector: 'app-cta-section',
   standalone: true,
-  imports: [RouterLink, ButtonPrimaryComponent],
+  imports: [ButtonPrimaryComponent],
   templateUrl: './cta-section.component.html',
   styleUrl: './cta-section.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

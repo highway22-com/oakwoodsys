@@ -348,6 +348,27 @@ export const GET_CASE_STUDIES = gql`
   }
 `;
 
+/** Varios Gen Content por slugs (para relatedBloqs: pedir datos por slugs sin list_of GenContent). */
+export const GET_GEN_CONTENTS_BY_SLUGS = gql`
+  query GetGenContentsBySlugs($slugs: [String]) {
+    genContents(where: { nameIn: $slugs }, first: 20) {
+      nodes {
+        id
+        title
+        slug
+        excerpt
+        primaryTag
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+      }
+    }
+  }
+`;
+
 /** Un Gen Content por slug (para case studies que viven en Gen Content categoría case-study). Mismo patrón que GetBlogOrPost: id con idType SLUG. */
 export const GET_GEN_CONTENT_BY_SLUG = gql`
   query GetGenContentBySlug($id: ID!) {
