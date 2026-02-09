@@ -99,7 +99,7 @@ interface CaseStudyDetail {
 
 @Component({
   selector: 'app-resources-wordpress',
-  imports: [CommonModule, RouterLink, VideoHero, FeaturedCaseStudyCardsSectionComponent, BlogCardComponent, CtaSectionComponent],
+  imports: [CommonModule, VideoHero, FeaturedCaseStudyCardsSectionComponent, BlogCardComponent, CtaSectionComponent],
   templateUrl: './resources.html',
   styleUrl: './resources.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -125,8 +125,8 @@ export class Resources implements OnInit {
     { displayCategory: 'Application Innovation', value: 'Application Innovation' },
     { displayCategory: 'High-Performance Computing (HPC)', value: 'HPC' },
     { displayCategory: 'Modern Work', value: 'Modern Work Blog' },
-    { displayCategory: 'Featured', value: 'Featured' },
-    { displayCategory: 'Modern Work', value: 'Modern Work' },
+    // { displayCategory: 'Featured', value: 'Featured' },
+    // { displayCategory: 'Modern Work', value: 'Modern Work' },
     { displayCategory: 'Managed Services', value: 'Managed Services' },
     // { displayCategory: 'IoT', value: 'IoT' },
     // { displayCategory: 'Healthcare', value: 'Healthcare' },
@@ -136,7 +136,7 @@ export class Resources implements OnInit {
     // { displayCategory: 'Cloud and Infrastructure Blog', value: 'Cloud and Infrastructure Blog' },
     // { displayCategory: 'Data and AI Blog', value: 'Data and AI Blog' },
     // { displayCategory: 'Microsoft 365 Blog', value: 'Microsoft 365 Blog' },
-    { displayCategory: 'Uncategorized', value: 'Uncategorized' },
+    // { displayCategory: 'Uncategorized', value: 'Uncategorized' },
   ];
 
   // Signals para datos de WordPress
