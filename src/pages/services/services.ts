@@ -262,7 +262,7 @@ export class Services implements OnInit, OnDestroy {
     if (Array.isArray(slugs) && slugs.length > 0) return slugs;
     return [
       'secure-azure-research-environment-architecture',
-      'enterprise-reporting-and-data-roadmap-development',
+      'secure-azure-research-environment-architecture',
     ];
   }
 

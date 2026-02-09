@@ -21,8 +21,9 @@
 
 <!-- Hero Section with Video Background -->
 @if (content()?.videoUrls && (content()?.videoUrls?.length ?? 0) > 0) {
-<app-video-hero [videoUrls]="content()?.videoUrls!" [title]="content()!.title" [description]="content()!.description"
-  [ctaPrimary]="content()!.cta.primary" [ctaSecondary]="content()!.cta.secondary">
+<app-video-hero [hvh70]="true" [videoUrls]="content()?.videoUrls!" [title]="content()!.title"
+  [description]="content()!.description" [ctaPrimary]="content()!.cta.primary"
+  [ctaSecondary]="content()!.cta.secondary">
 </app-video-hero>
 } @else {
 <!-- Fallback to Image Background if no videos -->
@@ -64,12 +65,70 @@
 <!-- Main Description Section -->
 @if (content()?.mainDescription) {
 <section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="main-description">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <div class="max-w-3xl mx-auto">
-      <p class="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-900 font-normal leading-relaxed    text-left"
+  <div class="px-0">
+    <div class="max-w-7xl mx-auto">
+      <p class="text-base sm:text-lg md:text-xl lg:text-4xl text-gray-700 font-normal leading-relaxed   text-center"
         id="main-description">
         {{ content()?.mainDescription?.text }}
       </p>
+    </div>
+  </div>
+</section>
+}
+<!-- Service areas (Figma: WHERE WE EXCEL + 4 cards) -->
+@if (content()?.serviceAreas) {
+<section class="w-full overflow-hidden px-32" aria-labelledby="service-areas-title">
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr] min-h-[600px] lg:min-h-[720px]">
+    <!-- Left: banner con imagen y texto -->
+    <div class="relative min-h-[320px] lg:min-h-full order-2 lg:order-1">
+      <img [src]="content()?.serviceAreas?.backgroundImage ?? ''"
+        [alt]="(content()?.serviceAreas?.title ?? 'Service areas') + ' background'"
+        class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+
+      <div class="absolute inset-0 bg-slate-600/30"></div>
+      <div
+        class="relative z-10 h-full flex flex-col justify-end px-6 sm:px-8 md:px-12 lg:px-16 py-12 sm:py-16 lg:py-20">
+        <p class="text-xs sm:text-sm uppercase tracking-[0.2em] text-white/90 mb-2">
+          {{ content()?.serviceAreas?.tagline }}
+        </p>
+        <h2 id="service-areas-title"
+          class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-3 sm:mb-4">
+          {{ content()?.serviceAreas?.title }}
+        </h2>
+        <p class="text-base sm:text-lg md:text-xl text-white/95 leading-relaxed max-w-xl">
+          {{ content()?.serviceAreas?.description }}
+        </p>
+      </div>
+    </div>
+    <!-- Right: 4 cards -->
+    <div class="flex flex-col gap-4 sm:gap-6 px-12 order-1 lg:order-2 overflow-y-auto">
+      @for (area of content()?.serviceAreas?.serviceAreas ?? []; track area.title) {
+      <article class="bg-white border border-gray-200/50 p-5 sm:p-6 flex flex-col gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          @if (area.icon) {
+          <img [src]="area.icon" [alt]="area.title + ' icon'" class="w-8 h-8 object-contain" loading="lazy" />
+          }
+          @for (badge of area.badges; track badge) {
+          <span class="tag-badge bg-p-500 text-white capitalize ml-3">
+            {{ badge }}
+          </span>
+          }
+        </div>
+        <h3 class="text-lg sm:text-xl font-bold text-gray-900 leading-tight">
+          {{ area.title }}
+        </h3>
+        <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+          {{ area.subtitle }}
+        </p>
+        @if (area.features?.length) {
+        <ul class="list-disc list-inside text-sm sm:text-base text-gray-600 space-y-1.5 mt-1">
+          @for (feature of area.features; track feature) {
+          <li>{{ feature }}</li>
+          }
+        </ul>
+        }
+      </article>
+      }
     </div>
   </div>
 </section>

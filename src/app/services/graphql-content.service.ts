@@ -112,11 +112,11 @@ export class GraphQLContentService {
       excerpt: n.excerpt ?? '',
       featuredImage: n.featuredImage
         ? {
-            node: {
-              sourceUrl: n.featuredImage.node.sourceUrl,
-              altText: n.featuredImage.node.altText ?? undefined,
-            },
-          }
+          node: {
+            sourceUrl: n.featuredImage.node.sourceUrl,
+            altText: n.featuredImage.node.altText ?? undefined,
+          },
+        }
         : undefined,
       caseStudyCategories: {
         nodes: [{ name: categoryName, slug: categorySlug }],
