@@ -12,8 +12,10 @@ import type { SafeHtml } from '@angular/platform-browser';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogCardComponent {
-  /** Slug del post (ruta: /blog/{{ slug }}). */
+  /** Slug del post. Con linkBase por defecto ruta: /blog/{{ slug }}. */
   readonly slug = input.required<string>();
+  /** Segmento base de la ruta (sin slug). Por defecto '/blog'. Ej: '/resources/case-studies'. */
+  readonly linkBase = input<string>('/blog');
   /** URL de la imagen destacada. */
   readonly imageUrl = input<string>('');
   /** Alt de la imagen. */

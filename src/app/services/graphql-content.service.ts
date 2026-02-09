@@ -20,6 +20,7 @@ import {
   type CaseStudyDetailResponse,
   type CmsPageContent,
   type CmsPageResponse,
+  type RelatedCaseStudyNode,
   type SearchResultItem,
 } from '../api/graphql';
 import { combineLatest } from 'rxjs';
@@ -154,7 +155,7 @@ export class GraphQLContentService {
           const gen = data?.genContent;
           const caseStudy = data?.caseStudyBy ?? null;
           this.loading.set(false);
-          if (gen) return this.genContentToCaseStudyBy(gen);
+          if (gen) return this.genContentToCaseStudyBy(gen, caseStudy);
           return caseStudy;
         }),
         catchError((err) => {
@@ -165,17 +166,23 @@ export class GraphQLContentService {
       );
   }
 
-  /** Mapea un Gen Content (categoría case-study) al formato CaseStudyBy para reutilizar la vista de detalle. */
-  private genContentToCaseStudyBy(g: GenContentDetailNode): CaseStudyBy {
-    const related = (g.relatedCaseStudies ?? []).map((r) => ({
-      id: r.id,
-      title: r.title,
-      slug: r.slug,
-      date: r.date,
-      excerpt: r.excerpt,
-      featuredImage: r.featuredImage ? { node: { sourceUrl: r.featuredImage.node?.sourceUrl ?? '' } } : undefined,
-      caseStudyCategories: r.genContentCategories ? { nodes: r.genContentCategories.nodes } : undefined,
-    }));
+  /** Mapea un Gen Content (categoría case-study) al formato CaseStudyBy. Si genContent.relatedCaseStudies falla o está vacío, usa caseStudyBy.caseStudyDetails.relatedCaseStudies (mapeo por slug). */
+  private genContentToCaseStudyBy(g: GenContentDetailNode, caseStudyBy?: CaseStudyBy | null): CaseStudyBy {
+    const fromGen = g.relatedCaseStudies ?? [];
+    const fromCaseStudy = caseStudyBy?.caseStudyDetails?.relatedCaseStudies?.nodes ?? [];
+    const source = fromGen.length > 0 ? fromGen : fromCaseStudy;
+    const related = source.map((r: NonNullable<GenContentDetailNode['relatedCaseStudies']>[number] | RelatedCaseStudyNode) => {
+      const hasGenCategories = 'genContentCategories' in r && r.genContentCategories;
+      return {
+        id: r.id,
+        title: r.title,
+        slug: r.slug,
+        date: r.date,
+        excerpt: r.excerpt,
+        featuredImage: r.featuredImage ? { node: { sourceUrl: r.featuredImage.node?.sourceUrl ?? '' } } : undefined,
+        caseStudyCategories: hasGenCategories ? { nodes: (r as { genContentCategories: { nodes: Array<{ name: string }> } }).genContentCategories.nodes } : (r as RelatedCaseStudyNode).caseStudyCategories,
+      };
+    });
     return {
       id: g.id,
       title: g.title,
