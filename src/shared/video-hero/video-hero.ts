@@ -23,6 +23,8 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
 
   @Input() loading = true;
   @Input() videoUrls: string[] = [];
+  /** Imagen de portada mientras carga el primer video (ej. thumbnail desde WordPress). */
+  @Input() poster: string | null = null;
   @Input() title: string = '';
   @Input() description: string = '';
   @Input() ctaPrimary?: { text: string; link: string; backgroundColor: string };
@@ -43,6 +45,13 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     const urls = this.videoUrlsSignal();
     const index = this.currentVideoIndex();
     return urls[index] || urls[0] || '';
+  });
+  /** URL del siguiente video para precargar en segundo plano (menos espera al rotar). */
+  readonly nextVideoUrl = computed(() => {
+    const urls = this.videoUrlsSignal();
+    if (urls.length <= 1) return '';
+    const nextIndex = (this.currentVideoIndex() + 1) % urls.length;
+    return urls[nextIndex] ?? '';
   });
 
   ngOnChanges(changes: SimpleChanges) {
