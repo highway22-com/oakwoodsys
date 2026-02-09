@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, NgZone } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { VideoHero } from '../../shared/video-hero/video-hero';
+import emailjs from '@emailjs/browser';
 
 const PLACEHOLDER_VIDEO_URLS = [
   'https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4',
@@ -26,6 +27,20 @@ export interface OfficeLocation {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactUs {
+  private readonly ngZone = inject(NgZone);
+  private readonly router = inject(Router);
+  submitted = false;
+  isSubmitting = false;
+  
+  constructor() {
+    // Initialize EmailJS
+    emailjs.init('Xw-Lh8d6dJzqqA08R');
+    
+    // Expose callback to window for reCAPTCHA
+    // (window as any)['onRecaptchaSuccess'] = (token: string) => {
+    //   this.ngZone.run(() => this.onRecaptchaSuccess(token));
+    // };
+  }
   readonly heroTitle = "Let's move your vision forward";
   readonly heroDescription = "Your goals guide the work - our expertise makes theirs real.";
   readonly videoUrls = PLACEHOLDER_VIDEO_URLS;
@@ -64,10 +79,9 @@ export class ContactUs {
     email: '',
     company: '',
     message: '',
-    notRobot: false,
   };
 
-  submitted = false;
+  recaptchaToken: string | null = null;
 
   private readonly sanitizer = inject(DomSanitizer);
 
@@ -76,7 +90,59 @@ export class ContactUs {
   }
 
   onSubmit() {
-    this.submitted = true;
-    // TODO: enviar a API o email
+    
+    // if (!this.recaptchaToken) {
+    //   alert('Please complete the reCAPTCHA');
+    //   return;
+    // }
+
+    if (!this.formModel.fullName || !this.formModel.email || !this.formModel.message) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    const emailParams = {
+      to_email: 'marketing@oakwoodsys.com', // Recipient email
+      from_name: this.formModel.fullName,
+      from_email: this.formModel.email,
+      company: this.formModel.company || 'Not provided',
+      message: this.formModel.message,
+    };
+
+    emailjs
+      .send('service_xelw36u', 'template_s238tmd', emailParams)
+      .then(() => {
+        this.isSubmitting = false;
+        this.resetForm();
+        this.router.navigate(['/contact-success']);
+      })
+      .catch((error) => {
+        this.isSubmitting = false;
+        console.error('Email sending failed:', error);
+        alert('Failed to send message. Please try again later.');
+      });
   }
+
+  private resetForm() {
+    this.formModel = {
+      fullName: '',
+      email: '',
+      company: '',
+      message: '',
+    };
+
+    this.submitted = false;
+    // Reset reCAPTCHA
+    // if ((window as any).grecaptcha) {
+    //   (window as any).grecaptcha.reset();
+    // }
+  }
+
+  // onRecaptchaSuccess(token: any) {
+  //   if (typeof token === 'string') {
+  //     this.recaptchaToken = token;
+  //   }
+  // }
 }

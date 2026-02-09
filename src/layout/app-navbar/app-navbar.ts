@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener, inject, PLATFORM_ID, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router, NavigationEnd } from '@angular/router';
 import { CommonModule, NgClass, NgIf, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MicrosoftServices } from "./microsoft-services/microsoft-services";
@@ -7,6 +7,7 @@ import { Industries } from "./industries/industries";
 import { Resources } from "./resources/resources";
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import type { CaseStudy } from '../../app/api/graphql';
+import { filter } from 'rxjs';
 
 interface MenuItem {
   label: string;
@@ -45,6 +46,7 @@ export class AppNavbar implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly http = inject(HttpClient);
   private readonly graphql = inject(GraphQLContentService);
+  private readonly router = inject(Router);
 
   isMobileMenuOpen = false;
   isScrolled = false;
@@ -52,6 +54,7 @@ export class AppNavbar implements OnInit, OnDestroy {
   isIndustriesDropdownOpen = false;
   isResourcesDropdownOpen = false;
   hoveredIndex = signal<number | null>(null);
+  isOnContactSuccess = signal(false);
 
   readonly menuItems = signal<MenuItem[]>([]);
   readonly services = signal<Service[]>([]);
@@ -64,6 +67,12 @@ export class AppNavbar implements OnInit, OnDestroy {
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.checkScrollPosition();
+      // Check current route
+      this.updateContactSuccessStatus();
+      // Listen to route changes
+      this.router.events.pipe(
+        filter(event => event instanceof NavigationEnd)
+      ).subscribe(() => this.updateContactSuccessStatus());
       // Cargar case studies y blogs solo en el cliente (GraphQL puede no estar disponible en SSR)
       this.graphql.getCaseStudies().subscribe((list) => {
         const sorted = [...list].sort(
@@ -138,17 +147,21 @@ export class AppNavbar implements OnInit, OnDestroy {
     const scrollThreshold = window.innerHeight; // 100vh
     this.isScrolled = scrollPosition > scrollThreshold;
   }
-
-  /** true cuando la barra debe usar estilo “oscuro” (logo oscuro, texto oscuro): scroll o hover en un dropdown (índice !== 0). */
+   private updateContactSuccessStatus(): void {
+    this.isOnContactSuccess.set(this.router.url === '/contact-success');
+  } 
+  /** true cuando la barra debe usar estilo "oscuro" (logo oscuro, texto oscuro): scroll o hover en un dropdown (índice !== 0) o en contact-success. */
   get isNavbarDark(): boolean {
     const hover = this.hoveredIndex();
-    return this.isScrolled || (hover !== null && hover !== 0);
+    return this.isScrolled || (hover !== null && hover !== 0) || this.isOnContactSuccess();
   }
 
-  /** true cuando la barra debe mostrar fondo (blanco) o texto de enlaces oscuro: scroll o cualquier hover en menú. */
+  /** true cuando la barra debe mostrar fondo (blanco) o texto de enlaces oscuro: scroll o cualquier hover en menú o en contact-success. */
   get hasNavbarBackground(): boolean {
-    return this.isScrolled || this.hoveredIndex() !== null;
+    return this.isScrolled || this.hoveredIndex() !== null || this.isOnContactSuccess();
   }
+
+  
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;

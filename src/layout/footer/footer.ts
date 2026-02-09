@@ -63,6 +63,14 @@ export class Footer implements OnInit {
   readonly footerData = signal<FooterSection | null>(null);
   readonly loading = signal(true);
 
+  /** Social media URLs mapped by icon name */
+  readonly socialUrls: Record<string, string> = {
+    linkedin: 'https://www.linkedin.com/company/oakwood-systems-group',
+    twitter: 'https://twitter.com/OakwoodInsights',
+    facebook: 'https://www.facebook.com/OakwoodSys/',
+    youtube: 'https://www.youtube.com/user/oakwoodinnovates'
+  };
+
   /** Grupos de enlaces para iterar en el template (Services, Industries, Resources, Company). */
   linkGroups(): { title: string; links: Array<{ text: string; routerLink: string }> }[] {
     const data = this.footerData();
@@ -103,9 +111,11 @@ export class Footer implements OnInit {
     if (!data) return null;
     // Si el contenido de la página es directamente la sección footer (type === 'footer')
     if ((data as { type?: string }).type === 'footer') {
+    
       return data as unknown as FooterSection;
     }
     // Si viene dentro de sections[] (p. ej. { page: 'footer', sections: [{ type: 'footer', ... }] })
+
     const section = data.sections?.find(s => s.type === 'footer');
     return section ? (section as unknown as FooterSection) : null;
   }

@@ -287,8 +287,8 @@
       <div class="flex flex-col">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           @for (feature of content()?.whyOakwood?.features; track feature.title) {
-          <div class="bg-white    p-6 sm:p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
-            <!-- Icon -->
+          <div class="bg-white border border-[#D1D1D1]   p-6 sm:p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
+            <!-- Icon -->       
             <div class="mb-4 sm:mb-6">
               <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center">
                 <img [src]="feature.icon" [alt]="feature.title + ' feature icon'" class="w-full h-auto object-contain"
@@ -297,12 +297,12 @@
             </div>
 
             <!-- Title -->
-            <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3   ">
+            <h3 class="text-[#242424] font-['Inter'] text-[32px] font-semibold leading-[130%]-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3   ">
               {{ feature.title }}
             </h3>
-
+        
             <!-- Description -->
-            <p class="text-sm sm:text-base text-gray-600 leading-relaxed   ">
+            <p class="text-[#242424] font-['Inter'] text-[20px] font-normal leading-[24px]">
               {{ feature.description }}
             </p>
           </div>

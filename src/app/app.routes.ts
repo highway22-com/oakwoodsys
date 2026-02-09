@@ -9,6 +9,7 @@ import { Industries } from '../pages/industries/industries';
 import { Structured } from '../pages/structured/structured';
 import { AboutUs } from '../pages/about-us/about-us';
 import { ContactUs } from '../pages/contact-us/contact-us';
+import { ContactSuccess } from '../pages/contact-success/contact-success';
 import { Login } from '../pages/login/login';
 
 export const routes: Routes = [
@@ -70,6 +71,10 @@ export const routes: Routes = [
     {
         path: 'contact-us',
         component: ContactUs
+    },
+    {
+        path: 'contact-success',
+        component: ContactSuccess
     },
     {
         path: 'admin/login',
