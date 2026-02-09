@@ -15,27 +15,23 @@
       }
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
-      @for (article of section().articles; track article.id ?? $index) {
-      <app-article-card [article]="article" />
+      @if (loading()) {
+      <p class="col-span-full text-center text-gray-500 py-8">Loading latest posts...</p>
+      } @else if (articles().length === 0) {
+      <p class="col-span-full text-center text-gray-500 py-8">No posts yet.</p>
+      } @else {
+      @for (post of articles(); track post.slug) {
+      <app-blog-card [slug]="post.slug" [imageUrl]="post.imageUrl" [imageAlt]="post.imageAlt"
+        [tag]="post.tag" [readingTimeMinutes]="post.readingTimeMinutes" [title]="post.title"
+        [excerptHtml]="post.excerptHtml" [authorDisplayName]="post.authorDisplayName"
+        [authorPicture]="post.authorPicture" [authorInitial]="post.authorInitial" [date]="post.date" />
+      }
       }
     </div>
     @if (section().cta; as cta) {
     @if (cta.text) {
-    <div class="flex ">
-      @if (cta.link) {
-      <!-- <a [href]="cta.link"
-        class="inline-block bg-transparent border border-gray-300 text-gray-800       px-8 py-4    hover:bg-gray-100 transition-colors duration-200">
-        {{ cta.text }}
-      </a> -->
-      } @else {
-      <!-- <button type="button"
-        class="bg-transparent border border-gray-300 text-gray-800       px-8 py-4    hover:bg-gray-100 transition-colors duration-200"
-        (click)="ctaClick.emit()">
-        {{ cta.text }}
-      </button> -->
-      <app-button-primary [text]="cta.text" [isTransparent]="true" [borderColor]="'black'" />
-
-      }
+    <div class="flex">
+      <app-button-primary [text]="cta.text" [link]="cta.link ?? '/blog'" [isTransparent]="true" [borderColor]="'black'" />
     </div>
     }
     }
