@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { VideoHero } from '../../shared/video-hero/video-hero';
+import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 
 interface IndustryChallengeCard {
   id: string;
@@ -65,7 +66,7 @@ interface IndustriesContent {
 
 @Component({
   selector: 'app-industries',
-  imports: [CommonModule, RouterLink, VideoHero],
+  imports: [CommonModule, RouterLink, VideoHero, CtaSectionComponent],
   templateUrl: './industries.html',
   styleUrl: './industries.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

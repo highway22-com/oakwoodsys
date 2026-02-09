@@ -223,23 +223,7 @@
 <app-latest-insights [section]="insightsSection" />
 
 <!-- CTA Banner: Let's move your vision forward -->
-<section class="about-cta-banner py-12 sm:py-16 md:py-20 bg-gradient-to-r from-indigo-50/90 to-white">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center">
-    <h2 class="text-2xl sm:text-3xl md:text-4xl font-light text-s-900 mb-4   ">
-      {{ ctaBannerTitle }}
-    </h2>
-    <p class="text-s-600 font-segoe font-light max-w-xl mx-auto mb-8">
-      {{ ctaBannerDescription }}
-    </p>
-    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <a routerLink="/contact-us"
-        class="inline-block text-center        px-6 py-3    text-white bg-primary-blue hover:opacity-90 transition">
-        LET'S TALK
-      </a>
-      <a routerLink="/resources"
-        class="inline-block text-center        px-6 py-3    border-2 border-primary-blue text-primary-blue hover:bg-primary-blue hover:text-white transition">
-        LEARN MORE
-      </a>
-    </div>
-  </div>
-</section>
+<app-cta-section [title]="ctaBannerTitle  ?? 'Let\'s move your vision forward'"
+  [description]="  ctaBannerDescription  ?? 'Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.'"
+  [primaryText]=" 'Talk to an expert'" [primaryLink]=" '/contact-us'" [secondaryText]="'Subscribe to our newsletter'"
+  [secondaryLink]=" '/contact-us'" />

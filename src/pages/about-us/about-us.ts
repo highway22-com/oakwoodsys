@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { LatestInsightsSectionComponent, type LatestInsightsSection } from '../../shared/sections/latest-insights/latest-insights';
+import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 
 const PLACEHOLDER_VIDEO_URLS = [
   'https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4',
@@ -38,7 +39,7 @@ export interface BlogCard {
 
 @Component({
   selector: 'app-about-us',
-  imports: [RouterLink, VideoHero, LatestInsightsSectionComponent],
+  imports: [RouterLink, VideoHero, LatestInsightsSectionComponent, CtaSectionComponent],
   templateUrl: './about-us.html',
   styleUrl: './about-us.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
