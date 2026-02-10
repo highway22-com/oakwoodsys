@@ -1,0 +1,9 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Bloquear rutas de admin/login si no quieres que se indexen
+Disallow: /admin/
+
+# Sitemap (ajusta el dominio si usas otro)
+Sitemap: https://oakwoodsys.com/sitemap.xml

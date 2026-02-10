@@ -5,10 +5,10 @@ import { ButtonPrimaryComponent } from "../button-primary/button-primary.compone
 
 /** URLs de video placeholder mientras carga el contenido (se sustituyen por GraphQL). */
 const PLACEHOLDER_VIDEO_URLS: string[] = [
-  'https://oakwoodsys.com/wp-content/uploads/2026/02/Home-1a.mp4',
-  'https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4',
-  'https://oakwoodsys.com/wp-content/uploads/2025/12/2.mp4',
-  'https://oakwoodsys.com/wp-content/uploads/2025/12/4.mp4',
+  "https://oakwoodsys.com/wp-content/uploads/2026/02/Home-1.mp4",
+  "https://oakwoodsys.com/wp-content/uploads/2026/02/Home-2.mp4",
+  "https://oakwoodsys.com/wp-content/uploads/2026/02/Home-3.mp4",
+  "https://oakwoodsys.com/wp-content/uploads/2026/02/Home-4.mp4",
 ];
 
 @Component({

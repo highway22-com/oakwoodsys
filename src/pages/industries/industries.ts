@@ -111,14 +111,20 @@ export class Industries implements OnInit, OnDestroy {
     return { text: p.text, link: p.link, backgroundColor: p.backgroundColor ?? '#1D69AC' };
   }
 
+  /** Slug de URL → clave en industries-content.json (para URLs amigables del navbar). */
+  private static readonly SLUG_TO_KEY: Record<string, string> = {
+    'education-public-sector': 'education',
+  };
+
   private loadContent() {
     this.loading.set(true);
     this.error.set(null);
     this.http.get<IndustriesContent>('/industries-content.json').subscribe({
       next: (data) => {
         const slugValue = this.slug();
-        if (slugValue && data.industries[slugValue]) {
-          this.content.set(data.industries[slugValue]);
+        const contentKey = slugValue ? (Industries.SLUG_TO_KEY[slugValue] ?? slugValue) : null;
+        if (contentKey && data.industries[contentKey]) {
+          this.content.set(data.industries[contentKey]);
         } else {
           this.error.set(slugValue ? `Industry "${slugValue}" not found` : null);
         }

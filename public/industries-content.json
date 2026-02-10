@@ -20,10 +20,26 @@
       "trustedLeaders": {
         "title": "Trusted by industry leaders",
         "partners": [
-          { "name": "Microsoft", "logo": "/assets/logos/microsoft.png", "alt": "Microsoft" },
-          { "name": "BJC Healthcare", "logo": "/assets/logos/bjc-healthcare.png", "alt": "BJC Healthcare" },
-          { "name": "Clarios", "logo": "/assets/logos/clarios.png", "alt": "Clarios" },
-          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+          {
+            "name": "Microsoft",
+            "logo": "/assets/logos/microsoft.png",
+            "alt": "Microsoft"
+          },
+          {
+            "name": "BJC Healthcare",
+            "logo": "/assets/logos/bjc-healthcare.png",
+            "alt": "BJC Healthcare"
+          },
+          {
+            "name": "Clarios",
+            "logo": "/assets/logos/clarios.png",
+            "alt": "Clarios"
+          },
+          {
+            "name": "Duke University",
+            "logo": "/assets/logos/duke-university.png",
+            "alt": "Duke University"
+          }
         ]
       },
       "industryChallenges": {
@@ -77,7 +93,10 @@
             "description": "Oakwood protects sensitive patient data with Microsoft security tools designed for regulated environments."
           }
         ],
-        "cta": { "text": "Schedule a call", "link": "/contact-us" }
+        "cta": {
+          "text": "Schedule a call",
+          "link": "/contact-us"
+        }
       },
       "featuredCaseStudy": {
         "sectionTitle": "FEATURED CASE STUDY",
@@ -85,14 +104,26 @@
         "title": "Airwatch to Intune Migration for Healthcare Organization",
         "description": "One of the largest nonprofit healthcare organizations in the United States looked to Oakwood's Cloud Team to assist in moving nearly 11,000 users utilizing 15,000 devices.",
         "image": "https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&q=80",
-        "ctaPrimary": { "text": "Read More", "link": "/resources/case-studies" },
-        "ctaSecondary": { "text": "View all case studies", "link": "/resources/case-studies" }
+        "ctaPrimary": {
+          "text": "Read More",
+          "link": "/resources/case-studies"
+        },
+        "ctaSecondary": {
+          "text": "View all case studies",
+          "link": "/resources/case-studies"
+        }
       },
       "ctaSection": {
         "heading": "Build a more intelligent health system",
         "description": "Enhance collaboration, secure sensitive data, and improve patient outcomes with modern cloud solutions.",
-        "primaryCta": { "text": "View all Industries", "link": "/industries" },
-        "secondaryCta": { "text": "View case studies", "link": "/resources/case-studies" }
+        "primaryCta": {
+          "text": "View all Industries",
+          "link": "/industries"
+        },
+        "secondaryCta": {
+          "text": "View case studies",
+          "link": "/resources/case-studies"
+        }
       }
     },
     "manufacturing": {
@@ -115,10 +146,26 @@
       "trustedLeaders": {
         "title": "Trusted by industry leaders",
         "partners": [
-          { "name": "Applied Materials", "logo": "/assets/logos/applied-materials.png", "alt": "Applied Materials" },
-          { "name": "ARCO", "logo": "/assets/logos/arco.png", "alt": "ARCO" },
-          { "name": "Clarios", "logo": "/assets/logos/clarios.png", "alt": "Clarios" },
-          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+          {
+            "name": "Applied Materials",
+            "logo": "/assets/logos/applied-materials.png",
+            "alt": "Applied Materials"
+          },
+          {
+            "name": "ARCO",
+            "logo": "/assets/logos/arco.png",
+            "alt": "ARCO"
+          },
+          {
+            "name": "Clarios",
+            "logo": "/assets/logos/clarios.png",
+            "alt": "Clarios"
+          },
+          {
+            "name": "Duke University",
+            "logo": "/assets/logos/duke-university.png",
+            "alt": "Duke University"
+          }
         ]
       },
       "industryChallenges": {
@@ -172,7 +219,10 @@
             "description": "Oakwood deploys Microsoft security tools to reduce IoT/OT risk."
           }
         ],
-        "cta": { "text": "Schedule a Consultation", "link": "/contact-us" }
+        "cta": {
+          "text": "Schedule a Consultation",
+          "link": "/contact-us"
+        }
       },
       "featuredCaseStudy": {
         "sectionTitle": "FEATURED CASE STUDY",
@@ -180,14 +230,26 @@
         "title": "Clarios accelerates Innovation with AMD-Powered HPC",
         "description": "See how Clarios slashed HPC workload times by 50% by using the AMD HPC Innovation Lab. What once took 12 hours now runs in just a few — results that speak for themselves.",
         "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80",
-        "ctaPrimary": { "text": "Read more", "link": "/resources/case-studies" },
-        "ctaSecondary": { "text": "View all case studies", "link": "/resources/case-studies" }
+        "ctaPrimary": {
+          "text": "Read more",
+          "link": "/resources/case-studies"
+        },
+        "ctaSecondary": {
+          "text": "View all case studies",
+          "link": "/resources/case-studies"
+        }
       },
       "ctaSection": {
         "heading": "Transform how you design, build, and deliver",
         "description": "Enable efficiency, automation, and real-time insights across your manufacturing operations.",
-        "primaryCta": { "text": "View all industries", "link": "/industries" },
-        "secondaryCta": { "text": "View case studies", "link": "/resources/case-studies" }
+        "primaryCta": {
+          "text": "View all industries",
+          "link": "/industries"
+        },
+        "secondaryCta": {
+          "text": "View case studies",
+          "link": "/resources/case-studies"
+        }
       }
     },
     "education": {
@@ -196,16 +258,40 @@
       "description": "Oakwood helps schools, state, and government agencies modernize their systems, secure their environments, and prepare for AI-driven operations.",
       "backgroundImage": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80",
       "cta": {
-        "primary": { "text": "Schedule a consultation", "link": "/contact-us", "backgroundColor": "#1D69AC" },
-        "secondary": { "text": "View resources", "link": "/resources", "borderColor": "#FFFFFF" }
+        "primary": {
+          "text": "Schedule a consultation",
+          "link": "/contact-us",
+          "backgroundColor": "#1D69AC"
+        },
+        "secondary": {
+          "text": "View resources",
+          "link": "/resources",
+          "borderColor": "#FFFFFF"
+        }
       },
       "trustedLeaders": {
         "title": "Trusted by industry leaders",
         "partners": [
-          { "name": "Microsoft", "logo": "/assets/logos/microsoft.png", "alt": "Microsoft" },
-          { "name": "BJC Healthcare", "logo": "/assets/logos/bjc-healthcare.png", "alt": "BJC Healthcare" },
-          { "name": "Clarios", "logo": "/assets/logos/clarios.png", "alt": "Clarios" },
-          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+          {
+            "name": "Microsoft",
+            "logo": "/assets/logos/microsoft.png",
+            "alt": "Microsoft"
+          },
+          {
+            "name": "BJC Healthcare",
+            "logo": "/assets/logos/bjc-healthcare.png",
+            "alt": "BJC Healthcare"
+          },
+          {
+            "name": "Clarios",
+            "logo": "/assets/logos/clarios.png",
+            "alt": "Clarios"
+          },
+          {
+            "name": "Duke University",
+            "logo": "/assets/logos/duke-university.png",
+            "alt": "Duke University"
+          }
         ]
       },
       "industryChallenges": {
@@ -259,7 +345,10 @@
             "description": "Oakwood helps create intuitive, accessible user experiences."
           }
         ],
-        "cta": { "text": "Schedule a consultation", "link": "/contact-us" }
+        "cta": {
+          "text": "Schedule a consultation",
+          "link": "/contact-us"
+        }
       },
       "featuredCaseStudy": {
         "sectionTitle": "FEATURED CASE STUDY",
@@ -267,13 +356,341 @@
         "title": "Clarios accelerates Innovation with AMD-Powered HPC",
         "description": "Clarios slashed global HPC workload times by over 20X using the AMD HPC Innovation Lab. What once took 12 hours now runs in just a few — results that speak for themselves.",
         "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80",
-        "ctaPrimary": { "text": "Read more", "link": "/resources/case-studies" },
-        "ctaSecondary": { "text": "View all case studies", "link": "/resources/case-studies" }
+        "ctaPrimary": {
+          "text": "Read more",
+          "link": "/resources/case-studies"
+        },
+        "ctaSecondary": {
+          "text": "View all case studies",
+          "link": "/resources/case-studies"
+        }
       },
       "ctaSection": {
         "heading": "Build a stronger future for the public you serve",
         "description": "Enable better outcomes with modern data, applications, and collaboration platforms.",
-        "primaryCta": { "text": "View all industries", "link": "/industries" },
+        "primaryCta": {
+          "text": "View all industries",
+          "link": "/industries"
+        },
+        "secondaryCta": {
+          "text": "View case studies",
+          "link": "/resources/case-studies"
+        }
+      }
+    },
+    "retail": {
+      "slug": "retail",
+      "title": "Retail Powered by Data and Intelligent Technology",
+      "description": "Oakwood helps retailers unify data, modernize operations, and deliver personalized experiences that outperform the competition.",
+      "backgroundImage": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80",
+      "cta": {
+        "primary": {
+          "text": "Schedule a consultation",
+          "link": "/contact-us",
+          "backgroundColor": "#1D69AC"
+        },
+        "secondary": {
+          "text": "View resources",
+          "link": "/resources",
+          "borderColor": "#FFFFFF"
+        }
+      },
+      "trustedLeaders": {
+        "title": "Trusted by industry leaders",
+        "partners": [
+          {
+            "name": "Microsoft",
+            "logo": "/assets/logos/microsoft.png",
+            "alt": "Microsoft"
+          },
+          {
+            "name": "BJC Healthcare",
+            "logo": "/assets/logos/bjc-healthcare.png",
+            "alt": "BJC Healthcare"
+          },
+          {
+            "name": "Clarios",
+            "logo": "/assets/logos/clarios.png",
+            "alt": "Clarios"
+          },
+          {
+            "name": "Duke University",
+            "logo": "/assets/logos/duke-university.png",
+            "alt": "Duke University"
+          }
+        ]
+      },
+      "industryChallenges": {
+        "sectionTitle": "INDUSTRY CHALLENGES",
+        "mainHeading": "The critical obstacles retail teams face",
+        "subDescription": "Retailers face fragmented channels, disconnected inventory and customer data, and pressure to deliver seamless omnichannel experiences at speed.",
+        "cards": [
+          {
+            "id": "01",
+            "image": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80",
+            "title": "Fragmented omnichannel experiences",
+            "description": "Disconnected systems across stores, e-commerce, and fulfillment slow decisions and create inconsistent customer experiences."
+          },
+          {
+            "id": "02",
+            "image": "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&q=80",
+            "title": "Data locked in silos",
+            "description": "Customer, inventory, and operational data is scattered across legacy and point solutions, limiting personalization and insights."
+          },
+          {
+            "id": "03",
+            "image": "https://images.unsplash.com/photo-1556742111-a301076d9d18?w=800&q=80",
+            "title": "Legacy systems and scaling limits",
+            "description": "Outdated platforms and manual processes limit agility and make it hard to respond to demand and competition."
+          }
+        ]
+      },
+      "howWeImprove": {
+        "sectionTitle": "RETAIL TRANSFORMATION",
+        "mainHeading": "How Oakwood helps retailers outperform",
+        "subDescription": "Unifying data, modernizing commerce and supply chain systems, and enabling AI-ready insights to drive growth and customer loyalty.",
+        "cards": [
+          {
+            "icon": "/assets/reta.png",
+            "title": "Unify customer and operational data",
+            "description": "Oakwood brings CRM, commerce, and inventory data together to support personalization and real-time decisions."
+          },
+          {
+            "icon": "/assets/reta.png",
+            "title": "Modernize commerce and fulfillment",
+            "description": "Oakwood integrates modern cloud platforms to enable seamless omnichannel and flexible fulfillment."
+          },
+          {
+            "icon": "/assets/reta.png",
+            "title": "Enable data-driven merchandising and demand",
+            "description": "Oakwood builds analytics and AI-ready data platforms for demand sensing and assortment optimization."
+          },
+          {
+            "icon": "/assets/reta.png",
+            "title": "Strengthen security and compliance",
+            "description": "Oakwood protects customer and payment data with Microsoft security tools built for retail and PCI needs."
+          }
+        ],
+        "cta": {
+          "text": "Schedule a consultation",
+          "link": "/contact-us"
+        }
+      },
+      "featuredCaseStudy": {
+        "sectionTitle": "FEATURED CASE STUDY",
+        "subHeading": "Retail & Consumer",
+        "title": "Clarios accelerates Innovation with AMD-Powered HPC",
+        "description": "Clarios slashed global HPC workload times by over 20X using the AMD HPC Innovation Lab. What once took 12 hours now runs in just a few - results that speak for themselves.",
+        "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80",
+        "ctaPrimary": {
+          "text": "Read more",
+          "link": "/resources/case-studies"
+        },
+        "ctaSecondary": {
+          "text": "View all case studies",
+          "link": "/resources/case-studies"
+        }
+      },
+      "ctaSection": {
+        "heading": "Outperform with data and modern technology",
+        "description": "Enable unified data, smarter operations, and personalized experiences across every channel.",
+        "primaryCta": {
+          "text": "View all industries",
+          "link": "/industries"
+        },
+        "secondaryCta": {
+          "text": "View case studies",
+          "link": "/resources/case-studies"
+        }
+      }
+    },
+    "financial-services": {
+      "slug": "financial-services",
+      "title": "Secure, Compliant, Data Driven Financial Innovation",
+      "description": "Oakwood helps financial institutions modernize securely, unlock value from their data, and adapt at scale, with confidence.",
+      "backgroundImage": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80",
+      "cta": {
+        "primary": {
+          "text": "Schedule a consultation",
+          "link": "/contact-us",
+          "backgroundColor": "#1D69AC"
+        },
+        "secondary": {
+          "text": "Read more",
+          "link": "/resources",
+          "borderColor": "#FFFFFF"
+        }
+      },
+      "trustedLeaders": {
+        "title": "Trusted by industry leaders",
+        "partners": [
+          { "name": "Microsoft", "logo": "/assets/logos/microsoft.png", "alt": "Microsoft" },
+          { "name": "BJC Healthcare", "logo": "/assets/logos/bjc-healthcare.png", "alt": "BJC Healthcare" },
+          { "name": "Clarios", "logo": "/assets/logos/clarios.png", "alt": "Clarios" },
+          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+        ]
+      },
+      "industryChallenges": {
+        "sectionTitle": "INDUSTRY CHALLENGES",
+        "mainHeading": "Key obstacles facing financial services organizations",
+        "subDescription": "Constantly changing regulations, siloed data, and legacy systems strain technology and data teams and limit personalization and modernization.",
+        "cards": [
+          {
+            "id": "01",
+            "image": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80",
+            "title": "Complex Regulatory Compliance",
+            "description": "Constantly changing regulations strain technology and data teams."
+          },
+          {
+            "id": "02",
+            "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+            "title": "Fragmented Customer Data",
+            "description": "Data lives across siloed, multiple systems which limits personalization and insights."
+          },
+          {
+            "id": "03",
+            "image": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80",
+            "title": "Legacy Core Systems",
+            "description": "Aging platforms slow modernization and increase operational risks."
+          }
+        ]
+      },
+      "howWeImprove": {
+        "sectionTitle": "FINANCIAL INNOVATION",
+        "mainHeading": "How Oakwood supports secure financial Innovation",
+        "subDescription": "Oakwood helps financial institutions strengthen compliance, modernize platforms, unify data, and enhance digital customer experience with Microsoft cloud and security tools.",
+        "cards": [
+          {
+            "icon": "/assets/fina.png",
+            "title": "Strengthen security and compliance posture",
+            "description": "Oakwood implements Microsoft tools that simplify KYC and regulatory requirements."
+          },
+          {
+            "icon": "/assets/fina.png",
+            "title": "Modernize legacy platforms",
+            "description": "Oakwood updates core systems and builds cloud-ready application ecosystems."
+          },
+          {
+            "icon": "/assets/fina.png",
+            "title": "Unify customer and transaction data",
+            "description": "Oakwood centralizes financial data to enable insightful and AI-driven insights."
+          },
+          {
+            "icon": "/assets/fina.png",
+            "title": "Enhance digital customer experience",
+            "description": "Oakwood builds modern digital solutions that improve current engagement."
+          }
+        ],
+        "cta": { "text": "Schedule a Consultation", "link": "/contact-us" }
+      },
+      "featuredCaseStudy": {
+        "sectionTitle": "FEATURED CASE STUDY",
+        "subHeading": "Financial services",
+        "title": "Recent work: Clarios accelerates Innovation with AMD-Powered HPC",
+        "description": "See how Clarios slashed HPC workload times by 50% (30T) using the AMD HPC Innovation Lab. What once took 12 hours now runs in just a few — that results speak for themselves.",
+        "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80",
+        "ctaPrimary": { "text": "Read more", "link": "/resources/case-studies" },
+        "ctaSecondary": { "text": "View all case studies", "link": "/resources/case-studies" }
+      },
+      "ctaSection": {
+        "heading": "Power growth with intelligent, secure innovation",
+        "description": "Improve risk management, efficiency and customer engagement with modern technology",
+        "primaryCta": { "text": "View all Industries", "link": "/industries" },
+        "secondaryCta": { "text": "View case studies", "link": "/resources/case-studies" }
+      }
+    },
+    "eda": {
+      "slug": "eda",
+      "title": "Accelerate Chip Design with High Performance Engineering Workflows",
+      "description": "Oakwood enables semiconductor and EDA teams to run faster simulations, optimize compute environments, and gain security with scale HPC.",
+      "backgroundImage": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80",
+      "cta": {
+        "primary": {
+          "text": "Schedule a consultation",
+          "link": "/contact-us",
+          "backgroundColor": "#1D69AC"
+        },
+        "secondary": {
+          "text": "View resources",
+          "link": "/resources",
+          "borderColor": "#FFFFFF"
+        }
+      },
+      "trustedLeaders": {
+        "title": "Trusted by industry leaders",
+        "partners": [
+          { "name": "Microsoft", "logo": "/assets/logos/microsoft.png", "alt": "Microsoft" },
+          { "name": "Applied Materials", "logo": "/assets/logos/applied-materials.png", "alt": "Applied Materials" },
+          { "name": "onsemi", "logo": "/assets/logos/onsemi.png", "alt": "onsemi" },
+          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+        ]
+      },
+      "industryChallenges": {
+        "sectionTitle": "INDUSTRY CHALLENGES",
+        "mainHeading": "Key challenges facing semiconductor and EDA organizations",
+        "subDescription": "Semiconductor and EDA organizations are under pressure to shorten design cycles, manage rising computational demands and protect valuable intellectual property.",
+        "cards": [
+          {
+            "id": "01",
+            "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+            "title": "Compute bottlenecks slow design cycles",
+            "description": "Growing model complexity demands more scalable infrastructure."
+          },
+          {
+            "id": "02",
+            "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80",
+            "title": "Fragmented engineering environments",
+            "description": "Tools, workflows, and data pipelines are often siloed."
+          },
+          {
+            "id": "03",
+            "image": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80",
+            "title": "Intellectual property risks",
+            "description": "Highly sensitive design assets require strong, multi-layered security."
+          }
+        ]
+      },
+      "howWeImprove": {
+        "sectionTitle": "SEMICONDUCTOR INNOVATION",
+        "mainHeading": "How Oakwood accelerates semiconductor innovation",
+        "subDescription": "Modernizing HPC environments, streamlining engineering workflows, and enhancing data insight to help semiconductor teams innovate at speed and scale.",
+        "cards": [
+          {
+            "icon": "/assets/elec.png",
+            "title": "Modernize and scale HPC environments",
+            "description": "Oakwood builds and optimizes HPC environments using Azure-enabled infrastructure."
+          },
+          {
+            "icon": "/assets/elec.png",
+            "title": "Streamline engineering workflows",
+            "description": "Oakwood integrates simulation tools, data-tooling, and pipelines."
+          },
+          {
+            "icon": "/assets/elec.png",
+            "title": "Enhance data and telemetry insight",
+            "description": "Oakwood provides insight into performance, cost, and utilization for engineering workloads."
+          },
+          {
+            "icon": "/assets/elec.png",
+            "title": "Protect high value IP and design assets",
+            "description": "Oakwood deploys Microsoft security tools tailored for engineering and semiconductor firms."
+          }
+        ],
+        "cta": { "text": "Schedule a consultation", "link": "/contact-us" }
+      },
+      "featuredCaseStudy": {
+        "sectionTitle": "FEATURED CASE STUDY",
+        "subHeading": "Semiconductor HPC",
+        "title": "Recent work: Clarios accelerates Innovation with AMD-Powered HPC",
+        "description": "Clarios optimized HPC workload times by over 100X using the AMD HPC Innovation Lab. What once took 12 hours now runs in just a few — results that speak for themselves.",
+        "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80",
+        "ctaPrimary": { "text": "Read more", "link": "/resources/case-studies" },
+        "ctaSecondary": { "text": "View all case studies", "link": "/resources/case-studies" }
+      },
+      "ctaSection": {
+        "heading": "Accelerate complex design workflows",
+        "description": "Power faster simulations, reduce bottlenecks, and optimize compute performance on Azure.",
+        "primaryCta": { "text": "View all Industries", "link": "/industries" },
         "secondaryCta": { "text": "View case studies", "link": "/resources/case-studies" }
       }
     }
