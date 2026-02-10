@@ -2,10 +2,7 @@
   "page": "resources",
   "videoHero": {
     "videoUrls": [
-      "https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4",
-      "https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4",
-      "https://oakwoodsys.com/wp-content/uploads/2025/12/2.mp4",
-      "https://oakwoodsys.com/wp-content/uploads/2025/12/4.mp4"
+      "https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4"
     ],
     "title": "Turn Data and AI Into Real Business Outcomes",
     "description": "Explore case studies and insights from projects built on Azure that solve real problems.",
@@ -37,6 +34,40 @@
     "label": "FEATURED CASE STUDY",
     "readMoreText": "Read More"
   },
+  "featuredCaseStudySlugs": [
+    "secure-azure-research-environment-architecture",
+    "enterprise-reporting-and-data-roadmap-development"
+  ],
+  "filters": [
+    {
+      "displayCategory": "All",
+      "value": "All"
+    },
+    {
+      "displayCategory": "Data & AI",
+      "value": "Data and AI Blog"
+    },
+    {
+      "displayCategory": "Data Center",
+      "value": "Data Center"
+    },
+    {
+      "displayCategory": "Application Innovation",
+      "value": "Application Innovation"
+    },
+    {
+      "displayCategory": "High-Performance Computing (HPC)",
+      "value": "HPC"
+    },
+    {
+      "displayCategory": "Modern Work",
+      "value": "Modern Work Blog"
+    },
+    {
+      "displayCategory": "Managed Services",
+      "value": "Managed Services"
+    }
+  ],
   "filterAndSearch": {
     "searchPlaceholder": "Search",
     "emptyStateMessage": "No resources found matching your criteria."

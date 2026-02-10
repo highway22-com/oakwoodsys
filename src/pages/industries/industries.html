@@ -17,18 +17,8 @@
 
 <!-- Trusted leaders -->
 @if (c.trustedLeaders?.partners?.length) {
-<section class="py-12 bg-gray-50" aria-labelledby="trusted-title">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <h2 id="trusted-title" class="text-center text-sm   uppercase tracking-wider text-gray-500 mb-8">
-      {{ c.trustedLeaders!.title }}
-    </h2>
-    <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-      @for (partner of c.trustedLeaders!.partners; track partner.name) {
-      <img [src]="partner.logo" [alt]="partner.alt" class="h-8 md:h-10 w-auto object-contain grayscale opacity-80" />
-      }
-    </div>
-  </div>
-</section>
+<app-trusted-by [title]="c.trustedLeaders!.title ?? '' " [companies]="c.trustedLeaders!.partners ?? []" />
+
 }
 
 <!-- Industry challenges -->
@@ -89,45 +79,9 @@
 </section>
 }
 
-<!-- Featured case study -->
-@if (c.featuredCaseStudy) {
-<section class="py-16 md:py-24 bg-white" aria-labelledby="case-study-title">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-      <div class="  overflow-hidden aspect-[4/3] bg-gray-100">
-        <img [src]="c.featuredCaseStudy.image" [alt]="c.featuredCaseStudy.title" class="w-full h-full object-cover"
-          loading="lazy" />
-      </div>
-      <div>
-        <p class="text-sm   uppercase tracking-wider text-gray-400 mb-1">{{ c.featuredCaseStudy.sectionTitle
-          }}</p>
-        <p class="text-sm   uppercase tracking-wider  text-p-500 mb-4">{{ c.featuredCaseStudy.subHeading
-          }}</p>
-        <h2 id="case-study-title" class="text-2xl sm:text-3xl   text-gray-900 mb-4">
-          {{ c.featuredCaseStudy.title }}
-        </h2>
-        <p class="text-gray-600 mb-6">{{ c.featuredCaseStudy.description }}</p>
-        <div class="flex flex-col sm:flex-row gap-4">
-          @if (c.featuredCaseStudy.ctaPrimary) {
-          <a [routerLink]="c.featuredCaseStudy.ctaPrimary.link"
-            class="inline-block text-center px-6 py-3  bg-p-500 text-white   transition">
-            {{ c.featuredCaseStudy.ctaPrimary.text }}
-          </a>
-          }
-          @if (c.featuredCaseStudy.ctaSecondary) {
-          <a [routerLink]="c.featuredCaseStudy.ctaSecondary.link"
-            class="inline-flex items-center  text-p-500  hover:underline gap-1">
-            {{ c.featuredCaseStudy.ctaSecondary.text }}
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
-          }
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- Featured case study (misma lógica que resources: slugs → app-featured-case-study-cards) -->
+@if (getSlugsForFeaturedSection().length) {
+<app-featured-case-study [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
 }
 
 <!-- CTA section -->

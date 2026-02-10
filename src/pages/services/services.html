@@ -21,7 +21,7 @@
 
 <!-- Hero Section with Video Background -->
 @if (content()?.videoUrls && (content()?.videoUrls?.length ?? 0) > 0) {
-<app-video-hero [hvh70]="true" [videoUrls]="content()?.videoUrls!" [title]="content()!.title"
+<app-video-hero [loading]="false" [hvh70]="true" [videoUrls]="content()?.videoUrls!" [title]="content()!.title"
   [description]="content()!.description" [ctaPrimary]="content()!.cta.primary"
   [ctaSecondary]="content()!.cta.secondary">
 </app-video-hero>
@@ -147,16 +147,13 @@
 </section>
 }
 
-<!-- Featured Case Study Section -->
-@if (getSlugsForFeaturedSection().length) {
-<app-featured-case-study [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
-}
+
 
 <!-- Solution Accelerators Section -->
 @if (content()?.solutionAccelerators) {
-<section class="w-full" aria-labelledby="solution-accelerators-title">
+<section class="w-full my-20" aria-labelledby="solution-accelerators-title">
   <!-- Hero Banner -->
-  <div class="relative min-h-[400px] sm:min-h-[500px] md:min-h-[600px] w-full overflow-hidden">
+  <div class="relative min-h-[400px] sm:min-h-[500px] md:min-h-[60vh] w-full overflow-hidden">
     <!-- Background Image/Video -->
     <div class="absolute inset-0 z-0">
       @if (content()?.solutionAccelerators?.videoUrls && (content()?.solutionAccelerators?.videoUrls?.length ?? 0) > 0)
@@ -170,8 +167,8 @@
       <img [src]="content()?.solutionAccelerators?.backgroundImage || ''"
         [alt]="(content()?.solutionAccelerators?.title || 'Solution accelerators') + ' background image'"
         class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+      <div class="absolute inset-0 bg-slate-700/20"></div>
       }
-      <div class="absolute inset-0 bg-slate-900/70"></div>
     </div>
 
     <!-- Content -->
@@ -193,15 +190,15 @@
   </div>
 
   <!-- Cards Grid -->
-  <div class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24">
+  <div class="w-full bg-p-30 py-12 sm:py-16 md:py-20  ">
     <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
         @for (card of content()?.solutionAccelerators?.cards; track card.title) {
         <div 
         class="border-r border-[#D1D1D1] bg-[#F2F8FD] flex flex-col p-8 m-0">
           <!-- Icon -->
-          <div class="mb-4 sm:mb-6">
-            <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center">
+          <div class="mb-8 sm:mb-6 ">
+            <div class="w-10">
               <img [src]="card.icon" [alt]="card.title + ' solution accelerator icon'"
                 
                 class="w-full h-auto object-contain text-[var(--Primary-500,#2A7EBF)] text-center text-[38px] font-light leading-normal"
@@ -296,58 +293,21 @@
     </div>
   </div>
 </section>
+@if (getSlugsForFeaturedSection().length) {
+<app-featured-case-study [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
 }
+
 
 <!-- Trusted Partners Section -->
 @if (content()?.trustedPartners) {
-<section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="trusted-partners-title">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <!-- Heading -->
-    <h2 id="trusted-partners-title"
-      class="text-2xl sm:text-3xl md:text-4xl        text-gray-700 text-center mb-8 sm:mb-12   ">
-      {{ content()?.trustedPartners?.title }}
-    </h2>
+<app-trusted-by [title]="content()?.trustedPartners?.title ?? '' "
+  [companies]="content()?.trustedPartners?.partners ?? []" />
 
-    <!-- Logo Carousel -->
-    <div class="relative">
-      <!-- Left Arrow -->
-      <button (click)="scrollLogos('left')"
-        class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 hover:bg-gray-300      flex items-center justify-center transition-colors duration-200 shadow-md"
-        aria-label="Scroll logos left">
-        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-
-      <!-- Logo Container -->
-      <div #logoCarousel
-        class="flex items-center gap-8 sm:gap-12 md:gap-16 overflow-x-auto scrollbar-hide px-12 sm:px-16 md:px-20"
-        style="scrollbar-width: none; -ms-overflow-style: none;">
-        @for (partner of content()?.trustedPartners?.partners; track partner.name) {
-        <div class="flex-shrink-0 flex items-center justify-center h-16 sm:h-20 md:h-24">
-          <img [src]="partner.logo" [alt]="partner.alt || partner.name + ' logo'"
-            class="max-h-full max-w-[150px] sm:max-w-[180px] md:max-w-[200px] object-contain opacity-70 hover:opacity-100 transition-opacity duration-200"
-            loading="lazy" />
-        </div>
-        }
-      </div>
-
-      <!-- Right Arrow -->
-      <button (click)="scrollLogos('right')"
-        class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 hover:bg-gray-300      flex items-center justify-center transition-colors duration-200 shadow-md"
-        aria-label="Scroll logos right">
-        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-    </div>
-  </div>
-</section>
 }
 
 <!-- Why Oakwood Section -->
 @if (content()?.whyOakwood) {
-<section class="w-full bg-slate-50 py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="why-oakwood-title">
+<section class="w-full bg-p-30 py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="why-oakwood-title">
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     <!-- Top Introductory Section -->
     <div class="text-center mb-12 sm:mb-16 md:mb-20">
@@ -384,7 +344,7 @@
           <div class="rounded-lg bg-white   p-6 sm:p-8  hover:shadow-lg transition-shadow duration-300">
             <!-- Icon -->       
             <div class="mb-4 sm:mb-6">
-              <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center">
+              <div class="w-8">
                 <img [src]="feature.icon" [alt]="feature.title + ' feature icon'" class="w-full h-auto object-contain"
                   loading="lazy" />
               </div>
@@ -414,7 +374,8 @@
   [description]="  content()?.ctaSection?.subheadline  ?? 'Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.'"
   [primaryText]="content()?.ctaSection?.primaryCta?.text ?? 'Talk to an expert'" primaryLink="/contact-us"
   [secondaryText]="content()?.ctaSection?.secondaryCta?.text ?? 'Subscribe to our newsletter'"
-  [secondaryLink]="content()?.ctaSection?.secondaryCta?.link ?? '/contact-us'" />
+  [secondaryLink]="content()?.ctaSection?.secondaryCta?.link ?? '/contact-us'" [gradientIndex]="2" />
 
+}
 }
 }

@@ -3,9 +3,13 @@
   <!-- Background Video -->
   <div class="absolute inset-0 z-0"   >
     <video class="absolute inset-0 w-full h-full object-cover" autoplay muted playsinline preload="auto" #videoElement
-      [src]="currentVideoUrl()">
+      [src]="currentVideoUrl()" [attr.poster]="poster || null">
       Your browser does not support the video tag.
     </video>
+    <!-- Precarga del siguiente video (WordPress) para transición sin espera -->
+    @if (nextVideoUrl()) {
+    <video class="hidden" preload="auto" [src]="nextVideoUrl()" aria-hidden="true"></video>
+    }
     <!-- Overlay: gradiente top-left → bottom-right según diseño -->
     <div class="video-hero__gradient absolute inset-0 z-0" aria-hidden="true"></div>
   </div>
@@ -15,7 +19,7 @@
     <div class="w-full flex flex-col items-start text-left">
       <!-- Title -->
       <h1 class="text-white mb-6 md:mb-8 lg:max-w-7xl">
-        {{ title }}
+        {{ currentTitle() }}
       </h1>
 
       <!-- Description -->
@@ -43,7 +47,7 @@
       </div>
 
       <!-- Video Indicators -->
-      @if (videoUrlsSignal().length > 1 && showIndicators) {
+      @if (effectiveShowIndicators()) {
       <div class="flex items-center gap-1.5">
         @for (indicator of [].constructor(videoUrlsSignal().length); track $index) {
 

@@ -6,10 +6,7 @@
       "description": "Unify, govern, and activate your data estate to deliver real AI outcomes.",
       "backgroundImage": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1920&q=80",
       "videoUrls": [
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/2.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/4.mp4"
+        "https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Data-Ai.mp4"
       ],
       "mainDescription": {
         "text": "Oakwood unites your data and accelerates your AI journey using Microsoft Fabric, Synapse, Power BI, and Azure AI. We help you turn insight into action so your organization can make better decisions and innovate faster."
@@ -82,22 +79,22 @@
         "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2025/12/s-data-and.ai-sa.png",
         "cards": [
           {
-            "icon": "/assets/graph.png",
+            "icon": "/assets/database.png",
             "title": "Unified data estate framework",
             "description": "Oakwood engineers unify fragmented data systems into a governed, scalable, AI-ready architecture."
           },
           {
-            "icon": "/assets/graph.png",
+            "icon": "/assets/toolbox.png",
             "title": "DataOps automation toolkit",
             "description": "Our Team automates ingestion, transformation, testing, and governance to deliver faster, higher-quality data pipelines."
           },
           {
-            "icon": "/assets/graph.png",
+            "icon": "/assets/chart-diagram.png",
             "title": "Business Intelligence maturity framework",
             "description": "We help your organization scale analytics adoption with a structured model for governance, enablement, and trusted insights."
           },
           {
-            "icon": "/assets/graph.png",
+            "icon": "/assets/square-binary.png",
             "title": "AI data playbook",
             "description": "Our Team prepares your data for AI by automating cleansing, enrichment, and structuring to enable high-quality model training."
           }
@@ -162,30 +159,30 @@
         "tagline": "WHY OAKWOOD",
         "title": "Unlock the full potential of your data",
         "description": "Discover how Oakwood transforms your data into strategic advantage through trusted expertise, modern platforms, and cutting-edge AI capabilities.",
-        "imageSrc": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1920&q=80",
+        "imageSrc": "https://oakwoodsys.com/wp-content/uploads/2026/02/wi.png",
         "features": [
           {
-            "icon": "/assets/graph.png",
+            "icon": "/assets/w1.png",
             "title": "AI ready data platforms",
             "description": "MLOps, vector search, and responsible AI controls built in."
           },
           {
-            "icon": "/assets/graph.png",
+            "icon": "/assets/w2.png",
             "title": "Microsoft centric expertise",
             "description": "Fabric, Synapse, AML, OpenAI, Purview, Power BI with deep implementation experience."
           },
           {
-            "icon": "/assets/graph.png",
+            "icon": "/assets/w3.png",
             "title": "Unified strategy to execution",
             "description": "Assess to Prove to Migrate to Manage with clear outcomes at each stage."
           },
           {
-            "icon": "/assets/graph.png",
+            "icon": "/assets/w4.png",
             "title": "Governed by design",
             "description": "Identity, lineage, auditing, and policy enforcement without slowing delivery."
           },
           {
-            "icon": "/assets/graph.png",
+            "icon": "/assets/w5.png",
             "title": "Full Lifecycle partnership",
             "description": "Roadmaps tied to measurable value like time to insight, cost, adoption, and reliability."
           }
@@ -218,10 +215,7 @@
     },
     "cloud-and-infrastructure": {
       "videoUrls": [
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/2.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/4.mp4"
+        "https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Clound-Infrastructure.mp4"
       ],
       "slug": "cloud-and-infrastructure",
       "title": "Cloud & Infrastructure",
@@ -426,10 +420,7 @@
     },
     "application-innovation": {
       "videoUrls": [
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/2.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/4.mp4"
+        "https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Application-Innovation.mp4"
       ],
       "slug": "application-innovation",
       "title": "Application Innovation",
@@ -629,10 +620,7 @@
     },
     "high-performance-computing": {
       "videoUrls": [
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/2.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/4.mp4"
+        "https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Hpc.mp4"
       ],
       "slug": "high-performance-computing",
       "title": "High Performance Computing (HPC)",
@@ -832,10 +820,7 @@
     },
     "modern-work": {
       "videoUrls": [
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/2.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/4.mp4"
+        "https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Modern-Work.mp4"
       ],
       "slug": "modern-work",
       "title": "Modern Work",
@@ -1030,10 +1015,7 @@
     },
     "managed-services": {
       "videoUrls": [
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/2.mp4",
-        "https://oakwoodsys.com/wp-content/uploads/2025/12/4.mp4"
+        "https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Managed-Services.mp4"
       ],
       "slug": "managed-services",
       "title": "Managed Services",
