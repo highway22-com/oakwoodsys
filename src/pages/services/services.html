@@ -103,25 +103,38 @@
     <!-- Right: 4 cards -->
     <div class="flex flex-col gap-4 sm:gap-6 px-12 order-1 lg:order-2 overflow-y-auto">
       @for (area of content()?.serviceAreas?.serviceAreas ?? []; track area.title) {
-      <article class="bg-white border border-gray-200/50 p-5 sm:p-6 flex flex-col gap-3">
+      <article class="bg-white border border-[#D1D1D1] p-8 sm:p-8 flex flex-col gap-3">
+        
         <div class="flex flex-wrap items-center gap-2">
           @if (area.icon) {
-          <img [src]="area.icon" [alt]="area.title + ' icon'" class="w-8 h-8 object-contain" loading="lazy" />
+          <img [src]="area.icon" [alt]="area.title + ' icon'" 
+          class="text-[#3D3D3D] text-center text-[40px] font-light leading-normal object-contain block"
+          loading="lazy" />
           }
-          @for (badge of area.badges; track badge) {
-          <span class="tag-badge bg-p-500 text-white capitalize ml-3">
+          
+          <div class="w-full pt-8 pb-2">
+          @for (badge of area.badges; track badge; let first = $first) {
+          <span 
+          class="tag-badge bg-[#2A7EBF] text-white capitalize text-white text-[14px] font-semibold leading-normal"
+           [class.ml-3]="!first">
             {{ badge }}
           </span>
           }
+          </div>
         </div>
-        <h3 class="text-lg sm:text-xl font-bold text-gray-900 leading-tight">
+        <h3 
+        class="text-[var(--Secondary-950,#242424)] text-[32px] font-semibold leading-[130%]">
           {{ area.title }}
         </h3>
-        <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+        <p 
+        class="text-[#242424] text-[20px] font-normal leading-[24px]"
+       >
           {{ area.subtitle }}
         </p>
         @if (area.features?.length) {
-        <ul class="list-disc list-inside text-sm sm:text-base text-gray-600 space-y-1.5 mt-1">
+        <ul 
+        
+        class="list-disc list-outside pl-5  text-[#3D3D3D] text-base font-normal leading-[26px] space-y-1.5 mt-1">
           @for (feature of area.features; track feature) {
           <li>{{ feature }}</li>
           }
@@ -148,7 +161,7 @@
     <div class="absolute inset-0 z-0">
       @if (content()?.solutionAccelerators?.videoUrls && (content()?.solutionAccelerators?.videoUrls?.length ?? 0) > 0)
       {
-      <video class="absolute inset-0 w-full h-full object-cover" autoplay muted playsinline loop
+      <video class="absolute inset-0 w-full h-full object-cover" width="1920" height="850" autoplay muted playsinline loop
         aria-label="Solution accelerators background video">
         <source [src]="content()?.solutionAccelerators?.videoUrls?.[0] || ''" type="video/mp4">
         Your browser does not support the video tag.
@@ -163,13 +176,16 @@
 
     <!-- Content -->
     <div
-      class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 h-full flex items-end pb-12 sm:pb-16 md:pb-20">
+      class="absolute inset-0 z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 flex flex-col justify-end pb-12 sm:pb-16 md:pb-20">
       <div class="w-full max-w-3xl md:max-w-4xl">
         <h2 id="solution-accelerators-title"
-          class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4 sm:mb-6   ">
+        class="text-[#FFF] text-[50px] font-normal leading-[120%] tracking-[-0.5px] mb-4 sm:mb-6 "
+          >
           {{ content()?.solutionAccelerators?.title }}
         </h2>
-        <p class="text-base sm:text-lg md:text-xl text-white leading-relaxed    max-w-2xl md:max-w-3xl">
+        <p 
+        class="text-white text-[18px] font-medium leading-[150%]"
+        >
           {{ content()?.solutionAccelerators?.description }}
         </p>
       </div>
@@ -179,24 +195,31 @@
   <!-- Cards Grid -->
   <div class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24">
     <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
         @for (card of content()?.solutionAccelerators?.cards; track card.title) {
-        <div class="flex flex-col">
+        <div 
+        class="border-r border-[#D1D1D1] bg-[#F2F8FD] flex flex-col p-8 m-0">
           <!-- Icon -->
           <div class="mb-4 sm:mb-6">
             <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center">
               <img [src]="card.icon" [alt]="card.title + ' solution accelerator icon'"
-                class="w-full h-auto object-contain" loading="lazy" />
+                
+                class="w-full h-auto object-contain text-[var(--Primary-500,#2A7EBF)] text-center text-[38px] font-light leading-normal"
+               loading="lazy" />
             </div>
           </div>
 
           <!-- Title -->
-          <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-3 sm:mb-4   ">
+          <h3 
+          class="text-[#242424] text-[28px] font-semibold leading-[140%] mb-3 sm:mb-4"
+>
             {{ card.title }}
           </h3>
 
           <!-- Description -->
-          <p class="text-sm sm:text-base text-gray-600 leading-relaxed   ">
+          <p 
+          class="text-[#3D3D3D] text-[18px] font-normal leading-[150%]"
+          >
             {{ card.description }}
           </p>
         </div>
@@ -220,30 +243,37 @@
       </div>
 
       <!-- Right Column: Content -->
-      <div class="relative flex flex-col justify-center">
+      <div class="relative flex flex-col pl-12">
         <!-- Vertical Blue Line -->
         <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 to-blue-600 -ml-4 sm:-ml-6"></div>
 
         <!-- Featured Label -->
-        <p class="text-xs sm:text-sm       uppercase tracking-wider text-blue-500 mb-4 sm:mb-6   ">
+        <p 
+        class="text-[#0D53A2] text-[18px] font-semibold leading-[150%] uppercase mb-20 sm:mb-22 pt-8"
+        >
           {{ content()?.featuredCaseStudy?.featuredLabel }}
         </p>
 
         <!-- Category Tag -->
         <div class="mb-4 sm:mb-6">
-          <span class="inline-block px-4 py-2 bg-blue-600 text-white text-sm sm:text-base               ">
+          <span 
+          class="bg-[#E4EEFA] text-[#1D69AC] text-sm font-semibold leading-[150%] inline-block px-4 py-2"
+          >
             {{ content()?.featuredCaseStudy?.categoryTag }}
           </span>
         </div>
 
         <!-- Title -->
         <h2 id="case-study-title"
-          class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight   ">
+        class="text-black text-[50px] font-normal leading-[120%] tracking-[-0.5px] mb-4 sm:mb-6"
+       >
           {{ content()?.featuredCaseStudy?.title }}
         </h2>
 
         <!-- Description -->
-        <p class="text-base sm:text-lg text-gray-700 mb-8 sm:mb-10 leading-relaxed   ">
+        <p 
+        class="text-[#454545] text-[18px] font-normal leading-[150%] mb-8"
+        >
           {{ content()?.featuredCaseStudy?.description }}
         </p>
 
@@ -251,7 +281,7 @@
         <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
           <!-- Primary CTA Button -->
           <a [routerLink]="content()?.featuredCaseStudy?.primaryCta?.link"
-            class="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 hover:bg-blue-700 text-white           transition-colors duration-200   ">
+            class="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-[#0D53A2] hover:bg-blue-700 text-white           transition-colors duration-200   ">
             {{ content()?.featuredCaseStudy?.primaryCta?.text }}
           </a>
 
@@ -321,14 +351,19 @@
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     <!-- Top Introductory Section -->
     <div class="text-center mb-12 sm:mb-16 md:mb-20">
-      <p class="text-sm sm:text-base       uppercase tracking-wider text-blue-600 mb-3 sm:mb-4   ">
+      <p 
+      class="text-[#2A7EBF] text-[18px] font-semibold leading-[150%] uppercase mb-3 sm:mb-4"
+      >
         {{ content()?.whyOakwood?.tagline }}
       </p>
-      <h2 id="why-oakwood-title"
-        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight   ">
+      <h1 id="why-oakwood-title"
+      class="text-black text-[50px] font-bold leading-[110%] mb-4 sm:mb-6"
+>
         {{ content()?.whyOakwood?.title }}
-      </h2>
-      <p class="text-base sm:text-lg md:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed   ">
+      </h1>
+      <p 
+      class="text-[#3D3D3D] text-base font-normal leading-[150%]"
+      >
         {{ content()?.whyOakwood?.description }}
       </p>
     </div>
@@ -346,7 +381,7 @@
       <div class="flex flex-col">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           @for (feature of content()?.whyOakwood?.features; track feature.title) {
-          <div class="bg-white border border-[#D1D1D1]   p-6 sm:p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
+          <div class="rounded-lg bg-white   p-6 sm:p-8  hover:shadow-lg transition-shadow duration-300">
             <!-- Icon -->       
             <div class="mb-4 sm:mb-6">
               <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center">
