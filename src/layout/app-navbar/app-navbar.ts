@@ -1,13 +1,13 @@
-import { Component, OnInit, OnDestroy, HostListener, inject, PLATFORM_ID, signal } from '@angular/core';
 import { RouterLink, Router, NavigationEnd } from '@angular/router';
+import { Component, OnInit, OnDestroy, HostListener, inject, PLATFORM_ID, signal, computed, viewChild, ElementRef } from '@angular/core';
 import { CommonModule, NgClass, NgIf, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MicrosoftServices } from "./microsoft-services/microsoft-services";
 import { Industries } from "./industries/industries";
 import { Resources } from "./resources/resources";
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
-import type { CaseStudy } from '../../app/api/graphql';
 import { filter } from 'rxjs';
+import type { CaseStudy, SearchResultItem } from '../../app/api/graphql';
 
 interface MenuItem {
   label: string;
@@ -63,6 +63,40 @@ export class AppNavbar implements OnInit, OnDestroy {
   readonly featuredCaseStudies = signal<CaseStudy[]>([]);
   /** Dos blogs más recientes para el dropdown Resources (genContent categoría bloq). */
   readonly featuredBlogs = signal<FeaturedBlogItem[]>([]);
+
+  /** Panel de búsqueda (click en ícono): abierto/cerrado. */
+  readonly searchPanelOpen = signal(false);
+  /** Texto del input de búsqueda (máx 100 caracteres). */
+  readonly searchQuery = signal('');
+  /** Lista completa de items buscables (blogs + case studies), cargada al abrir el panel. */
+  readonly allSearchable = signal<SearchResultItem[]>([]);
+  /** Cantidad de resultados visibles para lazy load (incrementa al hacer scroll). */
+  readonly searchVisibleCount = signal(15);
+  readonly searchLoading = signal(false);
+  readonly SEARCH_PAGE_SIZE = 15;
+  readonly SEARCH_MAX_LENGTH = 100;
+  searchInputRef = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+
+  /** Resultados filtrados por searchQuery (título o snippet). */
+  readonly searchFilteredResults = computed(() => {
+    const q = this.searchQuery().toLowerCase().trim();
+    const all = this.allSearchable();
+    if (!q) return all;
+    return all.filter(
+      (item) =>
+        item.title.toLowerCase().includes(q) ||
+        item.snippet.toLowerCase().includes(q)
+    );
+  });
+
+  /** Resultados que se muestran en la lista (lazy: solo los primeros searchVisibleCount). */
+  readonly searchResultsToShow = computed(() =>
+    this.searchFilteredResults().slice(0, this.searchVisibleCount())
+  );
+
+  readonly searchHasMore = computed(
+    () => this.searchFilteredResults().length > this.searchVisibleCount()
+  );
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -139,6 +173,10 @@ export class AppNavbar implements OnInit, OnDestroy {
     }
   }
 
+  sleepMoveout() {
+    this.searchPanelOpen.set(false);
+  }
+
   private checkScrollPosition() {
     if (!isPlatformBrowser(this.platformId)) {
       return;
@@ -153,12 +191,12 @@ export class AppNavbar implements OnInit, OnDestroy {
   /** true cuando la barra debe usar estilo "oscuro" (logo oscuro, texto oscuro): scroll o hover en un dropdown (índice !== 0) o en contact-success. */
   get isNavbarDark(): boolean {
     const hover = this.hoveredIndex();
-    return this.isScrolled || (hover !== null && hover !== 0) || this.isOnContactSuccess();
+    return this.isScrolled || (hover !== null) || this.searchPanelOpen() || this.isOnContactSuccess();
   }
 
   /** true cuando la barra debe mostrar fondo (blanco) o texto de enlaces oscuro: scroll o cualquier hover en menú o en contact-success. */
   get hasNavbarBackground(): boolean {
-    return this.isScrolled || this.hoveredIndex() !== null || this.isOnContactSuccess();
+    return this.isScrolled || this.hoveredIndex() !== null || this.searchPanelOpen() ||this.isOnContactSuccess();
   }
 
   
@@ -207,15 +245,66 @@ export class AppNavbar implements OnInit, OnDestroy {
   }
 
   public onNavMouseLeave(): void {
-    // Only hide the menu when leaving the entire nav area
     this.hoveredIndex.set(null);
-    console.log('onNavMouseLeave', this.hoveredIndex());
+    // if (this.searchPanelOpen) {
+    //   this.searchPanelOpen.set(false);
+    // }
+    // console.log('onNavMouseLeave', this.hoveredIndex());
   }
 
   public handleMouseEnter(item: { index: number | null; hasDropdown: boolean }): void {
     if (item.hasDropdown && item.index !== null) {
-      this.onMouseEnter(item.index + 1);
+      this.hoveredIndex.set(item.index);
     }
+  }
+
+  toggleSearchPanel(): void {
+    const next = !this.searchPanelOpen();
+    this.searchPanelOpen.set(next);
+    if (next) {
+      this.hoveredIndex.set(null);
+      this.loadSearchableContent();
+      setTimeout(() => this.searchInputRef()?.nativeElement?.focus(), 120);
+    } else {
+      this.searchQuery.set('');
+      this.searchVisibleCount.set(this.SEARCH_PAGE_SIZE);
+    }
+  }
+
+  private loadSearchableContent(): void {
+    if (this.allSearchable().length > 0) return;
+    this.searchLoading.set(true);
+    this.graphql.getSearchableContent().subscribe({
+      next: (list) => {
+        this.allSearchable.set(list);
+        this.searchLoading.set(false);
+      },
+      error: () => this.searchLoading.set(false),
+    });
+  }
+
+  closeSearchPanel(): void {
+    this.searchPanelOpen.set(false);
+    this.searchQuery.set('');
+    this.searchVisibleCount.set(this.SEARCH_PAGE_SIZE);
+  }
+
+  onSearchInput(value: string): void {
+    this.searchQuery.set(value.slice(0, this.SEARCH_MAX_LENGTH));
+    this.searchVisibleCount.set(this.SEARCH_PAGE_SIZE);
+  }
+
+  onSearchScroll(event: Event): void {
+    const el = event.target as HTMLElement;
+    if (el.scrollHeight - el.scrollTop <= el.clientHeight + 80 && this.searchHasMore()) {
+      this.searchVisibleCount.update((n) => n + this.SEARCH_PAGE_SIZE);
+    }
+  }
+
+  /** Fragment (hash) con el texto buscado para que la página destino pueda hacer scroll a la posición. */
+  getSearchFragment(): string | undefined {
+    const q = this.searchQuery().trim();
+    return q ? encodeURIComponent(q) : undefined;
   }
 
   ngOnDestroy() {

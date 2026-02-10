@@ -132,37 +132,11 @@
 
 <!-- CTA section -->
 @if (c.ctaSection) {
-<section class="py-16 md:py-24 bg-gradient-to-b from-blue-50 to-white" aria-labelledby="cta-title">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center">
-    <h2 id="cta-title" class="text-3xl sm:text-4xl   text-gray-900 mb-4 max-w-2xl mx-auto">
-      {{ c.ctaSection.heading }}
-    </h2>
-    <p class="text-lg text-gray-600 mb-8 max-w-xl mx-auto">{{ c.ctaSection.description }}</p>
-    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      @if (c.ctaSection.primaryCta) {
-      <a [routerLink]="c.ctaSection.primaryCta.link"
-        class="inline-block text-center px-6 py-3  bg-p-500 text-white  hover:bg-blue-700 transition">
-        {{ c.ctaSection.primaryCta.text }}
-      </a>
-      }
-      @if (c.ctaSection.secondaryCta) {
-      <a [routerLink]="c.ctaSection.secondaryCta.link"
-        class="inline-block text-center px-6 py-3   border-2 border-blue-600  text-p-500 hover:bg-p-500 hover:text-white transition">
-        {{ c.ctaSection.secondaryCta.text }}
-      </a>
-      }
-    </div>
-  </div>
-</section>
-}
-
-<!-- Fallback cuando no hay hero/cta (ej. manufacturing) -->
-@if (!c.backgroundImage && !c.industryChallenges && !c.howWeImprove && !c.featuredCaseStudy && !c.ctaSection) {
-<div class="min-h-screen py-12 sm:py-16 md:py-20">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <h1 class="text-3xl sm:text-4xl md:text-5xl   text-gray-900 mb-6">{{ c.title }}</h1>
-    <p class="text-lg text-gray-600">{{ c.description }}</p>
-  </div>
-</div>
+<app-cta-section [title]="c.ctaSection.heading  ?? 'Let\'s move your vision forward'"
+  [description]="  c.ctaSection.description  ?? 'Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.'"
+  [primaryText]="c.ctaSection.primaryCta?.text ?? 'Talk to an expert'"
+  [primaryLink]="c.ctaSection.primaryCta!.link ?? '/contact-us'"
+  [secondaryText]="c.ctaSection.secondaryCta!.text ?? 'Subscribe to our newsletter'"
+  [secondaryLink]="c.ctaSection.secondaryCta!.link ?? '/contact-us'" />
 }
 }

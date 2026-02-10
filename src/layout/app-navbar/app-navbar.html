@@ -1,6 +1,6 @@
-<nav class="w-full px-4 sm:px-6 md:px-8 lg:px-1 py-4 md:py-5 fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-    [class.navbar--gradient]="!hasNavbarBackground" [class.bg-white]="hasNavbarBackground"
-    [class.shadow-md]="isScrolled" [class.text-reds]="isNavbarDark">
+<nav class="w-full px-4 sm:px-6 md:px-8 lg:px-1 py-4 md:py-5 fixed top-0 left-0 right-0 z-50 transition-all duration-300 "
+    [class.navbar--gradient]="!hasNavbarBackground " [class.bg-white]="hasNavbarBackground "
+    [class.shadow-md]="isScrolled  " [class.text-reds]="isNavbarDark  ">
     <div class="px-4 sm:px-6 md:px-8 lg:px-20 mx-auto flex items-center justify-between">
         <!-- Left Section: Logo -->
         <a [routerLink]="'/home'" class="flex items-center gap-2 sm:gap-3">
@@ -13,22 +13,23 @@
 
         <!-- Center Section: Navigation Links (Desktop/Tablet) -->
         <div class=" md:flex items-center gap-6 lg:gap-8">
-            @for (item of menuItems(); track item.label) {
+            @for (item of menuItems(); track item.label;let i = $index) {
             <!-- (mouseleave)="item.hasDropdown ? onNavMouseLeave() : null" -->
             <a [routerLink]="item.routerLink" (mouseenter)="handleMouseEnter(item)" [ngClass]="{
                     ' hover:text-primary-blue': !isScrolled,
                     ' hover:text-blue-600': isScrolled,
-                    'activeLink': item.hasDropdown && item.index !== null && hoveredIndex() === item.index
+                    'activeLink': item.hasDropdown &&  hoveredIndex() === item.index
                 }" class="transition-colors duration-200 flex items-center gap-1 group p-4"
                 [class.text-gray-900]="hasNavbarBackground" [class.text-white]="!hasNavbarBackground">
                 {{item.label}}
-                @if(item.hasDropdown && item.index !== null) {
-                <svg class="w-3 h-3 transition-transform duration-200"
-                    [class.rotate-180]="hoveredIndex() === item.index" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        clip-rule="evenodd" />
-                </svg>
+                @if(item.hasDropdown === true){
+                <div>
+                    @if(item.hasDropdown && hoveredIndex() === i) {
+                    <i class="fa-solid fa-chevron-up text-sm"></i>
+                    }@else {
+                    <i class=" fa-solid fa-chevron-down text-sm"></i>
+                    }
+                </div>
                 }
             </a>
             }
@@ -36,18 +37,16 @@
 
         <!-- Right Section: Search & Contact (Desktop/Tablet) -->
         <div class="hidden md:flex items-center gap-4 lg:gap-6">
-            <!-- Search Icon -->
-            <button [ngClass]="{
-                    'text-white hover:text-blue-200': !isScrolled,
-                    'text-gray-900 hover:text-primary-blue': isScrolled
-                }" [class.text-gray-900]="hasNavbarBackground" class="transition-colors duration-200"
-                aria-label="Search">
+            <!-- Search Icon: blanco + hover rojo; dark = negro + hover azul -->
+            <button type="button" class="search-panel-trigger" (click)="toggleSearchPanel()" [ngClass]="{
+                    'text-white hover:text-primary-blue': !isNavbarDark,
+                    'text-gray-900 hover:text-p-600': isNavbarDark
+                }" class="transition-colors duration-200" aria-label="Search" [attr.aria-expanded]="searchPanelOpen()">
                 <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </button>
-
             <!-- Contact Button -->
             <a routerLink="/contact-us"
                 class="bg-p-700 text-white  px-4 sm:px-6 py-2 sm:py-2.5  transition-colors duration-200 inline-block">
@@ -108,21 +107,80 @@
         </div>
     </div> -->
 </nav>
+@if(hoveredIndex() === 0){
+<div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(0)" (mouseleave)="onNavMouseLeave()" tabindex="0"
+    (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
+    <app-microsoft-services></app-microsoft-services>
+</div>
+}
 @if(hoveredIndex() === 1){
 <div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(1)" (mouseleave)="onNavMouseLeave()" tabindex="0"
     (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
-    <app-microsoft-services></app-microsoft-services>
+    <app-industries [caseStudies]="featuredCaseStudies()" />
 </div>
 }
 @if(hoveredIndex() === 2){
 <div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(2)" (mouseleave)="onNavMouseLeave()" tabindex="0"
     (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
-    <app-industries [caseStudies]="featuredCaseStudies()" />
+    <app-resources [featuredBlogs]="featuredBlogs()" />
 </div>
 }
-@if(hoveredIndex() === 3){
-<div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(3)" (mouseleave)="onNavMouseLeave()" tabindex="0"
-    (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
-    <app-resources [featuredBlogs]="featuredBlogs()" />
+
+<!-- Panel de búsqueda (click en ícono): input 100 chars, lista con link/snippet/imagen, lazy load al hacer scroll -->
+@if (searchPanelOpen()) {
+<div class="flex flex-col nav--body search-panel-container" (mouseleave)="sleepMoveout()">
+    <div class="px-4 sm:px-6 md:px-8 lg:px-20 py-6">
+        <div class="flex items-center gap-3 border-b border-gray-200 pb-4 mb-4">
+            <svg class="w-5 h-5 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input #searchInput type="text" [value]="searchQuery()" (input)="onSearchInput($any($event.target).value)"
+                [maxLength]="SEARCH_MAX_LENGTH" placeholder="Search"
+                class="flex-1 min-w-0 text-gray-900 placeholder-gray-400 bg-transparent border-0 focus:ring-0 focus:outline-none text-base" />
+            <span class="text-xs text-gray-400 shrink-0">{{ searchQuery().length }}/{{ SEARCH_MAX_LENGTH }}</span>
+        </div>
+        @if (searchLoading()) {
+        <p class="text-gray-500 py-4">…</p>
+        } @else {
+        <div class="max-h-[60vh] overflow-y-auto overflow-x-hidden pr-2" (scroll)="onSearchScroll($event)">
+            @if (searchFilteredResults().length === 0) {
+            <p class="text-gray-500 py-4">{{ searchQuery() ? 'No hay resultados.' : 'Escribe para buscar.' }}</p>
+            } @else {
+            <ul class="space-y-3 pb-4">
+                @for (item of searchResultsToShow(); track item.id) {
+                <li>
+                    <a [routerLink]="item.link" [fragment]="getSearchFragment()" (click)="closeSearchPanel()"
+                        class="flex gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                        @if (item.image) {
+                        <div class="w-16 h-16 shrink-0 rounded-md overflow-hidden bg-gray-100">
+                            <img [src]="item.image" [alt]="item.title"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                        </div>
+                        }
+                        <div class="min-w-0 flex-1">
+                            <span class="text-xs uppercase tracking-wider text-gray-400">{{ item.type === 'blog' ?
+                                'Blog' : 'Case Study' }}</span>
+                            <h4 class="font-medium text-gray-900 group-hover:text-primary-blue truncate">{{ item.title
+                                }}</h4>
+                            @if (item.snippet) {
+                            <p class="text-sm text-gray-600 line-clamp-2 mt-0.5">{{ item.snippet }}</p>
+                            }
+                        </div>
+                        <svg class="w-4 h-4 text-gray-400 shrink-0 self-center group-hover:text-primary-blue"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </li>
+                }
+            </ul>
+            @if (searchHasMore()) {
+            <p class="text-center text-sm text-gray-400 py-2">Desplázate para ver más</p>
+            }
+            }
+        </div>
+        }
+    </div>
 </div>
 }

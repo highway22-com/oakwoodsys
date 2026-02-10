@@ -3,7 +3,7 @@
  * Plugin Name: Oakwood CMS
  * Plugin URI: https://oakwoodsys.com
  * Description: Sirve JSON de páginas desde archivos. Sin base de datos: pones home.json, services.json, etc. en wp-content/uploads/oakwood-cms/ y este plugin los expone por GraphQL (WPGraphQL).
- * Version: 1.0.1
+ * Version: 1.0.3
  * Author: Aetro
  * Author URI: https://torre.ai/luisnoejasso?r=7zLtySsb
  * License: GPL v2 or later
@@ -133,8 +133,8 @@ function oakwood_cms_register_graphql() {
 	if ( ! function_exists( 'register_graphql_object_type' ) || ! function_exists( 'register_graphql_field' ) ) {
 		return;
 	}
-	// Tipo: contenido de una página CMS (JSON como string para máxima flexibilidad).
-	register_graphql_object_type( 'CmsPageContent', array(
+	// Tipo: contenido de una página CMS (nombre único para evitar DUPLICATE_TYPE con otros plugins).
+	register_graphql_object_type( 'OakwoodCmsPageContent', array(
 		'description' => __( 'Contenido de una página CMS (home, services, about-us, bloq, industries). El campo content es el JSON completo.', 'oakwood-cms' ),
 		'fields'      => array(
 			'content' => array(
@@ -144,10 +144,10 @@ function oakwood_cms_register_graphql() {
 		),
 	) );
 
-	// RootQuery: cmsPage(slug: String): CmsPageContent
+	// RootQuery: cmsPage(slug: String): OakwoodCmsPageContent
 	register_graphql_field( 'RootQuery', 'cmsPage', array(
 		'description' => __( 'Contenido de una página CMS por slug (home, services, about-us, bloq, industries).', 'oakwood-cms' ),
-		'type'        => 'CmsPageContent',
+		'type'        => 'OakwoodCmsPageContent',
 		'args'        => array(
 			'slug' => array(
 				'type'        => array( 'non_null' => 'String' ),

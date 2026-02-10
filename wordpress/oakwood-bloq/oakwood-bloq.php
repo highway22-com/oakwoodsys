@@ -3,7 +3,7 @@
  * Plugin Name: Oakwood Bloq
  * Plugin URI: https://oakwoodsys.com
  * Description: Registra el CPT "Gen Content" (gen_content) + taxonomía, agrega campos ACF (show_contact_section, related_bloqs) y los expone en WPGraphQL.
- * Version: 4.0.0
+ * Version: 4.0.1
  * Author: Aetro
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -337,18 +337,68 @@ function oakwood_bloq_register_graphql_fields() {
 					return array();
 				}
 
-				// Devolver posts (preservar orden del ACF).
-				$posts = get_posts(
-					array(
-						'post_type'      => 'gen_content',
-						'post__in'       => $ids,
-						'orderby'        => 'post__in',
-						'posts_per_page' => count( $ids ),
-						'post_status'    => 'publish',
-					)
-				);
+				// Construir lista solo con posts que existen, son gen_content y publicados (evita null en GraphQL).
+				$result = array();
+				foreach ( $ids as $id ) {
+					$id = (int) $id;
+					if ( $id <= 0 ) {
+						continue;
+					}
+					$p = get_post( $id );
+					if ( ! $p || ! isset( $p->post_type ) || $p->post_type !== 'gen_content' || $p->post_status !== 'publish' ) {
+						continue;
+					}
+					$result[] = $p;
+				}
+				return $result;
+			},
+		)
+	);
 
-				return is_array( $posts ) ? $posts : array();
+	register_graphql_field(
+		'GenContent',
+		'relatedBloqSlugs',
+		array(
+			'type'        => array( 'list_of' => 'String' ),
+			'description' => __( 'Slugs de Gen Content relacionados (ACF: related_bloqs). Para pedir datos completos por slug sin resolver list_of GenContent.', 'oakwood-bloq' ),
+			'resolve'     => function ( $post ) {
+				$post_id = null;
+				if ( is_object( $post ) && isset( $post->ID ) ) {
+					$post_id = (int) $post->ID;
+				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
+					$post_id = (int) $post['databaseId'];
+				}
+				if ( ! $post_id ) {
+					return array();
+				}
+
+				$value = null;
+				if ( function_exists( 'get_field' ) ) {
+					$value = get_field( 'related_bloqs', $post_id );
+				} else {
+					$value = get_post_meta( $post_id, 'related_bloqs', true );
+				}
+
+				$ids = oakwood_bloq_normalize_related_ids( $value );
+				if ( empty( $ids ) ) {
+					return array();
+				}
+
+				$slugs = array();
+				foreach ( $ids as $id ) {
+					$id = (int) $id;
+					if ( $id <= 0 ) {
+						continue;
+					}
+					$p = get_post( $id );
+					if ( ! $p || ! isset( $p->post_type ) || $p->post_type !== 'gen_content' || $p->post_status !== 'publish' ) {
+						continue;
+					}
+					if ( ! empty( $p->post_name ) ) {
+						$slugs[] = $p->post_name;
+					}
+				}
+				return $slugs;
 			},
 		)
 	);
@@ -411,17 +461,20 @@ function oakwood_bloq_register_graphql_fields() {
 					return array();
 				}
 
-				$posts = get_posts(
-					array(
-						'post_type'      => 'gen_content',
-						'post__in'       => $ids,
-						'orderby'        => 'post__in',
-						'posts_per_page' => count( $ids ),
-						'post_status'    => 'publish',
-					)
-				);
-
-				return is_array( $posts ) ? $posts : array();
+				// Construir lista solo con posts que existen, son gen_content y publicados (evita null en GraphQL).
+				$result = array();
+				foreach ( $ids as $id ) {
+					$id = (int) $id;
+					if ( $id <= 0 ) {
+						continue;
+					}
+					$p = get_post( $id );
+					if ( ! $p || ! isset( $p->post_type ) || $p->post_type !== 'gen_content' || $p->post_status !== 'publish' ) {
+						continue;
+					}
+					$result[] = $p;
+				}
+				return $result;
 			},
 		)
 	);

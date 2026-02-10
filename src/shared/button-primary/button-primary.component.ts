@@ -14,12 +14,21 @@ export class ButtonPrimaryComponent {
   readonly text = input<string>('');
   /** Si se define, se renderiza como enlace con routerLink en lugar de botón. */
   readonly link = input<string | undefined>(undefined);
-  /** Color de fondo (ej. hex). Si no se define, se usa la clase por defecto bg-p-700. */
+  /** Color de fondo (ej. hex o var(--color-p-700)). Si no se define, se usa var(--color-p-700). */
   readonly backgroundColor = input<string | undefined>(undefined);
+  /** Si es true, se usa el color por defecto del tema (var(--color-p-700)); si es false, se usa backgroundColor si se pasó. */
+  readonly isBgDefault = input<boolean>(true);
   /** Si es true, el fondo es transparente (útil con borde). */
   readonly isTransparent = input<boolean>(false);
   /** Color del borde: 'white' o 'black'. Si no se define, no se muestra borde. */
   readonly borderColor = input<'white' | 'black' | undefined>(undefined);
+
+  /** Color de fondo efectivo. */
+  readonly effectiveBackgroundColor = computed(() => {
+    if (this.isTransparent()) return 'transparent';
+    if (this.isBgDefault()) return 'var(--color-p-700)';
+    return this.backgroundColor() ?? 'var(--color-p-700)';
+  });
 
   /** Clases del trigger (un solo binding en el template). */
   readonly triggerClasses = computed(() => {
