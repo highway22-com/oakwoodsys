@@ -5,6 +5,11 @@
       transparent 100%) !important;
 }
 
+.activeLink {
+  color: #2A7EBF;
+  border-bottom: 2px solid #2A7EBF;
+}
+
 .text-reds {
   color: #242424 !important;
   background-color: white !important;

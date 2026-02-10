@@ -1,5 +1,5 @@
 <!-- Hero Section (contenido desde resources-content.json) -->
-<app-video-hero [hvh70]="true" [videoUrls]="videoHeroContent().videoUrls" [title]=" heroContent().title"
+<app-video-hero [loading]="false" [hvh70]="true" [videoUrls]="videoHeroContent().videoUrls" [title]="videoHeroContent().title"
   [description]="videoHeroContent().description" [ctaPrimary]="videoHeroContent().ctaPrimary"
   [ctaSecondary]="videoHeroContent().ctaSecondary" [showIndicators]="false" />
 
@@ -14,17 +14,17 @@
 </div>
 
 <!-- Filter Tabs and Search Section -->
-<section class="w-full bg-white border-t border-gray-200 py-6 sm:py-8" aria-label="Filter and Search">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+<section class="w-full bg-white  py-6 sm:py-8" aria-label="Filter and Search">
+  <div class=" px-4 sm:px-6 md:px-8 lg:px-24">
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
       <!-- Filter Tabs -->
       <div class="flex flex-wrap items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-2">
-        @for (filter of filters; track filter) {
-        <button (click)="selectFilter(filter)" [class.bg-blue-600]="selectedFilter() === filter"
-          [class.text-white]="selectedFilter() === filter" [class.bg-gray-100]="selectedFilter() !== filter"
-          [class.text-gray-700]="selectedFilter() !== filter"
-          class="px-4 sm:px-6 py-2 sm:py-3           text-sm sm:text-base transition-all duration-200 hover:opacity-90 whitespace-nowrap">
-          {{ filter }}
+        @for (filter of filters; track filter.value) {
+        @let isSelected = selectedFilter() === filter.value;
+        <button (click)="selectFilter(filter.value)" [class.bg-p-700]="isSelected" [class.text-white]="isSelected"
+          [ngClass]="{'button-filter': !isSelected}"
+          class="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base transition-all duration-200 hover:opacity-90 whitespace-nowrap">
+          {{ filter.displayCategory }}
         </button>
         }
       </div>
@@ -55,41 +55,18 @@
     } @else {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-12">
       @for (card of filteredResources(); track card.id) {
-      <app-article-card [article]="toArticleCard(card)" />
+      <app-blog-card [slug]="card.slug" [imageUrl]="card.image" [imageAlt]="card.title"
+        [tag]="card.primaryTag ?? card.category" [readingTimeMinutes]="3" [title]="card.title"
+        [excerptHtml]="getSanitizedExcerpt(card.description)" [authorDisplayName]="null" [date]="card.date"
+        linkBase="/resources/case-studies" />
       }
-    </div>
-
-    <!-- Load More Button -->
-    <div class="text-center mt-12 sm:mt-16">
-      <button
-        class="px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300           text-gray-700 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200">
-        {{ loadMoreText() }}
-      </button>
     </div>
     }
   </div>
 </section>
 
 <!-- CTA Section (contenido desde resources-content.json) -->
-<section class="w-full  from-blue-50 to-purple-50 py-16 sm:py-20 md:py-24" aria-label="Call to Action">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <div class="max-w-3xl mx-auto text-center">
-      <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight   ">
-        {{ ctaSectionContent().title }}
-      </h2>
-      <p class="text-base sm:text-lg md:text-xl text-gray-700 mb-8 sm:mb-10 md:mb-12 leading-relaxed   ">
-        {{ ctaSectionContent().description }}
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
-        <a [routerLink]="ctaSectionContent().ctaPrimary.link"
-          class="inline-block text-center        px-6 sm:px-8 py-3 sm:py-4    transition-all duration-200 hover:opacity-90 hover:scale-105    text-white bg-blue-600">
-          {{ ctaSectionContent().ctaPrimary.text }}
-        </a>
-        <a [routerLink]="ctaSectionContent().ctaSecondary.link"
-          class="inline-block text-center        px-6 sm:px-8 py-3 sm:py-4    transition-all duration-200 hover:bg-white/50 hover:scale-105    text-blue-600 border-2 border-blue-600">
-          {{ ctaSectionContent().ctaSecondary.text }}
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
+<app-cta-section [title]="ctaSectionContent().title" [description]="ctaSectionContent().description"
+  [primaryText]="ctaSectionContent().ctaPrimary.text ?? ''" [primaryLink]="ctaSectionContent().ctaPrimary.link ?? ''"
+  [secondaryText]="ctaSectionContent().ctaSecondary.text ?? ''"
+  [secondaryLink]="ctaSectionContent().ctaSecondary.link ?? ''" />

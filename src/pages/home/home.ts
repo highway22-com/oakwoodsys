@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, PLATFORM_ID, signal, DOCUMENT } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule, NgClass, isPlatformBrowser } from '@angular/common';
 import { Title, Meta, DomSanitizer } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -25,7 +24,6 @@ export class Home implements OnInit {
   readonly videoUrls = signal<string[]>([]);
 
   private readonly graphql = inject(GraphQLContentService);
-  private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly titleService = inject(Title);
   private readonly metaService = inject(Meta);
@@ -49,18 +47,17 @@ export class Home implements OnInit {
       this.isAdmin.set(!!token);
     }
 
-    // Cargar contenido desde GraphQL (Oakwood CMS: cmsPage(slug: "home"))
+    // Contenido solo desde GraphQL (cmsPage(slug: "home")) – sitio estático, sin /api/home-content
     this.graphql.getCmsPageBySlug('home').subscribe({
       next: (data) => {
-        console.log('Data from GraphQL:', data);
         if (data) {
-          console.log('[Home] Content loaded from GraphQL (cmsPage home)');
           this.applyContent(data);
+        } else {
+          this.loading.set(false);
         }
       },
       error: () => {
-        console.log('Error al cargar el contenido desde GraphQL');
-        this.fallbackToHomeContentApi();
+        this.loading.set(false);
       }
     });
   }
@@ -79,24 +76,6 @@ export class Home implements OnInit {
     this.updateMetadata(data);
     this.updateStructuredData(data);
     this.loading.set(false);
-  }
-
-  private fallbackToHomeContentApi() {
-    console.warn('[Home] GraphQL returned nothing, falling back to /api/home-content');
-    const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('admin_token') : null;
-    const headers: { [key: string]: string } = {};
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    this.http.get<CmsPageContent>('/api/home-content', { headers }).subscribe({
-      next: (data) => {
-        console.log('[Home] Content loaded from /api/home-content');
-        this.applyContent(data);
-      },
-      error: () => {
-        this.loading.set(false);
-      }
-    });
   }
 
   getSection(type: string) {
@@ -124,11 +103,14 @@ export class Home implements OnInit {
     return this.defaultFeaturedSlugs;
   }
 
-  /** Título del hero (desde sección hero o vacío). */
-  heroTitle(): string {
+  /** Título del hero: string, array (uno por video) o vacío (desde sección hero). */
+  heroTitle(): string | string[] {
     const section = this.getSection('hero');
     const t = section?.title;
-    return (typeof t === 'string' ? t : '') || '';
+    if (typeof t === 'string') return t || '';
+    if (Array.isArray(t)) return t.filter((s): s is string => typeof s === 'string');
+    if (t && typeof t === 'object' && !Array.isArray(t)) return [t.line1, t.line2].filter(Boolean).join(' ') || '';
+    return '';
   }
 
   /** Descripción del hero (desde sección hero o vacío). */
@@ -174,7 +156,11 @@ export class Home implements OnInit {
 
   private updateMetadata(content: CmsPageContent) {
     const heroSection = content.sections?.find(s => s.type === 'hero');
-    const heroTitle = (heroSection?.['title'] ?? '') as string;
+    const rawTitle = heroSection?.['title'];
+    const heroTitle = typeof rawTitle === 'string' ? rawTitle
+      : Array.isArray(rawTitle) ? (rawTitle[0] ?? '')
+      : rawTitle && typeof rawTitle === 'object' ? [rawTitle.line1, rawTitle.line2].filter(Boolean).join(' ') ?? ''
+      : '';
     const heroDesc = (heroSection?.['description'] ?? '') as string;
     const pageTitle = heroTitle ? `${heroTitle} | Oakwood Systems` : 'Oakwood Systems - Microsoft Solutions Partner';
 

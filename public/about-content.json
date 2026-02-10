@@ -1,0 +1,169 @@
+{
+  "heroTitle": "Trusted Technology Solutions for 40+ Years",
+  "heroDescription": "Oakwood brings deep expertise, a collaborative mindset and a relentless focus on delivering real business value.",
+  "videoUrls": [
+    "https://oakwoodsys.com/wp-content/uploads/2026/02/About-Us.mp4"
+  ],
+  "heroCtaPrimary": {
+    "text": "LET'S TALK",
+    "link": "/contact-us",
+    "backgroundColor": "#1D69AC"
+  },
+  "heroCtaSecondary": {
+    "text": "LEARN MORE",
+    "link": "/resources",
+    "borderColor": "#ffffff"
+  },
+  "aboutLabel": "ABOUT US",
+  "aboutTitle": "Oakwood bring deep expertise, a collaborative mindset",
+  "aboutDescription": "Founded in 1981, Oakwood provides expert counsel and comprehensive solutions in the areas of modern work, application innovation, data & AI, cloud, and managed services.",
+  "aboutFeatures": [
+    {
+      "icon": "people",
+      "title": "Our People",
+      "description": "Our team combines deep technical expertise with a collaborative culture focused on understanding your business and delivering outcomes that matter.",
+      "image": "/assets/a1.png",
+      "imageAlt": "Our people at Oakwood"
+    },
+    {
+      "icon": "process",
+      "title": "Our Process",
+      "description": "We follow a proven methodology that balances agility with discipline, ensuring transparency, accountability, and continuous alignment with your goals.",
+      "image": "/assets/a2.png",
+      "imageAlt": "Our process and methodology"
+    },
+    {
+      "icon": "technology",
+      "title": "Our Technology",
+      "description": "We leverage leading platforms and modern architectures to build solutions that scale, integrate, and evolve with your organization.",
+      "image": "/assets/a3.png",
+      "imageAlt": "Our technology stack"
+    }
+  ],
+  "partnerLogos": [
+    {
+      "src": "/assets/logos/microsoft.png",
+      "alt": "Microsoft"
+    },
+    {
+      "src": "/assets/logos/arco.png",
+      "alt": "ARCO"
+    },
+    {
+      "src": "/assets/logos/bjc-healthcare.png",
+      "alt": "BJC Healthcare"
+    },
+    {
+      "src": "/assets/logos/clarios.png",
+      "alt": "Clarios"
+    },
+    {
+      "src": "/assets/logos/onsemi.png",
+      "alt": "Onsemi"
+    },
+    {
+      "src": "/assets/logos/duke-university.png",
+      "alt": "Duke University"
+    },
+    {
+      "src": "/assets/logos/applied-materials.png",
+      "alt": "Applied Materials"
+    }
+  ],
+  "videoSectionTitle": "About Oakwood",
+  "videoSectionDescription": "Learn about Oakwood, who we are, where we came from, and what drives us.",
+  "videoSectionImage": "/assets/s-daa-h.jpg",
+  "teamLabel": "OUR TEAM",
+  "teamTitle": "Leadership that turns vision into action and strategy into results.",
+  "teamDescription": "Oakwood's leadership team brings decades of experience, expertise, and a passion for technology to help our clients achieve their goals.",
+  "teamMembers": [
+    {
+      "name": "Charles Ruecker",
+      "title": "CEO",
+      "image": "/assets/people/charles.png"
+    },
+    {
+      "name": "Jeff Rudden",
+      "title": "VP, Sales",
+      "image": "/assets/people/jeff.png"
+    },
+    {
+      "name": "Tonja Hilton",
+      "title": "VP Finance, Administration ",
+      "image": "/assets/people/tonja.png"
+    },
+    {
+      "name": "Michael Caylor",
+      "title": "Sr. Director, Cloud & Managed Services",
+      "image": "/assets/people/michael.png"
+    },
+    {
+      "name": "Steve Goodman",
+      "title": "Sr. Director, of Managed Services",
+      "image": "/assets/people/steve.png"
+    },
+    {
+      "name": "John Trease",
+      "title": "Director of App & AI",
+      "image": "/assets/people/john.png"
+    },
+    {
+      "name": "Tim Haaksma",
+      "title": "Director of Marketing",
+      "image": "/assets/people/tim.png"
+    }
+  ],
+  "deliverBannerTitle": "Deliver technology solutions with integrity, collaboration, and a relentless focus on real business outcomes.",
+  "deliverBannerDescription": "We partner with our clients to understand their challenges, design the right solutions, and execute with precision and care.",
+  "approachLabel": "OUR APPROACH",
+  "approachTitle": "How we work at Oakwood",
+  "approachDescription": "Our approach is built on transparency, collaboration, and a commitment to long-term partnerships. We align our processes with your goals and adapt as your needs evolve.",
+  "howWeWorkItems": [
+    {
+      "title": "Relationship and Accountability"
+    },
+    {
+      "title": "Continuous Innovation"
+    },
+    {
+      "title": "Learning Cycle at the core"
+    },
+    {
+      "title": "Proactive Leadership and Execution"
+    },
+    {
+      "title": "Building for long-term partnership"
+    }
+  ],
+  "insightsLabel": "FROM THE BLOG",
+  "insightsTitle": "Latest insights from Oakwood",
+  "insightsDescription": "Explore our blog for news, thought leadership, and expert advice.",
+  "insightCards": [
+    {
+      "image": "/assets/cloud.png",
+      "imageAlt": "Cloud solutions",
+      "category": "Cloud • Webinar",
+      "title": "Modernizing your infrastructure",
+      "description": "Best practices for migrating and optimizing your cloud environment.",
+      "link": "/blog"
+    },
+    {
+      "image": "/assets/s-daa-h.jpg",
+      "imageAlt": "Data and AI",
+      "category": "AI • Article",
+      "title": "Data and AI in the enterprise",
+      "description": "How leading organizations are leveraging data and AI for business impact.",
+      "link": "/blog"
+    },
+    {
+      "image": "/assets/app-innovation.png",
+      "imageAlt": "Application innovation",
+      "category": "Innovation • Case Study",
+      "title": "Building for the future",
+      "description": "Stories from the field on application innovation and digital transformation.",
+      "link": "/blog"
+    }
+  ],
+  "ctaBannerTitle": "Let's move your vision forward",
+  "ctaBannerDescription": "Contact us today to start a conversation with our team."
+}

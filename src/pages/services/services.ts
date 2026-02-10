@@ -6,6 +6,8 @@ import { Title, Meta, DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
+import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
+import { TrustedBySectionComponent } from "../../shared/sections/trusted-by/trusted-by";
 
 interface ServiceArea {
   icon: string;
@@ -130,7 +132,7 @@ interface ServicesContent {
 
 @Component({
   selector: 'app-services',
-  imports: [CommonModule, RouterLink, VideoHero, FeaturedCaseStudySectionComponent],
+  imports: [CommonModule, RouterLink, VideoHero, FeaturedCaseStudySectionComponent, CtaSectionComponent, TrustedBySectionComponent],
   templateUrl: './services.html',
   styleUrl: './services.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -261,7 +263,7 @@ export class Services implements OnInit, OnDestroy {
     if (Array.isArray(slugs) && slugs.length > 0) return slugs;
     return [
       'secure-azure-research-environment-architecture',
-      'enterprise-reporting-and-data-roadmap-development',
+      'secure-azure-research-environment-architecture',
     ];
   }
 

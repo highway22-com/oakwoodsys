@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { VideoHero } from '../../shared/video-hero/video-hero';
+import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 
 const PLACEHOLDER_VIDEO_URLS = [
   'https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4',
@@ -20,7 +21,7 @@ export interface OfficeLocation {
 
 @Component({
   selector: 'app-contact-us',
-  imports: [FormsModule, RouterLink, VideoHero],
+  imports: [FormsModule, RouterLink, VideoHero, CtaSectionComponent],
   templateUrl: './contact-us.html',
   styleUrl: './contact-us.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

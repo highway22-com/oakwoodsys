@@ -1,0 +1,10 @@
+{
+  "/api/graphql": {
+    "target": "https://oakwoodsys.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  }
+}

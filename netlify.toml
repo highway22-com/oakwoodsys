@@ -25,18 +25,15 @@
   status = 301
   force = true
 
-# Proxy GraphQL to WordPress backend (evita CORS y fallos de /api/graphql en Netlify)
+# Proxy GraphQL (CMS pages, case studies, etc.) – solo estático, sin servidor Node
 [[redirects]]
   from = "/api/graphql"
   to = "https://oakwoodsys.com/graphql"
   status = 200
   force = true
 
-# Angular SSR plugin configuration
-# This plugin automatically handles Angular SSR on Netlify
-[[plugins]]
-  package = "@netlify/angular-runtime"
-
-# Functions configuration
-[functions]
-  node_bundler = "esbuild"
+# SPA: rutas sin archivo estático sirven index.html (Angular Router)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

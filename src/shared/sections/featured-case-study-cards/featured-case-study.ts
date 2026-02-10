@@ -3,12 +3,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { forkJoin, of } from 'rxjs';
-import { take, catchError } from 'rxjs/operators';
 import { GraphQLContentService } from '../../../app/services/graphql-content.service';
-import { getAcfMediaUrl, type CaseStudyBy } from '../../../app/api/graphql';
+import type { CaseStudy } from '../../../app/api/graphql';
+import { take } from 'rxjs/operators';
 
-/** Vista de un case study para el template (mapeado desde CaseStudyBy). */
+/** Vista de un case study para el template (mapeado desde CaseStudy / Gen Content lista, misma estructura que post). */
 export interface FeaturedCaseStudyCardsView {
   label?: string;
   tag?: string;
@@ -102,6 +101,7 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
     }
   }
 
+  /** Carga case studies con la misma query que resources (GET_GEN_CONTENTS_BY_CATEGORY, case-study); estructura tipo post. */
   private loadCaseStudies(): void {
     const slugs = this.slugsFeaturedCaseStudies;
     if (!slugs?.length) {
@@ -116,45 +116,53 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
     this.loading.set(true);
     const [slug1, slug2] = slugs.slice(0, 2);
 
-    forkJoin({
-      a: this.graphql.getCaseStudyBySlug(slug1).pipe(take(1), catchError(() => of(null))),
-      b: this.graphql.getCaseStudyBySlug(slug2).pipe(take(1), catchError(() => of(null))),
-    })
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    this.graphql
+      .getCaseStudies()
+      .pipe(take(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ a, b }) => {
-          const list: FeaturedCaseStudyCardsView[] = [];
-          if (a) list.push(this.mapCaseStudyToView(a));
-          if (b) list.push(this.mapCaseStudyToView(b));
+        next: (caseStudies) => {
+          const bySlug = (s: string) => caseStudies.find((c) => c.slug === s);
+          const picked: CaseStudy[] = [];
+          const a = bySlug(slug1);
+          const b = bySlug(slug2);
+          if (a) picked.push(a);
+          if (b && b !== a) picked.push(b);
+          if (picked.length < 2) {
+            const rest = caseStudies.filter((c) => !picked.includes(c));
+            picked.push(...rest.slice(0, 2 - picked.length));
+          }
+          const list = picked.map((cs) => this.mapCaseStudyToListView(cs));
           this.caseStudiesData.set(list);
-          const current = this.selectedIndex();
-          if (current >= list.length) {
+          if (this.selectedIndex() >= list.length) {
             this.selectedIndex.set(0);
           }
           this.loading.set(false);
+          this.cdr.markForCheck();
         },
         error: () => {
           console.error('Error loading case studies');
           this.loading.set(false);
+          this.cdr.markForCheck();
         },
       });
   }
 
-  private mapCaseStudyToView(cs: CaseStudyBy): FeaturedCaseStudyCardsView {
-    const heroImage = cs.caseStudyDetails?.heroImage;
-    const imageUrl =
-      getAcfMediaUrl(heroImage) || cs.featuredImage?.node?.sourceUrl;
-    const imageAlt =
-      heroImage != null && typeof heroImage === 'object'
-        ? heroImage.node?.altText
-        : cs.featuredImage?.node?.altText;
-    const tag = cs.caseStudyDetails?.tags?.[0] ?? 'Case Study';
+  /** Mapea CaseStudy (lista Gen Content, misma estructura que post) a FeaturedCaseStudyCardsView. */
+  private mapCaseStudyToListView(cs: CaseStudy): FeaturedCaseStudyCardsView {
+    const imageUrl = cs.featuredImage?.node?.sourceUrl;
+    const imageAlt = cs.featuredImage?.node?.altText ?? undefined;
+    const tag =
+      cs.caseStudyDetails?.tags?.[0] ??
+      cs.caseStudyCategories?.nodes?.[0]?.name ??
+      'Case Study';
+    const description =
+      cs.caseStudyDetails?.cardDescription?.trim() || cs.excerpt || '';
 
     return {
       label: 'Featured Case Study',
       tag,
       title: cs.title ?? '',
-      description: (cs.caseStudyDetails?.cardDescription?.trim() || cs.excerpt) ?? '',
+      description,
       image: { url: imageUrl, alt: imageAlt },
       cta: {
         primary: {

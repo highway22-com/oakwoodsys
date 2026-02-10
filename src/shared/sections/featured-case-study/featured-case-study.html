@@ -1,4 +1,4 @@
-<section class="w-full bg-white px-30 py-40 overflow-visible min-h-[80vh] flex flex-col"
+<section class="w-full bg-white px-26 py-40 overflow-visible min-h-[80vh] flex flex-col"
   aria-labelledby="featured-case-study-title">
   <div class="overflow-visible flex-1 min-h-0">
     @if (currentSection(); as section) {
@@ -32,8 +32,7 @@
           <p class="text-lg       uppercase tracking-wide text-p-600 pb-24">
             {{ section[0].label ?? '' }}
           </p>
-          <span
-            class="inline-block text-xs sm:text-sm        text-p-600/85 bg-blue-50 px-3 py-1.5 sm:px-4 sm:py-2  mb-5 sm:mb-6">
+          <span class="inline-block tag-badge">
             {{ section[0].tag }}
           </span>
           <h2 id="featured-case-study-title"
@@ -98,8 +97,7 @@
           <p class="text-lg       uppercase tracking-wide text-p-600 pb-24">
             {{ section[1].label }}
           </p>
-          <span
-            class="inline-block text-xs sm:text-sm        text-p-600/85 bg-blue-50 px-3 py-1.5 sm:px-4 sm:py-2  mb-5 sm:mb-6">
+          <span class="inline-block tag-badge">
             {{ section[1].tag }}
           </span>
           <h2 id="featured-case-study-title"

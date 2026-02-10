@@ -4,6 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Apollo } from 'apollo-angular';
 import { DomSanitizer } from '@angular/platform-browser';
+import type { SafeHtml } from '@angular/platform-browser';
 import { getAcfMediaUrl, GET_GEN_CONTENTS_BY_CATEGORY, GET_CASE_STUDY_BY_SLUG } from '../../app/api/graphql';
 import type {
   CaseStudyBy,
@@ -13,7 +14,8 @@ import type {
 } from '../../app/api/graphql';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudyCardsSectionComponent } from '../../shared/sections/featured-case-study-cards/featured-case-study';
-import { ArticleCardComponent, type ArticleCardArticle } from '../../shared/article-card/article-card.component';
+import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
+import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 
 /** Contenido de la página Resources (resources-content.json). */
 export interface ResourcesPageContent {
@@ -33,6 +35,10 @@ export interface ResourcesPageContent {
     ctaSecondary?: { text?: string; link?: string };
   };
   featuredCaseStudy?: { label?: string; readMoreText?: string };
+  /** Slugs para app-featured-case-study-cards. */
+  featuredCaseStudySlugs?: string[];
+  /** Pestañas de filtro (displayCategory, value). */
+  filters?: { displayCategory: string; value: string }[];
   filterAndSearch?: { searchPlaceholder?: string; emptyStateMessage?: string };
   resourcesGrid?: { loadMoreText?: string; readMoreText?: string };
   ctaSection?: {
@@ -52,6 +58,10 @@ interface ResourceCard {
   description: string;
   link: string;
   slug: string;
+  /** Etiquetas (como en blog). */
+  tags?: string[];
+  /** Etiqueta principal para el badge (como en blog). */
+  primaryTag?: string | null;
 }
 
 interface FeaturedCaseStudy {
@@ -93,7 +103,7 @@ interface CaseStudyDetail {
 
 @Component({
   selector: 'app-resources-wordpress',
-  imports: [CommonModule, RouterLink, VideoHero, FeaturedCaseStudyCardsSectionComponent, ArticleCardComponent],
+  imports: [CommonModule, VideoHero, FeaturedCaseStudyCardsSectionComponent, BlogCardComponent, CtaSectionComponent],
   templateUrl: './resources.html',
   styleUrl: './resources.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -107,13 +117,22 @@ export class Resources implements OnInit {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly platformId = inject(PLATFORM_ID);
 
-  /** Contenido estático de la página (hero, CTAs, textos) desde resources-content.json. */
+  /** Contenido estático de la página (hero, CTAs, textos, filtros) desde resources-content.json. */
   readonly pageContent = signal<ResourcesPageContent | null>(null);
 
-  /** Filtros derivados de las categorías de los case studies (GraphQL). */
-  get filters(): string[] {
-    const categories = [...new Set(this.resourceCards().map((c) => c.category).filter(Boolean))];
-    return ['All', ...categories.sort()];
+  /** Filtros desde JSON; fallback solo antes de cargar. */
+  private static readonly DEFAULT_FILTERS: { displayCategory: string; value: string }[] = [
+    { displayCategory: 'All', value: 'All' },
+    { displayCategory: 'Data & AI', value: 'Data and AI Blog' },
+    { displayCategory: 'Data Center', value: 'Data Center' },
+    { displayCategory: 'Application Innovation', value: 'Application Innovation' },
+    { displayCategory: 'High-Performance Computing (HPC)', value: 'HPC' },
+    { displayCategory: 'Modern Work', value: 'Modern Work Blog' },
+    { displayCategory: 'Managed Services', value: 'Managed Services' },
+  ];
+
+  get filters(): { displayCategory: string; value: string }[] {
+    return this.pageContent()?.filters ?? Resources.DEFAULT_FILTERS;
   }
 
   // Signals para datos de WordPress
@@ -191,17 +210,15 @@ export class Resources implements OnInit {
     };
   }
 
-  /** Misma referencia siempre para evitar que el hijo recargue en cada change detection. */
-  private readonly defaultFeaturedSlugs: string[] = [
+  private static readonly DEFAULT_FEATURED_SLUGS: string[] = [
     'secure-azure-research-environment-architecture',
     'enterprise-reporting-and-data-roadmap-development',
   ];
 
-  /** Slugs para app-featured-case-study (desde la sección del bucle o por defecto). */
+  /** Slugs para app-featured-case-study-cards (desde resources-content.json). */
   getSlugsForFeaturedSection(): string[] {
-    // const slugs = section?.['slugsFeaturedCaseStudies'];
-    // if (Array.isArray(slugs) && slugs.length > 0) return slugs;
-    return this.defaultFeaturedSlugs;
+    const slugs = this.pageContent()?.featuredCaseStudySlugs;
+    return Array.isArray(slugs) && slugs.length > 0 ? slugs : Resources.DEFAULT_FEATURED_SLUGS;
   }
 
   /** Hero (sección con imagen de fondo): valores por defecto si no hay JSON. */
@@ -240,18 +257,9 @@ export class Resources implements OnInit {
     return this.pageContent()?.resourcesGrid?.readMoreText ?? 'Read More';
   }
 
-  /** Mapea ResourceCard a ArticleCardArticle para usar app-article-card. */
-  toArticleCard(card: ResourceCard): ArticleCardArticle {
-    return {
-      id: Number(card.id) || undefined,
-      title: card.title,
-      description: card.description,
-      link: card.link,
-      linkText: this.readMoreText(),
-      readingTime: card.date,
-      image: { url: card.image, alt: card.title },
-      tags: card.category ? [card.category] : [],
-    };
+  /** Sanitiza HTML para pasarlo a app-blog-card (excerptHtml). */
+  getSanitizedExcerpt(html: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(html ?? '');
   }
 
   ctaSectionContent() {
@@ -286,7 +294,7 @@ export class Resources implements OnInit {
           if (nodes.length) {
             const cards = this.transformGenContentToResourceCards(nodes);
             this.resourceCards.set(cards);
-            this.filteredResources.set(cards);
+            this.applyFilters();
 
             const featured =
               nodes.find((n) => n.tags?.includes('Featured')) ?? nodes[0];
@@ -352,7 +360,9 @@ export class Resources implements OnInit {
       title: node.title,
       description: this.cleanExcerpt(node.excerpt),
       link: `/resources/case-studies/${node.slug}`,
-      slug: node.slug
+      slug: node.slug,
+      tags: node.tags ?? undefined,
+      primaryTag: node.primaryTag ?? null,
     }));
   }
 
@@ -376,16 +386,22 @@ export class Resources implements OnInit {
     const acf = node.caseStudyDetails || {};
 
     // Transformar related case studies (imagen: hero ACF como en featured-case-study, luego featuredImage)
-    const relatedCaseStudies: ResourceCard[] = (acf.relatedCaseStudies?.nodes || []).map((related: any) => ({
-      id: related.id,
-      image: getAcfMediaUrl(related.caseStudyDetails?.heroImage) || related.featuredImage?.node?.sourceUrl || '/assets/resources/default.jpg',
-      category: related.caseStudyCategories?.nodes?.[0]?.name || 'Uncategorized',
-      date: this.formatDate(related.date),
-      title: related.title,
-      description: this.cleanExcerpt(related.excerpt),
-      link: `/resources/case-studies/${related.slug}`,
-      slug: related.slug
-    }));
+    const relatedCaseStudies: ResourceCard[] = (acf.relatedCaseStudies?.nodes || []).map((related: any) => {
+      const categoryNodes = related.caseStudyCategories?.nodes ?? [];
+      const categoryNames = categoryNodes.map((n: { name: string }) => n.name).filter(Boolean);
+      return {
+        id: related.id,
+        image: getAcfMediaUrl(related.caseStudyDetails?.heroImage) || related.featuredImage?.node?.sourceUrl || '/assets/resources/default.jpg',
+        category: categoryNames[0] || 'Uncategorized',
+        date: this.formatDate(related.date),
+        title: related.title,
+        description: this.cleanExcerpt(related.excerpt),
+        link: `/resources/case-studies/${related.slug}`,
+        slug: related.slug,
+        tags: categoryNames.length > 0 ? categoryNames : undefined,
+        primaryTag: categoryNames[0] ?? null,
+      };
+    });
 
     // Transformar connected services
     const connectedServices = (acf.connectedServices || []).map((service: any, index: number) => ({
@@ -441,20 +457,33 @@ export class Resources implements OnInit {
     this.applyFilters();
   }
 
+  /** Filtra por primaryTag (valor del filtro) y/o búsqueda por primaryTag, título o excerpt (description). */
   applyFilters() {
     let filtered = [...this.resourceCards()];
 
-    if (this.selectedFilter() !== 'All') {
-      filtered = filtered.filter(card => card.category === this.selectedFilter());
+    // Filtro por pestaña: primaryTag, category o si el valor está en tags (comparación normalizada)
+    const filterValue = this.selectedFilter();
+    if (filterValue !== 'All') {
+      const normalizedValue = filterValue.trim().toLowerCase();
+      filtered = filtered.filter(card => {
+        const cardTag = (card.primaryTag ?? card.category ?? '').trim().toLowerCase();
+        if (cardTag === normalizedValue) return true;
+        const inTags = (card.tags ?? []).some(t => t.trim().toLowerCase() === normalizedValue);
+        return inTags;
+      });
     }
 
-    if (this.searchQuery().trim()) {
-      const query = this.searchQuery().toLowerCase();
-      filtered = filtered.filter(card =>
-        card.title.toLowerCase().includes(query) ||
-        card.description.toLowerCase().includes(query) ||
-        card.category.toLowerCase().includes(query)
-      );
+    // Búsqueda: por primaryTag, título o excerpt (description); también en tags si existen
+    const query = this.searchQuery().trim().toLowerCase();
+    if (query) {
+      filtered = filtered.filter(card => {
+        const tagLabel = (card.primaryTag ?? card.category).toLowerCase();
+        const matchTitle = card.title.toLowerCase().includes(query);
+        const matchExcerpt = card.description.toLowerCase().includes(query);
+        const matchTag = tagLabel.includes(query);
+        const matchTags = (card.tags ?? []).some(t => t.toLowerCase().includes(query));
+        return matchTitle || matchExcerpt || matchTag || matchTags;
+      });
     }
 
     this.filteredResources.set(filtered);
