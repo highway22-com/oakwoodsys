@@ -35,6 +35,10 @@ export interface ResourcesPageContent {
     ctaSecondary?: { text?: string; link?: string };
   };
   featuredCaseStudy?: { label?: string; readMoreText?: string };
+  /** Slugs para app-featured-case-study-cards. */
+  featuredCaseStudySlugs?: string[];
+  /** Pestañas de filtro (displayCategory, value). */
+  filters?: { displayCategory: string; value: string }[];
   filterAndSearch?: { searchPlaceholder?: string; emptyStateMessage?: string };
   resourcesGrid?: { loadMoreText?: string; readMoreText?: string };
   ctaSection?: {
@@ -113,31 +117,23 @@ export class Resources implements OnInit {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly platformId = inject(PLATFORM_ID);
 
-  /** Contenido estático de la página (hero, CTAs, textos) desde resources-content.json. */
+  /** Contenido estático de la página (hero, CTAs, textos, filtros) desde resources-content.json. */
   readonly pageContent = signal<ResourcesPageContent | null>(null);
 
-  /** Filtros (misma lista que acf-related-bloqs.php oakwood_bloq_get_tag_choices). */
-
-  readonly filters: { displayCategory: string; value: string }[] = [
+  /** Filtros desde JSON; fallback solo antes de cargar. */
+  private static readonly DEFAULT_FILTERS: { displayCategory: string; value: string }[] = [
     { displayCategory: 'All', value: 'All' },
     { displayCategory: 'Data & AI', value: 'Data and AI Blog' },
     { displayCategory: 'Data Center', value: 'Data Center' },
     { displayCategory: 'Application Innovation', value: 'Application Innovation' },
     { displayCategory: 'High-Performance Computing (HPC)', value: 'HPC' },
     { displayCategory: 'Modern Work', value: 'Modern Work Blog' },
-    // { displayCategory: 'Featured', value: 'Featured' },
-    // { displayCategory: 'Modern Work', value: 'Modern Work' },
     { displayCategory: 'Managed Services', value: 'Managed Services' },
-    // { displayCategory: 'IoT', value: 'IoT' },
-    // { displayCategory: 'Healthcare', value: 'Healthcare' },
-    // { displayCategory: 'Data Governance', value: 'Data Governance' },
-    // { displayCategory: 'Security Blog', value: 'Security Blog' },
-    // { displayCategory: 'Application Modernization Blog', value: 'Application Modernization Blog' },
-    // { displayCategory: 'Cloud and Infrastructure Blog', value: 'Cloud and Infrastructure Blog' },
-    // { displayCategory: 'Data and AI Blog', value: 'Data and AI Blog' },
-    // { displayCategory: 'Microsoft 365 Blog', value: 'Microsoft 365 Blog' },
-    // { displayCategory: 'Uncategorized', value: 'Uncategorized' },
   ];
+
+  get filters(): { displayCategory: string; value: string }[] {
+    return this.pageContent()?.filters ?? Resources.DEFAULT_FILTERS;
+  }
 
   // Signals para datos de WordPress
   readonly resourceCards = signal<ResourceCard[]>([]);
@@ -214,17 +210,15 @@ export class Resources implements OnInit {
     };
   }
 
-  /** Misma referencia siempre para evitar que el hijo recargue en cada change detection. */
-  private readonly defaultFeaturedSlugs: string[] = [
+  private static readonly DEFAULT_FEATURED_SLUGS: string[] = [
     'secure-azure-research-environment-architecture',
     'enterprise-reporting-and-data-roadmap-development',
   ];
 
-  /** Slugs para app-featured-case-study (desde la sección del bucle o por defecto). */
+  /** Slugs para app-featured-case-study-cards (desde resources-content.json). */
   getSlugsForFeaturedSection(): string[] {
-    // const slugs = section?.['slugsFeaturedCaseStudies'];
-    // if (Array.isArray(slugs) && slugs.length > 0) return slugs;
-    return this.defaultFeaturedSlugs;
+    const slugs = this.pageContent()?.featuredCaseStudySlugs;
+    return Array.isArray(slugs) && slugs.length > 0 ? slugs : Resources.DEFAULT_FEATURED_SLUGS;
   }
 
   /** Hero (sección con imagen de fondo): valores por defecto si no hay JSON. */
