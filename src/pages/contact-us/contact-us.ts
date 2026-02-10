@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, NgZone, ViewChild, ElementRef, AfterViewInit, signal, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { VideoHero } from '../../shared/video-hero/video-hero';
+import { Footer } from '../../shared/footer/footer';
 import emailjs from '@emailjs/browser';
 
 const PLACEHOLDER_VIDEO_URLS = [
@@ -21,16 +22,29 @@ export interface OfficeLocation {
 
 @Component({
   selector: 'app-contact-us',
-  imports: [FormsModule, RouterLink, VideoHero],
+  imports: [FormsModule, RouterLink, VideoHero, Footer],
   templateUrl: './contact-us.html',
   styleUrl: './contact-us.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContactUs {
+export class ContactUs implements AfterViewInit {
+  @ViewChild('licensingSection') licensingSection!: ElementRef<HTMLElement>;
+  @ViewChild('contactImageContainer') contactImageContainer!: ElementRef<HTMLElement>;
+  @ViewChild('contactForm') contactForm!: ElementRef<HTMLElement>;
   private readonly ngZone = inject(NgZone);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
+  showLicensingAnimation = signal(false);
+  showContactImageAnimation = signal(false);
+  showFormAnimation = signal(false);
   submitted = false;
   isSubmitting = false;
+  validationErrors = {
+    fullName: false,
+    email: false,
+    company: false,
+    message: false,
+  };
   
   constructor() {
     // Initialize EmailJS
@@ -41,6 +55,75 @@ export class ContactUs {
     //   this.ngZone.run(() => this.onRecaptchaSuccess(token));
     // };
   }
+
+  ngAfterViewInit() {
+    if (this.licensingSection) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              this.ngZone.run(() => {
+                this.showLicensingAnimation.set(true);
+                this.cdr.markForCheck();
+              });
+            } else {
+              this.ngZone.run(() => {
+                this.showLicensingAnimation.set(false);
+                this.cdr.markForCheck();
+              });
+            }
+          });
+        },
+        { threshold: 0.2 }
+      );
+      observer.observe(this.licensingSection.nativeElement);
+    }
+
+    if (this.contactImageContainer) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              this.ngZone.run(() => {
+                this.showContactImageAnimation.set(true);
+                this.cdr.markForCheck();
+              });
+            } else {
+              this.ngZone.run(() => {
+                this.showContactImageAnimation.set(false);
+                this.cdr.markForCheck();
+              });
+            }
+          });
+        },
+        { threshold: 0.2 }
+      );
+      observer.observe(this.contactImageContainer.nativeElement);
+    }
+
+    if (this.contactForm) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              this.ngZone.run(() => {
+                this.showFormAnimation.set(true);
+                this.cdr.markForCheck();
+              });
+            } else {
+              this.ngZone.run(() => {
+                this.showFormAnimation.set(false);
+                this.cdr.markForCheck();
+              });
+            }
+          });
+        },
+        { threshold: 0.2 }
+      );
+      observer.observe(this.contactForm.nativeElement);
+    }
+  }
+
   readonly heroTitle = "Let's move your vision forward";
   readonly heroDescription = "Your goals guide the work - our expertise makes theirs real.";
   readonly videoUrls = PLACEHOLDER_VIDEO_URLS;
@@ -90,14 +173,17 @@ export class ContactUs {
   }
 
   onSubmit() {
+    this.submitted = true;
     
-    // if (!this.recaptchaToken) {
-    //   alert('Please complete the reCAPTCHA');
-    //   return;
-    // }
+    // Reset validation errors
+    this.validationErrors = {
+      fullName: !this.formModel.fullName,
+      email: !this.formModel.email,
+      company: !this.formModel.company,
+      message: !this.formModel.message,
+    };
 
-    if (!this.formModel.fullName || !this.formModel.email || !this.formModel.message) {
-      alert('Please fill in all required fields');
+    if (!this.formModel.fullName || !this.formModel.email || !this.formModel.company || !this.formModel.message) {
       return;
     }
 
@@ -134,6 +220,12 @@ export class ContactUs {
     };
 
     this.submitted = false;
+    this.validationErrors = {
+      fullName: false,
+      email: false,
+      company: false,
+      message: false,
+    };
     // Reset reCAPTCHA
     // if ((window as any).grecaptcha) {
     //   (window as any).grecaptcha.reset();

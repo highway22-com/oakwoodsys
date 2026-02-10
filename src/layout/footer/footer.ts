@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@ang
 import { RouterLink } from '@angular/router';
 import { CommonModule, NgClass } from '@angular/common';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
+import { Footer as AppFooter } from '../../shared/footer/footer';
 
 /** Estructura de la sección footer según CMS (slug: footer). */
 export interface FooterSection {
@@ -53,7 +54,7 @@ export interface FooterSection {
 
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink, CommonModule, NgClass],
+  imports: [RouterLink, CommonModule, NgClass, AppFooter],
   templateUrl: './footer.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -29,7 +29,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   @Input() ctaSecondary?: { text: string; link: string; borderColor?: string };
   /** Centra título, descripción y CTAs (ej. página Contact Us). */
   @Input() centerContent = false;
-  /** Si es true, usa altura fija min-h-[600px] sm:min-h-[700px] md:min-h-[800px] en lugar de min-h-screen. */
+  /** Si es true, usa altura 70vh en lugar de min-h-screen. */
   @Input() hvh70 = false;
   @Input() showIndicators = true;
 
