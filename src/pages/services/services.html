@@ -21,7 +21,7 @@
 
 <!-- Hero Section with Video Background -->
 @if (content()?.videoUrls && (content()?.videoUrls?.length ?? 0) > 0) {
-<app-video-hero [hvh70]="true" [videoUrls]="content()?.videoUrls!" [title]="content()!.title"
+<app-video-hero [loading]="false" [hvh70]="true" [videoUrls]="content()?.videoUrls!" [title]="content()!.title"
   [description]="content()!.description" [ctaPrimary]="content()!.cta.primary"
   [ctaSecondary]="content()!.cta.secondary">
 </app-video-hero>

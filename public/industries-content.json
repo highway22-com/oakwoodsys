@@ -5,6 +5,9 @@
       "title": "Modern Care Powered by Intelligent Technology",
       "description": "Oakwood helps healthcare organizations improve clinical outcomes, reduce operational friction, and prepare for AI-enabled care delivery.",
       "backgroundImage": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=1920&q=80",
+      "videoUrls": [
+        "https://oakwoodsys.com/wp-content/uploads/2026/02/In-Healthcare.mp4"
+      ],
       "cta": {
         "primary": {
           "text": "Schedule a consultation",
@@ -131,16 +134,17 @@
       "title": "Build Smarter, Faster, and More Resilient Operations",
       "description": "Oakwood helps manufacturers modernize production, streamline supply chains, and prepare for the next generation of AI-driven operations.",
       "backgroundImage": "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=1920&q=80",
+      "videoUrls": [
+        "https://oakwoodsys.com/wp-content/uploads/2026/02/In-Manufacturing.mp4"
+      ],
       "cta": {
         "primary": {
           "text": "Schedule a Consultation",
-          "link": "/contact-us",
-          "backgroundColor": "#1D69AC"
+          "link": "/contact-us"
         },
         "secondary": {
           "text": "View Resources",
-          "link": "/resources",
-          "borderColor": "#FFFFFF"
+          "link": "/resources"
         }
       },
       "trustedLeaders": {
@@ -257,6 +261,9 @@
       "title": "Modern Solutions for Learning and Public Services",
       "description": "Oakwood helps schools, state, and government agencies modernize their systems, secure their environments, and prepare for AI-driven operations.",
       "backgroundImage": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80",
+      "videoUrls": [
+        "https://oakwoodsys.com/wp-content/uploads/2026/02/In-Education-Public-Sector.mp4"
+      ],
       "cta": {
         "primary": {
           "text": "Schedule a consultation",
@@ -383,6 +390,9 @@
       "title": "Retail Powered by Data and Intelligent Technology",
       "description": "Oakwood helps retailers unify data, modernize operations, and deliver personalized experiences that outperform the competition.",
       "backgroundImage": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80",
+      "videoUrls": [
+        "https://oakwoodsys.com/wp-content/uploads/2026/02/In-Retail.mp4"
+      ],
       "cta": {
         "primary": {
           "text": "Schedule a consultation",
@@ -509,6 +519,9 @@
       "title": "Secure, Compliant, Data Driven Financial Innovation",
       "description": "Oakwood helps financial institutions modernize securely, unlock value from their data, and adapt at scale, with confidence.",
       "backgroundImage": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80",
+      "videoUrls": [
+        "https://oakwoodsys.com/wp-content/uploads/2026/02/In-Finalcial-Services.mp4"
+      ],
       "cta": {
         "primary": {
           "text": "Schedule a consultation",
@@ -524,10 +537,26 @@
       "trustedLeaders": {
         "title": "Trusted by industry leaders",
         "partners": [
-          { "name": "Microsoft", "logo": "/assets/logos/microsoft.png", "alt": "Microsoft" },
-          { "name": "BJC Healthcare", "logo": "/assets/logos/bjc-healthcare.png", "alt": "BJC Healthcare" },
-          { "name": "Clarios", "logo": "/assets/logos/clarios.png", "alt": "Clarios" },
-          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+          {
+            "name": "Microsoft",
+            "logo": "/assets/logos/microsoft.png",
+            "alt": "Microsoft"
+          },
+          {
+            "name": "BJC Healthcare",
+            "logo": "/assets/logos/bjc-healthcare.png",
+            "alt": "BJC Healthcare"
+          },
+          {
+            "name": "Clarios",
+            "logo": "/assets/logos/clarios.png",
+            "alt": "Clarios"
+          },
+          {
+            "name": "Duke University",
+            "logo": "/assets/logos/duke-university.png",
+            "alt": "Duke University"
+          }
         ]
       },
       "industryChallenges": {
@@ -581,7 +610,10 @@
             "description": "Oakwood builds modern digital solutions that improve current engagement."
           }
         ],
-        "cta": { "text": "Schedule a Consultation", "link": "/contact-us" }
+        "cta": {
+          "text": "Schedule a Consultation",
+          "link": "/contact-us"
+        }
       },
       "featuredCaseStudy": {
         "sectionTitle": "FEATURED CASE STUDY",
@@ -589,14 +621,26 @@
         "title": "Recent work: Clarios accelerates Innovation with AMD-Powered HPC",
         "description": "See how Clarios slashed HPC workload times by 50% (30T) using the AMD HPC Innovation Lab. What once took 12 hours now runs in just a few — that results speak for themselves.",
         "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80",
-        "ctaPrimary": { "text": "Read more", "link": "/resources/case-studies" },
-        "ctaSecondary": { "text": "View all case studies", "link": "/resources/case-studies" }
+        "ctaPrimary": {
+          "text": "Read more",
+          "link": "/resources/case-studies"
+        },
+        "ctaSecondary": {
+          "text": "View all case studies",
+          "link": "/resources/case-studies"
+        }
       },
       "ctaSection": {
         "heading": "Power growth with intelligent, secure innovation",
         "description": "Improve risk management, efficiency and customer engagement with modern technology",
-        "primaryCta": { "text": "View all Industries", "link": "/industries" },
-        "secondaryCta": { "text": "View case studies", "link": "/resources/case-studies" }
+        "primaryCta": {
+          "text": "View all Industries",
+          "link": "/industries"
+        },
+        "secondaryCta": {
+          "text": "View case studies",
+          "link": "/resources/case-studies"
+        }
       }
     },
     "eda": {
@@ -604,6 +648,9 @@
       "title": "Accelerate Chip Design with High Performance Engineering Workflows",
       "description": "Oakwood enables semiconductor and EDA teams to run faster simulations, optimize compute environments, and gain security with scale HPC.",
       "backgroundImage": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80",
+      "videoUrls": [
+        "https://oakwoodsys.com/wp-content/uploads/2026/02/In-Electronic-Design-Automation.mp4"
+      ],
       "cta": {
         "primary": {
           "text": "Schedule a consultation",
@@ -619,10 +666,26 @@
       "trustedLeaders": {
         "title": "Trusted by industry leaders",
         "partners": [
-          { "name": "Microsoft", "logo": "/assets/logos/microsoft.png", "alt": "Microsoft" },
-          { "name": "Applied Materials", "logo": "/assets/logos/applied-materials.png", "alt": "Applied Materials" },
-          { "name": "onsemi", "logo": "/assets/logos/onsemi.png", "alt": "onsemi" },
-          { "name": "Duke University", "logo": "/assets/logos/duke-university.png", "alt": "Duke University" }
+          {
+            "name": "Microsoft",
+            "logo": "/assets/logos/microsoft.png",
+            "alt": "Microsoft"
+          },
+          {
+            "name": "Applied Materials",
+            "logo": "/assets/logos/applied-materials.png",
+            "alt": "Applied Materials"
+          },
+          {
+            "name": "onsemi",
+            "logo": "/assets/logos/onsemi.png",
+            "alt": "onsemi"
+          },
+          {
+            "name": "Duke University",
+            "logo": "/assets/logos/duke-university.png",
+            "alt": "Duke University"
+          }
         ]
       },
       "industryChallenges": {
@@ -676,7 +739,10 @@
             "description": "Oakwood deploys Microsoft security tools tailored for engineering and semiconductor firms."
           }
         ],
-        "cta": { "text": "Schedule a consultation", "link": "/contact-us" }
+        "cta": {
+          "text": "Schedule a consultation",
+          "link": "/contact-us"
+        }
       },
       "featuredCaseStudy": {
         "sectionTitle": "FEATURED CASE STUDY",
@@ -684,14 +750,26 @@
         "title": "Recent work: Clarios accelerates Innovation with AMD-Powered HPC",
         "description": "Clarios optimized HPC workload times by over 100X using the AMD HPC Innovation Lab. What once took 12 hours now runs in just a few — results that speak for themselves.",
         "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80",
-        "ctaPrimary": { "text": "Read more", "link": "/resources/case-studies" },
-        "ctaSecondary": { "text": "View all case studies", "link": "/resources/case-studies" }
+        "ctaPrimary": {
+          "text": "Read more",
+          "link": "/resources/case-studies"
+        },
+        "ctaSecondary": {
+          "text": "View all case studies",
+          "link": "/resources/case-studies"
+        }
       },
       "ctaSection": {
         "heading": "Accelerate complex design workflows",
         "description": "Power faster simulations, reduce bottlenecks, and optimize compute performance on Azure.",
-        "primaryCta": { "text": "View all Industries", "link": "/industries" },
-        "secondaryCta": { "text": "View case studies", "link": "/resources/case-studies" }
+        "primaryCta": {
+          "text": "View all Industries",
+          "link": "/industries"
+        },
+        "secondaryCta": {
+          "text": "View case studies",
+          "link": "/resources/case-studies"
+        }
       }
     }
   }

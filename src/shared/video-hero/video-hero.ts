@@ -63,6 +63,8 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     if (Array.isArray(t) && t.length) return t[idx] ?? t[0] ?? '';
     return '';
   });
+  /** Indicadores visibles solo si hay más de un video y showIndicators es true. */
+  readonly effectiveShowIndicators = computed(() => this.showIndicators && this.videoUrlsSignal().length > 1);
 
   ngOnChanges(changes: SimpleChanges) {
     const usePlaceholders = this.loading || !this.videoUrls || this.videoUrls.length === 0;
@@ -157,6 +159,8 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private startVideoCarousel() {
+    if (this.videoUrlsSignal().length <= 1) return;
+
     // Clear any existing interval
     if (this.videoInterval) {
       clearInterval(this.videoInterval);
