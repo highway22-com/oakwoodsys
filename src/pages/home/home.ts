@@ -18,7 +18,7 @@ import { ButtonPrimaryComponent } from "../../shared/button-primary/button-prima
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Home implements OnInit {
+export default class Home implements OnInit {
   readonly content = signal<CmsPageContent | null>(null);
   readonly loading = signal(true);
   readonly videoUrls = signal<string[]>([]);
@@ -159,8 +159,8 @@ export class Home implements OnInit {
     const rawTitle = heroSection?.['title'];
     const heroTitle = typeof rawTitle === 'string' ? rawTitle
       : Array.isArray(rawTitle) ? (rawTitle[0] ?? '')
-      : rawTitle && typeof rawTitle === 'object' ? [rawTitle.line1, rawTitle.line2].filter(Boolean).join(' ') ?? ''
-      : '';
+        : rawTitle && typeof rawTitle === 'object' ? [rawTitle.line1, rawTitle.line2].filter(Boolean).join(' ') ?? ''
+          : '';
     const heroDesc = (heroSection?.['description'] ?? '') as string;
     const pageTitle = heroTitle ? `${heroTitle} | Oakwood Systems` : 'Oakwood Systems - Microsoft Solutions Partner';
 

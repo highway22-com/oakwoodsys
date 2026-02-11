@@ -55,7 +55,7 @@ export class LatestInsightsSectionComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly section = input.required<LatestInsightsSection>();
-  /** Últimos 3 bloq publicados por fecha (cargados desde GraphQL). */
+  /** Últimos 3 blog publicados por fecha (cargados desde GraphQL). */
   readonly articles = signal<LatestInsightsBlogCard[]>([]);
   private readonly sanitizer = inject(DomSanitizer);
   readonly loading = signal(true);

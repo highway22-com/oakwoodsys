@@ -85,7 +85,7 @@ const PAGE_SIZE = 10;
   styleUrl: './blogs.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Blogs implements OnInit {
+export default class Blogs implements OnInit {
   private readonly apollo = inject(Apollo);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly destroyRef = inject(DestroyRef);
@@ -122,7 +122,7 @@ export class Blogs implements OnInit {
   readonly error = signal<any>(null);
   readonly hasNextPage = signal(true);
   private endCursor: string | null = null;
-  private readonly categoryId = 'bloq';
+  private readonly categoryId = 'blog';
 
   /** Utilidad de tiempo de lectura (expuesta en template). */
   readonly readingTimeMinutes = readingTimeMinutes;

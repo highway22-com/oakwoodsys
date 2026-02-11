@@ -137,7 +137,7 @@ interface ServicesContent {
   styleUrl: './services.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Services implements OnInit, OnDestroy {
+export default class Services implements OnInit, OnDestroy {
   @ViewChild('logoCarousel', { static: false }) logoCarousel!: ElementRef<HTMLDivElement>;
 
   private readonly route = inject(ActivatedRoute);

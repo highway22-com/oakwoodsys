@@ -8,4 +8,4 @@ import { RouterLink } from '@angular/router';
   styleUrl: './structured.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Structured { }
+export default class Structured { }
