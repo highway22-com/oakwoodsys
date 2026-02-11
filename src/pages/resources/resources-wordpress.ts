@@ -276,7 +276,7 @@ export default class Resources implements OnInit {
     return this.slug !== null && this.caseStudyDetail() !== null;
   }
 
-  // Lista por categoría Gen Content "case-study" (misma lógica que bloq con "bloq")
+  // Lista por categoría Gen Content "case-study" (misma lógica que blog con "blog")
   private loadCaseStudiesList() {
     this.loading.set(true);
 

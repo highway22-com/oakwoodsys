@@ -5,7 +5,7 @@
  * Estructura JSON → ACF:
  * - showContactSection → show_contact_section (Boolean)
  * - typeContent → type_content (Select)
- * - relatedBloqs → related_bloqs (Relación múltiple a gen_content, filtrado por categoría bloq)
+ * - relatedBloqs → related_bloqs (Relación múltiple a gen_content, filtrado por categoría blog)
  * - relatedCaseStudies → related_case_studies (Relación múltiple a gen_content, filtrado por categoría case-study)
  * - tags → tags (Checkbox)
  * - primaryTag → primary_tag (Radio)
@@ -66,14 +66,14 @@ function oakwood_bloq_register_acf_field_group() {
 			'type'          => 'select',
 			'required'      => 0,
 			'choices'       => array(
-				'bloq'       => 'Bloq',
+				'blog'       => 'Blog',
 				'case_study' => 'Case Study',
 				'other'      => 'Other',
 			),
-			'default_value' => 'bloq',
+			'default_value' => 'blog',
 			'ui'            => 1,
 			'return_format' => 'value',
-			'instructions'  => 'Tipo de contenido para esta entrada (bloq, case study u otro).',
+			'instructions'  => 'Tipo de contenido para esta entrada (blog, case study u otro).',
 		),
 		array(
 			'key'           => 'field_oakwood_gen_content_tags',
@@ -108,7 +108,7 @@ function oakwood_bloq_register_acf_field_group() {
 			'multiple'      => 1,
 			'allow_null'    => 0,
 			'ui'            => 1,
-			'instructions'  => 'Selecciona Gen Content de categoría Bloq relacionados (solo se listan entradas con categoría bloq).',
+			'instructions'  => 'Selecciona Gen Content de categoría Blog relacionados (solo se listan entradas con categoría blog).',
 		),
 		array(
 			'key'           => 'field_oakwood_related_case_studies',
@@ -220,6 +220,19 @@ function oakwood_bloq_register_acf_field_group() {
 add_action( 'acf/init', 'oakwood_bloq_register_acf_field_group' );
 
 /**
+ * Forzar que type_content muestre "Blog" en lugar de "Bloq" (sobrescribe si ACF carga versión antigua desde DB).
+ */
+add_filter( 'acf/load_field/key=field_oakwood_type_content', function ( $field ) {
+	$field['choices'] = array(
+		'blog'       => 'Blog',
+		'case_study' => 'Case Study',
+		'other'      => 'Other',
+	);
+	$field['default_value'] = 'blog';
+	return $field;
+} );
+
+/**
  * Validación ACF: la tag principal debe estar dentro del arreglo de tags seleccionadas.
  */
 function oakwood_bloq_validate_primary_tag( $valid, $value, $field, $input ) {
@@ -263,7 +276,7 @@ function oakwood_bloq_validate_primary_tag( $valid, $value, $field, $input ) {
 add_filter( 'acf/validate_value/key=field_oakwood_gen_content_primary_tag', 'oakwood_bloq_validate_primary_tag', 10, 4 );
 
 /**
- * Filtra el selector de Related Bloqs: solo Gen Content con categoría "bloq".
+ * Filtra el selector de Related Bloqs: solo Gen Content con categoría "blog".
  */
 function oakwood_bloq_filter_related_bloqs_query( $args, $field, $post_id ) {
 	if ( ( $field['key'] ?? '' ) !== 'field_oakwood_related_bloqs' ) {
@@ -273,7 +286,7 @@ function oakwood_bloq_filter_related_bloqs_query( $args, $field, $post_id ) {
 		array(
 			'taxonomy' => 'gen_content_category',
 			'field'    => 'slug',
-			'terms'    => 'bloq',
+			'terms'    => 'blog',
 		),
 	);
 	return $args;

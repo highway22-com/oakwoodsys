@@ -122,7 +122,7 @@ export default class Blogs implements OnInit {
   readonly error = signal<any>(null);
   readonly hasNextPage = signal(true);
   private endCursor: string | null = null;
-  private readonly categoryId = 'bloq';
+  private readonly categoryId = 'blog';
 
   /** Utilidad de tiempo de lectura (expuesta en template). */
   readonly readingTimeMinutes = readingTimeMinutes;

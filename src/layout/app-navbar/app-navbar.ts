@@ -58,7 +58,7 @@ export class AppNavbar implements OnInit, OnDestroy {
   readonly loading = signal(true);
   /** Dos case studies más recientes para el dropdown Industries (se cargan al iniciar para que estén listos). */
   readonly featuredCaseStudies = signal<CaseStudy[]>([]);
-  /** Dos blogs más recientes para el dropdown Resources (genContent categoría bloq). */
+  /** Dos blogs más recientes para el dropdown Resources (genContent categoría blog). */
   readonly featuredBlogs = signal<FeaturedBlogItem[]>([]);
 
   /** Panel de búsqueda (click en ícono): abierto/cerrado. */
