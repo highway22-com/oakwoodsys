@@ -127,5 +127,5 @@ add_action( 'admin_notices', function () {
 	if ( ! current_user_can( 'manage_options' ) || empty( $_GET['oakwood_migration_reset'] ) ) {
 		return;
 	}
-	echo '<div class="notice notice-success is-dismissible"><p><strong>Migración reseteada.</strong> La próxima carga aplicará la migración bloq→blog de nuevo.</p></div>';
+	echo '<div class="notice notice-success is-dismissible"><p><strong>Migration reset.</strong> The next page load will run the bloq→blog migration again.</p></div>';
 } );
