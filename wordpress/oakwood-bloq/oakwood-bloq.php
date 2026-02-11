@@ -204,7 +204,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'showContactSection',
 		array(
 			'type'        => 'Boolean',
-			'description' => __( 'Mostrar sección de contacto (ACF: show_contact_section).', 'oakwood-blog' ),
+			'description' => __( 'Show contact section (ACF: show_contact_section).', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = null;
 				if ( is_object( $post ) && isset( $post->ID ) ) {
@@ -263,7 +263,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'primaryTag',
 		array(
 			'type'        => 'String',
-			'description' => __( 'Tag principal (ACF: primary_tag).', 'oakwood-blog' ),
+			'description' => __( 'Primary tag (ACF: primary_tag).', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = null;
 				if ( is_object( $post ) && isset( $post->ID ) ) {
@@ -286,7 +286,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'typeContent',
 		array(
 			'type'        => 'String',
-			'description' => __( 'Tipo de contenido (ACF: type_content).', 'oakwood-blog' ),
+			'description' => __( 'Content type (ACF: type_content).', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = null;
 				if ( is_object( $post ) && isset( $post->ID ) ) {
@@ -316,7 +316,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'relatedBloqs',
 		array(
 			'type'        => array( 'list_of' => 'GenContent' ),
-			'description' => __( 'Gen Content relacionados (ACF: related_bloqs).', 'oakwood-blog' ),
+			'description' => __( 'Related Gen Content (ACF: related_bloqs).', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = null;
 				if ( is_object( $post ) && isset( $post->ID ) ) {
@@ -363,7 +363,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'relatedBloqSlugs',
 		array(
 			'type'        => array( 'list_of' => 'String' ),
-			'description' => __( 'Slugs de Gen Content relacionados (ACF: related_bloqs). Para pedir datos completos por slug sin resolver list_of GenContent.', 'oakwood-blog' ),
+			'description' => __( 'Related Gen Content slugs (ACF: related_bloqs). To request full data by slug without resolving list_of GenContent.', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = null;
 				if ( is_object( $post ) && isset( $post->ID ) ) {
@@ -411,7 +411,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'relatedBloqIds',
 		array(
 			'type'        => array( 'list_of' => 'Int' ),
-			'description' => __( 'Database IDs relacionados (ACF: related_bloqs).', 'oakwood-blog' ),
+			'description' => __( 'Related database IDs (ACF: related_bloqs).', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = null;
 				if ( is_object( $post ) && isset( $post->ID ) ) {
@@ -440,7 +440,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'relatedCaseStudies',
 		array(
 			'type'        => array( 'list_of' => 'GenContent' ),
-			'description' => __( 'Gen Content relacionados de categoría Case Study (ACF: related_case_studies).', 'oakwood-blog' ),
+			'description' => __( 'Related Gen Content with Case Study category (ACF: related_case_studies).', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = null;
 				if ( is_object( $post ) && isset( $post->ID ) ) {
@@ -487,7 +487,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'relatedCaseStudyIds',
 		array(
 			'type'        => array( 'list_of' => 'Int' ),
-			'description' => __( 'Database IDs de Gen Content relacionados Case Study (ACF: related_case_studies).', 'oakwood-blog' ),
+			'description' => __( 'Related Case Study Gen Content database IDs (ACF: related_case_studies).', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = null;
 				if ( is_object( $post ) && isset( $post->ID ) ) {
@@ -517,7 +517,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'headTitle',
 		array(
 			'type'        => 'String',
-			'description' => __( 'Título para <title>. ACF oakwood_head_title; si vacío: título del post.', 'oakwood-blog' ),
+			'description' => __( 'Title for <title>. ACF oakwood_head_title; if empty: post title.', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
 				if ( ! $post_id ) {
@@ -538,7 +538,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'headDescription',
 		array(
 			'type'        => 'String',
-			'description' => __( 'Meta description. ACF oakwood_head_description; si vacío: extracto del post.', 'oakwood-blog' ),
+			'description' => __( 'Meta description. ACF oakwood_head_description; if empty: post excerpt.', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
 				if ( ! $post_id ) {
@@ -566,7 +566,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'headCanonicalUrl',
 		array(
 			'type'        => 'String',
-			'description' => __( 'URL canonica para <head>. ACF oakwood_head_canonical; si vacío: permalink del post.', 'oakwood-blog' ),
+			'description' => __( 'Canonical URL for <head>. ACF oakwood_head_canonical; if empty: post permalink.', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
 				if ( ! $post_id ) {
@@ -592,7 +592,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'headGeoRegion',
 		array(
 			'type'        => 'String',
-			'description' => __( 'Región geográfica (ACF oakwood_geo_region). Ej: US-MO.', 'oakwood-blog' ),
+			'description' => __( 'Geographic region (ACF oakwood_geo_region). E.g. US-MO.', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
 				if ( ! $post_id ) {
@@ -609,7 +609,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'headGeoPlacename',
 		array(
 			'type'        => 'String',
-			'description' => __( 'Nombre del lugar (ACF oakwood_geo_placename). Ej: St. Louis.', 'oakwood-blog' ),
+			'description' => __( 'Place name (ACF oakwood_geo_placename). E.g. St. Louis.', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
 				if ( ! $post_id ) {
@@ -626,7 +626,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'headGeoPosition',
 		array(
 			'type'        => 'String',
-			'description' => __( 'Coordenadas Lat;Long (ACF oakwood_geo_position).', 'oakwood-blog' ),
+			'description' => __( 'Lat;Long coordinates (ACF oakwood_geo_position).', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
 				if ( ! $post_id ) {
@@ -644,7 +644,7 @@ function oakwood_bloq_register_graphql_fields() {
 		'headJsonLdData',
 		array(
 			'type'        => 'String',
-			'description' => __( 'JSON-LD listo para <script type="application/ld+json">: Organization (Oakwood) + Article/BlogPosting con datos GEO.', 'oakwood-blog' ),
+			'description' => __( 'JSON-LD ready for <script type="application/ld+json">: Organization (Oakwood) + Article/BlogPosting with GEO data.', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				return oakwood_bloq_build_head_json_ld( $post );
 			},
