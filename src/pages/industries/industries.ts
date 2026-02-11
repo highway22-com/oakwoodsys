@@ -75,7 +75,7 @@ interface IndustriesContent {
   styleUrl: './industries.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Industries implements OnInit, OnDestroy {
+export default class Industries implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly http = inject(HttpClient);
   private routeSub?: Subscription;

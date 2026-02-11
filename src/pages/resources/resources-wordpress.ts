@@ -108,7 +108,7 @@ interface CaseStudyDetail {
   styleUrl: './resources.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Resources implements OnInit {
+export default class Resources implements OnInit {
   slug: string | null = null;
   selectedFilter = signal<string>('All');
   searchQuery = signal<string>('');
