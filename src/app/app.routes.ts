@@ -1,7 +1,11 @@
 import { Routes } from '@angular/router';
+
+import { Structured } from '../pages/structured/structured';
+import { StructuredOffer } from '../pages/structured-offer/structured-offer';
 import { ContactUs } from '../pages/contact-us/contact-us';
+import { ContactSuccess } from '../pages/contact-success/contact-success';
 import { Login } from '../pages/login/login';
-import Home from '../pages/home/home';
+
 
 export const routes: Routes = [
     {
@@ -51,8 +55,12 @@ export const routes: Routes = [
         pathMatch: 'full'
     },
     {
-        path: 'structured',
-        loadComponent: () => import('../pages/structured/structured')
+        path: 'structured-engagement',
+        component: Structured
+    },
+    {
+        path: 'structured-engagement/:slug',
+        component: StructuredOffer
     },
     {
         path: 'about-us',
@@ -61,6 +69,10 @@ export const routes: Routes = [
     {
         path: 'contact-us',
         component: ContactUs
+    },
+    {
+        path: 'contact-success',
+        component: ContactSuccess
     },
     {
         path: 'admin/login',

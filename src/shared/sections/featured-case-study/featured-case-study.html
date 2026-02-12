@@ -4,13 +4,13 @@
     @if (currentSection(); as section) {
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] overflow-visible h-[80vh] lg:min-h-[80vh]">
       <div class="w-full h-full min-h-0 overflow-hidden  featured-case-study-image-wrap" [@slideDown]="animationKey()">
-        @if (section[0]) {
-        <img [src]="section[0].image?.url ?? ''"
+        @if (section[0]?.image?.url) {
+        <img [src]="section[0].image?.url"
           [alt]="section[0].image?.alt ?? (section[0].title + ' - Featured case study image')"
           class="featured-case-study-image" [style.opacity]="1 - scrollProgress()" loading="lazy" />
         }
-        @if (section[1]) {
-        <img [src]="section[1].image?.url ?? ''"
+        @if (section[1]?.image?.url) {
+        <img [src]="section[1].image?.url"
           [alt]="section[1].image?.alt ?? (section[1].title + ' - Featured case study image')"
           class="featured-case-study-image" [style.opacity]="scrollProgress()" loading="lazy" />
         }

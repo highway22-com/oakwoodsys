@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnInit, OnDestroy, signal, inject, ViewChild, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, OnDestroy, AfterViewInit, signal, inject, ViewChild, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -147,6 +147,7 @@ export default class Services implements OnInit, OnDestroy {
   private readonly metaService = inject(Meta);
   readonly sanitizer = inject(DomSanitizer);
   private routeSubscription?: Subscription;
+  private autoScrollInterval?: any;
 
   readonly slug = signal<string | null>(null);
   readonly content = signal<ServiceContent | null>(null);
@@ -177,9 +178,30 @@ export default class Services implements OnInit, OnDestroy {
     this.titleService.setTitle('Services | Oakwood Systems');
   }
 
+  ngAfterViewInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      // Start auto-scrolling the logo carousel
+      this.autoScrollInterval = setInterval(() => {
+        if (this.logoCarousel && this.logoCarousel.nativeElement) {
+          const carousel = this.logoCarousel.nativeElement;
+          const scrollAmount = 1; // pixels per interval for smooth continuous scroll
+          carousel.scrollLeft += scrollAmount;
+          
+          // Reset scroll to beginning when reaching the end for infinite loop
+          if (carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth) {
+            carousel.scrollLeft = 0;
+          }
+        }
+      }, 20); // 20ms interval for smooth scrolling
+    }
+  }
+
   ngOnDestroy() {
     if (this.routeSubscription) {
       this.routeSubscription.unsubscribe();
+    }
+    if (this.autoScrollInterval) {
+      clearInterval(this.autoScrollInterval);
     }
   }
 
