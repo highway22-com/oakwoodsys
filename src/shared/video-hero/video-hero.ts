@@ -30,6 +30,8 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   @Input() description: string = '';
   @Input() ctaPrimary?: { text: string; link: string; backgroundColor: string };
   @Input() ctaSecondary?: { text: string; link: string; borderColor?: string };
+  /** Offer details cards (duration, delivery, pricing, category). */
+  @Input() offerdetails?: { offer: string; offervalue: string; icon?: string }[];
   /** Centra título, descripción y CTAs (ej. página Contact Us). */
   @Input() centerContent = false;
   /** Si es true, usa altura 70vh en lugar de min-h-screen. */
@@ -63,7 +65,15 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     if (Array.isArray(t) && t.length) return t[idx] ?? t[0] ?? '';
     return '';
   });
-  /** Indicadores visibles solo si hay más de un video y showIndicators es true. */
+  getIconPath(type: string): string {
+    const paths: Record<string, string> = {
+      'duration': 'M12 6v6m0 0v6m0-6h6m0 0h-6',
+      'delivery': 'M5 10l7-7 7 7M5 10.5v8.5a1 1 0 001 1h12a1 1 0 001-1v-8.5',
+      'pricing': 'M12 8c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm0 4.5c-2.5 0-7.5 1.5-7.5 4v2.5h15v-2.5c0-2.5-5-4-7.5-4z',
+      'category': 'M7 7h10v3H7z M7 12h10v3H7z M7 17h10v3H7z'
+    };
+    return paths[type] || paths['duration'];
+  }  /** Indicadores visibles solo si hay más de un video y showIndicators es true. */
   readonly effectiveShowIndicators = computed(() => this.showIndicators && this.videoUrlsSignal().length > 1);
 
   ngOnChanges(changes: SimpleChanges) {

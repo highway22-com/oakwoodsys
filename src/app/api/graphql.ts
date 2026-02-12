@@ -2,12 +2,12 @@ import { gql } from 'apollo-angular';
 
 /**
  * Modelos y queries GraphQL para oakwoodsys.com/graphql (WPGraphQL + ACF).
- * Bloqs y Case Studies (lista): misma lógica genContentCategory(id: $categoryId, idType: SLUG) — filtro "bloq" o "case-study".
+ * Bloqs y Case Studies (lista): misma lógica genContentCategory(id: $categoryId, idType: SLUG) — filtro "blog" o "case-study".
  * Case Studies (detalle): caseStudyBy(slug).
- * Oakwood CMS: cmsPage(slug) devuelve el JSON de la página (home, services, about-us, bloq, industries).
+ * Oakwood CMS: cmsPage(slug) devuelve el JSON de la página (home, services, about-us, blog, industries).
  */
 
-/** Nodo Gen Content en lista por categoría (bloq o case-study). Incluye SEO/GEO para Headless. */
+/** Nodo Gen Content en lista por categoría (blog o case-study). Incluye SEO/GEO para Headless. */
 export interface GenContentListNode {
   id: string;
   title: string;
@@ -281,7 +281,7 @@ const GEN_CONTENTS_FIELDS = `
   headJsonLdData
 `;
 
-/** Lista por categoría Gen Content: mismo patrón para bloq (categoryId: "bloq") y case study (categoryId: "case-study"). id espera ID! en WPGraphQL. */
+/** Lista por categoría Gen Content: mismo patrón para blog (categoryId: "blog") y case study (categoryId: "case-study"). id espera ID! en WPGraphQL. */
 export const GET_GEN_CONTENTS_BY_CATEGORY = gql`
   query GetGenContentsByCategory($categoryId: ID!) {
     genContentCategory(id: $categoryId, idType: SLUG) {
