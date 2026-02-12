@@ -30,8 +30,12 @@
   status = 301
   force = true
 
-# API GraphQL: NO usar redirect aquí. El proxy a URLs externas con POST puede dar 502.
-# La Edge Function Angular (server.ts) maneja /api/graphql y hace proxy a oakwoodsys.com correctamente.
+# API GraphQL: usa función Netlify dedicada (evita 502 de Edge/redirects externos)
+[[redirects]]
+  from = "/api/graphql"
+  to = "/.netlify/functions/graphql"
+  status = 200
+  force = true
 
 # Fallback SPA: solo si la Edge Function no responde. Con SSR, la Edge tiene prioridad.
 [[redirects]]
