@@ -1,38 +1,32 @@
 import { Routes } from '@angular/router';
-import { Blogs } from '../pages/blogs/blogs';
-import { Post } from '../pages/post/post';
-import { Home } from '../pages/home/home';
-import { Services } from '../pages/services/services';
-import { Resources as ResourcesList } from '../pages/resources/resources-wordpress';
-import { Industries } from '../pages/industries/industries';
+
 import { Structured } from '../pages/structured/structured';
 import { StructuredOffer } from '../pages/structured-offer/structured-offer';
-import { AboutUs } from '../pages/about-us/about-us';
 import { ContactUs } from '../pages/contact-us/contact-us';
 import { ContactSuccess } from '../pages/contact-success/contact-success';
 import { Login } from '../pages/login/login';
 
+
 export const routes: Routes = [
     {
         path: '',
-        component: Home
+        loadComponent: () => import('../pages/home/home')
     },
     {
         path: 'home',
-        redirectTo: '',
-        pathMatch: 'full'
+        loadComponent: () => import('../pages/home/home')
     },
     {
         path: 'blog/:slug',
-        component: Post
+        loadComponent: () => import('../pages/post/post')
     },
     {
         path: 'blog',
-        component: Blogs
+        loadComponent: () => import('../pages/blogs/blogs')
     },
     {
         path: 'services/:slug',
-        component: Services
+        loadComponent: () => import('../pages/services/services')
     },
     {
         path: 'services',
@@ -41,19 +35,19 @@ export const routes: Routes = [
     },
     {
         path: 'resources/case-studies/:slug',
-        component: Post
+        loadComponent: () => import('../pages/post/post')
     },
     {
         path: 'resources/case-studies',
-        component: ResourcesList
+        loadComponent: () => import('../pages/resources/resources-wordpress')
     },
     {
         path: 'resources',
-        component: ResourcesList
+        loadComponent: () => import('../pages/resources/resources-wordpress')
     },
     {
         path: 'industries/:slug',
-        component: Industries
+        loadComponent: () => import('../pages/industries/industries')
     },
     {
         path: 'industries',
@@ -70,7 +64,7 @@ export const routes: Routes = [
     },
     {
         path: 'about-us',
-        component: AboutUs
+        loadComponent: () => import('../pages/about-us/about-us')
     },
     {
         path: 'contact-us',
@@ -83,5 +77,9 @@ export const routes: Routes = [
     {
         path: 'admin/login',
         component: Login
+    },
+    {
+        path: '**',
+        redirectTo: '/'
     }
 ];

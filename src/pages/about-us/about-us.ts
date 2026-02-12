@@ -71,7 +71,7 @@ export interface AboutContent {
   styleUrl: './about-us.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AboutUs implements OnInit {
+export default class AboutUs implements OnInit {
   private readonly http = inject(HttpClient);
 
   readonly content = signal<AboutContent | null>(null);

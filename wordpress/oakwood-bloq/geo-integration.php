@@ -20,7 +20,8 @@ function oakwood_gc_schema_type( $type_content ) {
 	switch ( $type_content ) {
 		case 'case_study':
 			return 'CaseStudy';
-		case 'bloq':
+		case 'blog':
+		case 'bloq': // Legacy, pre-migration
 			return 'BlogPosting';
 		default:
 			return 'Article';

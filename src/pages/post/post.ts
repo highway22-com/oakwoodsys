@@ -57,7 +57,7 @@ export interface PostDetail {
   styleUrl: './post.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Post implements OnInit, OnDestroy {
+export default class Post implements OnInit, OnDestroy {
   slug = input<string>('');
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

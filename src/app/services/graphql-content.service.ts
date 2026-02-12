@@ -39,7 +39,7 @@ export class GraphQLContentService {
   readonly loading = signal<boolean>(false);
   readonly errors = signal<Error | null>(null);
 
-  /** Lista de posts de blog (genContent categoría "bloq"). Misma query que case studies, idType SLUG. */
+  /** Lista de posts de blog (genContent categoría "blog"). Misma query que case studies, idType SLUG. */
   getBlogs(): Observable<GenContentListNode[]> {
     this.loading.set(true);
     this.errors.set(null);
@@ -47,7 +47,7 @@ export class GraphQLContentService {
     return this.apollo
       .watchQuery<GenContentsByCategoryResponse>({
         query: GET_GEN_CONTENTS_BY_CATEGORY,
-        variables: { categoryId: 'bloq' },
+        variables: { categoryId: 'blog' },
         fetchPolicy: 'cache-and-network',
       })
       .valueChanges.pipe(
@@ -67,7 +67,7 @@ export class GraphQLContentService {
       );
   }
 
-  /** Lista de case studies: misma lógica que bloq, filtro categoría "case-study". */
+  /** Lista de case studies: misma lógica que blog, filtro categoría "case-study". */
   getCaseStudies(): Observable<CaseStudy[]> {
     this.loading.set(true);
     this.errors.set(null);
@@ -210,7 +210,7 @@ export class GraphQLContentService {
   }
 
   /**
-   * Contenido de una página CMS por slug (home, services, about-us, bloq, industries).
+   * Contenido de una página CMS por slug (home, services, about-us, blog, industries).
    * En servidor (SSR): hace la petición GraphQL y guarda el resultado en TransferState.
    * En cliente (hidratación): reutiliza los datos del TransferState y no vuelve a llamar a GraphQL.
    */
@@ -268,7 +268,7 @@ export class GraphQLContentService {
    */
   getSearchableContent(): Observable<SearchResultItem[]> {
     return combineLatest({
-      blogs: this.getGenContentsForSearch('bloq'),
+      blogs: this.getGenContentsForSearch('blog'),
       caseStudies: this.getGenContentsForSearch('case-study'),
     }).pipe(
       map(({ blogs, caseStudies }) => {

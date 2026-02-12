@@ -5,7 +5,7 @@
  * Estructura JSON → ACF:
  * - showContactSection → show_contact_section (Boolean)
  * - typeContent → type_content (Select)
- * - relatedBloqs → related_bloqs (Relación múltiple a gen_content, filtrado por categoría bloq)
+ * - relatedBloqs → related_bloqs (Relación múltiple a gen_content, filtrado por categoría blog)
  * - relatedCaseStudies → related_case_studies (Relación múltiple a gen_content, filtrado por categoría case-study)
  * - tags → tags (Checkbox)
  * - primaryTag → primary_tag (Radio)
@@ -57,7 +57,7 @@ function oakwood_bloq_register_acf_field_group() {
 			'required'      => 0,
 			'ui'            => 1,
 			'default_value' => 0,
-			'message'       => 'Mostrar sección de contacto en la página.',
+			'message'       => 'Show contact section on the page.',
 		),
 		array(
 			'key'           => 'field_oakwood_type_content',
@@ -66,14 +66,14 @@ function oakwood_bloq_register_acf_field_group() {
 			'type'          => 'select',
 			'required'      => 0,
 			'choices'       => array(
-				'bloq'       => 'Bloq',
+				'blog'       => 'Blog',
 				'case_study' => 'Case Study',
 				'other'      => 'Other',
 			),
-			'default_value' => 'bloq',
+			'default_value' => 'blog',
 			'ui'            => 1,
 			'return_format' => 'value',
-			'instructions'  => 'Tipo de contenido para esta entrada (bloq, case study u otro).',
+			'instructions'  => 'Content type for this entry (blog, case study, or other).',
 		),
 		array(
 			'key'           => 'field_oakwood_gen_content_tags',
@@ -95,7 +95,7 @@ function oakwood_bloq_register_acf_field_group() {
 			'allow_null'        => 1,
 			'other_choice'      => 0,
 			'save_other_choice' => 0,
-			'instructions'      => 'Selecciona una tag principal (debe estar incluida en Tags).',
+			'instructions'      => 'Select a primary tag (must be included in Tags).',
 		),
 		array(
 			'key'           => 'field_oakwood_related_bloqs',
@@ -108,7 +108,7 @@ function oakwood_bloq_register_acf_field_group() {
 			'multiple'      => 1,
 			'allow_null'    => 0,
 			'ui'            => 1,
-			'instructions'  => 'Selecciona Gen Content de categoría Bloq relacionados (solo se listan entradas con categoría bloq).',
+			'instructions'  => 'Select related Gen Content with Blog category (only entries with blog category are listed).',
 		),
 		array(
 			'key'           => 'field_oakwood_related_case_studies',
@@ -121,7 +121,7 @@ function oakwood_bloq_register_acf_field_group() {
 			'multiple'      => 1,
 			'allow_null'    => 0,
 			'ui'            => 1,
-			'instructions'  => 'Selecciona Gen Content de categoría Case Study relacionados (solo se listan entradas con categoría case-study).',
+			'instructions'  => 'Select related Gen Content with Case Study category (only entries with case-study category are listed).',
 		),
 		// Head progresivo (fase 1): para <head> en Headless — nombres oakwood_* para no chocar con otros plugins SEO
 		array(
@@ -130,8 +130,8 @@ function oakwood_bloq_register_acf_field_group() {
 			'name'          => 'oakwood_head_title',
 			'type'          => 'text',
 			'required'      => 0,
-			'placeholder'   => 'Título para <title> (vacío = título del post)',
-			'instructions'  => 'Opcional. Si está vacío se usará el título del post.',
+			'placeholder'   => 'Title for <title> (empty = post title)',
+			'instructions'  => 'Optional. If empty, the post title will be used.',
 		),
 		array(
 			'key'           => 'field_oakwood_head_description',
@@ -140,8 +140,8 @@ function oakwood_bloq_register_acf_field_group() {
 			'type'          => 'textarea',
 			'required'      => 0,
 			'rows'          => 3,
-			'placeholder'   => 'Meta description (vacío = extracto del post)',
-			'instructions'  => 'Opcional. Si está vacío se usará el extracto del post.',
+			'placeholder'   => 'Meta description (empty = post excerpt)',
+			'instructions'  => 'Optional. If empty, the post excerpt will be used.',
 		),
 		array(
 			'key'           => 'field_oakwood_head_canonical',
@@ -150,7 +150,7 @@ function oakwood_bloq_register_acf_field_group() {
 			'type'          => 'url',
 			'required'      => 0,
 			'placeholder'   => 'https://...',
-			'instructions'  => 'Opcional. Si está vacío se usará la URL del post.',
+			'instructions'  => 'Optional. If empty, the post URL will be used.',
 		),
 		// GEO (para meta geo y JSON-LD en Headless) — nombres oakwood_geo_*
 		array(
@@ -160,7 +160,7 @@ function oakwood_bloq_register_acf_field_group() {
 			'type'          => 'text',
 			'required'      => 0,
 			'placeholder'   => 'US-MO',
-			'instructions'  => 'Región geográfica (ej: US-MO).',
+			'instructions'  => 'Geographic region (e.g. US-MO).',
 		),
 		array(
 			'key'           => 'field_oakwood_geo_placename',
@@ -169,7 +169,7 @@ function oakwood_bloq_register_acf_field_group() {
 			'type'          => 'text',
 			'required'      => 0,
 			'placeholder'   => 'St. Louis',
-			'instructions'  => 'Nombre del lugar (ej: St. Louis).',
+			'instructions'  => 'Place name (e.g. St. Louis).',
 		),
 		array(
 			'key'           => 'field_oakwood_geo_position',
@@ -178,7 +178,7 @@ function oakwood_bloq_register_acf_field_group() {
 			'type'          => 'text',
 			'required'      => 0,
 			'placeholder'   => '38.6270;-90.1994',
-			'instructions'  => 'Coordenadas Lat;Long (separadas por punto y coma).',
+			'instructions'  => 'Lat;Long coordinates (separated by semicolon).',
 		),
 	);
 
@@ -194,7 +194,7 @@ function oakwood_bloq_register_acf_field_group() {
 			'multiple'      => 0,
 			'allow_null'    => 1,
 			'ui'            => 1,
-			'instructions'  => 'Opcional: selecciona una persona como autor. Si está definido, se usará en lugar del autor de WordPress para mostrar y en GraphQL.',
+			'instructions'  => 'Optional: select a person as author. If set, it will be used instead of the WordPress author for display and in GraphQL.',
 		);
 	}
 
@@ -218,6 +218,19 @@ function oakwood_bloq_register_acf_field_group() {
 	);
 }
 add_action( 'acf/init', 'oakwood_bloq_register_acf_field_group' );
+
+/**
+ * Forzar que type_content muestre "Blog" en lugar de "Bloq" (sobrescribe si ACF carga versión antigua desde DB).
+ */
+add_filter( 'acf/load_field/key=field_oakwood_type_content', function ( $field ) {
+	$field['choices'] = array(
+		'blog'       => 'Blog',
+		'case_study' => 'Case Study',
+		'other'      => 'Other',
+	);
+	$field['default_value'] = 'blog';
+	return $field;
+} );
 
 /**
  * Validación ACF: la tag principal debe estar dentro del arreglo de tags seleccionadas.
@@ -255,7 +268,7 @@ function oakwood_bloq_validate_primary_tag( $valid, $value, $field, $input ) {
 	$tags = array_values( array_filter( $tags, static fn( $t ) => $t !== '' ) );
 
 	if ( empty( $tags ) || ! in_array( $primary, $tags, true ) ) {
-		return 'La tag principal debe estar incluida en el campo "Tags".';
+		return 'The primary tag must be included in the Tags field.';
 	}
 
 	return $valid;
@@ -263,7 +276,7 @@ function oakwood_bloq_validate_primary_tag( $valid, $value, $field, $input ) {
 add_filter( 'acf/validate_value/key=field_oakwood_gen_content_primary_tag', 'oakwood_bloq_validate_primary_tag', 10, 4 );
 
 /**
- * Filtra el selector de Related Bloqs: solo Gen Content con categoría "bloq".
+ * Filtra el selector de Related Bloqs: solo Gen Content con categoría "blog".
  */
 function oakwood_bloq_filter_related_bloqs_query( $args, $field, $post_id ) {
 	if ( ( $field['key'] ?? '' ) !== 'field_oakwood_related_bloqs' ) {
@@ -273,7 +286,7 @@ function oakwood_bloq_filter_related_bloqs_query( $args, $field, $post_id ) {
 		array(
 			'taxonomy' => 'gen_content_category',
 			'field'    => 'slug',
-			'terms'    => 'bloq',
+			'terms'    => 'blog',
 		),
 	);
 	return $args;

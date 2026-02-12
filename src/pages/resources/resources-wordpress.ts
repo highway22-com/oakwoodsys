@@ -108,7 +108,7 @@ interface CaseStudyDetail {
   styleUrl: './resources.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Resources implements OnInit {
+export default class Resources implements OnInit {
   slug: string | null = null;
   selectedFilter = signal<string>('All');
   searchQuery = signal<string>('');
@@ -276,7 +276,7 @@ export class Resources implements OnInit {
     return this.slug !== null && this.caseStudyDetail() !== null;
   }
 
-  // Lista por categoría Gen Content "case-study" (misma lógica que bloq con "bloq")
+  // Lista por categoría Gen Content "case-study" (misma lógica que blog con "blog")
   private loadCaseStudiesList() {
     this.loading.set(true);
 
