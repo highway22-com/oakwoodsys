@@ -25,9 +25,13 @@
               "src/styles.css"
             ],
             "server": "src/main.server.ts",
-            "outputMode": "static",
+            "outputMode": "server",
+            "ssr": {
+              "entry": "src/server.ts"
+            },
             "prerender": {
-              "discoverRoutes": true
+              "discoverRoutes": true,
+              "routesFile": "routes.txt"
             }
           },
           "configurations": {

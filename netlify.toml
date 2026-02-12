@@ -1,9 +1,14 @@
+# Angular SSR + prerender (routes.txt). Netlify usa Edge Functions para SSR.
 [build]
   command = "npm run build"
   publish = "dist/oaw/browser"
 
 [build.environment]
   NODE_VERSION = "20"
+
+# Plugin Angular SSR (Edge Functions). Requerido para Angular 19+ con SSR.
+[[plugins]]
+  package = "@netlify/angular-runtime"
 
 # Redirección de dominio: www y HTTP → HTTPS en dominio principal
 # Ajusta "oakwoodsys.com" si tu dominio es otro (ej. oakwoodsys.netlify.app no aplica)
@@ -25,14 +30,14 @@
   status = 301
   force = true
 
-# Proxy GraphQL (CMS pages, case studies, etc.) – solo estático, sin servidor Node
+# Proxy GraphQL (CMS, case studies). Las rutas HTML las maneja la Edge Function SSR.
 [[redirects]]
   from = "/api/graphql"
   to = "https://oakwoodsys.com/graphql"
   status = 200
   force = true
 
-# SPA: rutas sin archivo estático sirven index.html (Angular Router)
+# Fallback SPA: solo si la Edge Function no responde. Con SSR, la Edge tiene prioridad.
 [[redirects]]
   from = "/*"
   to = "/index.html"

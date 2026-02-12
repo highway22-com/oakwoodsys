@@ -7,11 +7,11 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createWebRequestFromNodeRequest, writeResponseToNodeResponse } from '@angular/ssr/node';
-import { reqHandler } from './server/server.mjs';
+import { reqHandler } from './dist/oaw/server/server.mjs';
 
 const port = parseInt(process.env.PORT || '4000', 10);
 const host = process.env.HOST || '0.0.0.0';
-const BROWSER_DIR = path.join(process.cwd(), 'browser');
+const BROWSER_DIR = path.join(process.cwd(), 'dist/oaw/browser');
 
 const MIME = {
   '.html': 'text/html',
