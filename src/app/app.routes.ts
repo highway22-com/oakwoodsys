@@ -6,6 +6,7 @@ import { Services } from '../pages/services/services';
 import { Resources as ResourcesList } from '../pages/resources/resources-wordpress';
 import { Industries } from '../pages/industries/industries';
 import { Structured } from '../pages/structured/structured';
+import { StructuredOffer } from '../pages/structured-offer/structured-offer';
 import { AboutUs } from '../pages/about-us/about-us';
 import { ContactUs } from '../pages/contact-us/contact-us';
 import { ContactSuccess } from '../pages/contact-success/contact-success';
@@ -60,8 +61,12 @@ export const routes: Routes = [
         pathMatch: 'full'
     },
     {
-        path: 'structured',
+        path: 'structured-engagement',
         component: Structured
+    },
+    {
+        path: 'structured-engagement/:slug',
+        component: StructuredOffer
     },
     {
         path: 'about-us',

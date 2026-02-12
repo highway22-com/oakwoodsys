@@ -2,3 +2,107 @@
   display: block;
   width: 100%;
 }
+
+.structured-card {
+  background-color: #ffffff;
+  border: 1px solid #d1d1d1;
+  padding: 3rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.structured-card:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.structured-card__icon {
+  margin-bottom: 2.5rem;
+}
+
+.structured-card__title {
+  color: #242424;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 120%;
+  margin-bottom: 0.5rem;
+}
+
+.structured-card__description {
+  color: #242424;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.structured-card__link {
+  color: #454545;
+  font-family: "Segoe UI", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: normal;
+  display: inline-flex;
+  align-items: center;
+  padding: 2rem 0;
+  text-decoration: none;
+}
+
+.structured-card__link:hover {
+  color: #374151;
+}
+
+@media (min-width: 640px) {
+  .structured-card {
+    padding: 3.25rem;
+  }
+
+  .structured-card__title {
+    font-size: 28px;
+    line-height: 125%;
+  }
+
+  .structured-card__description {
+    font-size: 16px;
+  }
+
+  .structured-card__link {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 768px) {
+  .structured-card__title {
+    font-size: 32px;
+    line-height: 130%;
+  }
+
+  .structured-card__description {
+    font-size: 18px;
+  }
+
+  .structured-card__link {
+    font-size: 18px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .structured-card__title {
+    font-size: 36px;
+  }
+
+  .structured-card__description {
+    font-size: 20px;
+  }
+
+  .structured-card__link {
+    font-size: 20px;
+  }
+}
+
+.structured-card--link {
+  cursor: pointer;
+}

@@ -1,0 +1,195 @@
+@if (error()) {
+<section class="w-full min-h-[60vh] flex items-center justify-center">
+  <div class="text-center">
+    <h1 class="text-2xl font-semibold text-gray-900 mb-2">Offer not found</h1>
+    <p class="text-gray-600 mb-6">We could not find the offer you requested.</p>
+    <!-- <a routerLink="/structured-engagement" class="text-blue-600 hover:text-blue-700">Back to Structured Engagements</a> -->
+  </div>
+</section>
+}
+
+@if (!error() && content()) {
+<app-video-hero
+  [loading]="false"
+  [hvh70]="true"
+  [videoUrls]="heroVideoUrls"
+  [title]="content()?.title || ''"
+  [description]=" ''"
+  [ctaPrimary]="heroCtaPrimary"
+  [ctaSecondary]="heroCtaSecondary"
+  [offerdetails]="offerDetails()"
+  [showIndicators]="false">
+</app-video-hero>
+<section class="w-full bg-white">
+  <div class="container container mx-auto px-4 py-10 sm:py-12 md:py-16">
+    <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-16 lg:gap-18">
+      <aside class="lg:sticky lg:top-24 h-max">
+        <p class="font-['Inter'] font-semibold text-[16px] leading-[150%] tracking-[0.05em] uppercase text-[#888888] mb-4">Table of contents</p>
+        <nav class="space-y-2">
+          <button type="button" (click)="scrollToSection('overview')"
+            [class.focus-active]="activeSection() === 'overview'"
+            [class.text-gray-700]="activeSection() !== 'overview'"
+            class="p-3 block w-full font-['Inter'] font-medium text-[16px] leading-[150%] tracking-[0em] text-[#3D3D3D] text-left text-xl hover:text-p-500 transition-colors cursor-pointer">
+            Overview
+          </button>
+          @for (section of content()!.sections; track section.id) {
+          @if (section.id !== 'overview') {
+
+              <button type="button" (click)="scrollToSection(section.id)"
+                  [class.focus-active]="activeSection() === section.id" [class.text-gray-700]="activeSection() !== section.id"
+                  class="p-3 block w-full text-left font-['Inter'] font-medium text-[16px] leading-[150%] tracking-[0em] text-[#3D3D3D] hover:text-p-500 transition-colors cursor-pointer">
+                  {{ section.title }}
+                </button>
+            
+      
+          }
+          }
+        </nav>
+      </aside>
+
+      <article class="max-w-3xl">
+        <section id="overview" class="mb-8">
+          <p class="font-['Inter'] font-semibold text-[28px] leading-[130%] tracking-[-0.01em] text-[#242424] mb-4">Overview</p>
+          
+          <p class="font-['Inter'] font-normal text-[16px] leading-[150%] tracking-[0em] text-[#242424]">{{ content()!.summary }}</p>
+        </section>
+
+        @for (section of content()!.sections; track section.id) {
+        @if (section.id !== 'overview') {
+        <section class="mb-8">
+          <h2 [id]="section.id" class="font-['Inter'] font-semibold text-[28px] leading-[130%] tracking-[-0.01em] text-[#242424] mb-4">{{ section.title }}</h2>
+          @if (section.body) {
+          <p class="font-['Inter'] font-normal text-[16px] leading-[150%] tracking-[0em] text-[#242424] mb-4">{{ section.body }}</p>
+          }
+          @if (section.bullets?.length) {
+          <ul class="list-disc pl-5 font-['Inter'] font-normal text-[16px] leading-[150%] tracking-[0em] text-[#242424] space-y-2 mb-4">
+            @for (item of section.bullets; track item) {
+            <li>{{ item }}</li>
+            }
+          </ul>
+          }
+          @if (section.image) {
+          <figure class="rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+            <img [src]="section.image.src" [alt]="section.image.alt" class="w-full h-auto object-cover" />
+            <!-- @if (section.image.caption) {
+            <figcaption class="text-xs text-gray-500 px-4 py-2">{{ section.image.caption }}</figcaption>
+            } -->
+          </figure>
+          }
+        </section>
+        }
+        }
+      </article>
+    </div>
+  </div>
+</section>
+}
+
+<section class="contact-section-form relative py-12 sm:py-12 md:py-16 lg:py-20" id="form" aria-labelledby="form-title">
+  <!-- Background image with opacity -->
+  <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-24"
+    style="background-image: url('/assets/bg-blue.png');"></div>
+
+
+
+  <!-- Content -->
+  <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+    <div class="grid grid-cols-[550px_1fr] gap-10 lg:gap-16 items-stretch">
+      <!-- Columna izquierda: imagen con estad�sticas superpuestas -->
+      <div #contactImageContainer [class]="'relative'">
+        <img src="/assets/contact-offers.png" alt="Team member ready to help" class="w-full h-full object-cover" />
+        <div class="absolute inset-0" style="background: linear-gradient(177.91deg, rgba(0, 0, 0, 0) 57.37%, rgba(0, 0, 0, 0.8) 101.86%);"></div>
+        <div class="absolute bottom-0 left-0 right-0 p-6 sm:p-8 text-white z-10">
+          <h3 class="font-inter font-normal text-[42px] leading-[50px] tracking-[-0.42px] mb-2">Pricing</h3>
+          <p class="font-segoe text-[16px] font-normal leading-[150%] opacity-90 max-w-[420px]">
+            This engagement may be eligible for Microsoft funding depending on your profile.
+          </p>
+        </div>
+      </div>
+      <!-- Columna derecha: formulario -->
+      <div class="p-6 sm:p-8 overflow-y-auto">
+        <h2 id="form-title" class="font-inter text-black text-[64px] font-normal leading-[130%] tracking-[-1.28px] mb-3">
+         Contact us to get started
+        </h2>
+        <p class="font-segoe text-[#3D3D3D] text-[18px] font-normal leading-[150%] mb-8">
+        Custom pricing based on scope and number of SQL workloads in scope.
+        </p>
+        <form #contactForm (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+          <label [class]="'flex flex-col gap-2' + (showFormAnimation() ? ' animate-fade-up' : '')">
+            <span class="text-black text-base font-normal leading-[24px]">Name</span>
+            <input type="text" [(ngModel)]="formModel().fullName" name="fullName"
+              [class]="'border px-4 py-2.5 rounded text-sm text-gray-700 placeholder-gray-400 bg-white transition-all duration-200 outline-none ' + (submitted() && validationErrors()['fullName'] ? 'border-red-500 hover:border-red-600 focus:border-red-600' : 'border-gray-100 hover:border-gray-200 focus:border-gray-200')"
+              placeholder="Your name" />
+            @if (submitted() && validationErrors()['fullName']) {
+            <span class="text-xs text-red-500">Full name is required</span>
+            }
+          </label>
+          <div
+            [class]="'grid grid-cols-2 gap-4' + (showFormAnimation() ? ' animate-fade-up [animation-delay:80ms]' : '')">
+            <label class="flex flex-col gap-2">
+              <span class="text-black text-base font-normal leading-[24px]">Work email address</span>
+              <input type="email" [(ngModel)]="formModel().email" name="email"
+                [class]="'border px-4 py-2.5 rounded text-sm text-gray-700 placeholder-gray-400 bg-white transition-all duration-200 outline-none ' + (submitted() && validationErrors()['email'] ? 'border-red-500 hover:border-red-600 focus:border-red-600' : 'border-gray-100 hover:border-gray-200 focus:border-gray-200')"
+                placeholder="email@example.com" />
+              @if (submitted() && validationErrors()['email']) {
+              <span class="text-xs text-red-500">Email is required</span>
+              }
+            </label>
+        
+          </div>
+          <label
+            [class]="'flex flex-col gap-2' + (showFormAnimation() ? ' animate-fade-up [animation-delay:160ms]' : '')">
+            <span class="text-black text-base font-normal leading-[24px]">Message</span>
+            <textarea [(ngModel)]="formModel().message" name="message" rows="4"
+              [class]="'border px-4 py-2.5 rounded text-sm text-gray-700 placeholder-gray-400 bg-white transition-all duration-200 outline-none resize-none ' + (submitted() && validationErrors()['message'] ? 'border-red-500 hover:border-red-600 focus:border-red-600' : 'border-gray-100 hover:border-gray-200 focus:border-gray-200')"
+              placeholder="Describe what you need help with or what you're planning next"></textarea>
+            @if (submitted() && validationErrors()['message']) {
+            <span class="text-xs text-red-500">Message is required</span>
+            }
+          </label>
+          <!-- <div class="recaptcha-container"> -->
+          <!-- Replace with your Site Key from https://www.google.com/recaptcha/admin -->
+          <!-- <div class="g-recaptcha" data-sitekey="6LeNtGQsAAAAAAhMRd3_mtjfoNCKgOUr4bWi8Dmt" data-callback="onRecaptchaSuccess"></div>
+          </div> -->
+          <button type="submit" [disabled]="isSubmitting()"
+            [class]="'w-full mt-6 px-6 py-3 text-white text-sm font-semibold bg-[#0D53A2] rounded hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'">
+            {{ isSubmitting() ? 'Sending...' : 'Send Message' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- Featured Case Study Section -->
+@if (getSlugsForFeaturedSection().length) {
+<app-featured-case-study [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
+}
+
+<section #licensingSection class="mb-20 sm:mb-12 md:mb-16 lg:mb-20">
+  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+    <div class="grid grid-cols-[550px_1fr] gap-10 lg:gap-16 items-stretch">
+      <div
+        [class]="'col-span-2 py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-indigo-50 via-white to-rose-100 text-center'">
+
+
+        <h2
+          [class]="'font-inter font-normal text-[64px] leading-tight text-s-900 mb-4'">
+          Need Microsoft licensing help?
+        </h2>
+
+        <p
+          [class]="'font-segoe font-normal text-base text-black leading-[1.5] tracking-normal text-s-600 max-w-2xl mx-auto mb-8'">
+          As a Tier-1 CSP, Oakwood can simplify, manage, and support your M365 and Azure licensing.
+        </p>
+
+        <a routerLink="/contact-us" fragment="form"
+          [class]="'inline-block px-6 py-4 font-inter font-semibold text-[16px] leading-[1] tracking-[0] text-white bg-[#0D53A2] hover:opacity-90 transition'">
+          Speak to a licensing expert
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>

@@ -42,6 +42,7 @@
         <aside class="lg:col-span-3">
           <div class="sticky top-24">
             <div class="    p-6">
+              
               <h2 class="text-lg       uppercase tracking-wider text-gray-700/60 mb-4">Table of contents</h2>
               <nav class="space-y-2">
                 @for (item of getProcessedContent().tableOfContents; track item.id) {
@@ -64,7 +65,7 @@
         <div class="lg:col-span-9">
           <div class=" prose prose-lg max-w-none">
             <section id="overview" class="mb-12 sm:mb-16 md:mb-20">
-              <h2 class="sm:text-4xl md:text-3xl        mb-4 ">Overview</h2>
+              <h2 class="sm:text-4xl md:text-3xl        mb-4 ">  Overview</h2>
               <div [innerHTML]="getProcessedContent().processedOverview"></div>
             </section>
             <section id="business-challenge" class="mb-12 sm:mb-16 md:mb-20">

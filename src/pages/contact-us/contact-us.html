@@ -28,9 +28,10 @@
                     fill="white" />
                 </svg>
 
+
                 <div>
-                  <div class="text-3xl font-semibold">40%</div>
-                  <div class="text-sm opacity-90">Faster time to value</div>
+                  <div class="font-[Segoe_UI] font-semibold text-[30px] leading-[110%] tracking-[-0.02em]">40%</div>
+                  <div class="font-[Inter] font-normal text-[16px] leading-[150%] tracking-[0em]  opacity-90">Faster time to value</div>
                 </div>
               </div>
 
@@ -42,8 +43,8 @@
                 </svg>
 
                 <div>
-                  <div class="text-3xl font-semibold">98%</div>
-                  <div class="text-sm opacity-90">Client satisfaction</div>
+                  <div class="font-[Segoe_UI] font-semibold text-[30px] leading-[110%] tracking-[-0.02em]">98%</div>
+                  <div class="font-[Inter] font-normal text-[16px] leading-[150%] tracking-[0em]  opacity-90">Client satisfaction</div>
                 </div>
               </div>
 
@@ -55,8 +56,8 @@
                 </svg>
 
                 <div>
-                  <div class="text-3xl font-semibold">Microsoft</div>
-                  <div class="text-sm opacity-90">Certified experts</div>
+                  <div class="font-[Segoe_UI] font-semibold text-[30px] leading-[110%] tracking-[-0.02em]">Microsoft</div>
+                  <div class="font-[Inter] font-normal text-[16px] leading-[150%] tracking-[0em] ">Certified experts</div>
                 </div>
               </div>
             </div>
@@ -118,8 +119,14 @@
           <!-- <div class="g-recaptcha" data-sitekey="6LeNtGQsAAAAAAhMRd3_mtjfoNCKgOUr4bWi8Dmt" data-callback="onRecaptchaSuccess"></div>
           </div> -->
           <button type="submit" [disabled]="isSubmitting"
-            [class]="'w-[18rem] mt-6 px-6 py-3 text-white text-sm font-semibold bg-[#0D53A2] rounded hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed' + (showFormAnimation() ? ' animate-fade-up [animation-delay:240ms]' : '')">
-            {{ isSubmitting ? 'Sending...' : 'Submit' }}
+            [class]="'group w-[18rem] mt-6 px-6 py-3 text-white text-sm font-semibold bg-[#0D53A2] rounded hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2' + (showFormAnimation() ? ' animate-fade-up [animation-delay:240ms]' : '')">
+            <span class="transition-all duration-200 group-hover:-translate-x-1">{{ isSubmitting ? 'Sending...' : 'Submit' }}</span>
+            <svg class="w-3.5 h-3.5 transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+              viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path
+                d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z"
+                fill="currentColor" />
+            </svg>
           </button>
         </form>
       </div>
@@ -150,22 +157,51 @@
 
           <!-- Gradient overlay: transparent -> #3E61A2 with alpha, plus overall 40% opacity -->
           <div class="absolute inset-0 opacity-40"
-            style="background: linear-gradient(to bottom, #3E61A200, #3E61A2E5);"></div>
+            style="background: linear-gradient(to bottom, #3E61A200, #3E61A2E5); backdrop-filter: blur(5.599999904632568px); -webkit-backdrop-filter: blur(5.599999904632568px);">
+          </div>
 
           <!-- Header content on top of the image -->
           <div class="absolute inset-0 p-6 sm:p-8 flex flex-col justify- items-start text-white">
 
             <span class="text-[#FAF6FD] text-[42px] font-semibold leading-[50px] tracking-[-0.42px] mb-4">{{ office.name
               }}</span>
-              
-            <p class="font-segoe text-white text-[24px] font-semibold leading-[28px] pt-18">{{ office.address }}</p>
-            <a [href]="'mailto:' + office.email" class="text-white text-[24px] font-semibold leading-[28px] block my-2">
-              {{ office.email }}
-            </a>
-            <a [href]="'tel:' + office.phone"
-              class="font-segoe text-white text-[24px] font-semibold leading-[28px] hover:text-white">
-              {{ office.phone }}
-            </a>
+
+            <div class="flex flex-col items-start gap-2 self-start max-w-full">
+              <div class="flex items-center gap-2 pt-16  pl-1 rounded-sm max-w-full">
+                <span class="w-6 h-6 flex items-center justify-center shrink-0">
+                  <svg class="w-6 h-6" viewBox="0 0 18 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M12.75 9C12.75 11.1094 11.0625 12.75 9 12.75C6.89062 12.75 5.25 11.1094 5.25 9C5.25 6.9375 6.89062 5.25 9 5.25C11.0625 5.25 12.75 6.9375 12.75 9ZM9 7.5C8.15625 7.5 7.5 8.20312 7.5 9C7.5 9.84375 8.15625 10.5 9 10.5C9.79688 10.5 10.5 9.84375 10.5 9C10.5 8.20312 9.79688 7.5 9 7.5ZM18 9C18 13.125 12.5156 20.3906 10.0781 23.4375C9.51562 24.1406 8.4375 24.1406 7.875 23.4375C5.4375 20.3906 0 13.125 0 9C0 4.03125 3.98438 0 9 0C13.9688 0 18 4.0312 18 9ZM9 2.25C5.25 2.25 2.25 5.29688 2.25 9C2.25 9.60938 2.4375 10.5 2.95312 11.7188C3.42188 12.8438 4.125 14.1562 4.92188 15.4688C6.28125 17.625 7.8281 19.6875 9 21.1875C10.125 19.6875 11.6719 17.625 13.0312 15.4688C13.8281 14.1562 14.5312 12.8438 15 11.7188C15.5156 10.5 15.75 9.60938 15.75 9C15.75 5.29688 12.7031 2.25 9 2.25Z"
+                      fill="#C3DDF4" />
+                  </svg>
+                </span>
+                <p class="font-segoe font-semibold text-[24px] leading-[28px] tracking-[0] max-w-full">{{ office.address }}</p>
+              </div>
+              <div class="flex items-center gap-2 rounded-sm max-w-full">
+                <span class="w-10 h-10 flex items-center justify-center shrink-0">
+                  <svg class="w-10 h-10" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M12 18C12 16.3594 13.3125 15 15 15H33C34.6406 15 36 16.3594 36 18V30C36 31.6875 34.6406 33 33 33H15C13.3125 33 12 31.6875 12 30V18ZM14.25 18V19.0781L22.3125 25.6875C23.2969 26.4844 24.6562 26.4844 25.6406 25.6875L33.75 19.0781V18C33.75 17.625 33.375 17.25 33 17.25H15C14.5781 17.25 14.25 17.625 14.25 18ZM14.25 21.9844V30C14.25 30.4219 14.5781 30.75 15 30.75H33C33.375 30.75 33.75 30.4219 33.75 30V21.9844L27.0938 27.4219C25.2656 28.9219 22.6875 28.9219 20.8594 27.4219L14.25 21.9844Z"
+                      fill="#C3DDF4" />
+                  </svg>
+                </span>
+                <a [href]="'mailto:' + office.email" class="text-white text-[24px] font-semibold leading-[28px] block">
+                  {{ office.email }}
+                </a>
+              </div>
+              <div class="flex items-center gap-2 prounded-sm max-w-full">
+                <span class="w-10 h-10 flex items-center justify-center shrink-0">
+                  <svg class="w-10 h-10" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M34.5 27.0469C35.5781 27.5156 36.1875 28.6875 35.8594 29.8594L34.875 34.125C34.6875 35.25 33.7031 36 32.5312 36C21.1875 36 12 26.8125 12 15.4688C12 14.2969 12.75 13.3125 13.875 13.0781L18.1406 12.0938C19.3125 11.8125 20.4844 12.4219 20.9531 13.5L22.9688 18.1875C23.3906 19.1719 23.0625 20.3438 22.2656 21.0469L20.6719 22.3125C21.8906 24.375 23.625 26.1094 25.7344 27.3281L27 25.7812C27.7031 24.9375 28.875 24.6094 29.9062 25.0781L34.5 27.0469ZM33.7031 29.3438C33.75 29.25 33.7031 29.1562 33.6094 29.0625L29.0156 27.0938C28.9219 27.0469 28.8281 27.0938 28.7812 27.1406L26.9062 29.4375C26.5781 29.8594 25.9688 29.9531 25.5 29.7188C22.3594 28.1719 19.7812 25.5938 18.2344 22.4531C18 21.9844 18.1406 21.4219 18.5156 21.0938L20.8125 19.2188C20.9062 19.1719 20.9062 19.0781 20.8594 18.9844L18.8906 14.3906C18.8438 14.3438 18.7969 14.25 18.7031 14.25L18.6562 14.2969L14.3906 15.2812C14.2969 15.2812 14.2031 15.375 14.2031 15.4688C14.2031 25.5469 22.4531 33.75 32.5312 33.75C32.625 33.75 32.7188 33.6562 32.7188 33.6094L33.7031 29.3438Z"
+                      fill="#C3DDF4" />
+                  </svg>
+                </span>
+                <a [href]="'tel:' + office.phone" class="font-segoe text-white text-[24px] font-semibold leading-[28px] hover:text-white">
+                  {{ office.phone }}
+                </a>
+              </div>
+            </div>
           </div>
         </div>
         <div class="bg-white p-0" style="position: relative;">
