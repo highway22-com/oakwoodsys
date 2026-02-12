@@ -204,7 +204,7 @@ export class ContactUs implements AfterViewInit {
         this.resetForm();
         this.router.navigate(['/contact-success']);
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         this.isSubmitting = false;
         console.error('Email sending failed:', error);
         alert('Failed to send message. Please try again later.');

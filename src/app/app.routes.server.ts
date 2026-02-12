@@ -18,6 +18,10 @@ export const serverRoutes: ServerRoute[] = [
     path: 'services/:slug',
     renderMode: RenderMode.Server
   },
+  {
+    path: 'structured-engagement/:slug',
+    renderMode: RenderMode.Server
+  },
   // Static routes can use Prerender
   {
     path: '**',
