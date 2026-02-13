@@ -103,25 +103,33 @@
     <!-- Right: 4 cards -->
     <div class="flex flex-col gap-4 sm:gap-6 px-12 order-1 lg:order-2 overflow-y-auto">
       @for (area of content()?.serviceAreas?.serviceAreas ?? []; track area.title) {
-      <article class="bg-white border border-gray-200/50 p-5 sm:p-6 flex flex-col gap-3">
+      <article class="bg-white border border-[#D1D1D1] p-8 sm:p-8 flex flex-col gap-3">
+
         <div class="flex flex-wrap items-center gap-2">
           @if (area.icon) {
-          <img [src]="area.icon" [alt]="area.title + ' icon'" class="w-8 h-8 object-contain" loading="lazy" />
+          <img [src]="area.icon" [alt]="area.title + ' icon'"
+            class="text-[#3D3D3D] text-center text-[40px] font-light leading-normal object-contain block"
+            loading="lazy" />
           }
-          @for (badge of area.badges; track badge) {
-          <span class="tag-badge bg-p-500 text-white capitalize ml-3">
-            {{ badge }}
-          </span>
-          }
+
+          <div class="w-full pt-8 pb-2">
+            @for (badge of area.badges; track badge; let first = $first) {
+            <span
+              class="tag-badge bg-[#2A7EBF] text-white capitalize text-white text-[14px] font-semibold leading-normal"
+              [class.ml-3]="!first">
+              {{ badge }}
+            </span>
+            }
+          </div>
         </div>
-        <h3 class="text-lg sm:text-xl font-bold text-gray-900 leading-tight">
+        <h3 class="text-[var(--Secondary-950,#242424)] text-[32px] font-semibold leading-[130%]">
           {{ area.title }}
         </h3>
-        <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+        <p class="text-[#242424] text-[20px] font-normal leading-[24px]">
           {{ area.subtitle }}
         </p>
         @if (area.features?.length) {
-        <ul class="list-disc list-inside text-sm sm:text-base text-gray-600 space-y-1.5 mt-1">
+        <ul class="list-disc list-outside pl-5  text-[#3D3D3D] text-base font-normal leading-[26px] space-y-1.5 mt-1">
           @for (feature of area.features; track feature) {
           <li>{{ feature }}</li>
           }
@@ -143,20 +151,30 @@
   <div class="relative min-h-[400px] sm:min-h-[500px] md:min-h-[60vh] w-full overflow-hidden">
     <!-- Background Image/Video -->
     <div class="absolute inset-0 z-0">
+      @if (content()?.solutionAccelerators?.videoUrls && (content()?.solutionAccelerators?.videoUrls?.length ?? 0) > 0)
+      {
+      <video class="absolute inset-0 w-full h-full object-cover" width="1920" height="850" autoplay muted playsinline
+        loop aria-label="Solution accelerators background video">
+        <source [src]="content()?.solutionAccelerators?.videoUrls?.[0] || ''" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      } @else if (content()?.solutionAccelerators?.backgroundImage) {
       <img [src]="content()?.solutionAccelerators?.backgroundImage || ''"
         [alt]="(content()?.solutionAccelerators?.title || 'Solution accelerators') + ' background image'"
         class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
       <div class="absolute inset-0 bg-slate-700/20"></div>
+      }
     </div>
 
     <!-- Content -->
-    <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 h-full flex  pb-12 sm:pb-16 md:pb-20 ">
-      <div class="w-full max-w-3xl md:max-w-4xl pt-[30vh]">
+    <div
+      class="absolute inset-0 z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 flex flex-col justify-end pb-12 sm:pb-16 md:pb-20">
+      <div class="w-full max-w-3xl md:max-w-4xl">
         <h2 id="solution-accelerators-title"
-          class="text-3xl sm:text-4xl md:text-5xl lg:text-5xl  text-white leading-tight mb-4 sm:mb-6   ">
+          class="text-[#FFF] text-[50px] font-normal leading-[120%] tracking-[-0.5px] mb-4 sm:mb-6 ">
           {{ content()?.solutionAccelerators?.title }}
         </h2>
-        <p class="text-base sm:text-lg md:text-lg text-white leading-relaxed    max-w-2xl md:max-w-3xl">
+        <p class="text-white text-[18px] font-medium leading-[150%]">
           {{ content()?.solutionAccelerators?.description }}
         </p>
       </div>
@@ -166,24 +184,25 @@
   <!-- Cards Grid -->
   <div class="w-full bg-p-30 py-12 sm:py-16 md:py-20  ">
     <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
         @for (card of content()?.solutionAccelerators?.cards; track card.title) {
-        <div class="flex flex-col">
+        <div class="border-r border-[#D1D1D1] bg-[#F2F8FD] flex flex-col p-8 m-0">
           <!-- Icon -->
           <div class="mb-8 sm:mb-6 ">
             <div class="w-10">
               <img [src]="card.icon" [alt]="card.title + ' solution accelerator icon'"
-                class="w-full h-auto object-contain" loading="lazy" />
+                class="w-full h-auto object-contain text-[var(--Primary-500,#2A7EBF)] text-center text-[38px] font-light leading-normal"
+                loading="lazy" />
             </div>
           </div>
 
           <!-- Title -->
-          <h3 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4   ">
+          <h3 class="text-[#242424] text-[28px] font-semibold leading-[140%] mb-3 sm:mb-4">
             {{ card.title }}
           </h3>
 
           <!-- Description -->
-          <p class="text-sm sm:text-base text-gray-600 leading-relaxed   ">
+          <p class="text-[#3D3D3D] text-[18px] font-normal leading-[150%]">
             {{ card.description }}
           </p>
         </div>
@@ -195,6 +214,8 @@
 }
 
 <!-- Featured Case Study Section -->
+@if (content()?.featuredCaseStudy) {
+
 @if (getSlugsForFeaturedSection().length) {
 <app-featured-case-study [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
 }
@@ -213,13 +234,13 @@
   <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
     <!-- Top Introductory Section -->
     <div class="text-center mb-12 sm:mb-16 md:mb-20">
-      <p class="text-sm sm:text-base  font-semibold uppercase tracking-wider text-p-500 mb-3 sm:mb-4   ">
+      <p class="text-[#2A7EBF] text-[18px] font-semibold leading-[150%] uppercase mb-3 sm:mb-4">
         {{ content()?.whyOakwood?.tagline }}
       </p>
-      <h2 id="why-oakwood-title" class="text-5xl text-gray-800 mb-4 sm:mb-6 leading-tight   ">
+      <h1 id="why-oakwood-title" class="text-black text-[50px] font-bold leading-[110%] mb-4 sm:mb-6">
         {{ content()?.whyOakwood?.title }}
-      </h2>
-      <p class="text-base sm:text-lg md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed  font-segoe ">
+      </h1>
+      <p class="text-[#3D3D3D] text-base font-normal leading-[150%]">
         {{ content()?.whyOakwood?.description }}
       </p>
     </div>
@@ -237,7 +258,7 @@
       <div class="flex flex-col">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           @for (feature of content()?.whyOakwood?.features; track feature.title) {
-          <div class="bg-white    p-6 sm:p-8 ">
+          <div class="rounded-lg bg-white   p-6 sm:p-8  hover:shadow-lg transition-shadow duration-300">
             <!-- Icon -->
             <div class="mb-4 sm:mb-6">
               <div class="w-8">
@@ -247,12 +268,13 @@
             </div>
 
             <!-- Title -->
-            <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3   ">
+            <h3
+              class="text-[#242424] font-['Inter'] text-[32px] font-semibold leading-[130%]-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3   ">
               {{ feature.title }}
             </h3>
 
             <!-- Description -->
-            <p class="text-sm sm:text-base text-gray-600 leading-relaxed   ">
+            <p class="text-[#242424] font-['Inter'] text-[20px] font-normal leading-[24px]">
               {{ feature.description }}
             </p>
           </div>
@@ -272,5 +294,6 @@
   [secondaryText]="content()?.ctaSection?.secondaryCta?.text ?? 'Subscribe to our newsletter'"
   [secondaryLink]="content()?.ctaSection?.secondaryCta?.link ?? '/contact-us'" [gradientIndex]="2" />
 
+}
 }
 }

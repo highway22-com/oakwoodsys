@@ -16,7 +16,7 @@
         },
         "secondary": {
           "text": "View engagement",
-          "link": "/structured",
+          "link": "/structured-engagement",
           "borderColor": "#1D69AC"
         }
       },

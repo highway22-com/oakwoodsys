@@ -1,0 +1,115 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.contact-success {
+  background: linear-gradient(120deg, #eef4ff 0%, #f7f9ff 55%, #fef2f2 100%);
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.5rem, 3vh, 3rem) 0;
+}
+
+.container {
+  width: min(1100px, 98vw);
+  margin: 0 auto;
+  padding: 0 1rem;
+  position: relative
+}
+
+
+
+.success-grid {
+  display: grid;
+  align-items: stretch;
+  margin: 0 auto;
+  position: relative;
+}
+
+.success-card {
+  padding: 2rem;
+  box-shadow: 0 24px 50px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.5rem;
+  height: 100%;
+}
+
+.success-badge {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.success-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin: 0 0 0.75rem;
+}
+
+.success-title {
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  color: #0f172a;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  line-height: 1.2;
+}
+
+.success-copy {
+  color: #475569;
+  margin: 0 0 1.5rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.success-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1e63b0;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.success-button:hover {
+  background: #174c86;
+  box-shadow: 0 10px 20px rgba(30, 99, 176, 0.25);
+  transform: translateY(-2px);
+}
+
+.success-media {
+  overflow: hidden;
+  box-shadow: 0 24px 50px rgba(15, 23, 42, 0.12);
+  height: 100%;
+}
+
+.success-media {
+  position: relative;
+  width: 100%;
+  border: orange 9px solid;
+  height: 100%;
+  object-fit: fill;
+
+}
+
+
+
+/* gradient overlay */
+.success-media::after {
+  content: "";
+  inset: 0;
+  background: linear-gradient(255deg,
+      rgba(0, 0, 0, 0.00) 44.21%,
+      rgba(0, 0, 0, 0.40) 100%);
+  pointer-events: none;
+
+
+}
