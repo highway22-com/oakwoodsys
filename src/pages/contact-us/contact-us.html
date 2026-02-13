@@ -2,6 +2,7 @@
 <app-video-hero [loading]="false" [videoUrls]="videoUrls" [title]="heroTitle" [description]="heroDescription"
   [ctaPrimary]="heroCtaPrimary" [ctaSecondary]="heroCtaSecondary" [centerContent]="true" />
 
+<main role="main">
 <!-- Sección: Start the conversation -->
 <section class="contact-section-form bg-slate-50 py-12 sm:py-16 md:py-20 lg:py-24" id="form"
   aria-labelledby="form-title">
@@ -9,7 +10,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
       <!-- Columna izquierda: imagen y estadísticas -->
       <div class="flex flex-col gap-8">
-        <img src="/assets/contact.png" alt="Team member ready to help" class="w-full    object-cover  max-h-[900px]" />
+        <img src="/assets/contact.png" alt="Oakwood team member ready to help with your project" class="w-full object-cover max-h-[900px]" loading="lazy" width="600" height="900" />
         <div class="flex flex-col gap-6">
           <div class="contact-stat flex items-center gap-4">
             <span class="text-3xl       text-primary-blue">40%</span>
@@ -108,6 +109,8 @@
     </div>
   </div>
 </section>
+
+</main>
 
 <!-- Banner CTA: Microsoft licensing -->
 <app-cta-section [title]=" 'Need Microsoft licensing help?'"

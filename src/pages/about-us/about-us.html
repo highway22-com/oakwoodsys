@@ -90,7 +90,7 @@
 <!-- Video section: About Oakwood -->
 <section class="about-video-section relative py-24 sm:py-32 overflow-hidden" aria-labelledby="video-section-title">
   <div class="absolute inset-0 z-0">
-    <img [src]="c.videoSectionImage" alt="" class="w-full h-full object-cover" />
+    <img [src]="c.videoSectionImage" [alt]="(c.videoSectionTitle || 'About Oakwood') + ' - video section background'" class="w-full h-full object-cover" loading="lazy" />
     <div class="absolute inset-0 bg-slate-900/60 z-0" aria-hidden="true"></div>
   </div>
   <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 flex flex-col items-center text-center">

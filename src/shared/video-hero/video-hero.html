@@ -19,8 +19,8 @@
     [ngClass]="hvh70 ? 'min-h-[100px] sm:min-h-[700px] md:min-h-[850px]' : 'h-screen'"
     [class.justify-center]="centerContent" [class.self-start]="!centerContent">
     <div class="w-full  flex flex-col self-end pb-[8.2rem]">
-      <!-- Title -->
-      <h1 class="text-white mb-6 md:mb-8 lg:max-w-7xl">
+      <!-- Title: único h1 por página para SEO -->
+      <h1 class="text-white mb-6 md:mb-8 lg:max-w-7xl" id="page-title">
         {{ currentTitle() }}
       </h1>
 
