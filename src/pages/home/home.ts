@@ -185,9 +185,7 @@ export default class Home implements OnInit {
     this.metaService.updateTag({ property: 'og:site_name', content: DEFAULT_TITLE });
     this.metaService.updateTag({ property: 'article:publisher', content: 'https://www.facebook.com/OakwoodSys/' });
 
-    const ogImage = content.videoUrls?.length
-      ? `${BASE_URL}/og-image.jpg`
-      : 'https://oakwoodsys.com/wp-content/uploads/2023/06/msft_solutions_partner_yoast_seo.png';
+    const ogImage = 'https://oakwoodsys.com/wp-content/uploads/2023/06/msft_solutions_partner_yoast_seo.png';
     this.metaService.updateTag({ property: 'og:image', content: ogImage });
     this.metaService.updateTag({ property: 'og:image:width', content: '1200' });
     this.metaService.updateTag({ property: 'og:image:height', content: '675' });
