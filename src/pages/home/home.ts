@@ -11,6 +11,11 @@ import { StructuredEngagementsSectionComponent } from '../../shared/sections/str
 import { LatestInsightsSectionComponent } from '../../shared/sections/latest-insights/latest-insights';
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
 
+const BASE_URL = 'https://oakwoodsystemsgroup.com';
+const DEFAULT_TITLE = 'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
+const DEFAULT_DESCRIPTION = 'As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.';
+const SEO_KEYWORDS = 'Microsoft Solutions Partner, Azure Consulting, Azure Cloud services, St. Louis, Kansas City, cloud migration, Data & AI, Microsoft 365, Power BI, Azure Synapse, digital transformation, managed IT services';
+
 @Component({
   selector: 'app-home',
   imports: [CommonModule, NgClass, FormsModule, VideoHero, FeaturedCaseStudySectionComponent, TrustedBySectionComponent, StructuredEngagementsSectionComponent, LatestInsightsSectionComponent, ButtonPrimaryComponent],
@@ -162,26 +167,37 @@ export default class Home implements OnInit {
         : rawTitle && typeof rawTitle === 'object' ? [rawTitle.line1, rawTitle.line2].filter(Boolean).join(' ') ?? ''
           : '';
     const heroDesc = (heroSection?.['description'] ?? '') as string;
-    const pageTitle = heroTitle ? `${heroTitle} | Oakwood Systems` : 'Oakwood Systems - Microsoft Solutions Partner';
+    const pageTitle = heroTitle ? `${heroTitle} | Oakwood Systems` : DEFAULT_TITLE;
+    const description = heroDesc || DEFAULT_DESCRIPTION;
 
     this.titleService.setTitle(pageTitle);
 
-    const description = heroDesc ||
-      'Oakwood Systems is a certified Microsoft Solutions Partner specializing in Data & AI, Cloud Infrastructure, Application Innovation, and Modern Work solutions.';
+    // Meta básicos
     this.metaService.updateTag({ name: 'description', content: description });
+    this.metaService.updateTag({ name: 'keywords', content: SEO_KEYWORDS });
 
-    this.metaService.updateTag({ property: 'og:title', content: heroTitle || 'Oakwood Systems' });
-    this.metaService.updateTag({ property: 'og:description', content: description });
+    // Open Graph
+    this.metaService.updateTag({ property: 'og:locale', content: 'en_US' });
     this.metaService.updateTag({ property: 'og:type', content: 'website' });
-    this.metaService.updateTag({ property: 'og:url', content: 'https://oakwoodsys.com' });
-    if (content.videoUrls && content.videoUrls.length > 0) {
-      this.metaService.updateTag({ property: 'og:image', content: 'https://oakwoodsys.com/og-image.jpg' });
-    }
+    this.metaService.updateTag({ property: 'og:title', content: heroTitle || DEFAULT_TITLE });
+    this.metaService.updateTag({ property: 'og:description', content: description });
+    this.metaService.updateTag({ property: 'og:url', content: `${BASE_URL}/` });
+    this.metaService.updateTag({ property: 'og:site_name', content: DEFAULT_TITLE });
+    this.metaService.updateTag({ property: 'article:publisher', content: 'https://www.facebook.com/OakwoodSys/' });
 
+    const ogImage = 'https://oakwoodsys.com/wp-content/uploads/2023/06/msft_solutions_partner_yoast_seo.png';
+    this.metaService.updateTag({ property: 'og:image', content: ogImage });
+    this.metaService.updateTag({ property: 'og:image:width', content: '1200' });
+    this.metaService.updateTag({ property: 'og:image:height', content: '675' });
+    this.metaService.updateTag({ property: 'og:image:type', content: 'image/png' });
+
+    // Twitter
     this.metaService.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
-    this.metaService.updateTag({ name: 'twitter:title', content: heroTitle || 'Oakwood Systems' });
+    this.metaService.updateTag({ name: 'twitter:site', content: '@OakwoodInsights' });
+    this.metaService.updateTag({ name: 'twitter:title', content: heroTitle || DEFAULT_TITLE });
     this.metaService.updateTag({ name: 'twitter:description', content: description });
 
+    // Canonical
     const head = this.document.getElementsByTagName('head')[0];
     if (head) {
       let linkEl = this.document.querySelector('link[rel="canonical"]');
@@ -190,29 +206,74 @@ export default class Home implements OnInit {
         linkEl.setAttribute('rel', 'canonical');
         head.appendChild(linkEl);
       }
-      linkEl.setAttribute('href', 'https://oakwoodsys.com/');
+      linkEl.setAttribute('href', `${BASE_URL}/`);
     }
   }
 
   private updateStructuredData(content: CmsPageContent) {
     const heroSection = content.sections?.find(s => s.type === 'hero');
     const heroDesc = (heroSection?.['description'] ?? '') as string;
+    const heroTitle = typeof heroSection?.['title'] === 'string' ? heroSection.title
+      : Array.isArray(heroSection?.['title']) ? (heroSection.title[0] ?? '')
+        : heroSection?.title && typeof heroSection.title === 'object'
+          ? [heroSection.title.line1, heroSection.title.line2].filter(Boolean).join(' ') ?? ''
+          : DEFAULT_TITLE;
 
     const structuredDataObj = {
       '@context': 'https://schema.org',
-      '@type': 'Organization',
-      'name': 'Oakwood Systems',
-      'url': 'https://oakwoodsys.com',
-      'description': heroDesc || 'Microsoft Solutions Partner',
-      'logo': 'https://oakwoodsys.com/logo.png',
-      'sameAs': [
-        // Add social media links if available
-      ],
-      'contactPoint': {
-        '@type': 'ContactPoint',
-        'contactType': 'Customer Service',
-        'url': 'https://oakwoodsys.com/contact-us'
-      }
+      '@graph': [
+        {
+          '@type': 'WebPage',
+          '@id': `${BASE_URL}/#webpage`,
+          url: `${BASE_URL}/`,
+          name: heroTitle,
+          isPartOf: { '@id': `${BASE_URL}/#website` },
+          about: { '@id': `${BASE_URL}/#organization` },
+          description: heroDesc || DEFAULT_DESCRIPTION,
+          breadcrumb: { '@id': `${BASE_URL}/#breadcrumb` },
+          inLanguage: 'en-US',
+          potentialAction: [{ '@type': 'ReadAction', target: [`${BASE_URL}/`] }]
+        },
+        {
+          '@type': 'BreadcrumbList',
+          '@id': `${BASE_URL}/#breadcrumb`,
+          itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home' }]
+        },
+        {
+          '@type': 'WebSite',
+          '@id': `${BASE_URL}/#website`,
+          url: `${BASE_URL}/`,
+          name: DEFAULT_TITLE,
+          description: 'Microsoft Solutions Partner in St. Louis and Kansas City',
+          publisher: { '@id': `${BASE_URL}/#organization` },
+          alternateName: 'Microsoft Solutions Partner - Oakwood',
+          inLanguage: 'en-US'
+        },
+        {
+          '@type': 'Organization',
+          '@id': `${BASE_URL}/#organization`,
+          name: 'Microsoft Solutions Partner - St. Louis and Kansas City',
+          alternateName: 'Oakwood Systems Group, Inc.',
+          url: `${BASE_URL}/`,
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://oakwoodsys.com/wp-content/uploads/2018/06/cropped-logo2-2.png',
+            width: 1270,
+            height: 185
+          },
+          sameAs: [
+            'https://www.facebook.com/OakwoodSys/',
+            'https://x.com/OakwoodInsights',
+            'https://www.linkedin.com/company/oakwood-systems-group',
+            'https://www.youtube.com/user/oakwoodinnovates'
+          ],
+          contactPoint: {
+            '@type': 'ContactPoint',
+            contactType: 'Customer Service',
+            url: `${BASE_URL}/contact-us`
+          }
+        }
+      ]
     };
 
     this.structuredData.set(structuredDataObj);

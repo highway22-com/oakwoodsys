@@ -62,8 +62,8 @@
 </div>
 }
 
-<!-- Right Side: Preview -->
-<div class="relative w-full" [ngClass]="{'pr-[50%]': isAdmin() && panelVisible()}">
+<!-- Main content -->
+<main class="relative w-full" [ngClass]="{'pr-[50%]': isAdmin() && panelVisible()}" role="main">
 
   @for (section of content()!.sections; track section.type) {
   @switch (section.type) {
@@ -89,7 +89,7 @@
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
         @for (service of section.services; track service.id) {
-        <div
+        <article
           class="group  border border-gray-200/20 p-20 sm:p-8 hover:border-gray-200/60 hover:bg-white transition-shadow duration-300 cursor-pointer">
           <div class="pb-20">
             <!-- Icon Container (Left) -->
@@ -110,7 +110,7 @@
             {{ service.linkText }} <i class="fa-solid fa-chevron-right pl-1.5" style="font-size: 1rem;"
               aria-hidden="true"></i>
           </a>
-        </div>
+        </article>
         }
       </div>
     </div>
@@ -161,12 +161,12 @@
             digital and cloud services.</span>
         </h2>
       </div>
-      <div class="max-w-6xl mx-auto">
+      <div class="max-w-6xl mx-auto" aria-label="Microsoft Solutions Partner certifications">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          <img src="/logos/microsoft/m1.png" class="  object-cover" />
-          <img src="/logos/microsoft/m2.png" class="  object-cover" />
-          <img src="/logos/microsoft/m3.png" class="  object-cover" />
-          <img src="/logos/microsoft/m4.png" class="  object-cover" />
+          <img src="/logos/microsoft/m1.png" alt="Microsoft Solutions Partner - Data and AI" class="object-cover" width="200" height="auto" loading="lazy" />
+          <img src="/logos/microsoft/m2.png" alt="Microsoft Solutions Partner - Cloud and Infrastructure" class="object-cover" width="200" height="auto" loading="lazy" />
+          <img src="/logos/microsoft/m3.png" alt="Microsoft Solutions Partner - Digital and App Innovation" class="object-cover" width="200" height="auto" loading="lazy" />
+          <img src="/logos/microsoft/m4.png" alt="Microsoft Solutions Partner - Modern Work" class="object-cover" width="200" height="auto" loading="lazy" />
         </div>
       </div>
     </div>
@@ -179,6 +179,6 @@
 
   }
   }
-</div>
+</main>
 
 }
