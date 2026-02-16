@@ -1,24 +1,16 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { SeoMetaService } from '../../app/services/seo-meta.service';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { OfficeLocationsSectionComponent } from '../../shared/office-locations-section/office-locations-section.component';
+import { CTA_GRADIENTS, CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 
 @Component({
   selector: 'app-contact-success',
-  imports: [RouterLink],
+  imports: [OfficeLocationsSectionComponent, CtaSectionComponent],
   templateUrl: './contact-success.html',
   styleUrl: './contact-success.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContactSuccess implements OnInit {
-  private readonly seoMeta = inject(SeoMetaService);
-
-  ngOnInit() {
-    this.seoMeta.updateMeta({
-      title: 'Message Received | Oakwood Systems',
-      description: "Thanks for reaching out. We'll be in touch soon.",
-      canonicalPath: '/contact-success',
-    });
-  }
+export class ContactSuccess {
+  readonly licensingGradient = CTA_GRADIENTS[4];
   readonly heroTitle = 'Thanks for reaching out.';
   readonly heroSubtitle = "We'll be in touch soon.";
   readonly heroCopy = 'We received your message and our team will review it shortly.';

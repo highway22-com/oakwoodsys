@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { ButtonPrimaryComponent } from "../button-primary/button-primary.component";
 
-/** Lista de 4 gradientes para fondo de la sección CTA. Índice 0 = primero (45° derecha a izquierda). */
+/** Lista de fondos para la sección CTA. Índice 0 = primero (45° derecha a izquierda). */
 export const CTA_GRADIENTS: readonly string[] = [
   /* 1: derecha a izquierda, 45°, #F0F7FA → #E5F2F7 → #E9ECF7 → #EDE6F6 */
   'linear-gradient(45deg, #F0F7FA, #E5F2F7, #E9ECF7, #EDE6F6)',
@@ -11,6 +11,8 @@ export const CTA_GRADIENTS: readonly string[] = [
   'linear-gradient(225deg, #EBF7F9, #DBF0F4, #D2F0E8, #DCF5E2)',
   /* 4: misma paleta, 315° */
   'linear-gradient(315deg, #D2E8F5, #E8DCE8, #EFDBD5, #F7E1B9)',
+  /* 5: color sólido vía variable de diseño */
+  'linear-gradient(135deg, #EEF2FF, #FFFFFF, #FFE4E6)',
 ];
 
 @Component({
@@ -35,10 +37,13 @@ export class CtaSectionComponent {
   /** URL o ruta del botón secundario (routerLink). */
   readonly secondaryLink = input<string>('/contact-us');
 
-  /** Índice del gradiente de fondo (0–3). Por defecto 0 = 45° derecha a izquierda. */
+  /** Índice del fondo en CTA_GRADIENTS. Por defecto 0. */
   readonly gradientIndex = input<number>(0);
+  /** Valor de gradiente explícito; si existe, tiene prioridad sobre gradientIndex. */
+  readonly backgroundGradientValue = input<string>('');
+
   /** Gradiente de fondo efectivo según gradientIndex. */
   readonly backgroundGradient = computed(() =>
-    CTA_GRADIENTS[this.gradientIndex()] ?? CTA_GRADIENTS[0]
+    this.backgroundGradientValue().trim() || (CTA_GRADIENTS[this.gradientIndex()] ?? CTA_GRADIENTS[0])
   );
 }
