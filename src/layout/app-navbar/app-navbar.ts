@@ -55,6 +55,7 @@ export class AppNavbar implements OnInit, OnDestroy {
   isResourcesDropdownOpen = false;
   hoveredIndex = signal<number | null>(null);
   isOnContactSuccess = signal(false);
+  isOnStructuredEngagement = signal(false);
 
   readonly menuItems = signal<MenuItem[]>([]);
   readonly services = signal<Service[]>([]);
@@ -184,18 +185,43 @@ export class AppNavbar implements OnInit, OnDestroy {
     const scrollPosition = window.scrollY || document.documentElement.scrollTop;
     const scrollThreshold = window.innerHeight; // 100vh
     this.isScrolled = scrollPosition > scrollThreshold;
+    this.updateStructuredEngagementStatus();
+  }
+
+  private updateStructuredEngagementStatus(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      this.isOnStructuredEngagement.set(false);
+      return;
+    }
+
+    const sectionEl = document.querySelector('app-structured-engagements');
+    if (!sectionEl) {
+      this.isOnStructuredEngagement.set(false);
+      return;
+    }
+
+    const rect = sectionEl.getBoundingClientRect();
+    const navProbeY = 110;
+    const inViewAtNavbar = rect.top <= navProbeY && rect.bottom >= navProbeY;
+    this.isOnStructuredEngagement.set(inViewAtNavbar);
   }
    private updateContactSuccessStatus(): void {
-    this.isOnContactSuccess.set(this.router.url === '/contact-success');
+    this.isOnContactSuccess.set(this.router.url === '/contact-success'||this.router.url === '/contact-us' );
   } 
   /** true cuando la barra debe usar estilo "oscuro" (logo oscuro, texto oscuro): scroll o hover en un dropdown (índice !== 0) o en contact-success. */
   get isNavbarDark(): boolean {
+    if (this.isOnStructuredEngagement()) {
+      return false;
+    }
     const hover = this.hoveredIndex();
     return this.isScrolled || (hover !== null) || this.searchPanelOpen() || this.isOnContactSuccess();
   }
 
   /** true cuando la barra debe mostrar fondo (blanco) o texto de enlaces oscuro: scroll o cualquier hover en menú o en contact-success. */
   get hasNavbarBackground(): boolean {
+    if (this.isOnStructuredEngagement()) {
+      return false;
+    }
     return this.isScrolled || this.hoveredIndex() !== null || this.searchPanelOpen() ||this.isOnContactSuccess();
   }
 

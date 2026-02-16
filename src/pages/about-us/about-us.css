@@ -12,12 +12,10 @@
 }
 
 .about-video-section {
-  min-height: 320px;
+  min-height: 680px;
 }
 
-.about-play-button {
-  box-shadow: 0 4px 20px rgba(29, 105, 172, 0.4);
-}
+
 
 .about-team-avatar {
   transition: transform 0.2s ease;
@@ -38,3 +36,5 @@
 .about-insight-card {
   transition: box-shadow 0.2s ease;
 }
+
+
