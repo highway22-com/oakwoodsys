@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, NgZone, ViewChild, ElementRef, AfterViewInit, signal, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, NgZone, ViewChild, ElementRef, AfterViewInit, OnInit, signal, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { Footer } from '../../shared/footer/footer';
+import { SeoMetaService } from '../../app/services/seo-meta.service';
 import emailjs from '@emailjs/browser';
 
 const PLACEHOLDER_VIDEO_URLS = [
@@ -27,13 +28,14 @@ export interface OfficeLocation {
   styleUrl: './contact-us.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContactUs implements AfterViewInit {
+export class ContactUs implements OnInit, AfterViewInit {
   @ViewChild('licensingSection') licensingSection!: ElementRef<HTMLElement>;
   @ViewChild('contactImageContainer') contactImageContainer!: ElementRef<HTMLElement>;
   @ViewChild('contactForm') contactForm!: ElementRef<HTMLElement>;
   private readonly ngZone = inject(NgZone);
   private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly seoMeta = inject(SeoMetaService);
   showLicensingAnimation = signal(false);
   showContactImageAnimation = signal(false);
   showFormAnimation = signal(false);
@@ -54,6 +56,14 @@ export class ContactUs implements AfterViewInit {
     // (window as any)['onRecaptchaSuccess'] = (token: string) => {
     //   this.ngZone.run(() => this.onRecaptchaSuccess(token));
     // };
+  }
+
+  ngOnInit() {
+    this.seoMeta.updateMeta({
+      title: 'Contact Us | Oakwood Systems',
+      description: "Let's move your vision forward. Get in touch with Oakwood Systems for Microsoft solutions, Azure consulting, and digital transformation.",
+      canonicalPath: '/contact-us',
+    });
   }
 
   ngAfterViewInit() {
