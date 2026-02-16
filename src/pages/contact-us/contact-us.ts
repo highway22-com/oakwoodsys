@@ -52,70 +52,72 @@ export class ContactUs implements AfterViewInit {
   ngAfterViewInit() {
     this.initRecaptcha();
 
-    if (this.licensingSection) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              this.ngZone.run(() => {
-                this.showLicensingAnimation.set(true);
-                this.cdr.markForCheck();
-              });
-            } else {
-              this.ngZone.run(() => {
-                this.showLicensingAnimation.set(false);
-                this.cdr.markForCheck();
-              });
-            }
-          });
-        },
-        { threshold: 0.2 }
-      );
-      observer.observe(this.licensingSection.nativeElement);
-    }
+    if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
+      if (this.licensingSection) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                this.ngZone.run(() => {
+                  this.showLicensingAnimation.set(true);
+                  this.cdr.markForCheck();
+                });
+              } else {
+                this.ngZone.run(() => {
+                  this.showLicensingAnimation.set(false);
+                  this.cdr.markForCheck();
+                });
+              }
+            });
+          },
+          { threshold: 0.2 }
+        );
+        observer.observe(this.licensingSection.nativeElement);
+      }
 
-    if (this.contactImageContainer) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              this.ngZone.run(() => {
-                this.showContactImageAnimation.set(true);
-                this.cdr.markForCheck();
-              });
-            } else {
-              this.ngZone.run(() => {
-                this.showContactImageAnimation.set(false);
-                this.cdr.markForCheck();
-              });
-            }
-          });
-        },
-        { threshold: 0.2 }
-      );
-      observer.observe(this.contactImageContainer.nativeElement);
-    }
+      if (this.contactImageContainer) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                this.ngZone.run(() => {
+                  this.showContactImageAnimation.set(true);
+                  this.cdr.markForCheck();
+                });
+              } else {
+                this.ngZone.run(() => {
+                  this.showContactImageAnimation.set(false);
+                  this.cdr.markForCheck();
+                });
+              }
+            });
+          },
+          { threshold: 0.2 }
+        );
+        observer.observe(this.contactImageContainer.nativeElement);
+      }
 
-    if (this.contactForm) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              this.ngZone.run(() => {
-                this.showFormAnimation.set(true);
-                this.cdr.markForCheck();
-              });
-            } else {
-              this.ngZone.run(() => {
-                this.showFormAnimation.set(false);
-                this.cdr.markForCheck();
-              });
-            }
-          });
-        },
-        { threshold: 0.2 }
-      );
-      observer.observe(this.contactForm.nativeElement);
+      if (this.contactForm) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                this.ngZone.run(() => {
+                  this.showFormAnimation.set(true);
+                  this.cdr.markForCheck();
+                });
+              } else {
+                this.ngZone.run(() => {
+                  this.showFormAnimation.set(false);
+                  this.cdr.markForCheck();
+                });
+              }
+            });
+          },
+          { threshold: 0.2 }
+        );
+        observer.observe(this.contactForm.nativeElement);
+      }
     }
   }
 
