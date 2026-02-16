@@ -130,8 +130,10 @@ export default class AboutUs implements OnInit {
     });
 
     this.lastScrollVisible = false;
-    window.addEventListener('scroll', this.handleScrollAnimation.bind(this));
-    setTimeout(() => this.handleScrollAnimation(), 100);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', this.handleScrollAnimation.bind(this));
+      setTimeout(() => this.handleScrollAnimation(), 100);
+    }
   }
 
   lastScrollVisible = false;
