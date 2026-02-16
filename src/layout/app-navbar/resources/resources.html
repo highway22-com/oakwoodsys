@@ -1,7 +1,7 @@
-<div class="2xl:max-w-screen-2xl 2xl:mx-auto">
+<div class="px-20">
     <div class="flex flex-col lg:flex-row">
         <!-- Left and Middle Columns: Resource Categories -->
-        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
+        <div class="flex-8/12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
             @for (category of resourceCategories; track category.id) {
             <a [routerLink]="category.link"
                 class="flex w-full group hover:bg-slate-50 transition-all duration-300 relative overflow-hidden">
@@ -41,12 +41,12 @@
         </div>
 
         <!-- Right Column: Featured Blogs + Whitepapers -->
-        <div class="lg:w-80 xl:w-96 border-t border-gray-200 lg:border-t-0 lg:border-l">
+        <div class="flex-auto lg:w-80 xl:w-96 border-t border-gray-200 lg:border-t-0 lg:border-l">
             <div class="px-6 sm:px-8 md:px-10 pt-10 sm:pt-16 md:pt-18 pb-8 sm:pb-10 md:pb-10">
                 <!-- Featured Blogs (2 últimos desde GraphQL / blog) -->
-                <div class="mb-8 md:mb-10 max-h-[200px] overflow-y-auto">
+                <div class="">
                     <div class="flex items-center gap-2 mb-6 md:mb-8">
-                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-4 h-4 text-p-500" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
                                 clip-rule="evenodd" />
@@ -59,23 +59,28 @@
                         @for (blog of featuredBlogs(); track blog.id) {
                         <div class="group">
                             <a [routerLink]="blog.link" class="block">
-                                @if (blog.image) {
-                                <div class="relative w-full h-32 sm:h-40 md:h-48 overflow-hidden">
-                                    <img [src]="blog.image" [alt]="blog.title"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                                </div>
-                                }
-                                <h4
-                                    class="text-sm text-[#454545] group-hover:text-p-500 transition-colors duration-200 mt-2">
-                                    {{ blog.title }}
-                                </h4>
-                                <div
-                                    class="flex items-center text-xs text-[#5D5D5D] group-hover:text-p-500 transition-colors duration-200">
-                                    <span>Read more</span>
-                                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5l7 7-7 7" />
-                                    </svg>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-38 h-26 shrink-0 overflow-hidden rounded-sm flex-shrink-0">
+                                        <img [src]="blog.image" [alt]="(blog.title) ?? ''"
+                                            class="w-full h-full object-cover" loading="lazy" />
+                                    </div>
+                                    <div>
+                                        <h4
+                                            class="text-sm text-[#454545] group-hover:text-p-500 transition-colors duration-200 mt-2">
+                                            {{ blog.title }}
+                                        </h4>
+                                        <div
+                                            class="flex items-center text-xs text-[#5D5D5D] group-hover:text-p-500 transition-colors duration-200">
+                                            <span>Read more</span>
+                                            <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+
                                 </div>
                             </a>
                         </div>
@@ -86,7 +91,7 @@
 
 
                 <!-- Explore Knowledge Link -->
-                <div class="mt-1 md:mt-q pt-q md:pt-8 border-t border-gray-200">
+                <div class="mt-3 md:mt-8 pt-6 md:pt-8 border-t border-gray-200">
                     <a routerLink="/resources"
                         class="flex items-center gap-2 text-sm       text-[#454545] hover:text-p-500 transition-colors duration-200">
                         <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">

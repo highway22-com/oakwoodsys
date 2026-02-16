@@ -24,6 +24,7 @@ import { ButtonPrimaryComponent } from "../../shared/button-primary/button-prima
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { readingTimeMinutes } from '../../app/utils/reading-time.util';
+import { SeoMetaService } from '../../app/services/seo-meta.service';
 
 interface PostAuthor {
   node: {
@@ -88,6 +89,7 @@ const PAGE_SIZE = 10;
 export default class Blogs implements OnInit {
   private readonly apollo = inject(Apollo);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly seoMeta = inject(SeoMetaService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly blogHeroBreadcrumbs: PageHeroBreadcrumb[] = [
@@ -166,6 +168,11 @@ export default class Blogs implements OnInit {
   }
 
   ngOnInit() {
+    this.seoMeta.updateMeta({
+      title: 'IT Blog | Oakwood Systems',
+      description: 'Insights and articles on Microsoft solutions, Azure, Data & AI, cloud migration, and digital transformation from Oakwood Systems.',
+      canonicalPath: '/blog',
+    });
     this.loadFirstPage();
   }
 

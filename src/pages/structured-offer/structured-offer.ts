@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
+import { SeoMetaService } from '../../app/services/seo-meta.service';
 
 interface StructuredOfferSection {
   id: string;
@@ -1044,6 +1045,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
 })
 export class StructuredOffer implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
+  private readonly seoMeta = inject(SeoMetaService);
   private readonly platformId = inject(PLATFORM_ID);
   private routeSubscription?: Subscription;
   private scrollListener?: () => void;
@@ -1120,11 +1122,22 @@ export class StructuredOffer implements OnInit, OnDestroy {
     this.activeSection.set('overview');
     const slugValue = this.slug();
     if (slugValue && STRUCTURED_OFFER_CONTENT[slugValue]) {
-      this.content.set(STRUCTURED_OFFER_CONTENT[slugValue]);
+      const offer = STRUCTURED_OFFER_CONTENT[slugValue];
+      this.content.set(offer);
+      this.seoMeta.updateMeta({
+        title: `${offer.title} | Oakwood Systems`,
+        description: offer.summary,
+        canonicalPath: `/structured-engagement/${slugValue}`,
+      });
       return;
     }
     this.content.set(null);
     this.error.set('Offer not found.');
+    this.seoMeta.updateMeta({
+      title: 'Structured Engagements | Oakwood Systems',
+      description: 'Drive efficiency and innovation with tailored, strategic engagements designed to align technology solutions with your unique business goals.',
+      canonicalPath: '/structured-engagement',
+    });
   }
 
   onSubmit() {
