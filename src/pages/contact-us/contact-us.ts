@@ -8,8 +8,7 @@ import { SeoMetaService } from '../../app/services/seo-meta.service';
 import emailjs from '@emailjs/browser';
 
 const PLACEHOLDER_VIDEO_URLS = [
-  'https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4',
-  'https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4',
+  'https://oakwoodsys.com/wp-content/uploads/2026/02/Contact-Us-1.mp4',
 ];
 
 export interface OfficeLocation {
@@ -47,11 +46,11 @@ export class ContactUs implements OnInit, AfterViewInit {
     company: false,
     message: false,
   };
-  
+
   constructor() {
     // Initialize EmailJS
     emailjs.init('Xw-Lh8d6dJzqqA08R');
-    
+
     // Expose callback to window for reCAPTCHA
     // (window as any)['onRecaptchaSuccess'] = (token: string) => {
     //   this.ngZone.run(() => this.onRecaptchaSuccess(token));
@@ -184,7 +183,7 @@ export class ContactUs implements OnInit, AfterViewInit {
 
   onSubmit() {
     this.submitted = true;
-    
+
     // Reset validation errors
     this.validationErrors = {
       fullName: !this.formModel.fullName,
