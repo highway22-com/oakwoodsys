@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { VideoHero } from '../../shared/video-hero/video-hero';
+import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { LatestInsightsSectionComponent, type LatestInsightsSection } from '../../shared/sections/latest-insights/latest-insights';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
@@ -79,6 +80,7 @@ export interface AboutContent {
 })
 export default class AboutUs implements OnInit {
   private readonly http = inject(HttpClient);
+  private readonly seoMeta = inject(SeoMetaService);
 
   readonly content = signal<AboutContent | null>(null);
   readonly loading = signal(true);
@@ -118,9 +120,19 @@ export default class AboutUs implements OnInit {
   });
 
   ngOnInit() {
+    this.seoMeta.updateMeta({
+      title: 'About Us | Oakwood Systems',
+      description: 'Learn about Oakwood Systems, a Microsoft Solutions Partner driving business innovation and modernization with Azure and cloud services.',
+      canonicalPath: '/about-us',
+    });
     this.http.get<AboutContent>('/about-content.json').subscribe({
       next: (data) => {
         this.content.set(data);
+        this.seoMeta.updateMeta({
+          title: `${data.heroTitle} | Oakwood Systems`,
+          description: data.heroDescription,
+          canonicalPath: '/about-us',
+        });
         this.loading.set(false);
       },
       error: () => {

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, NgZone, ViewChild, ElementRef, AfterViewInit, signal, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, NgZone, ViewChild, ElementRef, AfterViewInit, OnInit, signal, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OfficeLocationsSectionComponent } from '../../shared/office-locations-section/office-locations-section.component';
@@ -24,6 +24,7 @@ export class ContactUs implements AfterViewInit {
   private readonly ngZone = inject(NgZone);
   private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly seoMeta = inject(SeoMetaService);
   showLicensingAnimation = signal(false);
   showContactImageAnimation = signal(false);
   showFormAnimation = signal(false);
@@ -37,7 +38,7 @@ export class ContactUs implements AfterViewInit {
     message: false,
     recaptcha: false,
   };
-  
+
   constructor() {
     // Initialize EmailJS
     emailjs.init('Xw-Lh8d6dJzqqA08R');
@@ -47,6 +48,14 @@ export class ContactUs implements AfterViewInit {
         this.ngZone.run(() => this.onRecaptchaSuccess(token));
       };
     }
+  }
+
+  ngOnInit() {
+    this.seoMeta.updateMeta({
+      title: 'Contact Us | Oakwood Systems',
+      description: "Let's move your vision forward. Get in touch with Oakwood Systems for Microsoft solutions, Azure consulting, and digital transformation.",
+      canonicalPath: '/contact-us',
+    });
   }
 
   ngAfterViewInit() {
@@ -182,7 +191,7 @@ export class ContactUs implements AfterViewInit {
 
   onSubmit() {
     this.submitted = true;
-    
+
     // Reset validation errors
     this.validationErrors = {
       fullName: !this.formModel.fullName,

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Apollo, gql } from 'apollo-angular';
+import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { GET_GEN_CONTENTS_BY_SLUGS } from '../../app/api/graphql';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { readingTimeMinutes } from '../../app/utils/reading-time.util';
@@ -63,6 +64,7 @@ export default class Post implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly apollo = inject(Apollo);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly seoMeta = inject(SeoMetaService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly ngZone = inject(NgZone);
   private scrollListener?: () => void;
@@ -240,6 +242,7 @@ export default class Post implements OnInit, OnDestroy {
               this.post.set(postData);
               if (toc.length > 0) this.activeSection.set(toc[0].id);
             });
+            this.updateSeoMeta(postData, slugValue);
             const relatedSlugs = (raw['relatedBloqSlugs'] as string[] | null | undefined) ?? [];
             if (relatedSlugs.length > 0 && data?.genContent) {
               this.apollo.query({ query: GET_GEN_CONTENTS_BY_SLUGS, variables: { slugs: relatedSlugs }, fetchPolicy: 'network-only' }).subscribe({
@@ -270,6 +273,20 @@ export default class Post implements OnInit, OnDestroy {
           this.loading.set(false);
         },
       });
+  }
+
+  private updateSeoMeta(post: PostDetail, slug: string): void {
+    const isCaseStudy = this.router.url.startsWith('/resources/case-studies');
+    const canonicalPath = isCaseStudy ? `/resources/case-studies/${slug}` : `/blog/${slug}`;
+    const title = post.headTitle || `${post.title} | Oakwood Systems`;
+    const description = post.headDescription || post.excerpt || this.seoMeta.defaultDescription;
+    const canonicalUrl = post.headCanonicalUrl || undefined;
+    this.seoMeta.updateMeta({
+      title,
+      description,
+      canonicalPath: canonicalUrl ?? canonicalPath,
+      image: post.featuredImage?.node?.sourceUrl,
+    });
   }
 
   ngOnDestroy() {
