@@ -1,8 +1,8 @@
 <div class="bg-white/50 overflow-hidden h-full flex flex-col">
   <div class="relative h-[53%] overflow-hidden p-6">
     <img [src]="article().image?.url ?? ''"
-      [alt]="article().image?.alt ?? (article().title ? article().title + ' article image' : '')"
-      class="aspect-6/5 object-cover" loading="lazy" />
+      [alt]="article().image?.alt ?? (article().title ? article().title + ' - Oakwood case study' : 'Oakwood case study image')"
+      class="aspect-6/5 object-cover" loading="lazy" width="400" height="333" />
   </div>
   <div class="py-5 px-5 flex flex-col grow">
     <div class="flex items-center mb-5">
