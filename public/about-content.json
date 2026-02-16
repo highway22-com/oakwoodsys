@@ -120,19 +120,29 @@
   "approachDescription": "Our approach is built on transparency, collaboration, and a commitment to long-term partnerships. We align our processes with your goals and adapt as your needs evolve.",
   "howWeWorkItems": [
     {
-      "title": "Relationship and Accountability"
+      "title": "Ownership and accountability",
+      "description": "Oakwood teams are trusted to own outcomes, not just complete tasks. Responsibilities are clearly defined, and decisions are made close to the work. When challenges arise, they surface early and are addressed directly and transparently.",
+      "icon":"ownership"
     },
     {
-      "title": "Continuous Innovation"
+      "title": "Craftsmanship in delivery",
+      "description": "Oakwood prioritizes thoughtful design, clean architecture, and disciplined execution. The team invests time upfront to understand environments, constraints, and long-term impact. This approach reduces rework and leads to more durable solutions.",
+      "icon":"craftsmanship"
     },
     {
-      "title": "Learning Cycle at the core"
+      "title": "Learning is part of the job",
+      "description": "Technology evolves quickly, and Oakwood expects its teams to evolve with it. Continuous learning, certification, and hands-on experience are part of day-to-day work. Staying current is essential to maintaining client trust and delivering high-quality outcomes.",
+      "icon":"learning"
     },
     {
-      "title": "Proactive Leadership and Execution"
+      "title": "Flexibility supported by clear expectations",
+      "description":"Oakwood operates with flexibility while maintaining clear expectations around communication, delivery, and accountability. Teams balance autonomy with responsibility, ensuring work is performed thoughtfully, on time, and with attention to detail.",
+      "icon":"flexibility"
     },
     {
-      "title": "Building for long-term partnership"
+      "title": "Built for long-term partnerships",
+      "description":"Oakwood is designed for repeat engagements and lasting relationships. Teams focus on building environments and solutions that can grow and adapt over time. Long-term success and client trust matter more than short-term wins.",
+      "icon":"partnerships"
     }
   ],
   "insightsLabel": "FROM THE BLOG",
