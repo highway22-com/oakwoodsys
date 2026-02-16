@@ -1,7 +1,7 @@
 {
   "menuItems": [
     {
-      "label": "Microsoft Services",
+      "label": "Services",
       "routerLink": "/services/data-and-ai",
       "index": 0,
       "hasDropdown": true

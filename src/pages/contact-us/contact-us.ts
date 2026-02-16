@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OfficeLocationsSectionComponent } from '../../shared/office-locations-section/office-locations-section.component';
 import { CTA_GRADIENTS, CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
+import { SeoMetaService } from '../../app/services/seo-meta.service';
 import emailjs from '@emailjs/browser';
 
 
@@ -14,7 +15,7 @@ import emailjs from '@emailjs/browser';
   styleUrl: './contact-us.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContactUs implements AfterViewInit {
+export class ContactUs implements OnInit, AfterViewInit {
   readonly ctaGradients = CTA_GRADIENTS;
   readonly licensingGradient = CTA_GRADIENTS[4];
   @ViewChild('licensingSection') licensingSection!: ElementRef<HTMLElement>;
