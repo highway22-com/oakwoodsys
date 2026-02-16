@@ -143,7 +143,7 @@ export class ContactUs implements OnInit, AfterViewInit {
       }
 
       this.recaptchaWidgetId = grecaptcha.render(this.recaptchaHost!.nativeElement, {
-        sitekey: '6LeNtGQsAAAAAAhMRd3_mtjfoNCKgOUr4bWi8Dmt',
+        sitekey: '6Lcxz20sAAAAADeQNIyXPS7BCqu30dGRazhNwn8W',
         callback: (token: string) => {
           this.ngZone.run(() => {
             this.recaptchaToken = token;
