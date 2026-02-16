@@ -117,10 +117,13 @@ export default class Home implements OnInit {
   }
 
   /** Descripción del hero (desde sección hero o vacío). */
-  heroDescription(): string {
+  heroDescription(): string | string[] {
     const section = this.getSection('hero');
-    const d = section?.description;
-    return (typeof d === 'string' ? d : '') || '';
+    const t = section?.description;
+    if (typeof t === 'string') return t || '';
+    if (Array.isArray(t)) return t.filter((s): s is string => typeof s === 'string');
+    if (t && typeof t === 'object' && !Array.isArray(t)) return [t.line1, t.line2].filter(Boolean).join(' ') || '';
+    return '';
   }
 
   /** CTA principal del hero (desde sección hero). */
