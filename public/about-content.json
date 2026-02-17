@@ -10,12 +10,12 @@
     "backgroundColor": "#1D69AC"
   },
   "heroCtaSecondary": {
-    "text": "LEARN MORE",
+    "text": "View our Work",
     "link": "/resources",
     "borderColor": "#ffffff"
   },
   "aboutLabel": "ABOUT US",
-  "aboutTitle": "Oakwood bring deep expertise, a collaborative mindset",
+  "aboutTitle": "Oakwood brings deep expertise, a collaborative mindset",
   "aboutDescription": "Founded in 1981, Oakwood provides expert counsel and comprehensive solutions in the areas of modern work, application innovation, data & AI, cloud, and managed services.",
   "aboutFeatures": [
     {
