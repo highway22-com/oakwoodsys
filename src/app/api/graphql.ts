@@ -57,7 +57,7 @@ export interface CmsSection {
   type: string;
   /** Título como string o como objeto con line1/line2 (ej. sección microsoftPartner). */
   title?: string | { line1?: string; line2?: string };
-  description?: string;
+  description?: string | { line1?: string; line2?: string };
   label?: string;
   /** Subtítulo (ej. sección latestInsights). */
   subtitle?: string;

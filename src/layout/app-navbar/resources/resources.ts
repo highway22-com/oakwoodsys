@@ -20,15 +20,9 @@ export class Resources {
       desc: 'Insights and perspectives on business and innovation.',
       icon: '/assets/manu.png'
     },
+
     {
       id: '02',
-      name: 'Partners',
-      link: '/partners',
-      desc: 'In-depth examples of how Oakwood solutions are applied in real-world scenarios.',
-      icon: '/assets/parn.png'
-    },
-    {
-      id: '03',
       name: 'Case Studies',
       link: '/resources/case-studies',
       desc: 'Discover our impact through realized projects',

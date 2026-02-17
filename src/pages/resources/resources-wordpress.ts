@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, OnInit, PLATFORM_ID, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Apollo } from 'apollo-angular';
@@ -16,6 +16,7 @@ import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudyCardsSectionComponent } from '../../shared/sections/featured-case-study-cards/featured-case-study';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
+import { SeoMetaService } from '../../app/services/seo-meta.service';
 
 /** Contenido de la página Resources (resources-content.json). */
 export interface ResourcesPageContent {
@@ -115,6 +116,8 @@ export default class Resources implements OnInit {
   private readonly apollo = inject(Apollo);
   private readonly http = inject(HttpClient);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly router = inject(Router);
+  private readonly seoMeta = inject(SeoMetaService);
   private readonly platformId = inject(PLATFORM_ID);
 
   /** Contenido estático de la página (hero, CTAs, textos, filtros) desde resources-content.json. */
@@ -166,6 +169,7 @@ export default class Resources implements OnInit {
   }
 
   ngOnInit() {
+    this.updateSeoMeta(null);
     this.loadPageContent();
     if (!this.slug) {
       this.loadCaseStudiesList();
@@ -174,8 +178,26 @@ export default class Resources implements OnInit {
 
   private loadPageContent() {
     this.http.get<ResourcesPageContent>('/resources-content.json').subscribe({
-      next: (data) => this.pageContent.set(data),
+      next: (data) => {
+        this.pageContent.set(data);
+        this.updateSeoMeta(data);
+      },
       error: () => this.pageContent.set(null),
+    });
+  }
+
+  private updateSeoMeta(content: ResourcesPageContent | null): void {
+    const isCaseStudies = this.router.url.includes('/case-studies');
+    const canonicalPath = isCaseStudies ? '/resources/case-studies' : '/resources';
+    const hero = content?.videoHero ?? content?.hero;
+    const title = hero?.title ?? (isCaseStudies ? 'Case Studies | Oakwood Systems' : 'Resources | Oakwood Systems');
+    const description = hero?.description ?? (isCaseStudies
+      ? 'Explore case studies and success stories from Oakwood Systems Microsoft and Azure projects.'
+      : 'Explore case studies, insights, and resources from Oakwood Systems on Microsoft solutions, Azure, and digital transformation.');
+    this.seoMeta.updateMeta({
+      title: title.includes('|') ? title : `${title} | Oakwood Systems`,
+      description,
+      canonicalPath,
     });
   }
 

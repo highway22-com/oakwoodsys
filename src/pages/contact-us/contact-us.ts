@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, NgZone, ViewChild, ElementRef, AfterViewInit, signal, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, NgZone, ViewChild, ElementRef, AfterViewInit, OnInit, signal, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OfficeLocationsSectionComponent } from '../../shared/office-locations-section/office-locations-section.component';
 import { CTA_GRADIENTS, CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
+import { SeoMetaService } from '../../app/services/seo-meta.service';
 import emailjs from '@emailjs/browser';
 
 
@@ -14,7 +15,7 @@ import emailjs from '@emailjs/browser';
   styleUrl: './contact-us.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContactUs implements AfterViewInit {
+export class ContactUs implements OnInit, AfterViewInit {
   readonly ctaGradients = CTA_GRADIENTS;
   readonly licensingGradient = CTA_GRADIENTS[4];
   @ViewChild('licensingSection') licensingSection!: ElementRef<HTMLElement>;
@@ -24,6 +25,7 @@ export class ContactUs implements AfterViewInit {
   private readonly ngZone = inject(NgZone);
   private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly seoMeta = inject(SeoMetaService);
   showLicensingAnimation = signal(false);
   showContactImageAnimation = signal(false);
   showFormAnimation = signal(false);
@@ -37,7 +39,7 @@ export class ContactUs implements AfterViewInit {
     message: false,
     recaptcha: false,
   };
-  
+
   constructor() {
     // Initialize EmailJS
     emailjs.init('Xw-Lh8d6dJzqqA08R');
@@ -47,6 +49,14 @@ export class ContactUs implements AfterViewInit {
         this.ngZone.run(() => this.onRecaptchaSuccess(token));
       };
     }
+  }
+
+  ngOnInit() {
+    this.seoMeta.updateMeta({
+      title: 'Contact Us | Oakwood Systems',
+      description: "Let's move your vision forward. Get in touch with Oakwood Systems for Microsoft solutions, Azure consulting, and digital transformation.",
+      canonicalPath: '/contact-us',
+    });
   }
 
   ngAfterViewInit() {
@@ -133,7 +143,7 @@ export class ContactUs implements AfterViewInit {
       }
 
       this.recaptchaWidgetId = grecaptcha.render(this.recaptchaHost!.nativeElement, {
-        sitekey: '6LeNtGQsAAAAAAhMRd3_mtjfoNCKgOUr4bWi8Dmt',
+        sitekey: '6Lcxz20sAAAAADeQNIyXPS7BCqu30dGRazhNwn8W',
         callback: (token: string) => {
           this.ngZone.run(() => {
             this.recaptchaToken = token;
@@ -182,7 +192,7 @@ export class ContactUs implements AfterViewInit {
 
   onSubmit() {
     this.submitted = true;
-    
+
     // Reset validation errors
     this.validationErrors = {
       fullName: !this.formModel.fullName,

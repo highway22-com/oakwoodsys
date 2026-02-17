@@ -7,6 +7,7 @@ import { VideoHero } from '../../shared/video-hero/video-hero';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { TrustedBySectionComponent } from "../../shared/sections/trusted-by/trusted-by";
 import { FeaturedCaseStudySectionComponent } from "../../shared/sections/featured-case-study/featured-case-study";
+import { SeoMetaService } from '../../app/services/seo-meta.service';
 
 interface IndustryChallengeCard {
   id: string;
@@ -78,6 +79,7 @@ interface IndustriesContent {
 export default class Industries implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly http = inject(HttpClient);
+  private readonly seoMeta = inject(SeoMetaService);
   private routeSub?: Subscription;
 
   readonly slug = signal<string | null>(null);
@@ -124,9 +126,21 @@ export default class Industries implements OnInit, OnDestroy {
         const slugValue = this.slug();
         const contentKey = slugValue ? (Industries.SLUG_TO_KEY[slugValue] ?? slugValue) : null;
         if (contentKey && data.industries[contentKey]) {
-          this.content.set(data.industries[contentKey]);
+          const industry = data.industries[contentKey];
+          this.content.set(industry);
+          this.seoMeta.updateMeta({
+            title: `${industry.title} | Oakwood Systems`,
+            description: industry.description,
+            canonicalPath: `/industries/${slugValue}`,
+            image: industry.backgroundImage,
+          });
         } else {
           this.error.set(slugValue ? `Industry "${slugValue}" not found` : null);
+          this.seoMeta.updateMeta({
+            title: 'Industries | Oakwood Systems',
+            description: 'Explore how Oakwood Systems helps healthcare, education, and other industries with Microsoft and Azure solutions.',
+            canonicalPath: '/industries',
+          });
         }
         this.loading.set(false);
       },
