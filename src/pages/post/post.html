@@ -64,7 +64,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span class="text-sm">{{ p.date | date:'MMMM d, y' }}</span>
+                  <span class="text-sm">{{ p.date | date:'d MMM, yyyy' }}</span>
                   <span class="mx-0.5">•</span>
                   <span class="text-sm ">{{ readingTimeMinutes(p.content) }} min read</span>
                 </div>
@@ -209,15 +209,11 @@
       <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <!-- Left Column: Image -->
-          <div class="order-2 lg:order-1">
-            <div class="relative w-full aspect-[4/3]    overflow-hidden">
-              <img src="/assets/contact-hero.jpg" alt="Team collaboration" class="w-full h-full object-cover" />
-            </div>
-            <div class="flex items-center gap-6 mt-6">
-              <img src="/assets/logos/microsoft.png" alt="Microsoft" class="h-8 opacity-70" />
-              <img src="/assets/logos/azure.png" alt="Azure" class="h-8 opacity-70" />
-            </div>
+          <div class="relative w-full h-full    overflow-hidden">
+            <img src="https://oakwoodsys.com/wp-content/uploads/2026/02/contactus.png" alt="Team collaboration"
+              class="w-full h-full object-cover" />
           </div>
+
 
           <!-- Right Column: Form -->
           <div class="order-1 lg:order-2">
@@ -353,5 +349,4 @@
 
 <app-cta-section title="Let's move your vision forward"
   description="Connect with a team committed to helping you modernize, innovate, and achieve meaningful results."
-  primaryText="Talk to an expert" primaryLink="/contact-us" secondaryText="Subscribe to our newsletter"
-  secondaryLink="/contact-us" />
+  primaryText="Talk to an expert" primaryLink="/contact-us"  />

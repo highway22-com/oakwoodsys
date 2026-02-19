@@ -1,6 +1,7 @@
 import {
   GET_GEN_CONTENTS_FOR_SEARCH,
   GET_GEN_CONTENTS_BY_CATEGORY,
+  GET_GEN_CONTENTS_BY_TAG_AND_CATEGORY,
   GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED,
   GET_CASE_STUDIES,
   GET_GEN_CONTENT_BY_SLUG,
@@ -8,6 +9,7 @@ import {
   GET_CASE_STUDY_BY_SLUG,
   GET_CMS_PAGE,
   getAcfMediaUrl,
+  getPrimaryTagName,
   type GenContentListNode,
   type GenContentsByCategoryResponse,
   type CaseStudyByResponse,
@@ -45,6 +47,15 @@ describe('GraphQL API (graphql.ts)', () => {
       const { name, variables } = getOperationInfo(GET_GEN_CONTENTS_BY_CATEGORY);
       expect(name).toBe('GetGenContentsByCategory');
       expect(variables).toContain('categoryId');
+    });
+
+    it('exports valid DocumentNode for GET_GEN_CONTENTS_BY_TAG_AND_CATEGORY', () => {
+      expect(GET_GEN_CONTENTS_BY_TAG_AND_CATEGORY).toBeDefined();
+      expect(GET_GEN_CONTENTS_BY_TAG_AND_CATEGORY.kind).toBe('Document');
+      const { name, variables } = getOperationInfo(GET_GEN_CONTENTS_BY_TAG_AND_CATEGORY);
+      expect(name).toBe('GetGenContentsByTagAndCategory');
+      expect(variables).toContain('tagSlug');
+      expect(variables).toContain('categorySlug');
     });
 
     it('exports valid DocumentNode for GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED', () => {
@@ -126,6 +137,22 @@ describe('GraphQL API (graphql.ts)', () => {
 
     it('returns undefined when given AcfMediaNode with node but no sourceUrl', () => {
       expect(getAcfMediaUrl({ node: {} })).toBeUndefined();
+    });
+  });
+
+  describe('getPrimaryTagName', () => {
+    it('returns null for null/undefined', () => {
+      expect(getPrimaryTagName(null)).toBeNull();
+      expect(getPrimaryTagName(undefined)).toBeNull();
+    });
+    it('returns string when primaryTag is string', () => {
+      expect(getPrimaryTagName('Data & AI')).toBe('Data & AI');
+    });
+    it('returns name when value is object with name', () => {
+      expect(getPrimaryTagName({ name: 'Cloud', slug: 'cloud' })).toBe('Cloud');
+    });
+    it('returns null when object has no name', () => {
+      expect(getPrimaryTagName({ slug: 'cloud' })).toBeNull();
     });
   });
 

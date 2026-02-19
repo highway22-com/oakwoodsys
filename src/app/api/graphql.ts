@@ -16,7 +16,8 @@ export interface GenContentListNode {
   slug: string;
   date: string;
   tags?: string[] | null;
-  primaryTag?: string | null;
+  /** primaryTagName: string del plugin oakwood-bloq (evita conflicto con ACF primaryTag). */
+  primaryTagName?: string | null;
   featuredImage?: {
     node: { sourceUrl: string; altText?: string | null };
   } | null;
@@ -34,6 +35,9 @@ export interface GenContentListNode {
   genContentCategories?: {
     nodes: Array<{ name: string; slug: string }>;
   };
+  genContentTags?: {
+    nodes: Array<{ name: string; slug: string }>;
+  };
   /** Head (Gen Content ACF oakwood_* — no chocar con otros plugins SEO). */
   headTitle?: string | null;
   headDescription?: string | null;
@@ -46,10 +50,29 @@ export interface GenContentListNode {
   headJsonLdData?: string | null;
 }
 
+/** Extrae el nombre del tag desde primaryTagName (o primaryTag legacy). */
+export function getPrimaryTagName(
+  value: GenContentListNode['primaryTagName'] | string | { name?: string } | null
+): string | null {
+  if (value == null) return null;
+  if (typeof value === 'string') return value;
+  return (value as { name?: string }).name ?? null;
+}
+
 export interface GenContentsByCategoryResponse {
   genContentCategory?: {
     genContents?: { nodes: GenContentListNode[] };
   } | null;
+}
+
+export interface GenContentsByTagResponse {
+  genContentTag?: {
+    genContents?: { nodes: GenContentListNode[] };
+  } | null;
+}
+
+export interface GenContentsByTagAndCategoryResponse {
+  genContents?: { nodes: GenContentListNode[] } | null;
 }
 
 /** Sección de una página CMS (propiedades comunes para el template; el resto es dinámico). */
@@ -57,7 +80,7 @@ export interface CmsSection {
   type: string;
   /** Título como string o como objeto con line1/line2 (ej. sección microsoftPartner). */
   title?: string | { line1?: string; line2?: string };
-  description?: string;
+  description?: string | { line1?: string; line2?: string };
   label?: string;
   /** Subtítulo (ej. sección latestInsights). */
   subtitle?: string;
@@ -241,7 +264,7 @@ const GEN_CONTENTS_FIELDS = `
   slug
   date
   tags
-  primaryTag
+  primaryTagName
   featuredImage {
     node {
       sourceUrl
@@ -272,6 +295,12 @@ const GEN_CONTENTS_FIELDS = `
       slug
     }
   }
+  genContentTags {
+    nodes {
+      name
+      slug
+    }
+  }
   headTitle
   headDescription
   headCanonicalUrl
@@ -281,7 +310,7 @@ const GEN_CONTENTS_FIELDS = `
   headJsonLdData
 `;
 
-/** Lista por categoría Gen Content: mismo patrón para blog (categoryId: "blog") y case study (categoryId: "case-study"). id espera ID! en WPGraphQL. */
+/** Lista por categoría Gen Content: blog (categoryId: "blog") o case study (categoryId: "case-study"). */
 export const GET_GEN_CONTENTS_BY_CATEGORY = gql`
   query GetGenContentsByCategory($categoryId: ID!) {
     genContentCategory(id: $categoryId, idType: SLUG) {
@@ -289,6 +318,30 @@ export const GET_GEN_CONTENTS_BY_CATEGORY = gql`
         nodes {
           ${GEN_CONTENTS_FIELDS}
         }
+      }
+    }
+  }
+`;
+
+/** Lista por tag Gen Content (gen_content_tag): tema/industry (ej. tagId: "data-ai-solutions"). */
+export const GET_GEN_CONTENTS_BY_TAG = gql`
+  query GetGenContentsByTag($tagId: ID!) {
+    genContentTag(id: $tagId, idType: SLUG) {
+      genContents(first: 500) {
+        nodes {
+          ${GEN_CONTENTS_FIELDS}
+        }
+      }
+    }
+  }
+`;
+
+/** Lista por tag + categoría (blog o case-study). Filtro combinado en el servidor. */
+export const GET_GEN_CONTENTS_BY_TAG_AND_CATEGORY = gql`
+  query GetGenContentsByTagAndCategory($tagSlug: String, $categorySlug: String) {
+    genContents(where: { tagSlug: $tagSlug, categorySlug: $categorySlug }, first: 500) {
+      nodes {
+        ${GEN_CONTENTS_FIELDS}
       }
     }
   }
@@ -357,7 +410,7 @@ export const GET_GEN_CONTENTS_BY_SLUGS = gql`
         title
         slug
         excerpt
-        primaryTag
+        primaryTagName
         featuredImage {
           node {
             sourceUrl
@@ -380,7 +433,7 @@ export const GET_GEN_CONTENT_BY_SLUG = gql`
       content
       excerpt
       tags
-      primaryTag
+      primaryTagName
       featuredImage {
         node {
           sourceUrl
@@ -426,7 +479,7 @@ export const GET_CASE_STUDY_DETAIL = gql`
       slug
       date
       tags
-      primaryTag
+      primaryTagName
       showContactSection
       featuredImage {
         node {

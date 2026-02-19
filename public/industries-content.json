@@ -15,7 +15,7 @@
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "View engagement",
+          "text": "View Engagement",
           "link": "/structured-engagement",
           "borderColor": "#1D69AC"
         }
@@ -143,7 +143,7 @@
           "link": "/contact-us"
         },
         "secondary": {
-          "text": "View Resources",
+          "text": "View Engagement",
           "link": "/resources"
         }
       },
@@ -246,14 +246,15 @@
       "ctaSection": {
         "heading": "Transform how you design, build, and deliver",
         "description": "Enable efficiency, automation, and real-time insights across your manufacturing operations.",
-        "primaryCta": {
-          "text": "View all industries",
+         "primaryCta": {
+          "text": "View all Industries",
           "link": "/industries"
         },
         "secondaryCta": {
           "text": "View case studies",
           "link": "/resources/case-studies"
         }
+
       }
     },
     "education": {
@@ -375,14 +376,15 @@
       "ctaSection": {
         "heading": "Build a stronger future for the public you serve",
         "description": "Enable better outcomes with modern data, applications, and collaboration platforms.",
-        "primaryCta": {
-          "text": "View all industries",
+          "primaryCta": {
+          "text": "View all Industries",
           "link": "/industries"
         },
         "secondaryCta": {
           "text": "View case studies",
           "link": "/resources/case-studies"
         }
+
       }
     },
     "retail": {
@@ -504,14 +506,15 @@
       "ctaSection": {
         "heading": "Outperform with data and modern technology",
         "description": "Enable unified data, smarter operations, and personalized experiences across every channel.",
-        "primaryCta": {
-          "text": "View all industries",
+         "primaryCta": {
+          "text": "View all Industries",
           "link": "/industries"
         },
         "secondaryCta": {
           "text": "View case studies",
           "link": "/resources/case-studies"
         }
+
       }
     },
     "financial-services": {
@@ -641,6 +644,7 @@
           "text": "View case studies",
           "link": "/resources/case-studies"
         }
+
       }
     },
     "eda": {
@@ -762,7 +766,7 @@
       "ctaSection": {
         "heading": "Accelerate complex design workflows",
         "description": "Power faster simulations, reduce bottlenecks, and optimize compute performance on Azure.",
-        "primaryCta": {
+         "primaryCta": {
           "text": "View all Industries",
           "link": "/industries"
         },
@@ -770,6 +774,7 @@
           "text": "View case studies",
           "link": "/resources/case-studies"
         }
+
       }
     }
   }

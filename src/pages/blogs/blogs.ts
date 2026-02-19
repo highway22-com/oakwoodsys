@@ -16,14 +16,17 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Apollo } from 'apollo-angular';
 import {
+  getPrimaryTagName,
   GET_GEN_CONTENTS_BY_CATEGORY,
   GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED,
+  type GenContentListNode,
 } from '../../app/api/graphql';
 import { PageHeroComponent, type PageHeroBreadcrumb } from '../../shared/page-hero/page-hero.component';
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { readingTimeMinutes } from '../../app/utils/reading-time.util';
+import { SeoMetaService } from '../../app/services/seo-meta.service';
 
 interface PostAuthor {
   node: {
@@ -88,6 +91,7 @@ const PAGE_SIZE = 10;
 export default class Blogs implements OnInit {
   private readonly apollo = inject(Apollo);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly seoMeta = inject(SeoMetaService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly blogHeroBreadcrumbs: PageHeroBreadcrumb[] = [
@@ -135,19 +139,45 @@ export default class Blogs implements OnInit {
     return 'Author';
   }
 
-  private transformNodes(nodes: Post[]): Post[] {
-    return nodes.map((post: Post) => ({
-      ...post,
+  private transformNodes(nodes: GenContentListNode[]): Post[] {
+    const defaultAuthor: PostAuthor = { node: { email: '', firstName: '', id: '' } };
+    return nodes.map((post: GenContentListNode): Post => ({
+      id: post.id,
+      title: post.title ?? '',
+      content: post.content ?? '',
       excerpt: post.excerpt ?? '',
+      slug: post.slug ?? '',
+      date: post.date ?? '',
+      author: post.author
+        ? { node: { email: post.author.node?.email ?? '', firstName: post.author.node?.firstName ?? '', id: post.author.node?.id ?? '' } }
+        : defaultAuthor,
       tags: post.tags ?? [],
-      primaryTag: post.primaryTag ?? null,
-      authorPerson: post.authorPerson ?? null,
-      featuredImage: post.featuredImage ?? null,
-      sanitizedContent: this.sanitizer.bypassSecurityTrustHtml(post.content || ''),
+      primaryTag: getPrimaryTagName(post.primaryTagName) ?? null,
+      authorPerson: post.authorPerson
+        ? {
+            id: post.authorPerson.id,
+            name: post.authorPerson.name ?? null,
+            firstName: post.authorPerson.firstName ?? null,
+            position: post.authorPerson.position ?? null,
+            picture: post.authorPerson.picture ?? null,
+            socialLinks: post.authorPerson.socialLinks ?? [],
+          }
+        : null,
+      featuredImage: post.featuredImage
+        ? { node: { sourceUrl: post.featuredImage.node.sourceUrl, altText: post.featuredImage.node.altText ?? null } }
+        : null,
+      sanitizedContent: this.sanitizer.bypassSecurityTrustHtml(post.content ?? ''),
       sanitizedExcerpt:
         post.excerpt && post.excerpt.trim()
           ? this.sanitizer.bypassSecurityTrustHtml(post.excerpt.trim())
           : undefined,
+      headTitle: post.headTitle ?? undefined,
+      headDescription: post.headDescription ?? undefined,
+      headCanonicalUrl: post.headCanonicalUrl ?? undefined,
+      headGeoRegion: post.headGeoRegion ?? undefined,
+      headGeoPlacename: post.headGeoPlacename ?? undefined,
+      headGeoPosition: post.headGeoPosition ?? undefined,
+      headJsonLdData: post.headJsonLdData ?? undefined,
     }));
   }
 
@@ -166,6 +196,11 @@ export default class Blogs implements OnInit {
   }
 
   ngOnInit() {
+    this.seoMeta.updateMeta({
+      title: 'IT Blog | Oakwood Systems',
+      description: 'Insights and articles on Microsoft solutions, Azure, Data & AI, cloud migration, and digital transformation from Oakwood Systems.',
+      canonicalPath: '/blog',
+    });
     this.loadFirstPage();
   }
 
@@ -252,7 +287,7 @@ export default class Blogs implements OnInit {
       .subscribe({
         next: (result: any) => {
           const conn = result.data?.genContentCategory?.genContents;
-          const nodes = conn?.nodes as Post[] | undefined;
+          const nodes = conn?.nodes as GenContentListNode[] | undefined;
           const pageInfo = conn?.pageInfo;
           if (nodes?.length) {
             const current = this.posts();

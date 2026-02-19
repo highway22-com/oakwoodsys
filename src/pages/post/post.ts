@@ -3,7 +3,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Apollo, gql } from 'apollo-angular';
-import { GET_GEN_CONTENTS_BY_SLUGS } from '../../app/api/graphql';
+import { SeoMetaService } from '../../app/services/seo-meta.service';
+import { GET_GEN_CONTENTS_BY_SLUGS, getPrimaryTagName } from '../../app/api/graphql';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
@@ -14,6 +15,24 @@ interface PostAuthor {
     id: string;
   };
 }
+
+/** Categorías Gen Content por defecto (gen_content_category en WordPress). primaryTag/tags vienen de la taxonomía. */
+export const GEN_CONTENT_CATEGORIES = [
+  'High-Performance Computing (HPC)',
+  'Data & AI Solutions',
+  'Cloud & Infrastructure',
+  'Application Innovation',
+  'Modern Work',
+  'Managed Services',
+  'Microsoft Licensing',
+  'Manufacturing',
+  'Healthcare',
+  'Financial Services',
+  'Retail',
+  'Education/Public Sector',
+  'Electronic Design Automation (EDA)',
+  'Other',
+] as const;
 
 export interface AuthorPersonDetail {
   id: string;
@@ -63,6 +82,7 @@ export default class Post implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly apollo = inject(Apollo);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly seoMeta = inject(SeoMetaService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly ngZone = inject(NgZone);
   private scrollListener?: () => void;
@@ -104,7 +124,7 @@ export default class Post implements OnInit, OnDestroy {
           ? this.sanitizer.bypassSecurityTrustHtml(excerpt.trim())
           : undefined,
         featuredImage: (r['featuredImage'] as PostDetail['featuredImage']) ?? undefined,
-        primaryTag: (r['primaryTag'] as string | null) ?? null,
+        primaryTag: getPrimaryTagName(r['primaryTagName'] as string | null) ?? null,
       } as PostDetail;
     });
   }
@@ -146,7 +166,7 @@ export default class Post implements OnInit, OnDestroy {
               slug
               date
               tags
-              primaryTag
+              primaryTagName
               showContactSection
               featuredImage {
                 node {
@@ -222,7 +242,7 @@ export default class Post implements OnInit, OnDestroy {
                   this.sanitizer.bypassSecurityTrustHtml(excerpt.trim()) :
                   undefined,
               tags: (raw['tags'] as string[] | undefined) ?? undefined,
-              primaryTag: (raw['primaryTag'] as string | null) ?? undefined,
+              primaryTag: getPrimaryTagName(raw['primaryTagName'] as string | null) ?? undefined,
               authorPerson: (raw['authorPerson'] as AuthorPersonDetail | null) ?? undefined,
               featuredImage: (raw['featuredImage'] as PostDetail['featuredImage']) ?? undefined,
               showContactSection: (raw['showContactSection'] as boolean | undefined) ?? undefined,
@@ -240,6 +260,7 @@ export default class Post implements OnInit, OnDestroy {
               this.post.set(postData);
               if (toc.length > 0) this.activeSection.set(toc[0].id);
             });
+            this.updateSeoMeta(postData, slugValue);
             const relatedSlugs = (raw['relatedBloqSlugs'] as string[] | null | undefined) ?? [];
             if (relatedSlugs.length > 0 && data?.genContent) {
               this.apollo.query({ query: GET_GEN_CONTENTS_BY_SLUGS, variables: { slugs: relatedSlugs }, fetchPolicy: 'network-only' }).subscribe({
@@ -270,6 +291,20 @@ export default class Post implements OnInit, OnDestroy {
           this.loading.set(false);
         },
       });
+  }
+
+  private updateSeoMeta(post: PostDetail, slug: string): void {
+    const isCaseStudy = this.router.url.startsWith('/resources/case-studies');
+    const canonicalPath = isCaseStudy ? `/resources/case-studies/${slug}` : `/blog/${slug}`;
+    const title = post.headTitle || `${post.title} | Oakwood Systems`;
+    const description = post.headDescription || post.excerpt || this.seoMeta.defaultDescription;
+    const canonicalUrl = post.headCanonicalUrl || undefined;
+    this.seoMeta.updateMeta({
+      title,
+      description,
+      canonicalPath: canonicalUrl ?? canonicalPath,
+      image: post.featuredImage?.node?.sourceUrl,
+    });
   }
 
   ngOnDestroy() {

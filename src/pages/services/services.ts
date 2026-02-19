@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, ElementRef, OnInit, OnDestroy, Afte
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Title, Meta, DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
+import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { Subscription } from 'rxjs';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
@@ -143,8 +144,7 @@ export default class Services implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly titleService = inject(Title);
-  private readonly metaService = inject(Meta);
+  private readonly seoMeta = inject(SeoMetaService);
   readonly sanitizer = inject(DomSanitizer);
   private routeSubscription?: Subscription;
   private autoScrollInterval?: any;
@@ -168,14 +168,13 @@ export default class Services implements OnInit, OnDestroy {
   }
 
   private setDefaultMetadata() {
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
-    }
+    if (!isPlatformBrowser(this.platformId)) return;
 
-    // Set default meta description for services pages
-    const defaultDescription = 'Explore Oakwood Systems\' Microsoft services including Data & AI, Cloud Infrastructure, Application Innovation, High-Performance Computing, Modern Work, and Managed Services.';
-    this.metaService.updateTag({ name: 'description', content: defaultDescription });
-    this.titleService.setTitle('Services | Oakwood Systems');
+    this.seoMeta.updateMeta({
+      title: 'Services | Oakwood Systems',
+      description: 'Explore Oakwood Systems\' Microsoft services including Data & AI, Cloud Infrastructure, Application Innovation, High-Performance Computing, Modern Work, and Managed Services.',
+      canonicalPath: '/services',
+    });
   }
 
   ngAfterViewInit() {
@@ -206,41 +205,15 @@ export default class Services implements OnInit, OnDestroy {
   }
 
   private updateMetadata(content: ServiceContent) {
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
-    }
+    if (!isPlatformBrowser(this.platformId)) return;
 
-    // Update page title
-    const pageTitle = `${content.title} | Oakwood Systems`;
-    this.titleService.setTitle(pageTitle);
-
-    // Update meta description
     const description = content.mainDescription?.text || content.description;
-    this.metaService.updateTag({ name: 'description', content: description });
-
-    // Open Graph tags
-    this.metaService.updateTag({ property: 'og:title', content: content.title });
-    this.metaService.updateTag({ property: 'og:description', content: description });
-    this.metaService.updateTag({ property: 'og:type', content: 'website' });
-    this.metaService.updateTag({ property: 'og:url', content: `https://oakwoodsys.com/services/${content.slug}` });
-    if (content.backgroundImage) {
-      this.metaService.updateTag({ property: 'og:image', content: content.backgroundImage });
-    }
-
-    // Twitter Card tags
-    this.metaService.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
-    this.metaService.updateTag({ name: 'twitter:title', content: content.title });
-    this.metaService.updateTag({ name: 'twitter:description', content: description });
-
-    // Canonical URL
-    const canonicalUrl = `https://oakwoodsys.com/services/${content.slug}`;
-    let linkTag = document.querySelector('link[rel="canonical"]');
-    if (!linkTag) {
-      linkTag = document.createElement('link');
-      linkTag.setAttribute('rel', 'canonical');
-      document.head.appendChild(linkTag);
-    }
-    linkTag.setAttribute('href', canonicalUrl);
+    this.seoMeta.updateMeta({
+      title: `${content.title} | Oakwood Systems`,
+      description,
+      canonicalPath: `/services/${content.slug}`,
+      image: content.backgroundImage,
+    });
   }
 
   private updateStructuredData(content: ServiceContent) {

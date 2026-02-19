@@ -1,24 +1,23 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, PLATFORM_ID, signal, DOCUMENT } from '@angular/core';
 import { CommonModule, NgClass, isPlatformBrowser } from '@angular/common';
-import { Title, Meta, DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
+import { SeoMetaService } from '../../app/services/seo-meta.service';
 import type { CmsPageContent, CmsSection } from '../../app/api/graphql';
 import { TrustedBySectionComponent } from '../../shared/sections/trusted-by/trusted-by';
 import { StructuredEngagementsSectionComponent } from '../../shared/sections/structured-engagements/structured-engagements';
 import { LatestInsightsSectionComponent } from '../../shared/sections/latest-insights/latest-insights';
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
-
-const BASE_URL = 'https://oakwoodsystemsgroup.com';
+import { ScrollAnimationComponent } from '../../shared/scroll-animation-component/scroll-animation.component';
 const DEFAULT_TITLE = 'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
 const DEFAULT_DESCRIPTION = 'As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.';
-const SEO_KEYWORDS = 'Microsoft Solutions Partner, Azure Consulting, Azure Cloud services, St. Louis, Kansas City, cloud migration, Data & AI, Microsoft 365, Power BI, Azure Synapse, digital transformation, managed IT services';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, NgClass, FormsModule, VideoHero, FeaturedCaseStudySectionComponent, TrustedBySectionComponent, StructuredEngagementsSectionComponent, LatestInsightsSectionComponent, ButtonPrimaryComponent],
+  imports: [CommonModule, NgClass, FormsModule, VideoHero,ScrollAnimationComponent, FeaturedCaseStudySectionComponent, TrustedBySectionComponent, StructuredEngagementsSectionComponent, LatestInsightsSectionComponent, ButtonPrimaryComponent],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,8 +29,7 @@ export default class Home implements OnInit {
 
   private readonly graphql = inject(GraphQLContentService);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly titleService = inject(Title);
-  private readonly metaService = inject(Meta);
+  private readonly seoMeta = inject(SeoMetaService);
   private readonly document = inject(DOCUMENT);
   readonly sanitizer = inject(DomSanitizer);
   readonly posts = signal<any>(null);
@@ -41,6 +39,8 @@ export default class Home implements OnInit {
   readonly saving = signal(false);
   readonly saveSuccess = signal(false);
   readonly panelVisible = signal(false);
+    scrollAnimationVisible = signal(false);
+      scrollAnimationReverse = signal(false);
   jsonContent: string = '';
   readonly jsonError = signal<string | null>(null);
 
@@ -65,7 +65,14 @@ export default class Home implements OnInit {
         this.loading.set(false);
       }
     });
+   this.lastScrollVisible = false;
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', this.handleScrollAnimation.bind(this));
+      setTimeout(() => this.handleScrollAnimation(), 100);
+    }
   }
+
+  lastScrollVisible = false;
 
   private applyContent(data: CmsPageContent) {
     this.content.set(data);
@@ -119,10 +126,13 @@ export default class Home implements OnInit {
   }
 
   /** Descripción del hero (desde sección hero o vacío). */
-  heroDescription(): string {
+  heroDescription(): string | string[] {
     const section = this.getSection('hero');
-    const d = section?.description;
-    return (typeof d === 'string' ? d : '') || '';
+    const t = section?.description;
+    if (typeof t === 'string') return t || '';
+    if (Array.isArray(t)) return t.filter((s): s is string => typeof s === 'string');
+    if (t && typeof t === 'object' && !Array.isArray(t)) return [t.line1, t.line2].filter(Boolean).join(' ') || '';
+    return '';
   }
 
   /** CTA principal del hero (desde sección hero). */
@@ -170,44 +180,11 @@ export default class Home implements OnInit {
     const pageTitle = heroTitle ? `${heroTitle} | Oakwood Systems` : DEFAULT_TITLE;
     const description = heroDesc || DEFAULT_DESCRIPTION;
 
-    this.titleService.setTitle(pageTitle);
-
-    // Meta básicos
-    this.metaService.updateTag({ name: 'description', content: description });
-    this.metaService.updateTag({ name: 'keywords', content: SEO_KEYWORDS });
-
-    // Open Graph
-    this.metaService.updateTag({ property: 'og:locale', content: 'en_US' });
-    this.metaService.updateTag({ property: 'og:type', content: 'website' });
-    this.metaService.updateTag({ property: 'og:title', content: heroTitle || DEFAULT_TITLE });
-    this.metaService.updateTag({ property: 'og:description', content: description });
-    this.metaService.updateTag({ property: 'og:url', content: `${BASE_URL}/` });
-    this.metaService.updateTag({ property: 'og:site_name', content: DEFAULT_TITLE });
-    this.metaService.updateTag({ property: 'article:publisher', content: 'https://www.facebook.com/OakwoodSys/' });
-
-    const ogImage = 'https://oakwoodsys.com/wp-content/uploads/2023/06/msft_solutions_partner_yoast_seo.png';
-    this.metaService.updateTag({ property: 'og:image', content: ogImage });
-    this.metaService.updateTag({ property: 'og:image:width', content: '1200' });
-    this.metaService.updateTag({ property: 'og:image:height', content: '675' });
-    this.metaService.updateTag({ property: 'og:image:type', content: 'image/png' });
-
-    // Twitter
-    this.metaService.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
-    this.metaService.updateTag({ name: 'twitter:site', content: '@OakwoodInsights' });
-    this.metaService.updateTag({ name: 'twitter:title', content: heroTitle || DEFAULT_TITLE });
-    this.metaService.updateTag({ name: 'twitter:description', content: description });
-
-    // Canonical
-    const head = this.document.getElementsByTagName('head')[0];
-    if (head) {
-      let linkEl = this.document.querySelector('link[rel="canonical"]');
-      if (!linkEl) {
-        linkEl = this.document.createElement('link');
-        linkEl.setAttribute('rel', 'canonical');
-        head.appendChild(linkEl);
-      }
-      linkEl.setAttribute('href', `${BASE_URL}/`);
-    }
+    this.seoMeta.updateMeta({
+      title: pageTitle,
+      description,
+      canonicalPath: '/',
+    });
   }
 
   private updateStructuredData(content: CmsPageContent) {
@@ -219,42 +196,43 @@ export default class Home implements OnInit {
           ? [heroSection.title.line1, heroSection.title.line2].filter(Boolean).join(' ') ?? ''
           : DEFAULT_TITLE;
 
+    const baseUrl = this.seoMeta.baseUrl;
     const structuredDataObj = {
       '@context': 'https://schema.org',
       '@graph': [
         {
           '@type': 'WebPage',
-          '@id': `${BASE_URL}/#webpage`,
-          url: `${BASE_URL}/`,
+          '@id': `${baseUrl}/#webpage`,
+          url: `${baseUrl}/`,
           name: heroTitle,
-          isPartOf: { '@id': `${BASE_URL}/#website` },
-          about: { '@id': `${BASE_URL}/#organization` },
+          isPartOf: { '@id': `${baseUrl}/#website` },
+          about: { '@id': `${baseUrl}/#organization` },
           description: heroDesc || DEFAULT_DESCRIPTION,
-          breadcrumb: { '@id': `${BASE_URL}/#breadcrumb` },
+          breadcrumb: { '@id': `${baseUrl}/#breadcrumb` },
           inLanguage: 'en-US',
-          potentialAction: [{ '@type': 'ReadAction', target: [`${BASE_URL}/`] }]
+          potentialAction: [{ '@type': 'ReadAction', target: [`${baseUrl}/`] }]
         },
         {
           '@type': 'BreadcrumbList',
-          '@id': `${BASE_URL}/#breadcrumb`,
+          '@id': `${baseUrl}/#breadcrumb`,
           itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home' }]
         },
         {
           '@type': 'WebSite',
-          '@id': `${BASE_URL}/#website`,
-          url: `${BASE_URL}/`,
+          '@id': `${baseUrl}/#website`,
+          url: `${baseUrl}/`,
           name: DEFAULT_TITLE,
           description: 'Microsoft Solutions Partner in St. Louis and Kansas City',
-          publisher: { '@id': `${BASE_URL}/#organization` },
+          publisher: { '@id': `${baseUrl}/#organization` },
           alternateName: 'Microsoft Solutions Partner - Oakwood',
           inLanguage: 'en-US'
         },
         {
           '@type': 'Organization',
-          '@id': `${BASE_URL}/#organization`,
+          '@id': `${baseUrl}/#organization`,
           name: 'Microsoft Solutions Partner - St. Louis and Kansas City',
           alternateName: 'Oakwood Systems Group, Inc.',
-          url: `${BASE_URL}/`,
+          url: `${baseUrl}/`,
           logo: {
             '@type': 'ImageObject',
             url: 'https://oakwoodsys.com/wp-content/uploads/2018/06/cropped-logo2-2.png',
@@ -270,7 +248,7 @@ export default class Home implements OnInit {
           contactPoint: {
             '@type': 'ContactPoint',
             contactType: 'Customer Service',
-            url: `${BASE_URL}/contact-us`
+            url: `${baseUrl}/contact-us`
           }
         }
       ]
@@ -311,6 +289,17 @@ export default class Home implements OnInit {
     } catch (error) {
       this.jsonError.set('JSON inválido: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     }
+  }
+
+    handleScrollAnimation() {
+    const el = document.querySelector('.scroll-animation-section');
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+    const visible = rect.top < windowHeight * 0.7 && rect.bottom > windowHeight * 0.3;
+    this.scrollAnimationReverse.set(this.lastScrollVisible && !visible);
+    this.scrollAnimationVisible.set(visible);
+    this.lastScrollVisible = visible;
   }
 
   /** Copia el contenido JSON del editor al portapapeles. */

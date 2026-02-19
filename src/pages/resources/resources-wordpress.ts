@@ -1,21 +1,23 @@
 import { ChangeDetectionStrategy, Component, signal, OnInit, PLATFORM_ID, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Apollo } from 'apollo-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import type { SafeHtml } from '@angular/platform-browser';
-import { getAcfMediaUrl, GET_GEN_CONTENTS_BY_CATEGORY, GET_CASE_STUDY_BY_SLUG } from '../../app/api/graphql';
+import { getAcfMediaUrl, getPrimaryTagName, GET_GEN_CONTENTS_BY_CATEGORY, GET_GEN_CONTENTS_BY_TAG_AND_CATEGORY, GET_CASE_STUDY_BY_SLUG } from '../../app/api/graphql';
 import type {
   CaseStudyBy,
   CaseStudyByResponse,
   GenContentListNode,
   GenContentsByCategoryResponse,
+  GenContentsByTagAndCategoryResponse,
 } from '../../app/api/graphql';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudyCardsSectionComponent } from '../../shared/sections/featured-case-study-cards/featured-case-study';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
+import { SeoMetaService } from '../../app/services/seo-meta.service';
 
 /** Contenido de la página Resources (resources-content.json). */
 export interface ResourcesPageContent {
@@ -115,20 +117,35 @@ export default class Resources implements OnInit {
   private readonly apollo = inject(Apollo);
   private readonly http = inject(HttpClient);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly router = inject(Router);
+  private readonly seoMeta = inject(SeoMetaService);
   private readonly platformId = inject(PLATFORM_ID);
 
   /** Contenido estático de la página (hero, CTAs, textos, filtros) desde resources-content.json. */
   readonly pageContent = signal<ResourcesPageContent | null>(null);
 
-  /** Filtros desde JSON; fallback solo antes de cargar. */
+  /** Categorías Gen Content (deben coincidir con gen_content_category en WordPress). value = slug para queries GraphQL. */
+  private static readonly GEN_CONTENT_CATEGORIES: { name: string; slug: string }[] = [
+    { name: 'High-Performance Computing (HPC)', slug: 'high-performance-computing-hpc' },
+    { name: 'Data & AI Solutions', slug: 'data-ai-solutions' },
+    { name: 'Cloud & Infrastructure', slug: 'cloud-infrastructure' },
+    { name: 'Application Innovation', slug: 'application-innovation' },
+    { name: 'Modern Work', slug: 'modern-work' },
+    { name: 'Managed Services', slug: 'managed-services' },
+    { name: 'Microsoft Licensing', slug: 'microsoft-licensing' },
+    { name: 'Manufacturing', slug: 'manufacturing' },
+    { name: 'Healthcare', slug: 'healthcare' },
+    { name: 'Financial Services', slug: 'financial-services' },
+    { name: 'Retail', slug: 'retail' },
+    { name: 'Education/Public Sector', slug: 'education-public-sector' },
+    { name: 'Electronic Design Automation (EDA)', slug: 'electronic-design-automation-eda' },
+    { name: 'Other', slug: 'other' },
+  ];
+
+  /** Filtros desde JSON; fallback con categorías por defecto. value = slug para queries GraphQL. */
   private static readonly DEFAULT_FILTERS: { displayCategory: string; value: string }[] = [
     { displayCategory: 'All', value: 'All' },
-    { displayCategory: 'Data & AI', value: 'Data and AI Blog' },
-    { displayCategory: 'Data Center', value: 'Data Center' },
-    { displayCategory: 'Application Innovation', value: 'Application Innovation' },
-    { displayCategory: 'High-Performance Computing (HPC)', value: 'HPC' },
-    { displayCategory: 'Modern Work', value: 'Modern Work Blog' },
-    { displayCategory: 'Managed Services', value: 'Managed Services' },
+    ...Resources.GEN_CONTENT_CATEGORIES.map((cat) => ({ displayCategory: cat.name, value: cat.slug })),
   ];
 
   get filters(): { displayCategory: string; value: string }[] {
@@ -166,6 +183,7 @@ export default class Resources implements OnInit {
   }
 
   ngOnInit() {
+    this.updateSeoMeta(null);
     this.loadPageContent();
     if (!this.slug) {
       this.loadCaseStudiesList();
@@ -174,8 +192,26 @@ export default class Resources implements OnInit {
 
   private loadPageContent() {
     this.http.get<ResourcesPageContent>('/resources-content.json').subscribe({
-      next: (data) => this.pageContent.set(data),
+      next: (data) => {
+        this.pageContent.set(data);
+        this.updateSeoMeta(data);
+      },
       error: () => this.pageContent.set(null),
+    });
+  }
+
+  private updateSeoMeta(content: ResourcesPageContent | null): void {
+    const isCaseStudies = this.router.url.includes('/case-studies');
+    const canonicalPath = isCaseStudies ? '/resources/case-studies' : '/resources';
+    const hero = content?.videoHero ?? content?.hero;
+    const title = hero?.title ?? (isCaseStudies ? 'Case Studies | Oakwood Systems' : 'Resources | Oakwood Systems');
+    const description = hero?.description ?? (isCaseStudies
+      ? 'Explore case studies and success stories from Oakwood Systems Microsoft and Azure projects.'
+      : 'Explore case studies, insights, and resources from Oakwood Systems on Microsoft solutions, Azure, and digital transformation.');
+    this.seoMeta.updateMeta({
+      title: title.includes('|') ? title : `${title} | Oakwood Systems`,
+      description,
+      canonicalPath,
     });
   }
 
@@ -276,42 +312,75 @@ export default class Resources implements OnInit {
     return this.slug !== null && this.caseStudyDetail() !== null;
   }
 
-  // Lista por categoría Gen Content "case-study" (misma lógica que blog con "blog")
-  private loadCaseStudiesList() {
+  /** Slug de categoría case-study para listar todos los case studies. */
+  private static readonly CASE_STUDY_CATEGORY_SLUG = 'case-study';
+
+  /**
+   * Carga lista de case studies. Usa slug para query GraphQL:
+   * - "All": genContentCategory(case-study) — todos los case studies
+   * - topic slug: genContentTag(slug) — case studies con ese tag, filtrados por categoría case-study
+   */
+  private loadCaseStudiesList(categoryOrTagSlug?: string) {
     this.loading.set(true);
+    const isAll = categoryOrTagSlug === 'All' || !categoryOrTagSlug;
 
-    this.apollo
-      .watchQuery<GenContentsByCategoryResponse>({
-        query: GET_GEN_CONTENTS_BY_CATEGORY,
-        variables: { categoryId: 'case-study' },
-        fetchPolicy: 'network-only',
-      })
-      .valueChanges.subscribe({
-        next: (result) => {
-          const data = result.data as GenContentsByCategoryResponse | undefined;
-          const nodes: GenContentListNode[] =
-            data?.genContentCategory?.genContents?.nodes ?? [];
-          if (nodes.length) {
-            const cards = this.transformGenContentToResourceCards(nodes);
-            this.resourceCards.set(cards);
-            this.applyFilters();
+    if (isAll) {
+      this.apollo
+        .watchQuery<GenContentsByCategoryResponse>({
+          query: GET_GEN_CONTENTS_BY_CATEGORY,
+          variables: { categoryId: Resources.CASE_STUDY_CATEGORY_SLUG },
+          fetchPolicy: 'network-only',
+        })
+        .valueChanges.subscribe({
+          next: (result) => this.handleCaseStudiesResult(
+            (result.data as GenContentsByCategoryResponse)?.genContentCategory?.genContents?.nodes ?? []
+          ),
+          error: (error) => this.handleCaseStudiesError(error),
+        });
+    } else {
+      this.apollo
+        .watchQuery<GenContentsByTagAndCategoryResponse>({
+          query: GET_GEN_CONTENTS_BY_TAG_AND_CATEGORY,
+          variables: {
+            tagSlug: categoryOrTagSlug,
+            categorySlug: Resources.CASE_STUDY_CATEGORY_SLUG,
+          },
+          fetchPolicy: 'network-only',
+        })
+        .valueChanges.subscribe({
+          next: (result) => this.handleCaseStudiesResult(
+            (result.data as GenContentsByTagAndCategoryResponse)?.genContents?.nodes ?? []
+          ),
+          error: (error) => this.handleCaseStudiesError(error),
+        });
+    }
+  }
 
-            const featured =
-              nodes.find((n) => n.tags?.includes('Featured')) ?? nodes[0];
-            if (featured) {
-              this.featuredCaseStudy.set(
-                this.transformGenContentToFeaturedCaseStudy(featured, nodes.length)
-              );
-            }
-          }
-          this.loading.set(false);
-        },
-        error: (error) => {
-          console.error('Error loading case studies:', error);
-          this.error.set(error);
-          this.loading.set(false);
-        },
-      });
+  private handleCaseStudiesResult(nodes: GenContentListNode[]) {
+    if (nodes.length) {
+      const cards = this.transformGenContentToResourceCards(nodes);
+      this.resourceCards.set(cards);
+      this.applyFilters();
+
+      const featured =
+        nodes.find((n) => n.tags?.includes('Featured')) ?? nodes[0];
+      if (featured) {
+        this.featuredCaseStudy.set(
+          this.transformGenContentToFeaturedCaseStudy(featured, nodes.length)
+        );
+      }
+    } else {
+      this.resourceCards.set([]);
+      this.filteredResources.set([]);
+      this.featuredCaseStudy.set(null);
+    }
+    this.loading.set(false);
+  }
+
+  private handleCaseStudiesError(error: unknown) {
+    console.error('Error loading case studies:', error);
+    this.error.set(error);
+    this.loading.set(false);
   }
 
   // Query GraphQL para detalle de caso de estudio (query centralizada en api/graphql.ts)
@@ -362,7 +431,7 @@ export default class Resources implements OnInit {
       link: `/resources/case-studies/${node.slug}`,
       slug: node.slug,
       tags: node.tags ?? undefined,
-      primaryTag: node.primaryTag ?? null,
+      primaryTag: getPrimaryTagName(node.primaryTagName) ?? null,
     }));
   }
 
@@ -446,10 +515,14 @@ export default class Resources implements OnInit {
     return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 
-  // Métodos de filtrado (mantener los existentes)
-  selectFilter(filter: string) {
-    this.selectedFilter.set(filter);
-    this.applyFilters();
+  /** filterValue = slug para topic, "All" para todos. Al cambiar filtro se recarga desde GraphQL. */
+  selectFilter(filterValue: string) {
+    this.selectedFilter.set(filterValue);
+    if (!this.slug) {
+      this.loadCaseStudiesList(filterValue);
+    } else {
+      this.applyFilters();
+    }
   }
 
   onSearchChange(query: string) {
@@ -457,21 +530,9 @@ export default class Resources implements OnInit {
     this.applyFilters();
   }
 
-  /** Filtra por primaryTag (valor del filtro) y/o búsqueda por primaryTag, título o excerpt (description). */
+  /** Filtra por búsqueda (el filtro por categoría se hace en GraphQL con slug). */
   applyFilters() {
     let filtered = [...this.resourceCards()];
-
-    // Filtro por pestaña: primaryTag, category o si el valor está en tags (comparación normalizada)
-    const filterValue = this.selectedFilter();
-    if (filterValue !== 'All') {
-      const normalizedValue = filterValue.trim().toLowerCase();
-      filtered = filtered.filter(card => {
-        const cardTag = (card.primaryTag ?? card.category ?? '').trim().toLowerCase();
-        if (cardTag === normalizedValue) return true;
-        const inTags = (card.tags ?? []).some(t => t.trim().toLowerCase() === normalizedValue);
-        return inTags;
-      });
-    }
 
     // Búsqueda: por primaryTag, título o excerpt (description); también en tags si existen
     const query = this.searchQuery().trim().toLowerCase();
