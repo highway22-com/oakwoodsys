@@ -1,66 +1,144 @@
 {
-  "menuItems": [
+  "menu": [
     {
+      "slug": "services",
       "label": "Services",
       "routerLink": "/services/data-and-ai",
       "index": 0,
       "hasDropdown": true
     },
     {
+      "slug": "industries",
       "label": "Industries",
       "routerLink": "/industries",
       "index": 1,
       "hasDropdown": true
     },
     {
+      "slug": "resources",
       "label": "Resources",
       "routerLink": "/resources",
       "index": 2,
       "hasDropdown": true
     },
     {
+      "slug": "about",
       "label": "About",
       "routerLink": "/about-us",
       "index": null,
       "hasDropdown": false
     }
   ],
-  "services": [
-    {
-      "title": "Data & AI Solutions",
-      "description": "Unify, govern, and activate your data estate to deliver real AI outcomes.",
-      "route": "/services/data-and-ai",
-      "icon": "data-ai"
-    },
-    {
-      "title": "Cloud & Infrastructure",
-      "description": "Modernize, secure, and optimize your cloud estate with Oakwood and Microsoft Azure",
-      "route": "/services/cloud-and-infrastructure",
-      "icon": "cloud"
-    },
-    {
-      "title": "Application Innovation",
-      "description": "Ship faster, run safer, and scale efficiently with modern applications on Azure.",
-      "route": "/services/application-innovation",
-      "icon": "app-innovation"
-    },
-    {
-      "title": "High-Performance Computing (HPC)",
-      "description": "Scale simulations, AI training, and PLM workloads with the power of Azure HPC.",
-      "route": "/services/high-performance-computing",
-      "icon": "hpc"
-    },
-    {
-      "title": "Modern Work",
-      "description": "Boost productivity, protect data, and improve employee experience with Microsoft 365 and Copilot.",
-      "route": "/services/modern-work",
-      "icon": "modern-work"
-    },
-    {
-      "title": "Managed Services",
-      "description": "Keep your Microsoft cloud running fast, secure, and cost effective with Oakwood.",
-      "route": "/services/managed-services",
-      "icon": "managed-services"
-    }
-  ]
+  "content": {
+    "services": [
+      {
+        "id": "01",
+        "name": "Data & AI Solutions",
+        "link": "/services/data-and-ai",
+        "desc": "Unify, govern, and activate your data estate",
+        "details": "Deliver real AI outcomes by unifying, governing, and activating your data estate to power intelligent innovation.",
+        "icon": "/assets/graph.svg"
+      },
+      {
+        "id": "02",
+        "name": "Cloud & Infrastructure",
+        "link": "/services/cloud-and-infrastructure",
+        "desc": "Modernize, secure, and optimize your cloud",
+        "details": "Modernize, secure, and optimize your cloud estate with Oakwood and Microsoft Azure for scalable, reliable infrastructure.",
+        "icon": "/assets/cloud.svg"
+      },
+      {
+        "id": "03",
+        "name": "Application Innovation",
+        "link": "/services/application-innovation",
+        "desc": "Ship faster, run safer, and scale efficiently",
+        "details": "Ship faster, run safer, and scale efficiently with modern applications on Azure built for performance and reliability.",
+        "icon": "/assets/app-innovation.svg"
+      },
+      {
+        "id": "04",
+        "name": "High-Performance Computing (HPC)",
+        "link": "/services/high-performance-computing",
+        "desc": "Scale simulations, AI training, and PLM workloads",
+        "details": "Scale simulations, AI training, and PLM workloads with the power of Azure HPC for maximum computational performance.",
+        "icon": "/assets/hpc.svg"
+      },
+      {
+        "id": "05",
+        "name": "Modern Work",
+        "link": "/services/modern-work",
+        "desc": "Boost productivity with Microsoft 365 and Copilot",
+        "details": "Boost productivity, protect data, and improve employee experience with Microsoft 365 and Copilot for modern collaboration.",
+        "icon": "/assets/modern-work.svg"
+      },
+      {
+        "id": "06",
+        "name": "Managed Services",
+        "link": "/services/managed-services",
+        "desc": "Keep your Microsoft cloud running fast and secure",
+        "details": "Keep your Microsoft cloud running fast, secure, and cost effective with Oakwood managed services and expert support.",
+        "icon": "/assets/managed-services.svg"
+      }
+    ],
+    "industries": [
+      {
+        "id": "01",
+        "name": "Manufacturing",
+        "link": "/industries/manufacturing",
+        "desc": "Unlock innovation, optimize operations, empower workers, and enhance the customer experience.",
+        "icon": "/assets/manu.svg"
+      },
+      {
+        "id": "04",
+        "name": "Retail",
+        "link": "/industries/retail",
+        "desc": "Helping retailers outperform their competition",
+        "icon": "/assets/reta.svg"
+      },
+      {
+        "id": "02",
+        "name": "Healthcare",
+        "link": "/industries/healthcare",
+        "desc": "We create connected healthcare ecosystems by coordinating data, people, and processes.",
+        "icon": "/assets/heal.svg"
+      },
+      {
+        "id": "05",
+        "name": "Education / Public Sector",
+        "link": "/industries/education-public-sector",
+        "desc": "Unlock innovation, optimize operations, empower workers, and enhance the customer experience.",
+        "icon": "/assets/edu.svg"
+      },
+      {
+        "id": "03",
+        "name": "Financial Services",
+        "link": "/industries/financial-services",
+        "desc": "Unlock the full potential of your banking data in the era of AI.",
+        "icon": "/assets/fina.svg"
+      },
+      {
+        "id": "06",
+        "name": "Electronic Design Automation (EDA)",
+        "link": "/industries/eda",
+        "desc": "Explore exciting opportunities to learn and connect with industry experts through our engaging webinars and conferences!",
+        "icon": "/assets/ele.svg"
+      }
+    ],
+    "resources": [
+      {
+        "id": "01",
+        "name": "IT Blog",
+        "link": "/blog",
+        "desc": "Insights and perspectives on business and innovation.",
+        "icon": "/assets/manu.svg"
+      },
+      {
+        "id": "02",
+        "name": "Case Studies",
+        "link": "/resources/case-studies",
+        "desc": "Discover our impact through realized projects",
+        "icon": "/assets/fina.svg"
+      }
+    ]
+  }
 }

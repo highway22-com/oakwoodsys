@@ -11,7 +11,6 @@
             }
         </a>
 
-        <!-- Center Section: Navigation Links (Desktop/Tablet) -->
         <div class=" md:flex items-center gap-6 lg:gap-8">
             @for (item of menuItems(); track item.label;let i = $index) {
             <!-- (mouseleave)="item.hasDropdown ? onNavMouseLeave() : null" -->
@@ -54,69 +53,21 @@
             </a>
         </div>
 
-        <!-- Mobile Menu Button -->
-        <button [ngClass]="{
-                    'text-white hover:text-blue-200': !isScrolled,
-                    'text-gray-900 hover:text-blue-600': isScrolled
-                }" class="md:hidden transition-colors duration-200" (click)="toggleMobileMenu()"
-            aria-label="Toggle menu">
-            <svg *ngIf="!isMobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-            <svg *ngIf="isMobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
     </div>
 
-    <!-- Mobile Menu -->
-    <!-- <div *ngIf="isMobileMenuOpen" [class.bg-gray-300]="!isScrolled" [class.bg-white]="isScrolled"
-        class="md:hidden mt-4 pb-4 border-t border-gray-400/30 pt-4 animate-in slide-in-from-top duration-200">
-        <div class="flex flex-col gap-4">
-            @for (item of menuItems(); track item.label) {
-            <a [routerLink]="item.routerLink" [ngClass]="{
-                    'text-white hover:text-blue-200': !isScrolled,
-                    'text-gray-900 hover:text-blue-600': isScrolled
-                }"
-                [class]="item.hasDropdown ? 'transition-colors duration-200 py-2 flex items-center justify-between' : 'transition-colors duration-200 py-2'">
-                {{item.label}}
-                @if(item.hasDropdown) {
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        clip-rule="evenodd" />
-                </svg>
-                }
-            </a>
-            }
-            <div class="flex items-center gap-4 pt-2 border-t border-gray-400/30 mt-2">
-                <button [ngClass]="{
-                    'text-white ': !isScrolled,
-                    'text-gray-900 ': isScrolled
-                }" class="transition-colors duration-200" aria-label="Search">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </button>
-                <a routerLink="/contact-us"
-                    class="bg-p-200  text-white  px-6 py-2.5 transition-colors duration-200 w-full text-center">
-                    Contact
-                </a>
-            </div>
-        </div>
-    </div> -->
 </nav>
 @if(hoveredIndex() === 0){
 <div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(0)" (mouseleave)="onNavMouseLeave()" tabindex="0"
     (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
-    <app-microsoft-services></app-microsoft-services>
+    <app-menu-list [content]="content()?.services ?? []" [caseStudies]="featuredCaseStudies()"
+        [featuredTitle]="featuredTitleServices()"></app-menu-list>
 </div>
 }
 @if(hoveredIndex() === 1){
 <div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(1)" (mouseleave)="onNavMouseLeave()" tabindex="0"
     (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
-    <app-industries [caseStudies]="featuredCaseStudies()" />
+    <app-menu-list [content]="content()?.industries ?? []" [caseStudies]="featuredCaseStudies()"
+        [featuredTitle]="featuredTitleIndustries()"></app-menu-list>
 </div>
 }
 @if(hoveredIndex() === 2){

@@ -4,11 +4,8 @@
  *
  * Estructura JSON → ACF:
  * - showContactSection → show_contact_section (Boolean)
- * - typeContent → type_content (Select)
  * - relatedBloqs → related_bloqs (Relación múltiple a gen_content, filtrado por categoría blog)
  * - relatedCaseStudies → related_case_studies (Relación múltiple a gen_content, filtrado por categoría case-study)
- * - tags → tags (Checkbox)
- * - primaryTag → primary_tag (Radio)
  * - authorPerson → author_person (Post Object → person) — editable aquí.
  * Head (progresivo): oakwood_head_* (title, description, canonical) y oakwood_geo_* (region, placename, position) — para <head> en Headless (nombres propios para no chocar con Yoast/Rank Math).
  *
@@ -18,35 +15,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
-function oakwood_bloq_get_tag_choices() {
-	return array(
-		'Case Study'                   => 'Case Study',
-		'HPC'                          => 'HPC',
-		'Featured'                    => 'Featured',
-		'Application Innovation'       => 'Application Innovation',
-		'Data & AI'                    => 'Data & AI',
-		'Data Center'                  => 'Data Center',
-		'Modern Work'                  => 'Modern Work',
-		'Managed Services'             => 'Managed Services',
-		'IoT'                          => 'IoT',
-		'Healthcare'                  => 'Healthcare',
-		'Data Governance'             => 'Data Governance',
-		'Security Blog'                => 'Security Blog',
-		'Application Modernization Blog' => 'Application Modernization Blog',
-		'Cloud and Infrastructure Blog' => 'Cloud and Infrastructure Blog',
-		'Data and AI Blog'             => 'Data and AI Blog',
-		'Microsoft 365 Blog'          => 'Microsoft 365 Blog',
-		'Modern Work Blog'            => 'Modern Work Blog',
-		'Uncategorized'               => 'Uncategorized',
-	);
-}
-
 function oakwood_bloq_register_acf_field_group() {
 	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
 		return;
 	}
-
-	$tag_choices = oakwood_bloq_get_tag_choices();
 
 	$fields = array(
 		array(
@@ -58,44 +30,6 @@ function oakwood_bloq_register_acf_field_group() {
 			'ui'            => 1,
 			'default_value' => 0,
 			'message'       => 'Show contact section on the page.',
-		),
-		array(
-			'key'           => 'field_oakwood_type_content',
-			'label'         => 'Type Content',
-			'name'          => 'type_content',
-			'type'          => 'select',
-			'required'      => 0,
-			'choices'       => array(
-				'blog'       => 'Blog',
-				'case_study' => 'Case Study',
-				'other'      => 'Other',
-			),
-			'default_value' => 'blog',
-			'ui'            => 1,
-			'return_format' => 'value',
-			'instructions'  => 'Content type for this entry (blog, case study, or other).',
-		),
-		array(
-			'key'           => 'field_oakwood_gen_content_tags',
-			'label'         => 'Tags',
-			'name'          => 'tags',
-			'type'          => 'checkbox',
-			'choices'       => $tag_choices,
-			'return_format' => 'value',
-			'layout'        => 'vertical',
-		),
-		array(
-			'key'               => 'field_oakwood_gen_content_primary_tag',
-			'label'             => 'Primary Tag',
-			'name'              => 'primary_tag',
-			'type'              => 'radio',
-			'choices'           => $tag_choices,
-			'return_format'     => 'value',
-			'layout'            => 'vertical',
-			'allow_null'        => 1,
-			'other_choice'      => 0,
-			'save_other_choice' => 0,
-			'instructions'      => 'Select a primary tag (must be included in Tags).',
 		),
 		array(
 			'key'           => 'field_oakwood_related_bloqs',
@@ -216,64 +150,44 @@ function oakwood_bloq_register_acf_field_group() {
 			'style'    => 'default',
 		)
 	);
+
+	// Primary Tag: dropdown en sidebar (alternativa cuando Yoast no muestra el selector en block editor).
+	acf_add_local_field_group(
+		array(
+			'key'      => 'group_oakwood_primary_tag',
+			'title'    => 'Primary Tag',
+			'fields'   => array(
+				array(
+					'key'           => 'field_oakwood_primary_tag',
+					'label'         => 'Select the primary tag',
+					'name'          => 'oakwood_primary_tag',
+					'type'          => 'taxonomy',
+					'taxonomy'      => 'gen_content_tag',
+					'field_type'    => 'select',
+					'return_format' => 'id',
+					'multiple'      => 0,
+					'allow_null'    => 1,
+					'add_term'      => 0,
+					'save_terms'    => 0,
+					'load_terms'    => 0,
+					'instructions'  => 'Choose which tag is primary for display (badge, SEO).',
+				),
+			),
+			'location' => array(
+				array(
+					array(
+						'param'    => 'post_type',
+						'operator' => '==',
+						'value'    => 'gen_content',
+					),
+				),
+			),
+			'position' => 'side',
+			'style'    => 'default',
+		)
+	);
 }
 add_action( 'acf/init', 'oakwood_bloq_register_acf_field_group' );
-
-/**
- * Forzar que type_content muestre "Blog" en lugar de "Bloq" (sobrescribe si ACF carga versión antigua desde DB).
- */
-add_filter( 'acf/load_field/key=field_oakwood_type_content', function ( $field ) {
-	$field['choices'] = array(
-		'blog'       => 'Blog',
-		'case_study' => 'Case Study',
-		'other'      => 'Other',
-	);
-	$field['default_value'] = 'blog';
-	return $field;
-} );
-
-/**
- * Validación ACF: la tag principal debe estar dentro del arreglo de tags seleccionadas.
- */
-function oakwood_bloq_validate_primary_tag( $valid, $value, $field, $input ) {
-	if ( $valid !== true ) {
-		return $valid;
-	}
-
-	if ( isset( $_POST['post_type'] ) && sanitize_text_field( wp_unslash( $_POST['post_type'] ) ) !== 'gen_content' ) {
-		return $valid;
-	}
-
-	$primary = is_scalar( $value ) ? (string) $value : '';
-	$primary = trim( $primary );
-	if ( $primary === '' ) {
-		return $valid;
-	}
-
-	$tags = array();
-	if ( isset( $_POST['acf'] ) && is_array( $_POST['acf'] ) && isset( $_POST['acf']['field_oakwood_gen_content_tags'] ) ) {
-		$tags = wp_unslash( $_POST['acf']['field_oakwood_gen_content_tags'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-	}
-
-	if ( ! is_array( $tags ) ) {
-		$tags = array();
-	}
-
-	$tags = array_map(
-		static function ( $t ) {
-			return is_scalar( $t ) ? trim( (string) $t ) : '';
-		},
-		$tags
-	);
-	$tags = array_values( array_filter( $tags, static fn( $t ) => $t !== '' ) );
-
-	if ( empty( $tags ) || ! in_array( $primary, $tags, true ) ) {
-		return 'The primary tag must be included in the Tags field.';
-	}
-
-	return $valid;
-}
-add_filter( 'acf/validate_value/key=field_oakwood_gen_content_primary_tag', 'oakwood_bloq_validate_primary_tag', 10, 4 );
 
 /**
  * Filtra el selector de Related Bloqs: solo Gen Content con categoría "blog".

@@ -3,7 +3,8 @@
  * GEO (Generative Engine Optimization) para Gen Content.
  *
  * - Inyecta JSON-LD Schema.org para ayudar a motores generativos a entender el contenido.
- * - Inyecta meta keywords + article:tag/section desde ACF (tags/primary_tag).
+ * - Inyecta meta keywords + article:tag/section desde taxonomía gen_content_tag.
+ * - Schema type (BlogPosting/CaseStudy) desde gen_content_category (blog/case-study).
  *
  * Nota: Esto complementa a Yoast; no intenta reemplazar su schema.
  */
@@ -11,38 +12,71 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Determinar el tipo Schema.org según type_content.
+ * Determinar el tipo Schema.org según la categoría del post (gen_content_category: blog/case-study).
  */
-function oakwood_gc_schema_type( $type_content ) {
-	$type_content = is_scalar( $type_content ) ? (string) $type_content : '';
-	$type_content = trim( $type_content );
-
-	switch ( $type_content ) {
-		case 'case_study':
-			return 'CaseStudy';
-		case 'blog':
-		case 'bloq': // Legacy, pre-migration
-			return 'BlogPosting';
-		default:
-			return 'Article';
+function oakwood_gc_schema_type_for_post( $post_id ) {
+	$terms = get_the_terms( $post_id, 'gen_content_category' );
+	if ( ! is_array( $terms ) ) {
+		return 'Article';
 	}
+	foreach ( $terms as $term ) {
+		if ( $term && ! is_wp_error( $term ) && isset( $term->slug ) ) {
+			if ( $term->slug === 'case-study' ) {
+				return 'CaseStudy';
+			}
+			if ( $term->slug === 'blog' ) {
+				return 'BlogPosting';
+			}
+		}
+	}
+	return 'Article';
 }
 
-function oakwood_gc_get_acf_tags_for_post( $post_id ) {
-	$tags = array();
-	if ( function_exists( 'get_field' ) ) {
-		$tags = get_field( 'tags', $post_id );
-	}
-	if ( ! is_array( $tags ) ) {
+/**
+ * Obtener nombres de términos de gen_content_tag para keywords/tags (display).
+ */
+function oakwood_gc_get_tag_terms_for_post( $post_id ) {
+	$terms = get_the_terms( $post_id, 'gen_content_tag' );
+	if ( ! is_array( $terms ) ) {
 		return array();
 	}
-	$tags = array_map(
-		static function ( $t ) {
-			return is_scalar( $t ) ? trim( (string) $t ) : '';
-		},
-		$tags
-	);
-	return array_values( array_unique( array_filter( $tags, static fn( $t ) => $t !== '' ) ) );
+	$names = array();
+	foreach ( $terms as $term ) {
+		if ( $term && ! is_wp_error( $term ) && isset( $term->name ) && trim( $term->name ) !== '' ) {
+			$names[] = trim( $term->name );
+		}
+	}
+	return array_values( array_unique( $names ) );
+}
+
+/**
+ * Obtener el primary tag para un post.
+ * Prioridad: ACF oakwood_primary_tag > Yoast primary term > primer tag.
+ */
+function oakwood_gc_get_primary_tag_for_post( $post_id ) {
+	$tags = oakwood_gc_get_tag_terms_for_post( $post_id );
+	if ( empty( $tags ) ) {
+		return null;
+	}
+	// 1) ACF (dropdown en panel Primary Tag)
+	$primary_id = function_exists( 'get_field' ) ? get_field( 'oakwood_primary_tag', $post_id ) : get_post_meta( $post_id, 'oakwood_primary_tag', true );
+	if ( ! empty( $primary_id ) ) {
+		$term = get_term( (int) $primary_id, 'gen_content_tag' );
+		if ( $term && ! is_wp_error( $term ) && isset( $term->name ) && trim( $term->name ) !== '' ) {
+			return trim( $term->name );
+		}
+	}
+	// 2) Yoast primary term
+	if ( function_exists( 'yoast_get_primary_term_id' ) ) {
+		$primary_id = yoast_get_primary_term_id( 'gen_content_tag', $post_id );
+		if ( ! empty( $primary_id ) ) {
+			$term = get_term( (int) $primary_id, 'gen_content_tag' );
+			if ( $term && ! is_wp_error( $term ) && isset( $term->name ) && trim( $term->name ) !== '' ) {
+				return trim( $term->name );
+			}
+		}
+	}
+	return $tags[0];
 }
 
 /**
@@ -60,17 +94,10 @@ function oakwood_gc_output_geo() {
 
 	$post_id = (int) $post->ID;
 
-	$type_content = function_exists( 'get_field' ) ? get_field( 'type_content', $post_id ) : '';
-	$primary_tag  = function_exists( 'get_field' ) ? get_field( 'primary_tag', $post_id ) : '';
-	$tags         = oakwood_gc_get_acf_tags_for_post( $post_id );
+	$tags         = oakwood_gc_get_tag_terms_for_post( $post_id );
+	$primary_tag  = oakwood_gc_get_primary_tag_for_post( $post_id ) ?? '';
 
-	$primary_tag = is_scalar( $primary_tag ) ? trim( (string) $primary_tag ) : '';
-	if ( $primary_tag !== '' ) {
-		// Asegurar que primary_tag esté primero en keywords/tags.
-		$tags = array_values( array_unique( array_merge( array( $primary_tag ), $tags ) ) );
-	}
-
-	// 1) Metadatos simples (útiles para parsers/LLMs aunque keywords sea "legacy")
+	// 1) Metadatos simples (útiles para parsers/LLMs)
 	if ( ! empty( $tags ) ) {
 		echo "\n" . '<meta name="keywords" content="' . esc_attr( implode( ', ', $tags ) ) . '">' . "\n";
 		foreach ( $tags as $t ) {
@@ -84,7 +111,7 @@ function oakwood_gc_output_geo() {
 	// 2) JSON-LD Schema.org
 	$permalink = get_permalink( $post );
 	$site_name = get_bloginfo( 'name' );
-	$schema_type = oakwood_gc_schema_type( $type_content );
+	$schema_type = oakwood_gc_schema_type_for_post( $post_id );
 
 	$description = has_excerpt( $post ) ? $post->post_excerpt : '';
 	$description = is_string( $description ) && $description !== '' ? $description : wp_trim_words( wp_strip_all_tags( $post->post_content ), 30 );

@@ -4,7 +4,7 @@ import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Apollo, gql } from 'apollo-angular';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
-import { GET_GEN_CONTENTS_BY_SLUGS } from '../../app/api/graphql';
+import { GET_GEN_CONTENTS_BY_SLUGS, getPrimaryTagName } from '../../app/api/graphql';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
@@ -15,6 +15,24 @@ interface PostAuthor {
     id: string;
   };
 }
+
+/** Categorías Gen Content por defecto (gen_content_category en WordPress). primaryTag/tags vienen de la taxonomía. */
+export const GEN_CONTENT_CATEGORIES = [
+  'High-Performance Computing (HPC)',
+  'Data & AI Solutions',
+  'Cloud & Infrastructure',
+  'Application Innovation',
+  'Modern Work',
+  'Managed Services',
+  'Microsoft Licensing',
+  'Manufacturing',
+  'Healthcare',
+  'Financial Services',
+  'Retail',
+  'Education/Public Sector',
+  'Electronic Design Automation (EDA)',
+  'Other',
+] as const;
 
 export interface AuthorPersonDetail {
   id: string;
@@ -106,7 +124,7 @@ export default class Post implements OnInit, OnDestroy {
           ? this.sanitizer.bypassSecurityTrustHtml(excerpt.trim())
           : undefined,
         featuredImage: (r['featuredImage'] as PostDetail['featuredImage']) ?? undefined,
-        primaryTag: (r['primaryTag'] as string | null) ?? null,
+        primaryTag: getPrimaryTagName(r['primaryTagName'] as string | null) ?? null,
       } as PostDetail;
     });
   }
@@ -148,7 +166,7 @@ export default class Post implements OnInit, OnDestroy {
               slug
               date
               tags
-              primaryTag
+              primaryTagName
               showContactSection
               featuredImage {
                 node {
@@ -224,7 +242,7 @@ export default class Post implements OnInit, OnDestroy {
                   this.sanitizer.bypassSecurityTrustHtml(excerpt.trim()) :
                   undefined,
               tags: (raw['tags'] as string[] | undefined) ?? undefined,
-              primaryTag: (raw['primaryTag'] as string | null) ?? undefined,
+              primaryTag: getPrimaryTagName(raw['primaryTagName'] as string | null) ?? undefined,
               authorPerson: (raw['authorPerson'] as AuthorPersonDetail | null) ?? undefined,
               featuredImage: (raw['featuredImage'] as PostDetail['featuredImage']) ?? undefined,
               showContactSection: (raw['showContactSection'] as boolean | undefined) ?? undefined,
