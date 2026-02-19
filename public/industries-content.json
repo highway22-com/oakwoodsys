@@ -15,7 +15,7 @@
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "View engagement",
+          "text": "View Engagement",
           "link": "/structured-engagement",
           "borderColor": "#1D69AC"
         }
@@ -143,7 +143,7 @@
           "link": "/contact-us"
         },
         "secondary": {
-          "text": "View Resources",
+          "text": "View Engagement",
           "link": "/resources"
         }
       },

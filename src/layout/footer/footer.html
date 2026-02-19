@@ -69,9 +69,26 @@
           {{ group.title }}</h3>
         <ul class="space-y-4">
           @for (link of group.links; track link.text) {
+          @if (link.text !== 'Whitepapers' && link.text !== 'Events' && link.text !== 'Webinars') {
           <li>
             <a [routerLink]="link.routerLink" class="text-white/70 hover:text-blue-300 transition-colors duration-200">
-              {{ link.text }}
+              {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
+            </a>
+          </li>
+          }
+          }
+          @if (group.title === 'Services') {
+          <li>
+            <a [routerLink]="'services/managed-services'"
+              class="text-white/70 hover:text-blue-300 transition-colors duration-200">
+              Managed Services
+            </a>
+          </li>
+          }
+          @if (group.title === 'Industries') {
+          <li>
+            <a [routerLink]="'industries/eda'" class="text-white/70 hover:text-blue-300 transition-colors duration-200">
+              Electronic Design Automation (EDA)
             </a>
           </li>
           }

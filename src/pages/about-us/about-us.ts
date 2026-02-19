@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { VideoHero } from '../../shared/video-hero/video-hero';
+import { YoutubePlayerComponent } from '../../app/youtube-player/youtube-player.component';
+import { SafeUrlPipe } from '../../app/youtube-player/safe-url.pipe';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { LatestInsightsSectionComponent, type LatestInsightsSection } from '../../shared/sections/latest-insights/latest-insights';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
@@ -73,7 +75,7 @@ export interface AboutContent {
 
 @Component({
   selector: 'app-about-us',
-  imports: [VideoHero, LatestInsightsSectionComponent, CtaSectionComponent, ButtonPrimaryComponent, ScrollAnimationComponent],
+  imports: [VideoHero, LatestInsightsSectionComponent, CtaSectionComponent, ButtonPrimaryComponent, ScrollAnimationComponent, YoutubePlayerComponent, SafeUrlPipe],
   templateUrl: './about-us.html',
   styleUrl: './about-us.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

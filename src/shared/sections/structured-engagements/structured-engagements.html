@@ -53,14 +53,15 @@
       }
     </div>
     <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-10 transition-opacity duration-200 ease-out"
+      class="flex flex-nowrap overflow-x-auto md:overflow-x-visible md:flex-none md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-10 transition-opacity duration-200 ease-out"
+      style="-webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;"
       [class.structured-engagements__cards-enter]="cardsVisible()"
       [style.opacity]="cardsVisible() ? 1 : 0"
       [style.transform]="'translateY(0)'"
     >
       @for (offer of filteredOffers(); track offer.id || $index) {
         <div
-          class="structured-engagements__card structured-engagements__card-border group cursor-pointer rounded-md"
+          class="structured-engagements__card structured-engagements__card-border group cursor-pointer rounded-md min-w-[300px] sm:min-h-[340px] md:min-w-0 md:min-h-0 md:min-h-[unset] md:min-w-[unset]"
           [attr.data-border]="normalizeBorderColor(offer.borderColor)"
           [ngClass]="getOfferCardClasses(offer.borderColor, $index)"
         >
@@ -87,11 +88,11 @@
                 ></i>
               }
             </div>
-            <h3 class="text-xl text-white/90 pt-10 pb-4">
+            <h3 class="text-xl sm:text-lg text-white/90 pt-10 pb-4">
               {{ offer.title }}
             </h3>
             <p
-              class="text-[15px] text-gray-300 mb-3 font-segoe pb-2"
+              class="text-[15px] sm:text-[13px] text-gray-300 mb-3 font-segoe pb-2"
               style="line-height: 140%"
             >
               {{ offer.description }}
@@ -119,9 +120,9 @@
             }
           </div>
         </div>
-
+        <!-- Desktop: Button in grid position -->
         @if ($index === 0 && section().cta) {
-          <div class="lg:col-start-1 lg:row-start-2">
+          <div class="hidden lg:block lg:col-start-1 lg:row-start-2">
             <div class="bg-p-700 inline-block mb-3">
               <app-button-primary
                 [text]="section().cta?.text ?? ''"
@@ -131,6 +132,19 @@
           </div>
         }
       }
+  
+      
     </div>
+        <!-- Mobile: Button at the very bottom, full width, after all cards -->
+       @if (section().cta) {
+        <div class="block lg:hidden w-[30px] mt-4 sm:row-start-2">
+          <div class="bg-p-700 inline-block w-full">
+            <app-button-primary
+              [text]="section().cta?.text ?? ''"
+              [link]="section().cta?.link ?? '/structured-engagement'"
+            />
+          </div>
+        </div>
+      } 
   </div>
 </section>
