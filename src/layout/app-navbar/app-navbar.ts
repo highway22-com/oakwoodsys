@@ -1,6 +1,6 @@
 import { RouterLink, Router, NavigationEnd } from '@angular/router';
 import { Component, OnInit, OnDestroy, HostListener, inject, PLATFORM_ID, signal, computed, viewChild, ElementRef } from '@angular/core';
-import { CommonModule, NgClass, NgIf, isPlatformBrowser } from '@angular/common';
+import { CommonModule, DOCUMENT, NgClass, NgIf, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MicrosoftServices } from "./microsoft-services/microsoft-services";
 import { Industries } from "./industries/industries";
@@ -54,11 +54,15 @@ export interface FeaturedBlogItem {
 })
 export class AppNavbar implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly document = inject(DOCUMENT);
   private readonly http = inject(HttpClient);
   private readonly graphql = inject(GraphQLContentService);
   private readonly router = inject(Router);
 
+  /** true cuando viewport < 768px (md breakpoint). Muestra hamburger + panel; si no, versión desktop. */
+  isTabletOrMobile = false;
   isMobileMenuOpen = false;
+  mobileExpandedIndex: number | null = null;
   isScrolled = false;
   isServicesDropdownOpen = false;
   isIndustriesDropdownOpen = false;
@@ -115,6 +119,7 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
+      this.updateTabletOrMobile();
       this.checkScrollPosition();
       // Check current route
       this.updateContactSuccessStatus();
@@ -191,6 +196,18 @@ export class AppNavbar implements OnInit, OnDestroy {
     this.searchPanelOpen.set(false);
   }
 
+  private readonly MOBILE_BREAKPOINT = 768;
+
+  private updateTabletOrMobile() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.isTabletOrMobile = window.innerWidth < this.MOBILE_BREAKPOINT;
+    if (!this.isTabletOrMobile) {
+      this.isMobileMenuOpen = false;
+      this.mobileExpandedIndex = null;
+      this.updateBodyScrollLock();
+    }
+  }
+
   private checkScrollPosition() {
     if (!isPlatformBrowser(this.platformId)) {
       return;
@@ -242,6 +259,33 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    if (!this.isMobileMenuOpen) this.mobileExpandedIndex = null;
+    this.updateBodyScrollLock();
+  }
+
+  closeMobileMenu() {
+    this.isMobileMenuOpen = false;
+    this.mobileExpandedIndex = null;
+    this.updateBodyScrollLock();
+  }
+
+  toggleMobileDropdown(index: number) {
+    this.mobileExpandedIndex = this.mobileExpandedIndex === index ? null : index;
+  }
+
+  getMobileExpandedIndex(): number | null {
+    return this.mobileExpandedIndex;
+  }
+
+  openSearchFromMobile() {
+    this.closeMobileMenu();
+    this.toggleSearchPanel();
+  }
+
+  private updateBodyScrollLock() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.document.body.classList.toggle('mobile-menu-open', this.isMobileMenuOpen);
+    }
   }
 
   toggleServicesDropdown(event: Event) {
@@ -280,7 +324,6 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   public onMouseEnter(index: number): void {
     this.hoveredIndex.set(index);
-    console.log('onMouseEnter', this.hoveredIndex());
   }
 
   public onNavMouseLeave(): void {

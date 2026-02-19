@@ -2,7 +2,7 @@
     [class.navbar--gradient]="!hasNavbarBackground " [class.bg-white]="hasNavbarBackground "
     [class.shadow-md]="hasNavbarBackground" [class.text-reds]="isNavbarDark  ">
     <div class="px-4 sm:px-6 md:px-8 lg:px-20 mx-auto flex items-center justify-between">
-        <!-- Left Section: Logo -->
+        <!-- Logo (siempre visible) -->
         <a [routerLink]="'/home'" class="flex items-center gap-2 sm:gap-3">
             @if (isNavbarDark) {
             <img src="/assets/logo_dark.svg" alt="Oakwood" class="h-10 w-auto">
@@ -11,9 +11,27 @@
             }
         </a>
 
-        <div class=" md:flex items-center gap-6 lg:gap-8">
+        @if (isTabletOrMobile) {
+        <!-- Mobile/Tablet: solo botón hamburger que abre panel -->
+        <button type="button" class="p-2 -mr-2" (click)="toggleMobileMenu()" [attr.aria-expanded]="isMobileMenuOpen"
+            aria-label="Abrir menú" [ngClass]="{
+                'text-white': !hasNavbarBackground,
+                'text-gray-900': hasNavbarBackground
+            }">
+            @if (isMobileMenuOpen) {
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            } @else {
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            }
+        </button>
+        } @else {
+        <!-- Desktop: menú completo -->
+        <div class="flex items-center gap-6 lg:gap-8">
             @for (item of menuItems(); track item.label;let i = $index) {
-            <!-- (mouseleave)="item.hasDropdown ? onNavMouseLeave() : null" -->
             <a [routerLink]="item.routerLink" (mouseenter)="handleMouseEnter(item)" [ngClass]="{
                     ' hover:text-primary-blue': !isScrolled,
                     ' hover:text-blue-600': isScrolled,
@@ -33,10 +51,7 @@
             </a>
             }
         </div>
-
-        <!-- Right Section: Search & Contact (Desktop/Tablet) -->
-        <div class="hidden md:flex items-center gap-4 lg:gap-6">
-            <!-- Search Icon: blanco + hover rojo; dark = negro + hover azul -->
+        <div class="flex items-center gap-4 lg:gap-6">
             <button type="button" class="search-panel-trigger" (click)="toggleSearchPanel()" [ngClass]="{
                     'text-white hover:text-primary-blue': !isNavbarDark,
                     'text-gray-900 hover:text-p-600': isNavbarDark
@@ -46,17 +61,104 @@
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </button>
-            <!-- Contact Button -->
             <a routerLink="/contact-us"
                 class="bg-p-700 text-white  px-4 sm:px-6 py-2 sm:py-2.5  transition-colors duration-200 inline-block">
                 Contact
             </a>
         </div>
-
+        }
     </div>
-
 </nav>
-@if(hoveredIndex() === 0){
+
+<!-- Mobile: panel lateral (overlay + drawer) -->
+@if (isTabletOrMobile && isMobileMenuOpen) {
+<div class="fixed inset-0 z-40 bg-black/40" (click)="closeMobileMenu()" aria-hidden="true"></div>
+<div class="fixed top-0 right-0 h-full w-full max-w-sm z-50 bg-white shadow-xl overflow-y-auto animate-slide-in-right">
+
+    <div class="flex flex-col py-6 ">
+        <div class="flex justify-between items-center px-4 border-b pb-4 border-gray-300/60">
+            <div>
+                <img src="/assets/logo_dark.svg" alt="Oakwood" class="h-8 w-auto">
+            </div>
+            <div class="flex items-center gap-2">
+                <button type="button" (click)="openSearchFromMobile()"
+                    class="flex items-center gap-2 py-3 text-gray-700  hover:text-primary-blue transition-colors">
+                    <img src="/assets/search.svg" alt="Search" class="w-6 h-6">
+                    <span></span>
+                </button>
+                <button type="button" class="bg-gray-100 rounded-md p-3" (click)="closeMobileMenu()">
+                    <img src="/assets/x.svg" alt="Close" class="w-6 h-6">
+                </button>
+            </div>
+        </div>
+        @for (item of menuItems(); track item.label; let i = $index) {
+        @if (item.hasDropdown) {
+        <div class="border-b border-gray-100 ">
+            <button type="button" (click)="toggleMobileDropdown(i)"
+                class="w-full flex items-center justify-between py-4 px-4 text-left text-gray-900 font-medium focus:bg-[#F6F6F6] transition-colors">
+
+                <span>{{ item.label }}</span>
+                <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200"
+                    [class.rotate-180]="getMobileExpandedIndex() === i"></i>
+            </button>
+            @if (getMobileExpandedIndex() === i) {
+            <div class="pb-4 pl-2 px-4">
+                @if (i === 0 && content()?.services) {
+                @for (sub of content()!.services; track sub.id) {
+                <a [routerLink]="sub.link" (click)="closeMobileMenu()"
+                    class=" flex items-center gap-5 py-3 px-2 text-gray-600 ">
+                    <img [src]="sub.icon" [alt]="sub.name" class="w-10 h-10">
+                    <div class="flex flex-col  gap-2">
+                        <span class="text-[15px] font-medium">{{ sub.name }}</span>
+                        <span class="text-[12px] text-gray-500">{{ sub.desc }}</span>
+                    </div>
+                </a>
+                }
+                }
+                @if (i === 1 && content()?.industries) {
+                @for (sub of content()!.industries; track sub.id) {
+                <a [routerLink]="sub.link" (click)="closeMobileMenu()"
+                    class=" flex items-center gap-5 py-3 px-2 text-gray-600 ">
+                    <img [src]="sub.icon" [alt]="sub.name" class="w-6 h-6">
+                    <div class="flex flex-col  gap-2">
+                        <span class="text-[15px] font-medium">{{ sub.name }}</span>
+                        <span class="text-[12px] text-gray-500">{{ sub.desc }}</span>
+                    </div>
+                </a>
+                }
+                }
+                @if (i === 2 && content()?.resources) {
+                @for (sub of content()!.resources; track sub.id) {
+                <a [routerLink]="sub.link" (click)="closeMobileMenu()"
+                    class=" flex items-center gap-5 py-3 px-2 text-gray-600 ">
+                    <img [src]="sub.icon" [alt]="sub.name" class="w-6 h-6">
+                    <div class="flex flex-col  gap-2">
+                        <span class="text-[15px] font-medium">{{ sub.name }}</span>
+                        <span class="text-[12px] text-gray-500">{{ sub.desc }}</span>
+                    </div>
+                </a>
+                }
+                }
+            </div>
+            }
+        </div>
+        } @else {
+        <a [routerLink]="item.routerLink" (click)="closeMobileMenu()"
+            class="py-4 px-4 text-gray-800   border-b border-gray-100">
+            {{ item.label }}
+        </a>
+        }
+        }
+        <div class="flex flex-col gap-3 px-4 pt-4 ">
+            <a routerLink="/contact-us" (click)="closeMobileMenu()"
+                class="bg-p-700 text-white text-center py-3 px-4 font-medium rounded transition-colors">
+                Contact
+            </a>
+        </div>
+    </div>
+</div>
+}
+@if (!isTabletOrMobile && hoveredIndex() === 0){
 <div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(0)" (mouseleave)="onNavMouseLeave()" tabindex="0"
     (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
     <app-menu-list [content]="content()?.services ?? []" [featuredTitle]="featuredTitleServices()"
@@ -70,7 +172,7 @@
         [featuredTitle]="featuredTitleIndustries()"></app-menu-list>
 </div>
 }
-@if(hoveredIndex() === 2){
+@if (!isTabletOrMobile && hoveredIndex() === 2){
 <div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(2)" (mouseleave)="onNavMouseLeave()" tabindex="0"
     (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
     <app-menu-list [content]="content()?.resources ?? []" [caseStudies]="featuredCaseStudies()"
@@ -78,7 +180,6 @@
 </div>
 }
 
-<!-- Panel de búsqueda (click en ícono): input 100 chars, lista con link/snippet/imagen, lazy load al hacer scroll -->
 @if (searchPanelOpen()) {
 <div class="flex flex-col nav--body search-panel-container" (mouseleave)="sleepMoveout()">
     <div class="px-4 sm:px-6 md:px-8 lg:px-20 py-6">
