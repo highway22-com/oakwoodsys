@@ -196,6 +196,11 @@ body {
     }
 }
 
+/* Body scroll lock cuando el menú móvil está abierto */
+body.mobile-menu-open {
+    overflow: hidden;
+}
+
 /* Hide scrollbar for logo carousel */
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
