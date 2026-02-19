@@ -7,7 +7,7 @@ import { ButtonPrimaryComponent } from '../../button-primary/button-primary.comp
 import { BlogCardComponent } from '../../blog-card/blog-card.component';
 import { GraphQLContentService } from '../../../app/services/graphql-content.service';
 import { readingTimeMinutes } from '../../../app/utils/reading-time.util';
-import type { GenContentListNode } from '../../../app/api/graphql';
+import { getPrimaryTagName, type GenContentListNode } from '../../../app/api/graphql';
 
 /** Item para app-blog-card (mismo formato que en blogs). */
 export interface LatestInsightsBlogCard {
@@ -91,7 +91,7 @@ export class LatestInsightsSectionComponent implements OnInit {
     const authorName =
       node.authorPerson?.name ?? node.authorPerson?.firstName ?? node.author?.node?.firstName ?? null;
     const authorInitial = (authorName ?? 'A').charAt(0);
-    const tag = node.primaryTag ?? (node.tags?.length ? node.tags[0]! : null);
+    const tag = getPrimaryTagName(node.primaryTagName) ?? (node.tags?.length ? node.tags[0]! : null);
     return {
       slug: node.slug,
       imageUrl: node.featuredImage?.node?.sourceUrl ?? '',

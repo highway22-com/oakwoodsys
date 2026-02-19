@@ -3,7 +3,7 @@
  * Plugin Name: Oakwood Blog
  * Plugin URI: https://oakwoodsys.com
  * Description: Registra el CPT "Gen Content" (gen_content) + taxonomía, agrega campos ACF (show_contact_section, related_bloqs) y los expone en WPGraphQL.
- * Version: 5.0.0
+ * Version: 7.0.12
  * Author: Aetro
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -150,6 +150,146 @@ function oakwood_bloq_register_taxonomy() {
 add_action( 'init', 'oakwood_bloq_register_taxonomy' );
 
 /**
+ * Registrar taxonomía Tags para Gen Content (flexible: agregar/eliminar libremente).
+ * Las categorías (Blog, Case Study, temas) se mantienen en gen_content_category.
+ */
+function oakwood_bloq_register_tag_taxonomy() {
+	$labels = array(
+		'name'                       => _x( 'Tags', 'taxonomy general name', 'oakwood-blog' ),
+		'singular_name'              => _x( 'Tag', 'taxonomy singular name', 'oakwood-blog' ),
+		'search_items'               => __( 'Search Tags', 'oakwood-blog' ),
+		'all_items'                  => __( 'All Tags', 'oakwood-blog' ),
+		'edit_item'                  => __( 'Edit Tag', 'oakwood-blog' ),
+		'update_item'                => __( 'Update Tag', 'oakwood-blog' ),
+		'add_new_item'               => __( 'Add New Tag', 'oakwood-blog' ),
+		'new_item_name'              => __( 'New Tag Name', 'oakwood-blog' ),
+		'menu_name'                  => __( 'Tags', 'oakwood-blog' ),
+	);
+
+	$args = array(
+		'hierarchical'          => true,
+		'labels'                => $labels,
+		'show_ui'               => true,
+		'show_admin_column'     => true,
+		'query_var'             => true,
+		'rewrite'               => array( 'slug' => 'gen-content-tag' ),
+		'show_in_rest'          => true,
+		'show_in_graphql'       => true,
+		'graphql_single_name'   => 'GenContentTag',
+		'graphql_plural_name'   => 'GenContentTags',
+	);
+
+	register_taxonomy( 'gen_content_tag', array( 'gen_content' ), $args );
+}
+add_action( 'init', 'oakwood_bloq_register_tag_taxonomy' );
+
+/**
+ * Ocultar selector "Parent" en Tags (todos los términos son planos).
+ */
+function oakwood_bloq_hide_tag_parent_selector() {
+	$screen = get_current_screen();
+	if ( ! $screen || $screen->post_type !== 'gen_content' ) {
+		return;
+	}
+	echo '<style>
+		.taxonomy-gen_content_tag .term-parent-wrap,
+		.taxonomy-gen_content_tag .term-parent,
+		#gen_content_tagdiv .term-parent-wrap,
+		.taxonomy-gen_content_tag .form-field.term-parent-wrap {
+			display: none !important;
+		}
+	</style>';
+}
+add_action( 'admin_head-post.php', 'oakwood_bloq_hide_tag_parent_selector' );
+add_action( 'admin_head-post-new.php', 'oakwood_bloq_hide_tag_parent_selector' );
+
+/**
+ * Columna Primary Tag en la tabla de listado Gen Content.
+ */
+function oakwood_bloq_add_primary_tag_column( $columns ) {
+	$new = array();
+	foreach ( $columns as $key => $label ) {
+		$new[ $key ] = $label;
+		if ( $key === 'taxonomy-gen_content_tag' ) {
+			$new['primary_tag'] = __( 'Primary Tag', 'oakwood-blog' );
+		}
+	}
+	return $new;
+}
+function oakwood_bloq_render_primary_tag_column( $column, $post_id ) {
+	if ( $column !== 'primary_tag' ) {
+		return;
+	}
+	$primary = function_exists( 'oakwood_gc_get_primary_tag_for_post' ) ? oakwood_gc_get_primary_tag_for_post( $post_id ) : null;
+	echo $primary ? esc_html( $primary ) : '—';
+}
+add_filter( 'manage_gen_content_posts_columns', 'oakwood_bloq_add_primary_tag_column' );
+add_action( 'manage_gen_content_posts_custom_column', 'oakwood_bloq_render_primary_tag_column', 10, 2 );
+
+add_action( 'init', 'oakwood_bloq_create_default_category_terms', 99 );
+add_action( 'init', 'oakwood_bloq_create_default_tag_terms', 99 );
+
+/**
+ * Categorías: solo Blog y Case Study (tipo de contenido). ACF y queries dependen de estos slugs.
+ */
+function oakwood_bloq_get_default_category_terms() {
+	return array(
+		array( 'name' => 'Blog', 'slug' => 'blog' ),
+		array( 'name' => 'Case Study', 'slug' => 'case-study' ),
+	);
+}
+
+/**
+ * Crear términos por defecto en gen_content_category (Blog, Case Study).
+ */
+function oakwood_bloq_create_default_category_terms() {
+	if ( ! taxonomy_exists( 'gen_content_category' ) ) {
+		return;
+	}
+	foreach ( oakwood_bloq_get_default_category_terms() as $term_data ) {
+		if ( ! term_exists( $term_data['slug'], 'gen_content_category' ) ) {
+			wp_insert_term( $term_data['name'], 'gen_content_category', array( 'slug' => $term_data['slug'] ) );
+		}
+	}
+}
+
+/**
+ * Tags por defecto para Gen Content (topic/industry). Las 14 etiquetas filtrables.
+ */
+function oakwood_bloq_get_default_tag_terms() {
+	return array(
+		array( 'name' => 'High-Performance Computing (HPC)', 'slug' => 'high-performance-computing-hpc' ),
+		array( 'name' => 'Data & AI Solutions', 'slug' => 'data-ai-solutions' ),
+		array( 'name' => 'Cloud & Infrastructure', 'slug' => 'cloud-infrastructure' ),
+		array( 'name' => 'Application Innovation', 'slug' => 'application-innovation' ),
+		array( 'name' => 'Modern Work', 'slug' => 'modern-work' ),
+		array( 'name' => 'Managed Services', 'slug' => 'managed-services' ),
+		array( 'name' => 'Microsoft Licensing', 'slug' => 'microsoft-licensing' ),
+		array( 'name' => 'Manufacturing', 'slug' => 'manufacturing' ),
+		array( 'name' => 'Healthcare', 'slug' => 'healthcare' ),
+		array( 'name' => 'Financial Services', 'slug' => 'financial-services' ),
+		array( 'name' => 'Retail', 'slug' => 'retail' ),
+		array( 'name' => 'Education/Public Sector', 'slug' => 'education-public-sector' ),
+		array( 'name' => 'Electronic Design Automation (EDA)', 'slug' => 'electronic-design-automation-eda' ),
+		array( 'name' => 'Other', 'slug' => 'other' ),
+	);
+}
+
+/**
+ * Crear términos por defecto en gen_content_tag.
+ */
+function oakwood_bloq_create_default_tag_terms() {
+	if ( ! taxonomy_exists( 'gen_content_tag' ) ) {
+		return;
+	}
+	foreach ( oakwood_bloq_get_default_tag_terms() as $term_data ) {
+		if ( ! term_exists( $term_data['slug'], 'gen_content_tag' ) ) {
+			wp_insert_term( $term_data['name'], 'gen_content_tag', array( 'slug' => $term_data['slug'] ) );
+		}
+	}
+}
+
+/**
  * Helpers: normalizar valores ACF de relación a IDs (database IDs).
  */
 function oakwood_bloq_normalize_related_ids( $value ) {
@@ -189,15 +329,59 @@ function oakwood_bloq_normalize_related_ids( $value ) {
 }
 
 /**
- * WPGraphQL: registrar campos showContactSection + typeContent + relatedBloqs en el tipo GenContent.
+ * WPGraphQL: registrar campos showContactSection + tags + primaryTagName + relatedBloqs en el tipo GenContent.
+ * tags y primaryTagName se derivan de la taxonomía gen_content_tag (tema/industry).
+ * primaryTagName evita conflicto con el campo primaryTag de ACF (tipo PrimaryTag).
  *
  * Permite consultar:
- * genContent(id: "...") { showContactSection typeContent relatedBloqs { id title uri } relatedBloqIds relatedCaseStudies { id title uri } relatedCaseStudyIds }
+ * genContent(id: "...") { showContactSection tags primaryTagName relatedBloqs { id title uri } relatedBloqIds relatedCaseStudies { id title uri } relatedCaseStudyIds }
  */
 function oakwood_bloq_register_graphql_fields() {
 	if ( ! function_exists( 'register_graphql_field' ) ) {
 		return;
 	}
+
+	register_graphql_field(
+		'GenContent',
+		'tags',
+		array(
+			'type'        => array( 'list_of' => 'String' ),
+			'description' => __( 'Tag names from gen_content_tag (for display).', 'oakwood-blog' ),
+			'resolve'     => function ( $post ) {
+				$post_id = null;
+				if ( is_object( $post ) && isset( $post->ID ) ) {
+					$post_id = (int) $post->ID;
+				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
+					$post_id = (int) $post['databaseId'];
+				}
+				if ( ! $post_id ) {
+					return array();
+				}
+				return function_exists( 'oakwood_gc_get_tag_terms_for_post' ) ? oakwood_gc_get_tag_terms_for_post( $post_id ) : array();
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'primaryTagName',
+		array(
+			'type'        => 'String',
+			'description' => __( 'Primary tag name from gen_content_tag (ACF/Yoast or first tag). Avoids conflict with ACF primaryTag.', 'oakwood-blog' ),
+			'resolve'     => function ( $post ) {
+				$post_id = null;
+				if ( is_object( $post ) && isset( $post->ID ) ) {
+					$post_id = (int) $post->ID;
+				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
+					$post_id = (int) $post['databaseId'];
+				}
+				if ( ! $post_id ) {
+					return null;
+				}
+				return function_exists( 'oakwood_gc_get_primary_tag_for_post' ) ? oakwood_gc_get_primary_tag_for_post( $post_id ) : null;
+			},
+		)
+	);
 
 	register_graphql_field(
 		'GenContent',
@@ -224,89 +408,6 @@ function oakwood_bloq_register_graphql_fields() {
 				}
 
 				return (bool) $value;
-			},
-		)
-	);
-
-	register_graphql_field(
-		'GenContent',
-		'tags',
-		array(
-			'type'        => array( 'list_of' => 'String' ),
-			'description' => __( 'Tags (ACF: tags).', 'oakwood-blog' ),
-			'resolve'     => function ( $post ) {
-				$post_id = null;
-				if ( is_object( $post ) && isset( $post->ID ) ) {
-					$post_id = (int) $post->ID;
-				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
-					$post_id = (int) $post['databaseId'];
-				}
-				if ( ! $post_id ) {
-					return array();
-				}
-				$value = function_exists( 'get_field' ) ? get_field( 'tags', $post_id ) : get_post_meta( $post_id, 'tags', true );
-				if ( ! is_array( $value ) ) {
-					return array();
-				}
-				$value = array_map( function ( $t ) {
-					return is_scalar( $t ) ? (string) $t : '';
-				}, $value );
-				return array_values( array_filter( $value, function ( $t ) {
-					return $t !== '';
-				} ) );
-			},
-		)
-	);
-
-	register_graphql_field(
-		'GenContent',
-		'primaryTag',
-		array(
-			'type'        => 'String',
-			'description' => __( 'Primary tag (ACF: primary_tag).', 'oakwood-blog' ),
-			'resolve'     => function ( $post ) {
-				$post_id = null;
-				if ( is_object( $post ) && isset( $post->ID ) ) {
-					$post_id = (int) $post->ID;
-				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
-					$post_id = (int) $post['databaseId'];
-				}
-				if ( ! $post_id ) {
-					return null;
-				}
-				$value = function_exists( 'get_field' ) ? get_field( 'primary_tag', $post_id ) : get_post_meta( $post_id, 'primary_tag', true );
-				$value = is_scalar( $value ) ? (string) $value : '';
-				return $value !== '' ? $value : null;
-			},
-		)
-	);
-
-	register_graphql_field(
-		'GenContent',
-		'typeContent',
-		array(
-			'type'        => 'String',
-			'description' => __( 'Content type (ACF: type_content).', 'oakwood-blog' ),
-			'resolve'     => function ( $post ) {
-				$post_id = null;
-				if ( is_object( $post ) && isset( $post->ID ) ) {
-					$post_id = (int) $post->ID;
-				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
-					$post_id = (int) $post['databaseId'];
-				}
-				if ( ! $post_id ) {
-					return null;
-				}
-
-				$value = null;
-				if ( function_exists( 'get_field' ) ) {
-					$value = get_field( 'type_content', $post_id );
-				} else {
-					$value = get_post_meta( $post_id, 'type_content', true );
-				}
-
-				$value = is_scalar( $value ) ? (string) $value : '';
-				return $value !== '' ? $value : null;
 			},
 		)
 	);
@@ -654,6 +755,72 @@ function oakwood_bloq_register_graphql_fields() {
 add_action( 'graphql_register_types', 'oakwood_bloq_register_graphql_fields' );
 
 /**
+ * Filtros where para genContents: categorySlug (blog/case-study) y tagSlug.
+ * Permite: genContents(where: { categorySlug: "case-study", tagSlug: "data-ai-solutions" }) { nodes { ... } }
+ */
+function oakwood_bloq_register_gencontents_where_args() {
+	if ( ! function_exists( 'register_graphql_field' ) ) {
+		return;
+	}
+	register_graphql_field(
+		'RootQueryToGenContentConnectionWhereArgs',
+		'categorySlug',
+		array(
+			'type'        => 'String',
+			'description' => __( 'Filter by gen_content_category slug (blog or case-study).', 'oakwood-blog' ),
+		)
+	);
+	register_graphql_field(
+		'RootQueryToGenContentConnectionWhereArgs',
+		'tagSlug',
+		array(
+			'type'        => 'String',
+			'description' => __( 'Filter by gen_content_tag slug (topic/industry).', 'oakwood-blog' ),
+		)
+	);
+}
+add_action( 'graphql_register_types', 'oakwood_bloq_register_gencontents_where_args' );
+
+/**
+ * Aplicar tax_query cuando categorySlug o tagSlug están en where (solo para gen_content).
+ */
+function oakwood_bloq_gencontents_connection_tax_query( $query_args, $source, $args, $context, $info ) {
+	$post_type = $query_args['post_type'] ?? null;
+	$is_gen_content = ( is_array( $post_type ) && in_array( 'gen_content', $post_type, true ) )
+		|| $post_type === 'gen_content';
+	if ( ! $is_gen_content ) {
+		return $query_args;
+	}
+
+	$where = $args['where'] ?? array();
+	$tax_queries = array();
+
+	if ( ! empty( $where['categorySlug'] ) && is_string( $where['categorySlug'] ) ) {
+		$tax_queries[] = array(
+			'taxonomy' => 'gen_content_category',
+			'field'    => 'slug',
+			'terms'    => sanitize_text_field( $where['categorySlug'] ),
+		);
+	}
+	if ( ! empty( $where['tagSlug'] ) && is_string( $where['tagSlug'] ) ) {
+		$tax_queries[] = array(
+			'taxonomy' => 'gen_content_tag',
+			'field'    => 'slug',
+			'terms'    => sanitize_text_field( $where['tagSlug'] ),
+		);
+	}
+
+	if ( ! empty( $tax_queries ) ) {
+		$query_args['tax_query'] = count( $tax_queries ) > 1
+			? array_merge( array( 'relation' => 'AND' ), $tax_queries )
+			: $tax_queries[0];
+	}
+
+	return $query_args;
+}
+add_filter( 'graphql_post_object_connection_query_args', 'oakwood_bloq_gencontents_connection_tax_query', 10, 5 );
+
+/**
  * Construye JSON-LD para Gen Content: Organization (Oakwood) + Article/BlogPosting con GEO.
  * Usado por el campo GraphQL headJsonLdData.
  *
@@ -670,8 +837,7 @@ function oakwood_bloq_build_head_json_ld( $post ) {
 	$permalink   = get_permalink( $p );
 	$site_name   = get_bloginfo( 'name' );
 	$site_url    = home_url( '/' );
-	$type_content = function_exists( 'get_field' ) ? get_field( 'type_content', $post_id ) : get_post_meta( $post_id, 'type_content', true );
-	$schema_type  = function_exists( 'oakwood_gc_schema_type' ) ? oakwood_gc_schema_type( $type_content ) : 'Article';
+	$schema_type = function_exists( 'oakwood_gc_schema_type_for_post' ) ? oakwood_gc_schema_type_for_post( $post_id ) : 'Article';
 
 	$description = function_exists( 'get_field' ) ? get_field( 'oakwood_head_description', $post_id ) : get_post_meta( $post_id, 'oakwood_head_description', true );
 	$description = ( $description !== null && $description !== '' ) ? trim( (string) $description ) : '';
@@ -686,12 +852,8 @@ function oakwood_bloq_build_head_json_ld( $post ) {
 	$image    = ( $image && is_string( $image ) ) ? $image : null;
 	$author   = get_userdata( (int) $p->post_author );
 	$author_name = $author ? (string) $author->display_name : '';
-	$tags     = function_exists( 'oakwood_gc_get_acf_tags_for_post' ) ? oakwood_gc_get_acf_tags_for_post( $post_id ) : array();
-	$primary  = function_exists( 'get_field' ) ? get_field( 'primary_tag', $post_id ) : get_post_meta( $post_id, 'primary_tag', true );
-	$primary  = ( $primary !== null && $primary !== '' ) ? trim( (string) $primary ) : null;
-	if ( $primary ) {
-		$tags = array_values( array_unique( array_merge( array( $primary ), $tags ) ) );
-	}
+	$tags     = function_exists( 'oakwood_gc_get_tag_terms_for_post' ) ? oakwood_gc_get_tag_terms_for_post( $post_id ) : array();
+	$primary  = ! empty( $tags ) ? $tags[0] : null;
 
 	$geo_region    = function_exists( 'get_field' ) ? get_field( 'oakwood_geo_region', $post_id ) : get_post_meta( $post_id, 'oakwood_geo_region', true );
 	$geo_placename = function_exists( 'get_field' ) ? get_field( 'oakwood_geo_placename', $post_id ) : get_post_meta( $post_id, 'oakwood_geo_placename', true );
@@ -771,6 +933,9 @@ function oakwood_bloq_build_head_json_ld( $post ) {
 function oakwood_bloq_activate() {
 	oakwood_bloq_register_post_type();
 	oakwood_bloq_register_taxonomy();
+	oakwood_bloq_register_tag_taxonomy();
+	oakwood_bloq_create_default_category_terms();
+	oakwood_bloq_create_default_tag_terms();
 	flush_rewrite_rules();
 }
 register_activation_hook( __FILE__, 'oakwood_bloq_activate' );

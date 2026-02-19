@@ -8,24 +8,34 @@ import { Resources } from "./resources/resources";
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { filter } from 'rxjs';
 import type { CaseStudy, SearchResultItem } from '../../app/api/graphql';
+import { MenuList } from './menu-list/menu-list';
 
-interface MenuItem {
+interface Menu {
+  slug: string;
   label: string;
   routerLink: string;
   index: number | null;
   hasDropdown: boolean;
 }
 
-interface Service {
-  title: string;
-  description: string;
-  route: string;
+interface Content {
+  id: string;
+  name: string;
+  link: string;
+  desc: string;
+  details?: string;
   icon: string;
 }
 
+interface ContentMap {
+  services: Content[];
+  industries: Content[];
+  resources: Content[];
+}
+
 interface NavbarContent {
-  menuItems: MenuItem[];
-  services: Service[];
+  menu: Menu[];
+  content: ContentMap;
 }
 
 /** Item de blog para el dropdown Resources (2 últimos desde GraphQL). */
@@ -38,7 +48,7 @@ export interface FeaturedBlogItem {
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, CommonModule, NgClass, MicrosoftServices, Industries, Resources],
+  imports: [RouterLink, CommonModule, NgClass, MicrosoftServices, Industries, Resources, MenuList],
   templateUrl: './app-navbar.html',
   styleUrl: './app-navbar.css',
 })
@@ -57,13 +67,17 @@ export class AppNavbar implements OnInit, OnDestroy {
   isOnContactSuccess = signal(false);
   isOnStructuredEngagement = signal(false);
 
-  readonly menuItems = signal<MenuItem[]>([]);
-  readonly services = signal<Service[]>([]);
+  readonly menuItems = signal<Menu[]>([]);
+  readonly content = signal<ContentMap | null>(null);
   readonly loading = signal(true);
   /** Dos case studies más recientes para el dropdown Industries (se cargan al iniciar para que estén listos). */
   readonly featuredCaseStudies = signal<CaseStudy[]>([]);
   /** Dos blogs más recientes para el dropdown Resources (genContent categoría blog). */
   readonly featuredBlogs = signal<FeaturedBlogItem[]>([]);
+
+  /** Título de la sección Featured por dropdown (Services, Industries). */
+  readonly featuredTitleServices = signal('FEATURED CASE STUDIES');
+  readonly featuredTitleIndustries = signal('FEATURED CASE STUDIES 2');
 
   /** Panel de búsqueda (click en ícono): abierto/cerrado. */
   readonly searchPanelOpen = signal(false);
@@ -136,15 +150,14 @@ export class AppNavbar implements OnInit, OnDestroy {
     this.loading.set(true);
     this.http.get<NavbarContent>('/navbar-content.json').subscribe({
       next: (data) => {
-        this.menuItems.set(data.menuItems);
-        this.services.set(data.services);
+        this.menuItems.set(data.menu);
+        this.content.set(data.content ?? null);
         this.loading.set(false);
       },
       error: (error) => {
         console.error('Error loading navbar content:', error);
-        // Fallback to empty arrays on error
         this.menuItems.set([]);
-        this.services.set([]);
+        this.content.set(null);
         this.loading.set(false);
       }
     });
@@ -205,9 +218,9 @@ export class AppNavbar implements OnInit, OnDestroy {
     const inViewAtNavbar = rect.top <= navProbeY && rect.bottom >= navProbeY;
     this.isOnStructuredEngagement.set(inViewAtNavbar);
   }
-   private updateContactSuccessStatus(): void {
-    this.isOnContactSuccess.set(this.router.url === '/contact-success'||this.router.url === '/contact-us' );
-  } 
+  private updateContactSuccessStatus(): void {
+    this.isOnContactSuccess.set(this.router.url === '/contact-success' || this.router.url === '/contact-us');
+  }
   /** true cuando la barra debe usar estilo "oscuro" (logo oscuro, texto oscuro): scroll o hover en un dropdown (índice !== 0) o en contact-success. */
   get isNavbarDark(): boolean {
     if (this.isOnStructuredEngagement()) {
@@ -222,10 +235,10 @@ export class AppNavbar implements OnInit, OnDestroy {
     if (this.isOnStructuredEngagement()) {
       return false;
     }
-    return this.isScrolled || this.hoveredIndex() !== null || this.searchPanelOpen() ||this.isOnContactSuccess();
+    return this.isScrolled || this.hoveredIndex() !== null || this.searchPanelOpen() || this.isOnContactSuccess();
   }
 
-  
+
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;

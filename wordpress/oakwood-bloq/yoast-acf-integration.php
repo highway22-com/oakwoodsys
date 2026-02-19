@@ -2,16 +2,32 @@
 /**
  * Integración Yoast SEO + ACF para Gen Content.
  *
- * Objetivo: que Yoast analice también fields ACF (tags, primary_tag, type_content)
+ * Objetivo: que Yoast analice también categorías de taxonomía gen_content_category
  * para mejorar señales como densidad de keyphrase, subheadings, longitud de texto, etc.
  *
+ * Primary Tag: gen_content_tag en primary term taxonomies → dropdown "Select the primary tag".
  * Requiere: Yoast SEO y Advanced Custom Fields activos.
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Añadir contenido ACF al texto que Yoast analiza (solo para gen_content).
+ * Añadir gen_content_tag a primary term taxonomies de Yoast.
+ * Muestra el dropdown "Select the primary tag" en el panel Tags.
+ */
+function oakwood_gc_yoast_primary_term_taxonomies( $taxonomies, $post_type, $all_taxonomies ) {
+	if ( $post_type !== 'gen_content' ) {
+		return $taxonomies;
+	}
+	if ( isset( $all_taxonomies['gen_content_tag'] ) ) {
+		$taxonomies['gen_content_tag'] = $all_taxonomies['gen_content_tag'];
+	}
+	return $taxonomies;
+}
+add_filter( 'wpseo_primary_term_taxonomies', 'oakwood_gc_yoast_primary_term_taxonomies', 10, 3 );
+
+/**
+ * Añadir categorías de taxonomía al texto que Yoast analiza (solo para gen_content).
  */
 function oakwood_gc_yoast_content( $content, $post ) {
 	if ( ! $post || ! ( $post instanceof WP_Post ) || $post->post_type !== 'gen_content' ) {
@@ -19,37 +35,13 @@ function oakwood_gc_yoast_content( $content, $post ) {
 	}
 
 	$post_id = (int) $post->ID;
-	$acf_content = array();
+	$tags = function_exists( 'oakwood_gc_get_tag_terms_for_post' ) ? oakwood_gc_get_tag_terms_for_post( $post_id ) : array();
 
-	$type_content = get_field( 'type_content', $post_id );
-	if ( is_string( $type_content ) && $type_content !== '' ) {
-		$acf_content[] = 'Type: ' . $type_content;
-	}
-
-	$primary_tag = get_field( 'primary_tag', $post_id );
-	if ( is_string( $primary_tag ) && $primary_tag !== '' ) {
-		$acf_content[] = 'Primary tag: ' . $primary_tag;
-	}
-
-	$tags = get_field( 'tags', $post_id );
-	if ( is_array( $tags ) && ! empty( $tags ) ) {
-		$tags = array_map(
-			static function ( $t ) {
-				return is_scalar( $t ) ? trim( (string) $t ) : '';
-			},
-			$tags
-		);
-		$tags = array_values( array_filter( $tags, static fn( $t ) => $t !== '' ) );
-		if ( ! empty( $tags ) ) {
-			$acf_content[] = 'Tags: ' . implode( ', ', $tags );
-		}
-	}
-
-	if ( empty( $acf_content ) ) {
+	if ( empty( $tags ) ) {
 		return $content;
 	}
 
-	return $content . "\n\n" . implode( "\n\n", $acf_content );
+	return $content . "\n\n" . 'Categories: ' . implode( ', ', $tags );
 }
 add_filter( 'wpseo_pre_analysis_post_content', 'oakwood_gc_yoast_content', 10, 2 );
 
