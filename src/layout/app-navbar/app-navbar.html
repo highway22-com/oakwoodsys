@@ -59,8 +59,8 @@
 @if(hoveredIndex() === 0){
 <div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(0)" (mouseleave)="onNavMouseLeave()" tabindex="0"
     (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
-    <app-menu-list [content]="content()?.services ?? []" [caseStudies]="featuredCaseStudies()"
-        [featuredTitle]="featuredTitleServices()"></app-menu-list>
+    <app-menu-list [content]="content()?.services ?? []" [featuredTitle]="featuredTitleServices()"
+        [featuredBlogs]="featuredBlogs()"></app-menu-list>
 </div>
 }
 @if(hoveredIndex() === 1){
@@ -73,7 +73,8 @@
 @if(hoveredIndex() === 2){
 <div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(2)" (mouseleave)="onNavMouseLeave()" tabindex="0"
     (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
-    <app-resources [featuredBlogs]="featuredBlogs()" />
+    <app-menu-list [content]="content()?.resources ?? []" [caseStudies]="featuredCaseStudies()"
+        [featuredTitle]="featuredTitleIndustries()"></app-menu-list>
 </div>
 }
 

@@ -2,6 +2,7 @@ import { Component, input } from '@angular/core';
 import { CaseStudy } from '../../../app/api/graphql';
 import { ArticleCardArticle } from '../../../shared/article-card/article-card.component';
 import { RouterLink } from '@angular/router';
+import type { FeaturedBlogItem } from '../app-navbar';
 
 export interface MenuItem {
   id: string;
@@ -10,6 +11,7 @@ export interface MenuItem {
   desc: string;
   details?: string;
   icon: string;
+  iconSize?: string;
 }
 
 @Component({
@@ -20,6 +22,8 @@ export interface MenuItem {
 export class MenuList {
   /** Case studies para "Featured" (inyectados desde el navbar para no depender del ciclo de vida del dropdown). */
   readonly caseStudies = input<CaseStudy[]>([]);
+  /** Blogs destacados (2 últimos desde GraphQL, como en app-resources). */
+  readonly featuredBlogs = input<FeaturedBlogItem[]>([]);
 
   get featuredCaseStudiesArticles(): ArticleCardArticle[] {
     return this.caseStudies().map((c) => this.toArticleCard(c));

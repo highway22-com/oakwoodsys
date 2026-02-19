@@ -37,7 +37,8 @@
         "link": "/services/data-and-ai",
         "desc": "Unify, govern, and activate your data estate",
         "details": "Deliver real AI outcomes by unifying, governing, and activating your data estate to power intelligent innovation.",
-        "icon": "/assets/graph.svg"
+        "icon": "/assets/graph.svg",
+        "iconSize": "38px"
       },
       {
         "id": "02",
@@ -45,7 +46,8 @@
         "link": "/services/cloud-and-infrastructure",
         "desc": "Modernize, secure, and optimize your cloud",
         "details": "Modernize, secure, and optimize your cloud estate with Oakwood and Microsoft Azure for scalable, reliable infrastructure.",
-        "icon": "/assets/cloud.svg"
+        "icon": "/assets/modern.svg",
+        "iconSize": "38px"
       },
       {
         "id": "03",
@@ -53,7 +55,8 @@
         "link": "/services/application-innovation",
         "desc": "Ship faster, run safer, and scale efficiently",
         "details": "Ship faster, run safer, and scale efficiently with modern applications on Azure built for performance and reliability.",
-        "icon": "/assets/app-innovation.svg"
+        "icon": "/assets/app-innovation.svg",
+        "iconSize": "38px"
       },
       {
         "id": "04",
@@ -61,7 +64,8 @@
         "link": "/services/high-performance-computing",
         "desc": "Scale simulations, AI training, and PLM workloads",
         "details": "Scale simulations, AI training, and PLM workloads with the power of Azure HPC for maximum computational performance.",
-        "icon": "/assets/hpc.svg"
+        "icon": "/assets/high.svg",
+        "iconSize": "38px"
       },
       {
         "id": "05",
@@ -69,7 +73,8 @@
         "link": "/services/modern-work",
         "desc": "Boost productivity with Microsoft 365 and Copilot",
         "details": "Boost productivity, protect data, and improve employee experience with Microsoft 365 and Copilot for modern collaboration.",
-        "icon": "/assets/modern-work.svg"
+        "icon": "/assets/modern.svg",
+        "iconSize": "38px"
       },
       {
         "id": "06",
@@ -77,7 +82,8 @@
         "link": "/services/managed-services",
         "desc": "Keep your Microsoft cloud running fast and secure",
         "details": "Keep your Microsoft cloud running fast, secure, and cost effective with Oakwood managed services and expert support.",
-        "icon": "/assets/managed-services.svg"
+        "icon": "/assets/mana.svg",
+        "iconSize": "38px"
       }
     ],
     "industries": [

@@ -76,8 +76,8 @@ export class AppNavbar implements OnInit, OnDestroy {
   readonly featuredBlogs = signal<FeaturedBlogItem[]>([]);
 
   /** Título de la sección Featured por dropdown (Services, Industries). */
-  readonly featuredTitleServices = signal('FEATURED CASE STUDIES');
-  readonly featuredTitleIndustries = signal('FEATURED CASE STUDIES 2');
+  readonly featuredTitleServices = signal('FEATURED BLOGS');
+  readonly featuredTitleIndustries = signal('FEATURED CASE STUDIES');
 
   /** Panel de búsqueda (click en ícono): abierto/cerrado. */
   readonly searchPanelOpen = signal(false);
