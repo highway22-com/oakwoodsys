@@ -122,7 +122,6 @@
     </div>
   </section>
 
-
   <!-- Select Partners: carrusel de logos -->
   <section class="py-12 sm:py-16 bg-slate-50" aria-labelledby="partners-label">
     <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
@@ -130,7 +129,7 @@
         id="partners-label"
         class="text-primary-blue uppercase tracking-wider text-sm text-center mb-8"
       >
-        SELECT PARTNERS
+        OUR CLIENTS
       </p>
       <div class="relative w-full overflow-x-hidden py-4">
         <div
@@ -176,54 +175,36 @@
   </section>
 
   <!-- Video section: About Oakwood -->
+
   <section
-    class="about-video-section relative py-24 sm:py-32 overflow-hidden"
+    class="about-video-section relative py-12 sm:py-16 md:py-20 lg:py-24 overflow-hidden flex justify-center items-center"
     aria-labelledby="video-section-title"
   >
-    <div class="absolute inset-0 z-0">
-      <img
-        
-        src="/assets/inner-page-about-us-video-bg.png"
-        alt=""
-        class="w-full h-full object-cover"
-      />
-      <div
-        class="absolute inset-0 bg-slate-900/60 z-0"
-        aria-hidden="true"
-      ></div>
-    </div>
-    <div
-      class="absolute left-0 bottom-0 flex flex-col items-start justify-end p-8 sm:p-12 md:p-16 lg:p-20 w-full h-full z-10"
-    >
-      <a
-        href="https://www.youtube.com/watch?v=4UsqCp2pr3k"
-        class="about-play-button w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center text-white mb-6 transition"
-        aria-label="Play About Oakwood video"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <svg
-          width="84"
-          height="80"
-          viewBox="0 0 84 80"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M41.875 2.5C28.4375 2.5 16.0938 9.6875 9.375 21.25C2.65625 32.9688 2.65625 47.1875 9.375 58.75C16.0938 70.4688 28.4375 77.5 41.875 77.5C55.1562 77.5 67.5 70.4688 74.2188 58.75C80.9375 47.1875 80.9375 32.9688 74.2188 21.25C67.5 9.6875 55.1562 2.5 41.875 2.5ZM41.875 80C27.5 80 14.375 72.5 7.1875 60C0 47.6562 0 32.5 7.1875 20C14.375 7.65625 27.5 0 41.875 0C56.0938 0 69.2188 7.65625 76.4062 20C83.5938 32.5 83.5938 47.6562 76.4062 60C69.2188 72.5 56.0938 80 41.875 80ZM32.5 25.1562C32.0312 25.4688 31.875 25.9375 31.875 26.25V53.75C31.875 54.2188 32.0312 54.6875 32.5 54.8438C32.8125 55.1562 33.2812 55.1562 33.75 54.8438L56.25 41.0938C56.5625 40.9375 56.875 40.4688 56.875 40C56.875 39.6875 56.5625 39.2188 56.25 39.0625L33.75 25.3125C33.2812 25 32.8125 25 32.5 25.1562ZM35 23.125L57.5 36.875C58.5938 37.5 59.375 38.75 59.375 40C59.375 41.4062 58.5938 42.5 57.5 43.2812L35 57.0312C33.9062 57.6562 32.3438 57.6562 31.25 57.0312C30 56.4062 29.2188 55.1562 29.2188 53.75V26.25C29.2188 25 30 23.75 31.25 22.9688C32.3438 22.3438 33.9062 22.3438 35 23.125Z"
-            fill="#F2F8FD"
-          />
-        </svg>
-      </a>
-      <h2
-        id="video-section-title"
-        class="text-2xl sm:text-3xl md:text-4xl font-light text-white mb-3"
-      >
-        {{ c.videoSectionTitle }}
-      </h2>
-      <p class="text-white/90 font-segoe font-light max-w-xl">
-        {{ c.videoSectionDescription }}
-      </p>
+    <div class="w-full max-w-6xl aspect-video">
+      <iframe
+        class="w-full h-full "
+        title="About Oakwood"
+        src="https://www.youtube.com/embed/4UsqCp2pr3k?feature=oembed&amp;enablejsapi=1&amp;origin=https://oakwoodsys.com"
+        frameborder="0"
+        allow="
+          accelerometer;
+          autoplay;
+          clipboard-write;
+          encrypted-media;
+          gyroscope;
+          picture-in-picture;
+          web-share;
+        "
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen=""
+        data-lf-form-tracking-inspected-ywvko4xwjlw7z6bj="true"
+        data-lf-yt-playback-inspected-ywvko4xwjlw7z6bj="true"
+        data-lf-vimeo-playback-inspected-ywvko4xwjlw7z6bj="true"
+        data-lf-yt-playback-inspected-kn9eq4rrwel4rlvp="true"
+        data-lf-vimeo-playback-inspected-kn9eq4rrwel4rlvp="true"
+        data-gtm-yt-inspected-13="true"
+        id="119598994"
+      ></iframe>
     </div>
   </section>
 
@@ -559,13 +540,12 @@
     </div>
   </section>
 
-
-
-<!-- Scroll Animation Section -->
-  <div style="margin-top: 4rem;">
-    <app-scroll-animation [isVisible]="scrollAnimationVisible()" ></app-scroll-animation>
+  <!-- Scroll Animation Section -->
+  <div style="margin-top: 4rem">
+    <app-scroll-animation
+      [isVisible]="scrollAnimationVisible()"
+    ></app-scroll-animation>
   </div>
-
 
   <!-- Latest insights from Oakwood -->
   @if (insightsSection()) {
@@ -580,5 +560,4 @@
     [primaryText]="'Talk to an expert'"
     [primaryLink]="'/contact-us'"
   />
-
 }

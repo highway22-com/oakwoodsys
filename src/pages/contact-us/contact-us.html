@@ -1,92 +1,199 @@
-
-
 <!-- Sección: Start the conversation -->
-<section class="contact-section-form relative pt-24 pb-14 sm:pt-26 sm:pb-12 md:py-16 lg:pt-30 lg:pb-20" id="form" aria-labelledby="form-title">
+<section
+  class="contact-section-form relative pt-24 pb-14 sm:pt-26 sm:pb-12 md:py-16 lg:pt-30 lg:pb-20 pr-10"
+  id="form"
+  aria-labelledby="form-title"
+>
   <!-- Background image with opacity -->
-  <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-24 lg:px-12"
-    style="background-image: url('/assets/bg-blue.png');"></div>
+  <div
+    class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-24 lg:px-12"
+    style="background-image: url(&quot;/assets/bg-blue.png&quot;)"
+  ></div>
 
+  <div
+    class="min-h-screen mx-auto w-full px-4 sm:px-6 md:px-8 lg:px-20 flex items-start justify-center"
+  >
+    <div
+      class="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-6 md:gap-10 lg:gap-12 w-full overflow-visible relative"
+    >
+      <!-- LEFT SIDE (FORM) -->
+      <div class="flex flex-col justify-center">
+        <p
+          class="text-[#0D53A2] text-[18px] font-semibold leading-[150%] uppercase mb-2"
+        >
+          Contact US
+        </p>
 
-
-  <!-- Content -->
-  <div class="relative z-10 mx-auto w-full px-4 sm:px-6 md:px-8 lg:px-20">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10 lg:gap-16 items-start">
-
-
-        <!-- Columna derecha: formulario -->
-      <div class="p-4 sm:p-8 overflow-y-auto lg:col-span-7 lg:order-1">
-         <p class="text-[#0D53A2] text-[18px] font-semibold leading-[150%] uppercase mb-2">Contact US</p>
-        <h2 id="form-title"
-          class="font-inter text-black text-[40px] sm:text-[52px] lg:text-[64px] font-normal leading-[115%] sm:leading-[120%] lg:leading-[130%] tracking-[-0.8px] sm:tracking-[-1.04px] lg:tracking-[-1.28px] mb-3">
+        <h2
+          id="form-title"
+          class="font-inter text-black text-[40px] sm:text-[52px] lg:text-[64px] font-normal leading-[115%] sm:leading-[120%] lg:leading-[130%] tracking-[-0.8px] sm:tracking-[-1.04px] lg:tracking-[-1.28px] mb-3"
+        >
           Start the conversation
         </h2>
-        <p class="font-segoe text-[#3D3D3D] text-base font-normal leading-[150%] mb-8">
-          Tell us a bit about your project and we'll reach out to help you make it a reality.
+
+        <p
+          class="font-segoe text-[#3D3D3D] text-base font-normal leading-[150%] mb-8"
+        >
+          Tell us a bit about your project and we'll reach out to help you make
+          it a reality.
         </p>
+
         <form #contactForm (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
-          <label [class]="'flex flex-col gap-2' + (showFormAnimation() ? ' animate-fade-up' : '')">
-            <span class="font-inter font-normal text-[16px] leading-[24px] tracking-[0]">Your full name</span>
-            <input type="text" [(ngModel)]="formModel.fullName" name="fullName"
-              [class]="'border px-4 py-2.5 rounded text-sm text-gray-700 placeholder:text-[#6D6D6D] placeholder:text-[16px] bg-white transition-all duration-200 outline-none ' + (submitted && validationErrors.fullName ? 'border-[#D32F2F] hover:border-[#D32F2F] focus:border-[#D32F2F]' : 'border-[#D1D1D1] hover:border-[#6D6D6D] focus:border-[#6D6D6D]')"
-              placeholder="Your name" />
+          <label
+            [class]="
+              'flex flex-col gap-2' +
+              (showFormAnimation() ? ' animate-fade-up' : '')
+            "
+          >
+            <span
+              class="font-inter font-normal text-[16px] leading-[24px] tracking-[0]"
+              >Your full name</span
+            >
+            <input
+              type="text"
+              [(ngModel)]="formModel.fullName"
+              name="fullName"
+              [class]="
+                'border px-4 py-2.5 rounded text-sm text-gray-700 placeholder:text-[#6D6D6D] placeholder:text-[16px] bg-white transition-all duration-200 outline-none ' +
+                (submitted && validationErrors.fullName
+                  ? 'border-[#D32F2F] hover:border-[#D32F2F] focus:border-[#D32F2F]'
+                  : 'border-[#D1D1D1] hover:border-[#6D6D6D] focus:border-[#6D6D6D]')
+              "
+              placeholder="Your name"
+            />
             @if (submitted && validationErrors.fullName) {
-            <span class="text-xs text-[#D32F2F]">Full name is required</span>
+              <span class="text-xs text-[#D32F2F]">Full name is required</span>
             }
           </label>
+
           <div
-            [class]="'grid grid-cols-1 sm:grid-cols-2 gap-4' + (showFormAnimation() ? ' animate-fade-up [animation-delay:80ms]' : '')">
+            [class]="
+              'grid grid-cols-1 sm:grid-cols-2 gap-4' +
+              (showFormAnimation()
+                ? ' animate-fade-up [animation-delay:80ms]'
+                : '')
+            "
+          >
             <label class="flex flex-col gap-2">
-              <span class="font-inter font-normal text-[16px] leading-[24px] tracking-[0]">Work email address</span>
-              <input type="email" [(ngModel)]="formModel.email" name="email"
-                [class]="'border px-4 py-2.5 rounded text-sm text-gray-700 placeholder:text-[#6D6D6D] placeholder:text-[16px] bg-white transition-all duration-200 outline-none ' + (submitted && validationErrors.email ? 'border-[#D32F2F] hover:border-[#D32F2F] focus:border-[#D32F2F]' : 'border-[#D1D1D1] hover:border-[#6D6D6D] focus:border-[#6D6D6D]')"
-                placeholder="email@example.com" />
+              <span
+                class="font-inter font-normal text-[16px] leading-[24px] tracking-[0]"
+                >Work email address</span
+              >
+              <input
+                type="email"
+                [(ngModel)]="formModel.email"
+                name="email"
+                [class]="
+                  'border px-4 py-2.5 rounded text-sm text-gray-700 placeholder:text-[#6D6D6D] placeholder:text-[16px] bg-white transition-all duration-200 outline-none ' +
+                  (submitted && validationErrors.email
+                    ? 'border-[#D32F2F] hover:border-[#D32F2F] focus:border-[#D32F2F]'
+                    : 'border-[#D1D1D1] hover:border-[#6D6D6D] focus:border-[#6D6D6D]')
+                "
+                placeholder="email@example.com"
+              />
               @if (submitted && validationErrors.email) {
-              <span class="text-xs text-[#D32F2F]">Email is required</span>
+                <span class="text-xs text-[#D32F2F]">Email is required</span>
               }
             </label>
             <label class="flex flex-col gap-2">
-              <span class="font-inter font-normal text-[16px] leading-[24px] tracking-[0]">Company name</span>
-              <input type="text" [(ngModel)]="formModel.company" name="company"
-                [class]="'border px-4 py-2.5 rounded text-sm text-gray-700 placeholder:text-[#6D6D6D] placeholder:text-[16px] bg-white transition-all duration-200 outline-none ' + (submitted && validationErrors.company ? 'border-[#D32F2F] hover:border-[#D32F2F] focus:border-[#D32F2F]' : 'border-[#D1D1D1] hover:border-[#6D6D6D] focus:border-[#6D6D6D]')"
-                placeholder="Your company" />
+              <span
+                class="font-inter font-normal text-[16px] leading-[24px] tracking-[0]"
+                >Company name</span
+              >
+              <input
+                type="text"
+                [(ngModel)]="formModel.company"
+                name="company"
+                [class]="
+                  'border px-4 py-2.5 rounded text-sm text-gray-700 placeholder:text-[#6D6D6D] placeholder:text-[16px] bg-white transition-all duration-200 outline-none ' +
+                  (submitted && validationErrors.company
+                    ? 'border-[#D32F2F] hover:border-[#D32F2F] focus:border-[#D32F2F]'
+                    : 'border-[#D1D1D1] hover:border-[#6D6D6D] focus:border-[#6D6D6D]')
+                "
+                placeholder="Your company"
+              />
               @if (submitted && validationErrors.company) {
-              <span class="text-xs text-[#D32F2F]">Company is required</span>
+                <span class="text-xs text-[#D32F2F]">Company is required</span>
               }
             </label>
           </div>
+
           <label
-            [class]="'flex flex-col gap-2' + (showFormAnimation() ? ' animate-fade-up [animation-delay:160ms]' : '')">
-            <span class="font-inter font-normal text-[16px] leading-[24px] tracking-[0]">Message</span>
-            <textarea [(ngModel)]="formModel.message" name="message" rows="4"
-              [class]="'border px-4 py-2.5 rounded text-sm text-gray-700 placeholder:text-[#6D6D6D] placeholder:text-[16px] bg-white transition-all duration-200 outline-none resize-none ' + (submitted && validationErrors.message ? 'border-[#D32F2F] hover:border-[#D32F2F] focus:border-[#D32F2F]' : 'border-[#D1D1D1] hover:border-[#6D6D6D] focus:border-[#6D6D6D]')"
-              placeholder="Describe what you need help with or what you're planning next"></textarea>
+            [class]="
+              'flex flex-col gap-2' +
+              (showFormAnimation()
+                ? ' animate-fade-up [animation-delay:160ms]'
+                : '')
+            "
+          >
+            <span
+              class="font-inter font-normal text-[16px] leading-[24px] tracking-[0]"
+              >Message</span
+            >
+            <textarea
+              [(ngModel)]="formModel.message"
+              name="message"
+              rows="4"
+              [class]="
+                'border px-4 py-2.5 rounded text-sm text-gray-700 placeholder:text-[#6D6D6D] placeholder:text-[16px] bg-white transition-all duration-200 outline-none resize-none ' +
+                (submitted && validationErrors.message
+                  ? 'border-[#D32F2F] hover:border-[#D32F2F] focus:border-[#D32F2F]'
+                  : 'border-[#D1D1D1] hover:border-[#6D6D6D] focus:border-[#6D6D6D]')
+              "
+              placeholder="Describe what you need help with or what you're planning next"
+            ></textarea>
             @if (submitted && validationErrors.message) {
-            <span class="text-xs text-[#D32F2F]">Message is required</span>
+              <span class="text-xs text-[#D32F2F]">Message is required</span>
             }
           </label>
-          <div class="recaptcha-container">
+          <!-- <div class="recaptcha-container">
             <div #recaptchaHost></div>
             @if (submitted && validationErrors.recaptcha) {
-            <span class="text-xs text-[#D32F2F]">Please verify that you are not a robot</span>
+              <span class="text-xs text-[#D32F2F]"
+                >Please verify that you are not a robot</span
+              >
             }
-          </div>
-          <button type="submit" [disabled]="isSubmitting"
-            [class]="'group w-full sm:w-[18rem] mt-6  py-6 text-white text-sm font-inter font-semibold text-[16px] leading-[100%] tracking-[0] bg-[#0D53A2] rounded hover:bg-[#0D53A2] active:bg-blue-800 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2' + (showFormAnimation() ? ' animate-fade-up [animation-delay:240ms]' : '')">
-            <span class="transition-all duration-200 group-hover:-translate-x-1">{{ isSubmitting ? 'Sending...' : 'Submit' }}</span>
-            <svg class="w-3.5 h-3.5 transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
-              viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          </div> -->
+
+          <button
+            type="submit"
+            [disabled]="isSubmitting"
+            [class]="
+              'group w-full sm:w-[18rem] mt-6  py-6 text-white text-sm font-inter font-semibold text-[16px] leading-[100%] tracking-[0] bg-[#0D53A2] rounded hover:bg-[#0D53A2] active:bg-blue-800 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2' +
+              (showFormAnimation()
+                ? ' animate-fade-up [animation-delay:240ms]'
+                : '')
+            "
+          >
+            <span
+              class="transition-all duration-200 group-hover:-translate-x-1"
+              >{{ isSubmitting ? "Sending..." : "Submit" }}</span
+            >
+            <svg
+              class="w-3.5 h-3.5 transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+              viewBox="0 0 14 13"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
               <path
                 d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z"
-                fill="currentColor" />
+                fill="currentColor"
+              />
             </svg>
           </button>
         </form>
       </div>
-      <!-- Columna izquierda: imagen con estadísticas superpuestas -->
-      <div #contactImageContainer [class]="'relative overflow-hidden lg:col-span-5 lg:self-start w-full lg:justify-self-end min-h-[440px] sm:min-h-[440px] md:min-h-[540px] lg:min-h-[680px] lg:order-2' + (showContactImageAnimation() ? ' animate-fade-up' : '')">
-        <img src="/assets/contact.png" alt="Team member ready to help" class="w-full h-[680px] sm:h-[440px] md:h-[540px] lg:h-[680px] object-[center_62%]" />
 
-        <!-- Bottom overlay with stats (uses img + div together) -->
+      <!-- RIGHT SIDE (IMAGE) -->
+      <div class="relative min-h-[340px] h-64 sm:min-h-96 lg:h-auto overflow-visible">
+        <div class="relative w-full h-full">
+          <img
+            src="/assets/contact-us-new-pic.png"
+            alt="Data center"
+            class="w-full h-full object-cover"
+          />
+     <!-- Bottom overlay with stats (uses img + div together) -->
         <div class="absolute inset-x-0 bottom-0 pointer-events-none">
           <div class="bg-gradient-to-t from-black/70 to-transparent px-4 sm:px-6 py-3 sm:py-4">
             <div class="max-w-[1100px] mx-auto grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 text-white pointer-events-auto">
@@ -100,7 +207,7 @@
 
                 <div class="min-w-0">
                   <div class="font-[Segoe_UI] font-semibold text-[24px] sm:text-[26px] lg:text-[30px] leading-[110%] tracking-[-0.02em]">40%</div>
-                  <div class="font-[Inter] font-normal text-[14px] sm:text-[15px] lg:text-[16px] leading-[140%] sm:leading-[150%] tracking-[0em] opacity-90 break-normal">Faster time to value</div>
+                  <div class="font-[Inter] font-normal text-[14px] sm:text-[15px] lg:text-[16px] leading-[140%] sm:leading-[150%] tracking-[0em] opacity-90">Faster time to value</div>
                 </div>
               </div>
 
@@ -113,7 +220,7 @@
 
                 <div class="min-w-0">
                   <div class="font-[Segoe_UI] font-semibold text-[24px] sm:text-[26px] lg:text-[30px] leading-[110%] tracking-[-0.02em]">98%</div>
-                  <div class="font-[Inter] font-normal text-[14px] sm:text-[15px] lg:text-[16px] leading-[140%] sm:leading-[150%] tracking-[0em] opacity-90 break-normal">Client satisfaction</div>
+                  <div class="font-[Inter] font-normal text-[14px] sm:text-[15px] lg:text-[16px] leading-[140%] sm:leading-[150%] tracking-[0em] opacity-90">Client satisfaction</div>
                 </div>
               </div>
 
@@ -125,8 +232,8 @@
                 </svg>
 
                 <div class="min-w-0">
-                  <div class="font-[Segoe_UI] font-semibold text-[24px] sm:text-[26px] lg:text-[30px] leading-[110%] tracking-[-0.02em] break-normal whitespace-nowrap">Microsoft</div>
-                  <div class="font-[Inter] font-normal text-[14px] sm:text-[15px] lg:text-[16px] leading-[140%] sm:leading-[150%] tracking-[0em] break-normal">Certified experts</div>
+                  <div class="font-[Segoe_UI] font-semibold text-[24px] sm:text-[26px] lg:text-[30px] leading-[110%] tracking-[-0.02em] break-word ">Microsoft</div>
+                  <div class="font-[Inter] font-normal text-[14px] sm:text-[15px] lg:text-[16px] leading-[140%] sm:leading-[150%] tracking-[0em] break-word">Certified experts</div>
                 </div>
               </div>
             </div>
@@ -137,6 +244,7 @@
     </div>
 
 </div>
+</div>
 
 </section>
 
@@ -144,20 +252,21 @@
 
 <!-- Banner CTA: Microsoft licensing -->
 
-
 <section #licensingSection class="mb-20 sm:mb-12 md:mb-16 lg:mb-20">
   <div class="mx-auto w-full px-2 sm:px-6 md:px-8 lg:px-8">
     <div class="grid grid-cols-1 gap-10 lg:gap-16 items-stretch">
       <div [class]="showLicensingAnimation() ? 'animate-fade-in' : ''">
         <app-cta-section
           [title]="'Need Microsoft licensing help?'"
-          [description]="'As a Tier-1 CSP, Oakwood can simplify, manage, and support your M365 and Azure licensing.'"
+          [description]="
+            'As a Tier-1 CSP, Oakwood can simplify, manage, and support your M365 and Azure licensing.'
+          "
           [primaryText]="'Speak to a licensing expert'"
           [primaryLink]="'/contact-us'"
-          [backgroundGradientValue]="ctaGradients[4]">
+          [backgroundGradientValue]="ctaGradients[4]"
+        >
         </app-cta-section>
       </div>
     </div>
-
   </div>
 </section>

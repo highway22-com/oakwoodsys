@@ -37,18 +37,18 @@ export class ContactUs implements OnInit, AfterViewInit {
     email: false,
     company: false,
     message: false,
-    recaptcha: false,
+    // recaptcha: false,
   };
 
   constructor() {
     // Initialize EmailJS
     emailjs.init('Xw-Lh8d6dJzqqA08R');
 
-    if (typeof window !== 'undefined') {
-      (window as any)['onRecaptchaSuccess'] = (token: string) => {
-        this.ngZone.run(() => this.onRecaptchaSuccess(token));
-      };
-    }
+    // if (typeof window !== 'undefined') {
+    //   (window as any)['onRecaptchaSuccess'] = (token: string) => {
+    //     this.ngZone.run(() => this.onRecaptchaSuccess(token));
+    //   };
+    // }
   }
 
   ngOnInit() {
@@ -60,7 +60,7 @@ export class ContactUs implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.initRecaptcha();
+   // this.initRecaptcha();
 
     if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
       if (this.licensingSection) {
@@ -131,41 +131,41 @@ export class ContactUs implements OnInit, AfterViewInit {
     }
   }
 
-  private initRecaptcha(): void {
-    if (typeof window === 'undefined' || !this.recaptchaHost?.nativeElement) {
-      return;
-    }
+  // private initRecaptcha(): void {
+  //   if (typeof window === 'undefined' || !this.recaptchaHost?.nativeElement) {
+  //     return;
+  //   }
 
-    const render = () => {
-      const grecaptcha = (window as any).grecaptcha;
-      if (!grecaptcha?.render || this.recaptchaWidgetId !== null) {
-        return;
-      }
+  //   const render = () => {
+  //     const grecaptcha = (window as any).grecaptcha;
+  //     if (!grecaptcha?.render || this.recaptchaWidgetId !== null) {
+  //       return;
+  //     }
 
-      this.recaptchaWidgetId = grecaptcha.render(this.recaptchaHost!.nativeElement, {
-        sitekey: '6Lcxz20sAAAAADeQNIyXPS7BCqu30dGRazhNwn8W',
-        callback: (token: string) => {
-          this.ngZone.run(() => {
-            this.recaptchaToken = token;
-            this.validationErrors.recaptcha = false;
-            this.cdr.markForCheck();
-          });
-        },
-        'expired-callback': () => {
-          this.ngZone.run(() => {
-            this.recaptchaToken = null;
-            this.cdr.markForCheck();
-          });
-        },
-      });
-    };
+  //     this.recaptchaWidgetId = grecaptcha.render(this.recaptchaHost!.nativeElement, {
+  //       sitekey: '6Lcxz20sAAAAADeQNIyXPS7BCqu30dGRazhNwn8W',
+  //       callback: (token: string) => {
+  //         this.ngZone.run(() => {
+  //           this.recaptchaToken = token;
+  //           this.validationErrors.recaptcha = false;
+  //           this.cdr.markForCheck();
+  //         });
+  //       },
+  //       'expired-callback': () => {
+  //         this.ngZone.run(() => {
+  //           this.recaptchaToken = null;
+  //           this.cdr.markForCheck();
+  //         });
+  //       },
+  //     });
+  //   };
 
-    render();
-    if (this.recaptchaWidgetId === null) {
-      setTimeout(render, 300);
-      setTimeout(render, 1000);
-    }
-  }
+  //   render();
+  //   if (this.recaptchaWidgetId === null) {
+  //     setTimeout(render, 300);
+  //     setTimeout(render, 1000);
+  //   }
+  // }
 
   readonly heroTitle = "Let's move your vision forward";
   readonly heroDescription = "Your goals guide the work - our expertise makes theirs real.";
@@ -194,15 +194,16 @@ export class ContactUs implements OnInit, AfterViewInit {
     this.submitted = true;
 
     // Reset validation errors
+    //  recaptcha: !this.recaptchaToken,
     this.validationErrors = {
       fullName: !this.formModel.fullName,
       email: !this.formModel.email,
       company: !this.formModel.company,
       message: !this.formModel.message,
-      recaptcha: !this.recaptchaToken,
+    
     };
 
-    if (!this.formModel.fullName || !this.formModel.email || !this.formModel.company || !this.formModel.message || !this.recaptchaToken) {
+    if (!this.formModel.fullName || !this.formModel.email || !this.formModel.company || !this.formModel.message ) {
       return;
     }
 
@@ -244,7 +245,7 @@ export class ContactUs implements OnInit, AfterViewInit {
       email: false,
       company: false,
       message: false,
-      recaptcha: false,
+      // recaptcha: false,
     };
     this.recaptchaToken = null;
     if (typeof window !== 'undefined' && this.recaptchaWidgetId !== null && (window as any).grecaptcha?.reset) {
@@ -252,10 +253,10 @@ export class ContactUs implements OnInit, AfterViewInit {
     }
   }
 
-  onRecaptchaSuccess(token: any) {
-    if (typeof token === 'string') {
-      this.recaptchaToken = token;
-      this.validationErrors.recaptcha = false;
-    }
-  }
+  // onRecaptchaSuccess(token: any) {
+  //   if (typeof token === 'string') {
+  //     this.recaptchaToken = token;
+  //     this.validationErrors.recaptcha = false;
+  //   }
+  // }
 }

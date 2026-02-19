@@ -1,0 +1,15 @@
+<div class="video-container">
+  @if (!played) {
+    <div class="overlay" (click)="playVideo()">
+      <div class="play-btn"></div>
+    </div>
+  }
+  @if (played) {
+    <iframe
+      [src]="videoUrl | safeUrl"
+      frameborder="0"
+      allow="autoplay; encrypted-media"
+      allowfullscreen>
+    </iframe>
+  }
+</div>

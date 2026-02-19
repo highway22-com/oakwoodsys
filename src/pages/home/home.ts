@@ -11,13 +11,13 @@ import { TrustedBySectionComponent } from '../../shared/sections/trusted-by/trus
 import { StructuredEngagementsSectionComponent } from '../../shared/sections/structured-engagements/structured-engagements';
 import { LatestInsightsSectionComponent } from '../../shared/sections/latest-insights/latest-insights';
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
-
+import { ScrollAnimationComponent } from '../../shared/scroll-animation-component/scroll-animation.component';
 const DEFAULT_TITLE = 'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
 const DEFAULT_DESCRIPTION = 'As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, NgClass, FormsModule, VideoHero, FeaturedCaseStudySectionComponent, TrustedBySectionComponent, StructuredEngagementsSectionComponent, LatestInsightsSectionComponent, ButtonPrimaryComponent],
+  imports: [CommonModule, NgClass, FormsModule, VideoHero,ScrollAnimationComponent, FeaturedCaseStudySectionComponent, TrustedBySectionComponent, StructuredEngagementsSectionComponent, LatestInsightsSectionComponent, ButtonPrimaryComponent],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,6 +39,8 @@ export default class Home implements OnInit {
   readonly saving = signal(false);
   readonly saveSuccess = signal(false);
   readonly panelVisible = signal(false);
+    scrollAnimationVisible = signal(false);
+      scrollAnimationReverse = signal(false);
   jsonContent: string = '';
   readonly jsonError = signal<string | null>(null);
 
@@ -63,7 +65,14 @@ export default class Home implements OnInit {
         this.loading.set(false);
       }
     });
+   this.lastScrollVisible = false;
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', this.handleScrollAnimation.bind(this));
+      setTimeout(() => this.handleScrollAnimation(), 100);
+    }
   }
+
+  lastScrollVisible = false;
 
   private applyContent(data: CmsPageContent) {
     this.content.set(data);
@@ -280,6 +289,17 @@ export default class Home implements OnInit {
     } catch (error) {
       this.jsonError.set('JSON inválido: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     }
+  }
+
+    handleScrollAnimation() {
+    const el = document.querySelector('.scroll-animation-section');
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+    const visible = rect.top < windowHeight * 0.7 && rect.bottom > windowHeight * 0.3;
+    this.scrollAnimationReverse.set(this.lastScrollVisible && !visible);
+    this.scrollAnimationVisible.set(visible);
+    this.lastScrollVisible = visible;
   }
 
   /** Copia el contenido JSON del editor al portapapeles. */
