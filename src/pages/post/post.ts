@@ -8,6 +8,7 @@ import { GET_GEN_CONTENTS_BY_SLUGS, getPrimaryTagName } from '../../app/api/grap
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
+import { decodeHtmlEntities } from '../../app/utils/cast';
 interface PostAuthor {
   node: {
     email: string;
@@ -87,6 +88,7 @@ export default class Post implements OnInit, OnDestroy {
   private readonly ngZone = inject(NgZone);
   private scrollListener?: () => void;
   private routeSub?: { unsubscribe(): void };
+  readonly decodeHtmlEntities = decodeHtmlEntities;
 
   readonly post = signal<PostDetail | null>(null);
   readonly loading = signal(true);

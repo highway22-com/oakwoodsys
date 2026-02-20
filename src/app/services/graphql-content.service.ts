@@ -1,25 +1,32 @@
 import { inject, Injectable, makeStateKey, PLATFORM_ID, signal, TransferState } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { Apollo } from 'apollo-angular';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, catchError, tap, filter, switchMap, take } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import {
   GET_GEN_CONTENTS_BY_CATEGORY,
+  GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED,
   GET_GEN_CONTENTS_FOR_SEARCH,
   GET_CASE_STUDY_BY_SLUG,
   GET_GEN_CONTENT_BY_SLUG,
   GET_CASE_STUDY_DETAIL,
   GET_CMS_PAGE,
+  GET_GEN_CONTENT_TAXONOMIES,
   type CaseStudy,
   type CaseStudyBy,
   type GenContentDetailNode,
   type GenContentListNode,
+  type GenContentsByCategoryPaginatedResponse,
   type GenContentsByCategoryResponse,
   type CaseStudyByResponse,
   type GenContentBySlugResponse,
   type CaseStudyDetailResponse,
   type CmsPageContent,
   type CmsPageResponse,
+  type CmsSection,
+  type GenContentTaxonomiesResponse,
+  type GenContentTaxonomyTerm,
   type RelatedCaseStudyNode,
   type SearchResultItem,
 } from '../api/graphql';
@@ -38,6 +45,60 @@ export class GraphQLContentService {
   readonly caseStudies = signal<CaseStudy[]>([]);
   readonly loading = signal<boolean>(false);
   readonly errors = signal<Error | null>(null);
+
+  /** Categorías y tags de Gen Content (cargados al inicio). Acceso global. */
+  readonly genContentCategories = signal<GenContentTaxonomyTerm[]>([]);
+  readonly genContentTags = signal<GenContentTaxonomyTerm[]>([]);
+
+  /** Contenido CMS de home (cargado en APP_INITIALIZER). Observable para suscribirse. */
+  private readonly homePageContentSubject = new BehaviorSubject<CmsPageContent | null>(null);
+  readonly homePageContent$: Observable<CmsPageContent | null> = this.homePageContentSubject.asObservable();
+
+  /** Carga home en APP_INITIALIZER. Acceso vía homePageContent$ o homePageContentSubject.value. */
+  loadHomePageContent(): Promise<void> {
+    return firstValueFrom(this.getCmsPageBySlug('home')).then((data) => {
+      this.homePageContentSubject.next(data);
+    }).catch(() => {
+      this.homePageContentSubject.next(null);
+    });
+  }
+
+  /** Lista paginada de blogs. Apollo cache-and-network: prefetch llena caché, al navegar se usa caché. */
+  getBlogsPaginated(first: number, after: string | null): Observable<{
+    nodes: GenContentListNode[];
+    pageInfo: { hasNextPage: boolean; endCursor: string | null };
+  }> {
+    return this.apollo
+      .watchQuery<GenContentsByCategoryPaginatedResponse>({
+        query: GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED,
+        variables: { categoryId: 'blog', first, after },
+        fetchPolicy: 'cache-and-network',
+      })
+      .valueChanges.pipe(
+        filter((result) => !result.loading),
+        map((result) => {
+          const data = result.data as GenContentsByCategoryPaginatedResponse | undefined;
+          const conn = data?.genContentCategory?.genContents;
+          const nodes = conn?.nodes ?? [];
+          const pageInfo = conn?.pageInfo ?? {};
+          return {
+            nodes,
+            pageInfo: {
+              hasNextPage: pageInfo.hasNextPage ?? false,
+              endCursor: pageInfo.endCursor ?? null,
+            },
+          };
+        }),
+        catchError(() =>
+          of({ nodes: [], pageInfo: { hasNextPage: false, endCursor: null } })
+        )
+      );
+  }
+
+  /** Prefetch: carga primera página de blogs en background. Apollo cachea; al navegar a /blog se usa caché. */
+  prefetchBlogs(): void {
+    this.getBlogsPaginated(10, null).subscribe();
+  }
 
   /** Lista de posts de blog (genContent categoría "blog"). Misma query que case studies, idType SLUG. */
   getBlogs(): Observable<GenContentListNode[]> {
@@ -261,6 +322,98 @@ export class GraphQLContentService {
           return of(null);
         })
       );
+  }
+
+  /**
+   * Service lines para sidebar/filtros (blogs, etc.). Obtiene desde CMS: home (services section) → footer (links.services).
+   */
+  getServiceLines(): Observable<{ label: string; link: string }[]> {
+    return this.getCmsPageBySlug('home').pipe(
+      switchMap((home) => {
+        const fromHome = this.extractServiceLinesFromCms(home);
+        if (fromHome.length > 0) return of(fromHome);
+        return this.getCmsPageBySlug('footer').pipe(
+          map((footer) => this.extractServiceLinesFromFooter(footer)),
+          catchError(() => of([]))
+        );
+      }),
+      catchError(() =>
+        this.getCmsPageBySlug('footer').pipe(
+          map((footer) => this.extractServiceLinesFromFooter(footer)),
+          catchError(() => of([]))
+        )
+      )
+    );
+  }
+
+  private extractServiceLinesFromCms(data: CmsPageContent | null): { label: string; link: string }[] {
+    if (!data?.sections) return [];
+    const section = data.sections.find((s) => s.type === 'services' && s.services?.length);
+    if (!section?.services) return [];
+    return section.services
+      .map((s) => ({ label: s.title ?? '', link: s.link ?? '' }))
+      .filter((x) => x.label && x.link);
+  }
+
+  private extractServiceLinesFromFooter(
+    data: CmsPageContent | { type?: string; sections?: Array<{ type?: string; links?: { services?: Array<{ text?: string; routerLink?: string }> } }>; links?: { services?: Array<{ text?: string; routerLink?: string }> } } | null
+  ): { label: string; link: string }[] {
+    if (!data) return [];
+    const d = data as { type?: string; sections?: Array<{ type?: string; links?: { services?: Array<{ text?: string; routerLink?: string }> } }>; links?: { services?: Array<{ text?: string; routerLink?: string }> } };
+    let services = d.links?.services ?? [];
+    if (services.length === 0 && d.sections) {
+      const footerSection = d.sections.find((s) => s.type === 'footer');
+      services = (footerSection as { links?: { services?: Array<{ text?: string; routerLink?: string }> } })?.links?.services ?? [];
+    }
+    return services
+      .map((s) => ({ label: s.text ?? '', link: s.routerLink ?? '' }))
+      .filter((x) => x.label && x.link);
+  }
+
+  /**
+   * Categorías y tags de Gen Content desde GraphQL (gen_content_category, gen_content_tag).
+   * Para filtros, sidebars, etc.
+   */
+  getGenContentTaxonomies(): Observable<{
+    categories: GenContentTaxonomyTerm[];
+    tags: GenContentTaxonomyTerm[];
+  }> {
+    return this.apollo
+      .query<GenContentTaxonomiesResponse>({
+        query: GET_GEN_CONTENT_TAXONOMIES,
+        fetchPolicy: 'network-only',
+      })
+      .pipe(
+        map((result) => {
+          const data = result.data as GenContentTaxonomiesResponse | undefined;
+          return {
+            categories: data?.genContentCategoriesList?.nodes ?? [],
+            tags: data?.genContentTagsList?.nodes ?? [],
+          };
+        }),
+        catchError(() =>
+          of({
+            categories: [],
+            tags: [],
+          })
+        )
+      );
+  }
+
+  /**
+   * Carga categorías y tags al inicio y los guarda en signals.
+   * Se llama desde APP_INITIALIZER. Acceso vía genContentCategories() y genContentTags().
+   */
+  loadGenContentTaxonomies(): Promise<void> {
+    return firstValueFrom(this.getGenContentTaxonomies())
+      .then(({ categories, tags }) => {
+        this.genContentCategories.set(categories);
+        this.genContentTags.set(tags);
+      })
+      .catch(() => {
+        this.genContentCategories.set([]);
+        this.genContentTags.set([]);
+      });
   }
 
   /**

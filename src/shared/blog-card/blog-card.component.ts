@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import type { SafeHtml } from '@angular/platform-browser';
+import { decodeHtmlEntities } from '../../app/utils/cast';
 
 @Component({
   selector: 'app-blog-card',
@@ -12,6 +13,8 @@ import type { SafeHtml } from '@angular/platform-browser';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogCardComponent {
+
+  readonly decodeHtmlEntities = decodeHtmlEntities;
   /** Slug del post. Con linkBase por defecto ruta: /blog/{{ slug }}. */
   readonly slug = input.required<string>();
   /** Segmento base de la ruta (sin slug). Por defecto '/blog'. Ej: '/resources/case-studies'. */

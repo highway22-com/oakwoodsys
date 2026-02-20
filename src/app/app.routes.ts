@@ -22,7 +22,8 @@ export const routes: Routes = [
     },
     {
         path: 'blog',
-        loadComponent: () => import('../pages/blogs/blogs')
+        loadComponent: () => import('../pages/blogs/blogs'),
+        data: { isBlogs: true }
     },
     {
         path: 'services/:slug',

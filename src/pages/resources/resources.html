@@ -1,7 +1,6 @@
 <!-- Hero Section (contenido desde resources-content.json) -->
-<app-video-hero [loading]="false" [hvh70]="true" [videoUrls]="videoHeroContent().videoUrls" [title]="videoHeroContent().title"
-  [description]="videoHeroContent().description" [ctaPrimary]="videoHeroContent().ctaPrimary"
-  [ctaSecondary]="videoHeroContent().ctaSecondary" [showIndicators]="false" />
+<app-video-hero [loading]="false" [hvh70]="true" [videoUrls]="videoHeroContent().videoUrls"
+  [title]="videoHeroContent().title" [description]="videoHeroContent().description" [showIndicators]="false" />
 
 <!-- Featured Case Study Section -->
 <div class="w-full bg-p-10 p-10">
@@ -13,53 +12,62 @@
 
 </div>
 
-<!-- Filter Tabs and Search Section -->
-<section class="w-full bg-white  py-6 sm:py-8" aria-label="Filter and Search">
-  <div class=" px-4 sm:px-6 md:px-8 lg:px-24">
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
-      <!-- Filter Tabs -->
-      <div class="flex flex-wrap items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-2">
-        @for (filter of filters; track filter.value) {
-        @let isSelected = selectedFilter() === filter.value;
-        <button (click)="selectFilter(filter.value)" [class.bg-p-700]="isSelected" [class.text-white]="isSelected"
-          [ngClass]="{'button-filter': !isSelected}"
-          class="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base transition-all duration-200 hover:opacity-90 whitespace-nowrap">
-          {{ filter.displayCategory }}
-        </button>
-        }
-      </div>
-
-      <!-- Search -->
-      <div class="relative w-full sm:w-auto min-w-[200px] sm:min-w-[300px]">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+<!-- Resources Section (aside + grid como blogs) -->
+<section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-label="Resources">
+  <div class="px-4 sm:px-6 md:px-8 lg:px-36">
+    @if (!loading() && !error() && resourceCards().length > 0) {
+    <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
+      <!-- Left Column: Filter by (aside de blogs) -->
+      <aside class="flex-auto lg:w-74">
+        <div class="sticky top-24">
+          <div class="relative pl-4">
+            <h2 class="text-base font-semibold uppercase tracking-wider text-gray-700/60 mb-6">
+              Filter by
+            </h2>
+            <div class="flex flex-col gap-3.5 py-2" aria-label="Filters">
+              @for (filter of filters; track filter.value) {
+              <button type="button" (click)="selectFilter(filter.value)"
+                class="flex text-left text-base font-medium rounded transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-p-600 focus-visible:ring-offset-2">
+                <span class="px-3 py-1.5 transition-colors" [class.text-p-500]="selectedFilter() !== filter.value"
+                  [class.bg-p-10]="selectedFilter() !== filter.value"
+                  [class.text-white]="selectedFilter() === filter.value"
+                  [class.bg-p-600]="selectedFilter() === filter.value"
+                  [class.ring-2]="selectedFilter() === filter.value">{{ decodeHtmlEntities(filter.displayCategory)
+                  }}</span>
+              </button>
+              }
+            </div>
+          </div>
         </div>
-        <input type="text" [placeholder]="searchPlaceholder()" [value]="searchQuery()"
-          (input)="onSearchChange($any($event.target).value)"
-          class="block w-full pl-10 pr-3 py-2 sm:py-3 border border-gray-300    focus:ring-2 focus:ring-p-700 focus:border-p-700 text-sm sm:text-base">
+      </aside>
+
+      <!-- Right Column: Resources Grid -->
+      <div class="flex-8/12">
+        <div class="max-w-none">
+          @if (filteredResources().length) {
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            @for (card of filteredResources(); track card.id) {
+            <app-blog-card [slug]="card.slug" [imageUrl]="card.image" [imageAlt]="card.title"
+              [tag]="card.primaryTag ?? card.category" [readingTimeMinutes]="3" [title]="card.title"
+              [excerptHtml]="getSanitizedExcerpt(card.description)" [authorDisplayName]="null" [date]="card.date"
+              linkBase="/resources/case-studies" />
+            }
+          </div>
+          }
+          @if (filteredResources().length === 0) {
+          <div class="text-center py-12">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">No resources match the selected filters</h3>
+            <p class="text-gray-600 text-sm">Try selecting different filters or clear the selection.</p>
+          </div>
+          }
+        </div>
       </div>
     </div>
-  </div>
-</section>
+    }
 
-<!-- Resources Grid Section -->
-<section class="w-full bg-white py-12 sm:py-16 md:py-20" aria-label="Resources">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    @if (filteredResources().length === 0) {
-    <div class="text-center py-12">
+    @if (!loading() && !error() && resourceCards().length === 0) {
+    <div class="text-center py-12 sm:py-16 md:py-20">
       <p class="text-lg text-gray-600">{{ emptyStateMessage() }}</p>
-    </div>
-    } @else {
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-12">
-      @for (card of filteredResources(); track card.id) {
-      <app-blog-card [slug]="card.slug" [imageUrl]="card.image" [imageAlt]="card.title"
-        [tag]="card.primaryTag ?? card.category" [readingTimeMinutes]="3" [title]="card.title"
-        [excerptHtml]="getSanitizedExcerpt(card.description)" [authorDisplayName]="null" [date]="card.date"
-        linkBase="/resources/case-studies" />
-      }
     </div>
     }
   </div>

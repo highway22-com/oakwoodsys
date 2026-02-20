@@ -3,7 +3,7 @@
  * Plugin Name: Oakwood Blog
  * Plugin URI: https://oakwoodsys.com
  * Description: Registra el CPT "Gen Content" (gen_content) + taxonomía, agrega campos ACF (show_contact_section, related_bloqs) y los expone en WPGraphQL.
- * Version: 7.0.12
+ * Version: 7.0.15
  * Author: Aetro
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -16,6 +16,9 @@ defined( 'ABSPATH' ) || exit;
 
 // Definición del grupo ACF (Related Bloqs).
 require_once __DIR__ . '/acf-related-bloqs.php';
+
+// GraphQL: root queries para categorías y tags (genContentCategories, genContentTags).
+require_once __DIR__ . '/graphql-taxonomies.php';
 
 // GEO: schema + meta desde ACF (frontend).
 require_once __DIR__ . '/geo-integration.php';

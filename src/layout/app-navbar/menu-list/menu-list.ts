@@ -3,6 +3,7 @@ import { CaseStudy } from '../../../app/api/graphql';
 import { ArticleCardArticle } from '../../../shared/article-card/article-card.component';
 import { RouterLink } from '@angular/router';
 import type { FeaturedBlogItem } from '../app-navbar';
+import { PrefetchBlogsDirective } from '../../../app/directives/prefetch-blogs.directive';
 
 export interface MenuItem {
   id: string;
@@ -16,7 +17,7 @@ export interface MenuItem {
 
 @Component({
   selector: 'app-menu-list',
-  imports: [RouterLink],
+  imports: [RouterLink, PrefetchBlogsDirective],
   templateUrl: './menu-list.html',
 })
 export class MenuList {

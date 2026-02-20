@@ -40,7 +40,7 @@
             @if (p.authorPerson || p.author.node) {
             <div class="flex items-center gap-3 ">
               <div class="tag-badge-transparent">
-                {{ p.primaryTag }}
+                {{ decodeHtmlEntities(p.primaryTag ?? '') }}
               </div>
               @if (p.author.node.firstName === 'Oakwood') {
               <img src="/assets/oawPerson.png" [alt]="authorDisplayName(p)"
@@ -124,7 +124,7 @@
                   [class]="activeSection() === item.id
                      ? 'block px-3 py-2 text-[1.06rem] text-p-500 bg-p-30 font-semibold transition-colors cursor-pointer'
                      : 'block px-3 py-2 text-[1.06rem] text-gray-700 hover:text-p-500 hover:bg-p-30 transition-colors cursor-pointer'">
-                  {{ item.text }}
+                  {{ decodeHtmlEntities(item.text) }}
                 </a>
                 } @empty {
                 <p class="text-sm text-gray-500 px-3 py-2">No sections in this post.</p>
@@ -349,4 +349,4 @@
 
 <app-cta-section title="Let's move your vision forward"
   description="Connect with a team committed to helping you modernize, innovate, and achieve meaningful results."
-  primaryText="Talk to an expert" primaryLink="/contact-us"  />
+  primaryText="Talk to an expert" primaryLink="/contact-us" />
