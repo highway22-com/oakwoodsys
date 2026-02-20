@@ -1,127 +1,429 @@
-<section class="w-full bg-white px-26 py-40 overflow-visible min-h-[80vh] flex flex-col"
-  aria-labelledby="featured-case-study-title">
-  <div class="overflow-visible flex-1 min-h-0">
-    @if (currentSection(); as section) {
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] overflow-visible h-[80vh] lg:min-h-[80vh]">
-      <div class="w-full h-full min-h-0 overflow-hidden  featured-case-study-image-wrap" [@slideDown]="animationKey()">
+<!-- Mobile Card Layout: Only visible on mobile -->
+<div class="sm:hidden flex justify-center w-full">
+  @if (currentSection(); as section) {
+    <div
+      class="bg-white w-full max-w-[370px] mx-auto p-0 flex flex-col"
+    >
+      <!-- Navigation at top -->
+      <div class="flex items-center justify-between px-4 pt-4 pb-2">
+        <span class="font-sans font-semibold text-sm leading-[1.5] tracking-normal uppercase text-[#2A7EBF] font-semibold uppercase"
+          >FEATURED CASE STUDY</span
+        >
+        <div class="flex items-center ">
+          <span class="font-sans font-medium text-base leading-[1.5] tracking-normal uppercase text-[#3D3D3D] pr-3">{{ selectedIndex() + 1 }}/2</span>
+          <button
+            type="button"
+            class="w-7 h-7 flex items-center justify-center border border-[#E7E7E7] bg-white text-[#3D3D3D] font-sans font-medium text-base leading-[1.5] tracking-normal uppercase shadow-sm hover:bg-gray-100 transition"
+            [ngClass]="selectedIndex() === 0 ? 'opacity-100' : 'opacity-60'"
+            (click)="selectCaseStudy(0)"
+            [attr.aria-label]="'Case study 1'"
+            [attr.aria-pressed]="selectedIndex() === 0"
+          >
+            <svg width="14" height="14" fill="none" viewBox="0 0 16 16">
+              <path
+                d="M10.5 13L6 8.5L10.5 4"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="w-7 h-7 flex items-center justify-center  border border-[#E7E7E7] bg-white text-[#3D3D3D] shadow-sm hover:bg-gray-100 transition"
+            [ngClass]="selectedIndex() === 1 ? 'opacity-100' : 'opacity-60'"
+            (click)="selectCaseStudy(1)"
+            [attr.aria-label]="'Case study 2'"
+            [attr.aria-pressed]="selectedIndex() === 1"
+          >
+            <svg width="14" height="14" fill="none" viewBox="0 0 16 16">
+              <path
+                d="M5.5 13L10 8.5L5.5 4"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <!-- Card Content -->
+      <ng-container *ngIf="selectedIndex() === 0">
         @if (section[0]?.image?.url) {
-        <img [src]="section[0].image?.url"
-          [alt]="section[0].image?.alt ?? (section[0].title + ' - Featured case study image')"
-          class="featured-case-study-image" [style.opacity]="1 - scrollProgress()" loading="lazy" />
+          <img
+            [src]="section[0].image?.url"
+            [alt]="
+              section[0].image?.alt ??
+              section[0].title + ' - Featured case study image'
+            "
+            class="featured-case-study-image"
+            loading="lazy"
+          />
         }
-        @if (section[1]?.image?.url) {
-        <img [src]="section[1].image?.url"
-          [alt]="section[1].image?.alt ?? (section[1].title + ' - Featured case study image')"
-          class="featured-case-study-image" [style.opacity]="scrollProgress()" loading="lazy" />
-        }
-      </div>
-      <div class=" flex justify-center flex-col w-2 h-full">
-        <!-- <button type="button"
-          class="w-2 h-full cursor-pointer transition-colors duration-300 ease-in-out hover:opacity-90"
-          [ngClass]="selectedIndex() === 0 ? 'bg-p-700' : 'bg-p-100'" (click)="selectCaseStudy(0)"
-          [attr.aria-label]="'Case study 1'" [attr.aria-pressed]="selectedIndex() === 0"></button>
-        <button type="button"
-          class="w-2 h-full cursor-pointer transition-colors duration-300 ease-in-out hover:opacity-90"
-          [ngClass]="selectedIndex() === 1 ? 'bg-p-700' : 'bg-p-100'" (click)="selectCaseStudy(1)"
-          [attr.aria-label]="'Case study 2'" [attr.aria-pressed]="selectedIndex() === 1"></button> -->
-      </div>
-      <div class="lg:pl-28 h-full min-h-0 featured-case-study-scroll" (scroll)="onScrollContainerScroll($event)">
         @if (section[0]) {
-        <div class="pt-10  min-h-full featured-case-study-scroll-inner" [attr.data-selected-index]="selectedIndex()"
-          [@slideDown]="animationKey()">
-          <p class="text-lg       uppercase tracking-wide text-p-600 pb-24">
-            {{ section[0].label ?? '' }}
-          </p>
-          <span class="inline-block tag-badge">
-            {{ section[0].tag }}
-          </span>
-          <h2 id="featured-case-study-title"
-            class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-gray-950 leading-tight pb-2">
-            {{ section[0].title }}
-          </h2>
-          <div class="text-sm sm:text-lg text-gray-500 mb-6 sm:mb-8 leading-relaxed font-segoe prose prose-p:mb-2"
-            [innerHTML]="section[0].description ?? ''"></div>
-          <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center pt-16">
-            @if (section[0].cta?.primary?.link) {
-            <a [routerLink]="section[0].cta?.primary?.link ?? ''"
-              class="group  text-white font-normal  transition-all duration-200  whitespace-nowrap shadow-none bg-p-700 ">
-              <span class="flex justify-center items-center py-4 px-8 ">
-                <div class="flex items-center transition-all duration-200 group-hover:-translate-x-2 pl-5">{{
-                  section[0].cta?.primary?.text ?? '' }}</div>
-                <div class="flex flex-1 ">
-                  <svg
-                    class="transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 "
-                    width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true">
-                    <path
-                      d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z"
-                      fill="currentColor" />
-                  </svg>
-                </div>
-              </span>
-            </a>
-            } @else if (section[0].cta?.primary) {
+          <div class="pt-6 px-4 pb-4 featured-case-study-scroll-inner">
+            <span class="inline-block tag-badge mb-2">{{
+              section[0].tag
+            }}</span>
+            <h2 class="font-sans font-normal text-[28px] leading-[1.3] tracking-[-0.01em] mb-1">
+              {{ section[0].title }}
+            </h2>
+            <div
+              class="font-segoe font-normal text-[18px] leading-[1.5] tracking-normal  text-[#454545] prose prose-p:mb-2"
+              [innerHTML]="section[0].description ?? ''"
+            ></div>
+            <div class="flex flex-col gap-2">
 
-            <button type="button"
-              class="group  text-white font-normal  transition-all duration-200  whitespace-nowrap shadow-none bg-p-700 ">
-              <span class="flex justify-center items-center py-4 px-8 ">
-                <div class="flex items-center transition-all duration-200 group-hover:-translate-x-2 pl-5">{{
-                  section[0].cta?.primary?.text ?? '' }}</div>
-                <div class="flex flex-1 ">
-                  <svg
-                    class="transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 "
-                    width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true">
-                    <path
-                      d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z"
-                      fill="currentColor" />
-                  </svg>
-                </div>
-              </span>
-            </button>
-            }
-            @if (section[0].cta?.secondary) {
-            <a [routerLink]="section[0].cta?.secondary?.link ?? '/resources/case-studies'"
-              class=" sm:text-lg md:text-base  text-gray-700  hover:text-p-500 transition-colors duration-200 inline-flex items-center gap-1 font-segoe">
-              {{ section[0].cta?.secondary?.text ?? '' }}
-              <i class="fa-solid fa-chevron-right text-sm pl-2" aria-hidden="true"></i>
-            </a>
-            }
+       
+             
+              @if (section[0].cta?.primary?.link) {
+                <a
+                  [routerLink]="section[0].cta?.primary?.link ?? ''"
+                  class="group mt-6 text-white font-normal transition-all duration-200 whitespace-nowrap shadow-none bg-p-700 rounded px-4 py-4 text-center"
+                >
+                  {{ section[0].cta?.primary?.text ?? "" }}
+                </a>
+              }
+
+              @else if (section[0].cta?.primary) {
+                    <button
+                      type="button"
+                      class="group mt-6 text-white font-normal transition-all duration-200 whitespace-nowrap shadow-none bg-p-700 rounded px-4 py-4 text-center"
+                    >
+                      <span class="flex justify-center items-center py-4 px-8">
+                        <div
+                          class="flex items-center transition-all duration-200 group-hover:-translate-x-2 pl-5"
+                        >
+                          {{ section[0].cta?.primary?.text ?? "" }}
+                        </div>
+                        <div class="flex flex-1">
+                          <svg
+                            class="transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+                            width="14"
+                            height="13"
+                            viewBox="0 0 14 13"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </div>
+                      </span>
+                    </button>
+                  }
+              @if (section[0].cta?.secondary) {
+                <a
+                  [routerLink]="
+                    section[0].cta?.secondary?.link ?? '/resources/case-studies'
+                  "
+                  class="pt-4 font-sans font-semibold text-base leading-none tracking-normal text-[#454545] hover:text-p-500  transition-colors duration-200 inline-flex items-center gap-1 font-segoe justify-center"
+                >
+                  {{ section[0].cta?.secondary?.text ?? "" }}
+                  <i
+                    class="fa-solid fa-chevron-right text-xs pl-2"
+                    aria-hidden="true"
+                  ></i>
+                </a>
+              }
+            </div>
           </div>
-        </div>
         }
-        <!-- Case study 2 -->
+      </ng-container>
+      <ng-container *ngIf="selectedIndex() === 1">
+        @if (section[1]?.image?.url) {
+          <img
+            [src]="section[1].image?.url"
+            [alt]="
+              section[1].image?.alt ??
+              section[1].title + ' - Featured case study image'
+            "
+            class="featured-case-study-image"
+            loading="lazy"
+          />
+        }
         @if (section[1]) {
-        <div class="pt-10 min-h-full featured-case-study-scroll-inner" [attr.data-selected-index]="selectedIndex()"
-          [@slideDown]="animationKey()">
-          <p class="text-lg       uppercase tracking-wide text-p-600 pb-24">
-            {{ section[1].label }}
-          </p>
-          <span class="inline-block tag-badge">
-            {{ section[1].tag }}
-          </span>
-          <h2 id="featured-case-study-title-2"
-            class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-gray-950 leading-tight pb-2">
-            {{ section[1].title }}
-          </h2>
-          <div class="text-sm sm:text-lg text-gray-500 mb-6 sm:mb-8 leading-relaxed font-segoe prose prose-p:mb-2"
-            [innerHTML]="section[1].description ?? ''"></div>
-          <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center pt-16">
-            @if (section[1].cta?.primary) {
-            <app-button-primary [text]="section[1].cta?.primary?.text ?? ''" [link]="section[1].cta?.primary?.link" />
+          <div class="pt-6 px-4 pb-4 featured-case-study-scroll-inner">
+            <span class="inline-block tag-badge mb-2">{{
+              section[1].tag
+            }}</span>
+            <h2 class="font-sans font-normal text-[28px] leading-[1.3] tracking-[-0.01em] mb-1">
+              {{ section[1].title }}
+            </h2>
+            <div
+              class="font-segoe font-normal text-[18px] leading-[1.5] tracking-normal  text-[#454545] prose prose-p:mb-2"
+              [innerHTML]="section[1].description ?? ''"
+            ></div>
+            <div class="flex flex-col gap-2">
+              @if (section[1].cta?.primary?.link) {
+                <a
+                  [routerLink]="section[1].cta?.primary?.link ?? ''"
+                  class="group mt-6 text-white font-normal transition-all duration-200 whitespace-nowrap shadow-none bg-p-700 rounded px-4 py-4 text-center"
+                >
+                  {{ section[1].cta?.primary?.text ?? "" }}
+                </a>
+              }
+
+              @else if (section[1].cta?.primary) {
+                    <button
+                      type="button"
+                      class="group mt-6 text-white font-normal transition-all duration-200 whitespace-nowrap shadow-none bg-p-700 rounded px-4 py-4 text-center"
+                    >
+                      <span class="flex justify-center items-center py-4 px-8">
+                        <div
+                          class="flex items-center transition-all duration-200 group-hover:-translate-x-2 pl-5"
+                        >
+                          {{ section[1].cta?.primary?.text ?? "" }}
+                        </div>
+                        <div class="flex flex-1">
+                          <svg
+                            class="transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+                            width="14"
+                            height="13"
+                            viewBox="0 0 14 13"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </div>
+                      </span>
+                    </button>
+                  }
+              @if (section[1].cta?.secondary) {
+                <a
+                  [routerLink]="
+                    section[1].cta?.secondary?.link ?? '/resources/case-studies'
+                  "
+                  class="pt-4 font-sans font-semibold text-base leading-none tracking-normal text-[#454545] hover:text-p-500  transition-colors duration-200 inline-flex items-center gap-1 font-segoe justify-center"
+                >
+                  {{ section[1].cta?.secondary?.text ?? "" }}
+                  <i
+                    class="fa-solid fa-chevron-right text-xs pl-2"
+                    aria-hidden="true"
+                  ></i>
+                </a>
+              }
+            </div>
+          </div>
+        }
+      </ng-container>
+    </div>
+  }
+</div>
+
+<!-- Desktop/Web Layout: Only visible on sm and up -->
+<div class="hidden sm:block">
+  <section
+    class="w-full bg-white px-26 py-40 overflow-visible min-h-[80vh] flex flex-col"
+    aria-labelledby="featured-case-study-title"
+  >
+    <div class="overflow-visible flex-1 min-h-0">
+      @if (currentSection(); as section) {
+        <div
+          class="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] overflow-visible h-[80vh] lg:min-h-[80vh]"
+        >
+          <div
+            class="w-full h-full min-h-0 overflow-hidden featured-case-study-image-wrap"
+            [@slideDown]="animationKey()"
+          >
+            @if (section[0]?.image?.url) {
+              <img
+                [src]="section[0].image?.url"
+                [alt]="
+                  section[0].image?.alt ??
+                  section[0].title + ' - Featured case study image'
+                "
+                class="featured-case-study-image"
+                [style.opacity]="1 - scrollProgress()"
+                loading="lazy"
+              />
             }
-            @if (section[1].cta?.secondary) {
-            <a [routerLink]="section[1].cta?.secondary?.link ?? '/resources/case-studies'"
-              class=" sm:text-lg md:text-base  text-gray-700  hover:text-p-500 transition-colors duration-200 inline-flex items-center gap-1 font-segoe">
-              {{ section[1].cta?.secondary?.text ?? '' }}
-              <i class="fa-solid fa-chevron-right text-sm pl-2" aria-hidden="true"></i>
-            </a>
+            @if (section[1]?.image?.url) {
+              <img
+                [src]="section[1].image?.url"
+                [alt]="
+                  section[1].image?.alt ??
+                  section[1].title + ' - Featured case study image'
+                "
+                class="featured-case-study-image"
+                [style.opacity]="scrollProgress()"
+                loading="lazy"
+              />
+            }
+          </div>
+          <div class="flex justify-center flex-col w-2 h-full">
+            <!-- ...existing code... -->
+          </div>
+          <div
+            class="lg:pl-28 h-full min-h-0 featured-case-study-scroll"
+            (scroll)="onScrollContainerScroll($event)"
+          >
+            @if (section[0]) {
+              <div
+                class="pt-10 min-h-full featured-case-study-scroll-inner"
+                [attr.data-selected-index]="selectedIndex()"
+                [@slideDown]="animationKey()"
+              >
+                <p class="text-lg uppercase tracking-wide text-p-600 pb-24">
+                  {{ section[0].label ?? "" }}
+                </p>
+                <span class="inline-block tag-badge">
+                  {{ section[0].tag }}
+                </span>
+                <h2
+                  id="featured-case-study-title"
+                  class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-gray-950 leading-tight pb-2"
+                >
+                  {{ section[0].title }}
+                </h2>
+                <div
+                  class="text-sm sm:text-lg text-gray-500 mb-6 sm:mb-8 leading-relaxed font-segoe prose prose-p:mb-2"
+                  [innerHTML]="section[0].description ?? ''"
+                ></div>
+                <div
+                  class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center pt-16"
+                >
+                  @if (section[0].cta?.primary?.link) {
+                    <a
+                      [routerLink]="section[0].cta?.primary?.link ?? ''"
+                      class="group text-white font-normal transition-all duration-200 whitespace-nowrap shadow-none bg-p-700"
+                    >
+                      <span class="flex justify-center items-center py-4 px-8">
+                        <div
+                          class="flex items-center transition-all duration-200 group-hover:-translate-x-2 pl-5"
+                        >
+                          {{ section[0].cta?.primary?.text ?? "" }}
+                        </div>
+                        <div class="flex flex-1">
+                          <svg
+                            class="transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+                            width="14"
+                            height="13"
+                            viewBox="0 0 14 13"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </div>
+                      </span>
+                    </a>
+                  } @else if (section[0].cta?.primary) {
+                    <button
+                      type="button"
+                      class="group text-white font-normal transition-all duration-200 whitespace-nowrap shadow-none bg-p-700"
+                    >
+                      <span class="flex justify-center items-center py-4 px-8">
+                        <div
+                          class="flex items-center transition-all duration-200 group-hover:-translate-x-2 pl-5"
+                        >
+                          {{ section[0].cta?.primary?.text ?? "" }}
+                        </div>
+                        <div class="flex flex-1">
+                          <svg
+                            class="transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+                            width="14"
+                            height="13"
+                            viewBox="0 0 14 13"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </div>
+                      </span>
+                    </button>
+                  }
+                  @if (section[0].cta?.secondary) {
+                    <a
+                      [routerLink]="
+                        section[0].cta?.secondary?.link ??
+                        '/resources/case-studies'
+                      "
+                      class="sm:text-lg md:text-base text-gray-700 hover:text-p-500 transition-colors duration-200 inline-flex items-center gap-1 font-segoe"
+                    >
+                      {{ section[0].cta?.secondary?.text ?? "" }}
+                      <i
+                        class="fa-solid fa-chevron-right text-sm pl-2"
+                        aria-hidden="true"
+                      ></i>
+                    </a>
+                  }
+                </div>
+              </div>
+            }
+            <!-- Case study 2 -->
+            @if (section[1]) {
+              <div
+                class="pt-10 min-h-full featured-case-study-scroll-inner"
+                [attr.data-selected-index]="selectedIndex()"
+                [@slideDown]="animationKey()"
+              >
+                <p class="text-lg uppercase tracking-wide text-p-600 pb-24">
+                  {{ section[1].label }}
+                </p>
+                <span class="inline-block tag-badge">
+                  {{ section[1].tag }}
+                </span>
+                <h2
+                  id="featured-case-study-title-2"
+                  class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-gray-950 leading-tight pb-2"
+                >
+                  {{ section[1].title }}
+                </h2>
+                <div
+                  class="text-sm sm:text-lg text-gray-500 mb-6 sm:mb-8 leading-relaxed font-segoe prose prose-p:mb-2"
+                  [innerHTML]="section[1].description ?? ''"
+                ></div>
+                <div
+                  class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center pt-16"
+                >
+                  @if (section[1].cta?.primary) {
+                    <app-button-primary
+                      [text]="section[1].cta?.primary?.text ?? ''"
+                      [link]="section[1].cta?.primary?.link"
+                    />
+                  }
+                  @if (section[1].cta?.secondary) {
+                    <a
+                      [routerLink]="
+                        section[1].cta?.secondary?.link ??
+                        '/resources/case-studies'
+                      "
+                      class="sm:text-lg md:text-base text-gray-700 hover:text-p-500 transition-colors duration-200 inline-flex items-center gap-1 font-segoe"
+                    >
+                      {{ section[1].cta?.secondary?.text ?? "" }}
+                      <i
+                        class="fa-solid fa-chevron-right text-sm pl-2"
+                        aria-hidden="true"
+                      ></i>
+                    </a>
+                  }
+                </div>
+              </div>
             }
           </div>
         </div>
-        }
-      </div>
+      }
     </div>
-    }
-  </div>
-</section>
+  </section>
+</div>
+

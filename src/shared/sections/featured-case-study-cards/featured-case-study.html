@@ -1,80 +1,99 @@
-<section class="w-full bg-p-10 min-h-[80vh] flex flex-col" aria-labelledby="featured-case-study-title">
+<section class="w-full  min-h-[80vh] flex flex-col" aria-labelledby="featured-case-study-title">
   <div class="flex-1 min-h-0">
     @if (currentSection(); as list) {
     @if (list[selectedIndex()]; as item) {
-    <div class="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-0 min-h-[80vh]">
+    <div class="flex flex-col lg:grid lg:grid-cols-[1.2fr_1fr] gap-0 min-h-[80vh]">
+      <!-- Mobile: header row above image; Desktop: image left -->
+      <div class="block lg:hidden px-2 pt-12">
+        <!-- Header row: label + pagination (single line on mobile) -->
+        <div class="flex flex-row items-center justify-between gap-2 mb-6">
+          <span class="font-sans font-semibold uppercase text-[14px] leading-[1.5] text-[#2A7EBF]" style="font-family: 'Inter', sans-serif;">{{ item.label ?? 'Featured Case Study' }}</span>
+          <div class="flex items-center gap-1">
+            <span class="text-sm text-gray-500">
+              {{ selectedIndex() + 1 }}/{{ list.length }}
+            </span>
+            <button type="button" (click)="selectCaseStudy(selectedIndex() - 1)" [disabled]="selectedIndex() === 0"
+              [attr.aria-label]="'Previous case study'" [attr.aria-pressed]="selectedIndex() === 0"
+              class="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button type="button" (click)="selectCaseStudy(selectedIndex() + 1)"
+              [disabled]="selectedIndex() >= list.length - 1" [attr.aria-label]="'Next case study'"
+              [attr.aria-pressed]="selectedIndex() === 1"
+              class="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
       <!-- Left: image -->
       <div class="relative w-full min-h-[50vh] lg:min-h-[80vh] overflow-hidden bg-slate-100">
         <img [src]="item.image?.url ?? ''" [alt]="item.image?.alt ?? (item.title + ' - Featured case study image')"
           class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
       </div>
-
       <!-- Right: content -->
-      <div class="flex flex-col  px-6 sm:px-8 md:px-10 lg:px-14 xl:px-20 py-12 lg:py-16">
-        <!-- Header row: label + pagination -->
-        <div class="flex flex-wrap  gap-4 mb-6">
-          <p class="text-lg font-semibold   uppercase  text-p-700">
+      <div class="flex flex-col px-1 md:px-10 lg:px-14 xl:px-20 py-6 md:py-12 lg:py-16">
+        <!-- Desktop: header row in content -->
+        <div class="hidden lg:flex flex-wrap gap-4 mb-6">
+          <p class="text-lg font-semibold uppercase text-p-700">
             {{ item.label ?? 'Featured Case Study' }}
           </p>
-          <div class="flex items-center gap-3">
-            <span class="text-sm        text-gray-500">
-              {{ selectedIndex() + 1 }}/{{ list.length }}
-            </span>
-            <div class="flex items-center gap-1">
-              <button type="button" (click)="selectCaseStudy(selectedIndex() - 1)" [disabled]="selectedIndex() === 0"
-                [attr.aria-label]="'Previous case study'" [attr.aria-pressed]="selectedIndex() === 0"
-                class="w-9 h-9 flex items-center justify-center    border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <button type="button" (click)="selectCaseStudy(selectedIndex() + 1)"
-                [disabled]="selectedIndex() >= list.length - 1" [attr.aria-label]="'Next case study'"
-                [attr.aria-pressed]="selectedIndex() === 1"
-                class="w-9 h-9 flex items-center justify-center    border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+          <div class="flex-1 flex justify-end">
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-500">
+                {{ selectedIndex() + 1 }}/{{ list.length }}
+              </span>
+              <div class="flex items-center">
+                <button type="button" (click)="selectCaseStudy(selectedIndex() - 1)" [disabled]="selectedIndex() === 0"
+                  [attr.aria-label]="'Previous case study'" [attr.aria-pressed]="selectedIndex() === 0"
+                  class="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button type="button" (click)="selectCaseStudy(selectedIndex() + 1)"
+                  [disabled]="selectedIndex() >= list.length - 1" [attr.aria-label]="'Next case study'"
+                  [attr.aria-pressed]="selectedIndex() === 1"
+                  class="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Tag -->
-        <span class="inline-block tag-badge w-fit">
+        <span class="inline-block tag-badge w-fit ">
           {{ item.tag }}
         </span>
 
         <!-- Title -->
         <h2 id="featured-case-study-title"
-          class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl  text-gray-900 leading-tight mb-4 sm:mb-6">
+          class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl  text-gray-900 leading-tight pt-4  mb-4 sm:mb-6">
           {{ item.title }}
         </h2>
 
         <!-- Description -->
-        <div class="text-sm sm:text-base text-gray-500 mb-8 sm:mb-10 leading-relaxed prose prose-p:mb-2 max-w-xl"
+        <div class="text-sm sm:text-base text-gray-500 mb-8 sm:mb-10 leading-relaxed prose prose-p:mb-2 max-w-xl line-clamp-3"
           [innerHTML]="item.description ?? ''"></div>
 
         <!-- CTAs -->
         <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
           @if (item.cta?.primary?.link) {
           <a [routerLink]="item.cta?.primary?.link ?? '#'"
-            class="inline-flex items-center justify-center        px-6 sm:px-8 py-3 sm:py-4    bg-p-700 text-white hover:bg-p-700 transition-colors duration-200">
+            class="block w-full sm:inline-flex sm:w-auto items-center justify-center text-center px-6 sm:px-8 py-3 sm:py-4 bg-p-700 text-white hover:bg-p-700 transition-colors duration-200">
             {{ item.cta?.primary?.text ?? 'Read more' }}
           </a>
           } @else if (item.cta?.primary) {
-          <span class="inline-flex items-center justify-center        px-6 sm:px-8 py-3 sm:py-4    bg-p-700 text-white">
+          <span class="block w-full sm:inline-flex sm:w-auto items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-p-700 text-white">
             {{ item.cta?.primary?.text ?? 'Read more' }}
           </span>
-          }
-          @if (item.cta?.secondary) {
-          <a [routerLink]=" '/resources/case-studies'"
-            class="text-base text-gray-600  transition-colors duration-200 inline-flex items-center gap-1">
-            {{ item.cta?.secondary?.text ?? 'View all case studies' }}
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
           }
         </div>
       </div>
