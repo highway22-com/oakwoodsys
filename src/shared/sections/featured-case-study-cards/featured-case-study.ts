@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { GraphQLContentService } from '../../../app/services/graphql-content.service';
 import type { CaseStudy } from '../../../app/api/graphql';
 import { take } from 'rxjs/operators';
+import { decodeHtmlEntities } from '../../../app/utils/cast';
 
 /** Vista de un case study para el template (mapeado desde CaseStudy / Gen Content lista, misma estructura que post). */
 export interface FeaturedCaseStudyCardsView {
@@ -45,6 +46,7 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
   readonly titleText = 'Featured Case Study'
+  readonly decodeHtmlEntities = decodeHtmlEntities;
 
   /** Slugs de case studies a mostrar. */
   @Input({ required: true }) slugsFeaturedCaseStudies!: string[];

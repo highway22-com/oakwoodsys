@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal, inject, computed, PLATFORM_ID } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -1054,6 +1054,7 @@ export class StructuredOffer implements OnInit, OnDestroy {
   readonly content = signal<StructuredOfferContent | null>(null);
   readonly error = signal<string | null>(null);
   readonly activeSection = signal<string>('overview');
+  private readonly router = inject(Router);
 
   // Form properties
   readonly formModel = signal({
@@ -1133,6 +1134,7 @@ export class StructuredOffer implements OnInit, OnDestroy {
     }
     this.content.set(null);
     this.error.set('Offer not found.');
+    this.router.navigate(['/404']);
     this.seoMeta.updateMeta({
       title: 'Structured Engagements | Oakwood Systems',
       description: 'Drive efficiency and innovation with tailored, strategic engagements designed to align technology solutions with your unique business goals.',

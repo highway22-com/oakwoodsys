@@ -14,7 +14,7 @@
         <div class="flex items-center mb-4 flex-wrap gap-2">
             <div class="flex items-center gap-2 flex-wrap">
                 @if (tag()) {
-                <span class="tag-badge mr-2">{{ tag() }}</span>
+                <span class="tag-badge mr-2">{{ decodeHtmlEntities(tag()!) }}</span>
                 }
             </div>
             <span class="text-xs text-s-600">{{ readingTimeMinutes() }} min read</span>
