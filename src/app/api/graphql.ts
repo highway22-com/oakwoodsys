@@ -65,6 +65,16 @@ export interface GenContentsByCategoryResponse {
   } | null;
 }
 
+/** Respuesta paginada (first/after). */
+export interface GenContentsByCategoryPaginatedResponse {
+  genContentCategory?: {
+    genContents?: {
+      nodes: GenContentListNode[];
+      pageInfo?: { hasNextPage?: boolean; endCursor?: string | null };
+    };
+  } | null;
+}
+
 export interface GenContentsByTagResponse {
   genContentTag?: {
     genContents?: { nodes: GenContentListNode[] };
@@ -721,6 +731,41 @@ export const GET_CASE_STUDY_BY_SLUG = gql`
     }
   }
 `;
+
+/** Categorías y tags de Gen Content (taxonomías gen_content_category y gen_content_tag). */
+export const GET_GEN_CONTENT_TAXONOMIES = gql`
+  query GetGenContentTaxonomies {
+    genContentCategoriesList(first: 100) {
+      nodes {
+        id
+        name
+        slug
+      }
+    }
+    genContentTagsList(first: 100) {
+      nodes {
+        id
+        name
+        slug
+      }
+    }
+  }
+`;
+
+export interface GenContentTaxonomyTerm {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface GenContentTaxonomiesResponse {
+  genContentCategoriesList?: {
+    nodes: GenContentTaxonomyTerm[];
+  } | null;
+  genContentTagsList?: {
+    nodes: GenContentTaxonomyTerm[];
+  } | null;
+}
 
 /** Contenido de una página CMS por slug (Oakwood CMS: home.json, services.json, etc.). */
 export const GET_CMS_PAGE = gql`

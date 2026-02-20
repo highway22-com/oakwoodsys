@@ -124,6 +124,7 @@
                 <!-- Featured Blogs (2 últimos desde GraphQL) -->
                 <div class="">
                     <a [routerLink]="featuredTitle() === 'FEATURED CASE STUDIES' ? '/resources/case-studies' : '/blog'"
+                        [prefetchBlogs]="featuredTitle() !== 'FEATURED CASE STUDIES'"
                         class="flex items-center gap-2 text-sm text-[#454545] hover:text-blue-600 transition-colors duration-200">
                         <svg class="w-4 h-4 text-p-900" fill="currentColor" viewBox="0 0 20 20">
                             <path

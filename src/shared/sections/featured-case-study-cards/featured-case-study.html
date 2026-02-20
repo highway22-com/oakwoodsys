@@ -42,7 +42,7 @@
 
         <!-- Tag -->
         <span class="inline-block tag-badge w-fit">
-          {{ item.tag }}
+          {{ decodeHtmlEntities(item.tag ?? '') }}
         </span>
 
         <!-- Title -->

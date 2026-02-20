@@ -2,10 +2,11 @@ import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import type { FeaturedBlogItem } from '../app-navbar';
+import { PrefetchBlogsDirective } from '../../../app/directives/prefetch-blogs.directive';
 
 @Component({
   selector: 'app-resources',
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, PrefetchBlogsDirective],
   templateUrl: './resources.html',
 })
 export class Resources {

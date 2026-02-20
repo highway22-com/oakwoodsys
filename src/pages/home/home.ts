@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, PLATFORM_ID, signal, DOCUMENT } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal, DOCUMENT } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, NgClass, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -29,6 +30,7 @@ export default class Home implements OnInit {
 
   private readonly graphql = inject(GraphQLContentService);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly seoMeta = inject(SeoMetaService);
   private readonly document = inject(DOCUMENT);
   readonly sanitizer = inject(DomSanitizer);
@@ -52,19 +54,21 @@ export default class Home implements OnInit {
       this.isAdmin.set(!!token);
     }
 
-    // Contenido solo desde GraphQL (cmsPage(slug: "home")) – sitio estático, sin /api/home-content
-    this.graphql.getCmsPageBySlug('home').subscribe({
-      next: (data) => {
-        if (data) {
-          this.applyContent(data);
-        } else {
+    // Contenido desde servicio (precargado en APP_INITIALIZER vía homePageContent$)
+    this.graphql.homePageContent$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            this.applyContent(data);
+          } else {
+            this.loading.set(false);
+          }
+        },
+        error: () => {
           this.loading.set(false);
-        }
-      },
-      error: () => {
-        this.loading.set(false);
-      }
-    });
+        },
+      });
    this.lastScrollVisible = false;
     if (typeof window !== 'undefined') {
       window.addEventListener('scroll', this.handleScrollAnimation.bind(this));
