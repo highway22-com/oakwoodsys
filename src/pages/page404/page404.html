@@ -1,0 +1,56 @@
+<section
+    class="relative w-full min-h-[70vh] py-20 flex flex-col items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat"
+    style="background-image: url('/assets/404bg.png');" aria-labelledby="page404-title">
+
+    <div class="px-4 sm:px-6 md:px-8 lg:px-12 max-w-4xl mx-auto text-center py-12 sm:py-16 md:py-20">
+        <!-- 404 Number -->
+        <p id="page404-title"
+            class="text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] font-extralight leading-none text-p-100/90 tracking-tight select-none"
+            aria-hidden="true">
+            404
+        </p>
+
+        <!-- Main message -->
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-light text-s-800 mt-4 sm:mt-6 mb-3 sm:mb-4"
+            style="font-family: var(--font-inter);">
+            We are sorry the page you requested cannot be found.
+        </h1>
+
+        <!-- Secondary message -->
+        <p class="text-base sm:text-lg text-s-600 max-w-xl mx-auto mb-8 sm:mb-10 md:mb-12">
+            The URL may be misspelled or the page you're looking for is no longer available.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-12 sm:mb-14 md:mb-16">
+            <app-button-primary [text]="'Go to home'" [link]="'/'" />
+            <a routerLink="/industries"
+                class="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-p-600 border-2 border-p-600 font-medium text-base hover:bg-p-10 hover:border-p-700 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-p-600 focus-visible:ring-offset-2">
+                Explore Industries
+            </a>
+        </div>
+
+        <!-- Helpful links -->
+        <div class="text-left max-w-2xl mx-auto">
+            <h2 class="text-base font-semibold text-s-800 mb-4 sm:mb-6">
+                Helpful links:
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 sm:gap-y-4">
+                <!-- <ul class="space-y-2 sm:space-y-3 list-disc list-inside text-s-600 text-sm sm:text-base">
+                    <li><a routerLink="/resources/case-studies"
+                            class="hover:text-p-600 underline transition-colors">Case Studies</a></li>
+                    <li><a routerLink="/resources" class="hover:text-p-600 underline transition-colors">Whitepapers</a>
+                    </li>
+                    <li><a routerLink="/resources" class="hover:text-p-600 underline transition-colors">Events</a></li>
+                </ul> -->
+                <ul class="space-y-2 sm:space-y-3 list-disc list-inside text-s-600 text-sm sm:text-base">
+                    <li><a routerLink="/about-us" class="hover:text-p-600 underline transition-colors">Who We Are</a>
+                    </li>
+                    <li><a routerLink="/carrers" class="hover:text-p-600 underline transition-colors">Careers</a></li>
+                    <li><a routerLink="/contact-us" class="hover:text-p-600 underline transition-colors">Contact Us</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>

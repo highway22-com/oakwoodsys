@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnInit, OnDestroy, AfterViewInit, signal, inject, ViewChild, PLATFORM_ID } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -148,7 +148,7 @@ export default class Services implements OnInit, OnDestroy {
   readonly sanitizer = inject(DomSanitizer);
   private routeSubscription?: Subscription;
   private autoScrollInterval?: any;
-
+  private readonly router = inject(Router);
   readonly slug = signal<string | null>(null);
   readonly content = signal<ServiceContent | null>(null);
   readonly loading = signal(true);
@@ -185,7 +185,7 @@ export default class Services implements OnInit, OnDestroy {
           const carousel = this.logoCarousel.nativeElement;
           const scrollAmount = 1; // pixels per interval for smooth continuous scroll
           carousel.scrollLeft += scrollAmount;
-          
+
           // Reset scroll to beginning when reaching the end for infinite loop
           if (carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth) {
             carousel.scrollLeft = 0;
@@ -277,6 +277,7 @@ export default class Services implements OnInit, OnDestroy {
           this.updateStructuredData(serviceContent);
         } else {
           this.error.set(`Service "${slugValue}" not found`);
+          this.router.navigate(['/404']);
         }
         this.loading.set(false);
       },

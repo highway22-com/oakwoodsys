@@ -284,6 +284,7 @@ export default class Post implements OnInit, OnDestroy {
             }
           } else {
             this.error.set('Post not found');
+            this.router.navigate(['/404']);
           }
           this.loading.set(false);
         },

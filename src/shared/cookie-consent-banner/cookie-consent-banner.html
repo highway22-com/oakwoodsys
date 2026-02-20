@@ -1,0 +1,17 @@
+@if (visible()) {
+<div
+  class="fixed bottom-0 left-0 right-0 z-[200] bg-[#112740] text-white px-4 py-3 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-sm shadow-lg"
+  role="banner" aria-label="Cookie consent">
+  <p class="text-center m-0">
+    We use cookies to enhance your experience and analyze site traffic. By clicking "OK", you consent to our
+    <a routerLink="/privacy-policy" class="underline hover:text-blue-300 transition-colors">
+      Privacy Policy
+    </a>
+    and cookie use.
+  </p>
+  <button type="button" (click)="accept()"
+    class="shrink-0 px-5 py-2 bg-p-700 hover:bg-p-600 text-white font-medium rounded transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#112740]">
+    OK
+  </button>
+</div>
+}

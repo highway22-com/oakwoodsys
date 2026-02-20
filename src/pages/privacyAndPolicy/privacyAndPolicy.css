@@ -1,0 +1,9 @@
+.privacy-content h1,
+.privacy-content h2 {
+  font-family: var(--font-inter);
+}
+
+.privacy-content p,
+.privacy-content li {
+  font-family: var(--font-segoe);
+}
