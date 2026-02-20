@@ -61,7 +61,7 @@
     >
       @for (offer of filteredOffers(); track offer.id || $index) {
         <div
-          class="structured-engagements__card structured-engagements__card-border group cursor-pointer rounded-md min-w-[300px] sm:min-h-[340px] md:min-w-0 md:min-h-0 md:min-h-[unset] md:min-w-[unset]"
+          class="structured-engagements__card structured-engagements__card-border group cursor-pointer rounded-md min-w-[240px] sm:min-h-[300px] md:min-w-0 md:min-h-0 md:min-h-[unset] md:min-w-[unset]"
           [attr.data-border]="normalizeBorderColor(offer.borderColor)"
           [ngClass]="getOfferCardClasses(offer.borderColor, $index)"
         >
@@ -88,11 +88,11 @@
                 ></i>
               }
             </div>
-            <h3 class="text-xl sm:text-lg text-white/90 pt-10 pb-4">
+            <h3 class="text-base sm:text-lg text-white/90 pt-10 pb-4">
               {{ offer.title }}
             </h3>
             <p
-              class="text-[15px] sm:text-[13px] text-gray-300 mb-3 font-segoe pb-2"
+              class="text-sm sm:text-[13px] text-gray-300 mb-3 font-segoe pb-2"
               style="line-height: 140%"
             >
               {{ offer.description }}

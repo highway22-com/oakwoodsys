@@ -1,8 +1,8 @@
 <a [routerLink]="[linkBase(), slug()]"
     class="group bg-[#FFFFFF]/80 overflow-hidden transition-shadow duration-300 h-full flex flex-col hover:outline-gray-300 hover:outline hover:bg-p-30">
     <!-- Post Image -->
-    <div class="relative h-[25rem] w-full overflow-hidden px-6 py-5">
-        <div class="relative w-full aspect-square overflow-hidden">
+    <div class="relative w-full min-w-[220px] max-w-[340px] sm:min-w-0 sm:max-w-none overflow-hidden bg-white px-2 pt-2 pb-0 sm:px-12 lg:px-6 lg:pt-6 sm:pt-2 py-5">
+        <div class="relative w-full aspect-square overflow-hidden ">
             <img [src]="effectiveImageUrl()" [alt]="imageAlt()"
                 class="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-110" />
         </div>
@@ -21,16 +21,18 @@
         </div>
 
         <!-- Title -->
-        <h3 class="text-lg sm:text-2xl text-s-900 mb-3 sm:mb-4 leading-tight">
+        <h3 class="text-lg sm:text-2xl text-s-900 mb-3 sm:mb-4 leading-tight pb-10">
             {{ title() || 'Blog Post Title' }}
         </h3>
 
         <!-- Excerpt -->
-        @if (excerptHtml()) {
+        <!-- @if (excerptHtml()) {
         <div class="text-sm sm:text-base text-s-600 mb-4 leading-relaxed line-clamp-3 prose prose-sm max-w-none"
             [innerHTML]="excerptHtml()">
+
+            
         </div>
-        }
+        } -->
 
         <!-- Author Info -->
         <!-- @if (authorDisplayName()) {
@@ -54,8 +56,13 @@
 
         <!-- Read More -->
         <div
-            class="text-sm text-s-600 group-hover:text-p-500 transition-colors duration-200 inline-flex items-center mt-auto">
-            {{ readMoreText() }} <span class="ml-1">→</span>
+            class="font-inter font-semibold text-base leading-none tracking-normal text-[#454545] transition-colors duration-200 inline-flex items-center gap-3 mt-auto pb-2">
+            <span class="align-middle">{{ readMoreText() }}</span>
+            <span class="align-middle flex items-center mt-[0.35px]">
+                <svg width="8" height="13" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.83594 5.60547C7.19141 5.93359 7.19141 6.50781 6.83594 6.83594L1.58594 12.0859C1.25781 12.4414 0.683594 12.4414 0.355469 12.0859C0 11.7578 0 11.1836 0.355469 10.8555L4.97656 6.20703L0.355469 1.58594C0 1.25781 0 0.683594 0.355469 0.355469C0.683594 0 1.25781 0 1.58594 0.355469L6.83594 5.60547Z" fill="#454545"/>
+                </svg>
+            </span>
         </div>
     </div>
 </a>
