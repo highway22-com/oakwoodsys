@@ -2,31 +2,29 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   DestroyRef,
-  ElementRef,
   inject,
   OnInit,
-  PLATFORM_ID,
   signal,
-  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Apollo } from 'apollo-angular';
 import {
   getPrimaryTagName,
-  GET_GEN_CONTENTS_BY_CATEGORY,
-  GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED,
   type GenContentListNode,
 } from '../../app/api/graphql';
 import { PageHeroComponent, type PageHeroBreadcrumb } from '../../shared/page-hero/page-hero.component';
+import { VideoHero } from '../../shared/video-hero/video-hero';
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
+import { FeaturedCaseStudyCardsSectionComponent } from '../../shared/sections/featured-case-study-cards/featured-case-study';
 import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
+import { GraphQLContentService } from '../../app/services/graphql-content.service';
+import { decodeHtmlEntities } from '../../app/utils/cast';
+import { ActivatedRoute } from '@angular/router';
 
 interface PostAuthor {
   node: {
@@ -79,20 +77,24 @@ export interface Post {
   headJsonLdData?: string | null;
 }
 
-const PAGE_SIZE = 10;
+const INITIAL_LOAD_SIZE = 100;
 
 @Component({
   selector: 'app-bloq',
-  imports: [CommonModule, PageHeroComponent, ButtonPrimaryComponent, CtaSectionComponent, BlogCardComponent],
+  imports: [CommonModule, VideoHero, CtaSectionComponent, BlogCardComponent, FeaturedCaseStudyCardsSectionComponent],
   templateUrl: './blogs.html',
   styleUrl: './blogs.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Blogs implements OnInit {
-  private readonly apollo = inject(Apollo);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seoMeta = inject(SeoMetaService);
+  private readonly graphql = inject(GraphQLContentService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly route = inject(ActivatedRoute);
+
+  /** true = blog, false = resources (cuando se reutiliza el componente). */
+  readonly isBlogs = this.route.snapshot.data['isBlogs'] ?? true;
 
   readonly blogHeroBreadcrumbs: PageHeroBreadcrumb[] = [
     { label: 'Home', routerLink: '/' },
@@ -100,33 +102,99 @@ export default class Blogs implements OnInit {
     { label: 'IT Blog' },
   ];
 
-  readonly serviceLines: { label: string; link: string }[] = [
-    { label: 'Data Center', link: '/services/cloud-and-infrastructure' },
+  /** Service lines desde genContentTags (GraphQL). Fallback si vacío. */
+  readonly serviceLines = computed(() => {
+    const tags = this.graphql.genContentTags();
+    if (tags.length > 0) {
+      return tags.map((t) => ({ label: t.name, slug: t.slug, link: `/blog?tag=${t.slug}` }));
+    }
+    return this.defaultServiceLines.map((s) => ({
+      ...s,
+      slug: s.link.split('/').filter(Boolean).pop() ?? s.label.toLowerCase().replace(/\s+/g, '-'),
+    }));
+  });
+
+  /** Tags seleccionados para filtrar (slugs). Vacío = mostrar todo. */
+  readonly selectedTagSlugs = signal<Set<string>>(new Set());
+
+  /** Featured case study: truthy para mostrar la sección (mismo patrón que resources). */
+  readonly featuredCaseStudy = signal<{ id?: string } | null>({ id: '' });
+
+  private static readonly DEFAULT_FEATURED_SLUGS: string[] = [
+    'secure-azure-research-environment-architecture',
+    'enterprise-reporting-and-data-roadmap-development',
+  ];
+
+  getSlugsForFeaturedSection(): string[] {
+    return Blogs.DEFAULT_FEATURED_SLUGS;
+  }
+
+  videoHeroContent(): {
+    videoUrls: string[];
+    title: string;
+    description: string;
+  } {
+    return {
+      videoUrls: [
+        'https://oakwoodsys.com/wp-content/uploads/2026/02/Blogs.mp4',
+      ],
+      title: 'Discover our impact through realized projects',
+      description: 'Explore Oakwood\'s case studies, blogs, webinars, and events.'
+
+    };
+  }
+
+  toggleTagFilter(slug: string) {
+    this.selectedTagSlugs.update((set) => {
+      const next = new Set(set);
+      if (next.has(slug)) {
+        next.delete(slug);
+      } else {
+        next.add(slug);
+      }
+      return next;
+    });
+  }
+
+  isTagSelected(slug: string): boolean {
+    return this.selectedTagSlugs().has(slug);
+  }
+
+  readonly decodeHtmlEntities = decodeHtmlEntities;
+
+  /** Posts filtrados por tags seleccionados. Si ninguno seleccionado, muestra todos. */
+  readonly filteredDisplayedNodes = computed(() => {
+    const nodes = this.displayedNodes();
+    const selected = this.selectedTagSlugs();
+    if (selected.size === 0) return nodes;
+    const graphqlTags = this.graphql.genContentTags();
+    const tagNames = new Set<string>(
+      graphqlTags.length > 0
+        ? graphqlTags.filter((t) => selected.has(t.slug)).map((t) => t.name)
+        : this.serviceLines()
+          .filter((s) => selected.has(s.slug))
+          .map((s) => s.label)
+    );
+    return nodes.filter((post) => {
+      const primary = post.primaryTag;
+      const tags = post.tags ?? [];
+      return (primary && tagNames.has(primary)) || tags.some((t) => tagNames.has(t));
+    });
+  });
+  private readonly defaultServiceLines: { label: string; link: string }[] = [
+    { label: 'Data & AI Solutions', link: '/services/data-and-ai' },
+    { label: 'Cloud & Infrastructure', link: '/services/cloud-and-infrastructure' },
     { label: 'Application Innovation', link: '/services/application-innovation' },
     { label: 'High-Performance Computing (HPC)', link: '/services/high-performance-computing' },
     { label: 'Modern Work', link: '/services/modern-work' },
     { label: 'Managed Services', link: '/services/managed-services' },
   ];
 
-  /** Elemento centinela al final de la lista para activar "cargar más" al hacer scroll. */
-  readonly scrollSentinel = viewChild<ElementRef<HTMLElement>>('scrollSentinel');
-
   readonly posts = signal<{ nodes: Post[] } | null>(null);
-  /** En modo fallback (sin cursor), cuántos nodos mostrar; 0 = mostrar todos. */
-  private displayCount = signal(0);
-  /** Lista que se muestra: o bien posts().nodes o slice(0, displayCount()) en fallback. */
-  readonly displayedNodes = computed(() => {
-    const p = this.posts();
-    const n = p?.nodes ?? [];
-    const count = this.displayCount();
-    return count > 0 ? n.slice(0, count) : n;
-  });
+  /** Lista que se muestra (todos los posts cargados, sin scroll infinito). */
+  readonly displayedNodes = computed(() => this.posts()?.nodes ?? []);
   readonly loading = signal(true);
-  readonly loadingMore = signal(false);
   readonly error = signal<any>(null);
-  readonly hasNextPage = signal(true);
-  private endCursor: string | null = null;
-  private readonly categoryId = 'blog';
 
   /** Utilidad de tiempo de lectura (expuesta en template). */
   readonly readingTimeMinutes = readingTimeMinutes;
@@ -155,13 +223,13 @@ export default class Blogs implements OnInit {
       primaryTag: getPrimaryTagName(post.primaryTagName) ?? null,
       authorPerson: post.authorPerson
         ? {
-            id: post.authorPerson.id,
-            name: post.authorPerson.name ?? null,
-            firstName: post.authorPerson.firstName ?? null,
-            position: post.authorPerson.position ?? null,
-            picture: post.authorPerson.picture ?? null,
-            socialLinks: post.authorPerson.socialLinks ?? [],
-          }
+          id: post.authorPerson.id,
+          name: post.authorPerson.name ?? null,
+          firstName: post.authorPerson.firstName ?? null,
+          position: post.authorPerson.position ?? null,
+          picture: post.authorPerson.picture ?? null,
+          socialLinks: post.authorPerson.socialLinks ?? [],
+        }
         : null,
       featuredImage: post.featuredImage
         ? { node: { sourceUrl: post.featuredImage.node.sourceUrl, altText: post.featuredImage.node.altText ?? null } }
@@ -181,20 +249,6 @@ export default class Blogs implements OnInit {
     }));
   }
 
-  private readonly platformId = inject(PLATFORM_ID);
-
-  constructor() {
-    effect(() => {
-      const sentinel = this.scrollSentinel()?.nativeElement;
-      const _ = this.posts();
-      if (sentinel && isPlatformBrowser(this.platformId)) this.setupScrollObserver(sentinel);
-    });
-    this.destroyRef.onDestroy(() => {
-      this.observer?.disconnect();
-      this.observer = null;
-    });
-  }
-
   ngOnInit() {
     this.seoMeta.updateMeta({
       title: 'IT Blog | Oakwood Systems',
@@ -205,121 +259,21 @@ export default class Blogs implements OnInit {
   }
 
   private loadFirstPage() {
-    this.apollo
-      .query({
-        query: GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED,
-        variables: {
-          categoryId: this.categoryId,
-          first: PAGE_SIZE,
-          after: null,
-        },
-        fetchPolicy: 'network-only',
-      })
+    this.graphql
+      .getBlogsPaginated(INITIAL_LOAD_SIZE, null)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (result: any) => {
-          const conn = result.data?.genContentCategory?.genContents;
-          const nodes = conn?.nodes;
-          const pageInfo = conn?.pageInfo;
-          if (nodes?.length !== undefined) {
+        next: ({ nodes }) => {
+          if (nodes.length > 0) {
             this.posts.set({ nodes: this.transformNodes(nodes) });
-            this.hasNextPage.set(pageInfo?.hasNextPage ?? false);
-            this.endCursor = pageInfo?.endCursor ?? null;
-          } else {
-            this.fallbackLoadAll();
           }
           this.loading.set(false);
-          this.error.set(result.error);
+          this.error.set(null);
         },
         error: (err) => {
           this.loading.set(false);
           this.error.set(err);
-          this.fallbackLoadAll();
         },
       });
-  }
-
-  /** Si la API paginada falla, cargar todo y mostrar de 10 en 10 por scroll. */
-  private fallbackLoadAll() {
-    this.apollo
-      .query({
-        query: GET_GEN_CONTENTS_BY_CATEGORY,
-        variables: { categoryId: this.categoryId },
-        fetchPolicy: 'network-only',
-      })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((result: any) => {
-        const nodes = result.data?.genContentCategory?.genContents?.nodes;
-        if (nodes?.length) {
-          const transformed = this.transformNodes(nodes);
-          this.posts.set({ nodes: transformed });
-          this.displayCount.set(Math.min(PAGE_SIZE, transformed.length));
-          this.hasNextPage.set(transformed.length > PAGE_SIZE);
-          this.endCursor = null;
-        }
-        this.loading.set(false);
-      });
-  }
-
-  loadMore() {
-    if (this.loadingMore() || !this.hasNextPage()) return;
-    // Modo fallback: sin cursor, revelar 10 más del array ya cargado
-    if (this.endCursor == null) {
-      const p = this.posts();
-      const total = p?.nodes?.length ?? 0;
-      const next = Math.min(this.displayCount() + PAGE_SIZE, total);
-      this.displayCount.set(next);
-      this.hasNextPage.set(next < total);
-      return;
-    }
-    this.loadingMore.set(true);
-    this.apollo
-      .query({
-        query: GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED,
-        variables: {
-          categoryId: this.categoryId,
-          first: PAGE_SIZE,
-          after: this.endCursor,
-        },
-        fetchPolicy: 'network-only',
-      })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (result: any) => {
-          const conn = result.data?.genContentCategory?.genContents;
-          const nodes = conn?.nodes as GenContentListNode[] | undefined;
-          const pageInfo = conn?.pageInfo;
-          if (nodes?.length) {
-            const current = this.posts();
-            const merged = current
-              ? { nodes: [...current.nodes, ...this.transformNodes(nodes)] }
-              : { nodes: this.transformNodes(nodes) };
-            this.posts.set(merged);
-          }
-          this.hasNextPage.set(pageInfo?.hasNextPage ?? false);
-          this.endCursor = pageInfo?.endCursor ?? null;
-          this.loadingMore.set(false);
-        },
-        error: () => {
-          this.loadingMore.set(false);
-        },
-      });
-  }
-
-  private observer: IntersectionObserver | null = null;
-
-  private setupScrollObserver(sentinel: HTMLElement) {
-    if (!isPlatformBrowser(this.platformId) || typeof IntersectionObserver === 'undefined') return;
-    this.observer?.disconnect();
-    this.observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (entry?.isIntersecting && this.hasNextPage() && !this.loadingMore() && !this.loading()) {
-          this.loadMore();
-        }
-      },
-      { root: null, rootMargin: '200px', threshold: 0 }
-    );
-    this.observer.observe(sentinel);
   }
 }

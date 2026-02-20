@@ -18,6 +18,7 @@ import { FeaturedCaseStudyCardsSectionComponent } from '../../shared/sections/fe
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { SeoMetaService } from '../../app/services/seo-meta.service';
+import { decodeHtmlEntities } from '../../app/utils/cast';
 
 /** Contenido de la página Resources (resources-content.json). */
 export interface ResourcesPageContent {
@@ -152,6 +153,8 @@ export default class Resources implements OnInit {
     return this.pageContent()?.filters ?? Resources.DEFAULT_FILTERS;
   }
 
+  readonly decodeHtmlEntities = decodeHtmlEntities;
+
   // Signals para datos de WordPress
   readonly resourceCards = signal<ResourceCard[]>([]);
   readonly featuredCaseStudy = signal<FeaturedCaseStudy | null>(null);
@@ -220,8 +223,7 @@ export default class Resources implements OnInit {
     videoUrls: string[];
     title: string;
     description: string;
-    ctaPrimary: { text: string; link: string; backgroundColor: string };
-    ctaSecondary: { text: string; link: string; borderColor: string };
+
   } {
     const c = this.pageContent()?.videoHero;
     return {
@@ -233,16 +235,7 @@ export default class Resources implements OnInit {
       ],
       title: c?.title ?? 'Turn Data and AI Into Real Business Outcomes',
       description: c?.description ?? 'Explore case studies and insights from projects built on Azure.',
-      ctaPrimary: {
-        text: c?.ctaPrimary?.text ?? 'Watch the video',
-        link: c?.ctaPrimary?.link ?? '/',
-        backgroundColor: c?.ctaPrimary?.backgroundColor ?? '#1A63C9',
-      },
-      ctaSecondary: {
-        text: c?.ctaSecondary?.text ?? 'View Resources',
-        link: c?.ctaSecondary?.link ?? '/resources',
-        borderColor: c?.ctaSecondary?.borderColor ?? '#ffffff',
-      },
+
     };
   }
 

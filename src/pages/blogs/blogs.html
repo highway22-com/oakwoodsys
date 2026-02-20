@@ -1,7 +1,10 @@
-<app-page-hero [breadcrumbs]="blogHeroBreadcrumbs" bgImage="/bloq_hero.jpg"
-    mainText="Discover our impact through realized projects"
-    subtitle="Explore Oakwood's case studies, blogs, webinars, and events." />
-
+<app-video-hero [loading]="false" [hvh70]="true" [videoUrls]="videoHeroContent().videoUrls"
+    [title]="videoHeroContent().title" [description]="videoHeroContent().description" [showIndicators]="false" />
+<div class="w-full bg-p-10 p-10">
+    @if (featuredCaseStudy(); as featured) {
+    <app-featured-case-study-cards [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
+    }
+</div>
 <!-- Blog Posts Section -->
 <section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24">
     <div class="px-4 sm:px-6 md:px-8 lg:px-36">
@@ -14,14 +17,22 @@
             <aside class="flex-auto lg:w-74 ">
                 <div class="sticky top-24">
                     <div class="relative pl-4">
-                        <h2 class="text-base font-semibold uppercase tracking-wider text-gray-700/60 mb-6">Service
-                            lines
+                        <h2 class="text-base font-semibold uppercase tracking-wider
+                         text-gray-700/60 mb-6">
+                            Filter by
                         </h2>
                         <div class="flex flex-col gap-3.5 py-2" aria-label="Service lines">
-                            @for (item of serviceLines; track item.link) {
-                            <div class="flex  min-w-auto   text-left text-base  font-medium  ">
-                                <span class="px-3 py-1.5 text-p-500 bg-p-10">{{ item.label }}</span>
-                            </div>
+                            @for (item of serviceLines(); track item.link) {
+                            <button type="button" (click)="toggleTagFilter(item.slug)"
+                                class="flex  text-left text-base font-medium rounded transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-p-600 focus-visible:ring-offset-2">
+                                <span class="px-3 py-1.5 transition-colors"
+                                    [class.text-p-500]="!isTagSelected(item.slug)"
+                                    [class.bg-p-10]="!isTagSelected(item.slug)"
+                                    [class.text-white]="isTagSelected(item.slug)"
+                                    [class.bg-p-600]="isTagSelected(item.slug)"
+                                    [class.ring-2]="isTagSelected(item.slug)">{{ decodeHtmlEntities(item.label)
+                                    }}</span>
+                            </button>
                             }
                         </div>
                     </div>
@@ -32,67 +43,12 @@
             <div class="flex-8/12">
                 <div class="max-w-none ">
                     <!-- Featured Post (First Post - Large) -->
-                    @if (displayedNodes().length > 0) {
-                    @let featuredPost = displayedNodes()[0];
-                    <article class="bg-p-30  overflow-hidden p-8 mb-14">
-                        <!-- Post Image -->
-                        <div class="relative w-full h-64 sm:h-80 md:h-96 overflow-hidden">
-                            <img [src]="featuredPost.featuredImage?.node?.sourceUrl || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80'"
-                                [alt]="featuredPost.featuredImage?.node?.altText || featuredPost.title || 'Blog post'"
-                                class="w-full h-full object-cover" />
-                            <!-- Featured Tag -->
-                            <div class="absolute top-12 left-4">
-                                <span
-                                    class="bg-[#FFFFFF] text-p-600 text-base  font-medium uppercase px-3 py-1.5 rounded">
-                                    {{ featuredPost.primaryTag || (featuredPost.tags && featuredPost.tags[0]) ||
-                                    'FEATURED BLOG' }}
-                                </span>
-                            </div>
-                        </div>
 
-                        <!-- Post Content -->
-                        <div class="pt-8">
-                            <!-- Tags, Author, Reading Time -->
-                            <div class="flex items-center gap-4 mb-4 flex-wrap">
-                                @if (featuredPost.primaryTag || (featuredPost.tags && featuredPost.tags.length > 0)) {
-                                <span class="tag-badge">{{ featuredPost.primaryTag || featuredPost.tags[0] }}</span>
-                                }
-                                <span class="mx-0.5">•</span>
-                                <!-- <span class="text-sm text-s-600">{{ authorDisplayName(featuredPost) }}</span> -->
-                                <span class="text-sm text-s-600">{{ readingTimeMinutes(featuredPost.content) }} min
-                                    read</span>
-                            </div>
-
-                            <!-- Title -->
-                            <h3 class="text-2xl sm:text-3xl md:text-5xl font-normal text-s-800  mb-6 ">
-                                @if (featuredPost.title) {
-                                {{ featuredPost.title }}
-                                } @else {
-                                Blog Post Title
-                                }
-                            </h3>
-
-                            <!-- Excerpt (HTML desde WP; si viene vacío se muestra inicio del contenido) -->
-                            @if (featuredPost.sanitizedExcerpt) {
-                            <div class="text-base sm:text-lg text-s-600 mb-6 leading-relaxed prose prose-sm max-w-none font-segoe"
-                                [innerHTML]="featuredPost.sanitizedExcerpt">
-                            </div>
-                            } @else if (featuredPost.sanitizedContent) {
-                            <div class="text-base sm:text-lg text-s-600 mb-6 leading-relaxed line-clamp-3 prose prose-sm max-w-none font-segoe"
-                                [innerHTML]="featuredPost.sanitizedContent">
-                            </div>
-                            }
-
-                            <app-button-primary [text]="'Read more'" [link]="'/blog/' + (featuredPost.slug || '')"
-                                [isBgDefault]="true" />
-                        </div>
-                    </article>
-                    }
 
                     <!-- Other Posts Grid (2 columns) -->
-                    @if (displayedNodes().length > 1) {
+                    @if (filteredDisplayedNodes().length ) {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                        @for (post of displayedNodes().slice(1); track post.id) {
+                        @for (post of filteredDisplayedNodes().slice(1); track post.id) {
                         <app-blog-card [slug]="post.slug" [imageUrl]="post.featuredImage?.node?.sourceUrl ?? ''"
                             [imageAlt]="post.featuredImage?.node?.altText ?? post.title ?? 'Blog post'"
                             [tag]="post.primaryTag ?? (post.tags?.length ? post.tags[0] : null)"
@@ -106,16 +62,13 @@
                     </div>
                     }
 
-                    <!-- Sentinel para scroll infinito: al llegar aquí se cargan 10 más -->
-                    @if (hasNextPage()) {
-                    <div #scrollSentinel class="h-4 w-full" aria-hidden="true"></div>
-                    }
-                    <!-- Indicador "cargando más" -->
-                    @if (loadingMore()) {
-                    <div class="flex justify-center items-center py-8">
-                        <span class="text-s-600 text-sm">Loading more...</span>
+                    @if (filteredDisplayedNodes().length === 0) {
+                    <div class="text-center py-12">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">No posts match the selected filters</h3>
+                        <p class="text-gray-600 text-sm">Try selecting different tags or clear the selection.</p>
                     </div>
                     }
+
                 </div>
             </div>
         </div>
