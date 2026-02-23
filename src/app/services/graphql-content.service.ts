@@ -7,6 +7,7 @@ import { isPlatformBrowser } from '@angular/common';
 import {
   GET_GEN_CONTENTS_BY_CATEGORY,
   GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED,
+  GET_GEN_CONTENTS_BY_TAG_AND_CATEGORY,
   GET_GEN_CONTENTS_FOR_SEARCH,
   GET_CASE_STUDY_BY_SLUG,
   GET_GEN_CONTENT_BY_SLUG,
@@ -19,6 +20,7 @@ import {
   type GenContentListNode,
   type GenContentsByCategoryPaginatedResponse,
   type GenContentsByCategoryResponse,
+  type GenContentsByTagAndCategoryResponse,
   type CaseStudyByResponse,
   type GenContentBySlugResponse,
   type CaseStudyDetailResponse,
@@ -63,15 +65,19 @@ export class GraphQLContentService {
     });
   }
 
-  /** Lista paginada de blogs. Apollo cache-and-network: prefetch llena caché, al navegar se usa caché. */
-  getBlogsPaginated(first: number, after: string | null): Observable<{
+  /** Lista paginada por categoría (blog o case-study). Apollo cache-and-network. */
+  getGenContentsPaginated(
+    categoryId: 'blog' | 'case-study',
+    first: number,
+    after: string | null
+  ): Observable<{
     nodes: GenContentListNode[];
     pageInfo: { hasNextPage: boolean; endCursor: string | null };
   }> {
     return this.apollo
       .watchQuery<GenContentsByCategoryPaginatedResponse>({
         query: GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED,
-        variables: { categoryId: 'blog', first, after },
+        variables: { categoryId, first, after },
         fetchPolicy: 'cache-and-network',
       })
       .valueChanges.pipe(
@@ -97,7 +103,7 @@ export class GraphQLContentService {
 
   /** Prefetch: carga primera página de blogs en background. Apollo cachea; al navegar a /blog se usa caché. */
   prefetchBlogs(): void {
-    this.getBlogsPaginated(10, null).subscribe();
+    this.getGenContentsPaginated('blog', 10, null).subscribe();
   }
 
   /** Lista de posts de blog (genContent categoría "blog"). Misma query que case studies, idType SLUG. */
@@ -125,6 +131,30 @@ export class GraphQLContentService {
           this.loading.set(false);
           return of([]);
         })
+      );
+  }
+
+  /**
+   * Slugs de los primeros N case studies filtrados por tag (primary tag).
+   * Útil para featured case studies en páginas de servicio (ej. servicio "manufacturing" → case studies con tag manufacturing).
+   */
+  getCaseStudySlugsByTag(tagSlug: string, limit = 2): Observable<string[]> {
+    if (!tagSlug?.trim()) return of([]);
+    return this.apollo
+      .query<GenContentsByTagAndCategoryResponse>({
+        query: GET_GEN_CONTENTS_BY_TAG_AND_CATEGORY,
+        variables: { tagSlug: tagSlug.trim(), categorySlug: 'case-study' },
+        fetchPolicy: 'cache-first',
+      })
+      .pipe(
+        map((result) => {
+          const nodes = (result.data as GenContentsByTagAndCategoryResponse)?.genContents?.nodes ?? [];
+          return nodes
+            .slice(0, limit)
+            .map((n) => n.slug)
+            .filter((s): s is string => !!s);
+        }),
+        catchError(() => of([]))
       );
   }
 

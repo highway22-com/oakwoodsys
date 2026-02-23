@@ -3,18 +3,20 @@ import {
   Component,
   computed,
   DestroyRef,
+  HostListener,
   inject,
   OnInit,
+  PLATFORM_ID,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
   getPrimaryTagName,
   type GenContentListNode,
 } from '../../app/api/graphql';
-import { PageHeroComponent, type PageHeroBreadcrumb } from '../../shared/page-hero/page-hero.component';
+import { type PageHeroBreadcrumb } from '../../shared/page-hero/page-hero.component';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
@@ -62,6 +64,10 @@ export interface Post {
   date: string;
   author: PostAuthor;
   tags: string[];
+  /** Slugs de tags (desde genContentTags) para filtrar por slug. */
+  tagSlugs: string[];
+  /** Slug del primary tag (primer tag en genContentTags). */
+  primaryTagSlug: string | null;
   primaryTag: string | null;
   authorPerson: AuthorPerson | null;
   featuredImage: { node: FeaturedImageNode } | null;
@@ -92,21 +98,39 @@ export default class Blogs implements OnInit {
   private readonly graphql = inject(GraphQLContentService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
+  private readonly platformId = inject(PLATFORM_ID);
+
+  private readonly MOBILE_BREAKPOINT = 768;
+  readonly isTabletOrMobile = signal(false);
+  readonly filterDropdownOpen = signal(false);
 
   /** true = blog, false = resources (cuando se reutiliza el componente). */
   readonly isBlogs = this.route.snapshot.data['isBlogs'] ?? true;
 
-  readonly blogHeroBreadcrumbs: PageHeroBreadcrumb[] = [
-    { label: 'Home', routerLink: '/' },
-    { label: 'Resources' },
-    { label: 'IT Blog' },
-  ];
+  readonly blogHeroBreadcrumbs = (): PageHeroBreadcrumb[] =>
+    this.isBlogs
+      ? [
+          { label: 'Home', routerLink: '/' },
+          { label: 'Resources' },
+          { label: 'IT Blog' },
+        ]
+      : [
+          { label: 'Home', routerLink: '/' },
+          { label: 'Resources' },
+          { label: 'Case Studies' },
+        ];
+
+  /** Path base para listado (blog o case-studies). */
+  readonly listingPath = () => (this.isBlogs ? '/blog' : '/resources/case-studies');
+  /** Path base para detalle de post (blog o resources/case-studies). */
+  readonly detailPathBase = () => (this.isBlogs ? '/blog' : '/resources/case-studies');
 
   /** Service lines desde genContentTags (GraphQL). Fallback si vacío. */
   readonly serviceLines = computed(() => {
+    const base = this.listingPath();
     const tags = this.graphql.genContentTags();
     if (tags.length > 0) {
-      return tags.map((t) => ({ label: t.name, slug: t.slug, link: `/blog?tag=${t.slug}` }));
+      return tags.map((t) => ({ label: t.name, slug: t.slug, link: `${base}?tag=${t.slug}` }));
     }
     return this.defaultServiceLines.map((s) => ({
       ...s,
@@ -134,14 +158,17 @@ export default class Blogs implements OnInit {
     title: string;
     description: string;
   } {
-    return {
-      videoUrls: [
-        'https://oakwoodsys.com/wp-content/uploads/2026/02/Blogs.mp4',
-      ],
-      title: 'Discover our impact through realized projects',
-      description: 'Explore Oakwood\'s case studies, blogs, webinars, and events.'
-
-    };
+    return this.isBlogs
+      ? {
+          videoUrls: ['https://oakwoodsys.com/wp-content/uploads/2026/02/Blogs.mp4'],
+          title: 'Discover our impact through realized projects',
+          description: "Explore Oakwood's case studies, blogs, webinars, and events.",
+        }
+      : {
+          videoUrls: ['https://oakwoodsys.com/wp-content/uploads/2026/02/Blogs.mp4'],
+          title: 'Real-world success stories',
+          description: 'See how Oakwood helps organizations modernize, innovate, and achieve meaningful results.',
+        };
   }
 
   toggleTagFilter(slug: string) {
@@ -156,31 +183,51 @@ export default class Blogs implements OnInit {
     });
   }
 
+  /** Limpia los filtros de tags seleccionados. */
+  clearFilters(): void {
+    this.selectedTagSlugs.set(new Set());
+    this.filterDropdownOpen.set(false);
+  }
+
+  toggleFilterDropdown(): void {
+    this.filterDropdownOpen.update((v) => !v);
+  }
+
+  closeFilterDropdown(): void {
+    this.filterDropdownOpen.set(false);
+  }
+
+  /** Cantidad de filtros seleccionados (para mostrar en el trigger). */
+  readonly selectedFiltersCount = computed(() => this.selectedTagSlugs().size);
+
   isTagSelected(slug: string): boolean {
     return this.selectedTagSlugs().has(slug);
   }
 
   readonly decodeHtmlEntities = decodeHtmlEntities;
 
-  /** Posts filtrados por tags seleccionados. Si ninguno seleccionado, muestra todos. */
+  /** Posts filtrados por slugs de tags. Orden: primary tags primero (por orden del selected), luego otros tags. */
   readonly filteredDisplayedNodes = computed(() => {
     const nodes = this.displayedNodes();
     const selected = this.selectedTagSlugs();
     if (selected.size === 0) return nodes;
-    const graphqlTags = this.graphql.genContentTags();
-    const tagNames = new Set<string>(
-      graphqlTags.length > 0
-        ? graphqlTags.filter((t) => selected.has(t.slug)).map((t) => t.name)
-        : this.serviceLines()
-          .filter((s) => selected.has(s.slug))
-          .map((s) => s.label)
+    const selectedOrder = Array.from(selected);
+    const filtered = nodes.filter((post) =>
+      post.tagSlugs.some((slug) => selected.has(slug))
     );
-    return nodes.filter((post) => {
-      const primary = post.primaryTag;
-      const tags = post.tags ?? [];
-      return (primary && tagNames.has(primary)) || tags.some((t) => tagNames.has(t));
+    return [...filtered].sort((a, b) => {
+      const aPrimaryIndex = a.primaryTagSlug != null ? selectedOrder.indexOf(a.primaryTagSlug) : -1;
+      const bPrimaryIndex = b.primaryTagSlug != null ? selectedOrder.indexOf(b.primaryTagSlug) : -1;
+      const aHasPrimary = aPrimaryIndex >= 0;
+      const bHasPrimary = bPrimaryIndex >= 0;
+      if (aHasPrimary && !bHasPrimary) return -1;
+      if (!aHasPrimary && bHasPrimary) return 1;
+      if (aHasPrimary && bHasPrimary) return aPrimaryIndex - bPrimaryIndex;
+      return 0;
     });
   });
+
+
   private readonly defaultServiceLines: { label: string; link: string }[] = [
     { label: 'Data & AI Solutions', link: '/services/data-and-ai' },
     { label: 'Cloud & Infrastructure', link: '/services/cloud-and-infrastructure' },
@@ -220,6 +267,13 @@ export default class Blogs implements OnInit {
         ? { node: { email: post.author.node?.email ?? '', firstName: post.author.node?.firstName ?? '', id: post.author.node?.id ?? '' } }
         : defaultAuthor,
       tags: post.tags ?? [],
+      tagSlugs: post.genContentTags?.nodes?.map((n) => n.slug) ?? [],
+      primaryTagSlug: (() => {
+        const primaryName = getPrimaryTagName(post.primaryTagName);
+        const nodes = post.genContentTags?.nodes ?? [];
+        const match = primaryName ? nodes.find((n) => n.name === primaryName) : null;
+        return match?.slug ?? nodes[0]?.slug ?? null;
+      })(),
       primaryTag: getPrimaryTagName(post.primaryTagName) ?? null,
       authorPerson: post.authorPerson
         ? {
@@ -249,21 +303,50 @@ export default class Blogs implements OnInit {
     }));
   }
 
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isTabletOrMobile.set(window.innerWidth < this.MOBILE_BREAKPOINT);
+      if (!this.isTabletOrMobile()) this.filterDropdownOpen.set(false);
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.filter-dropdown-container')) {
+      this.closeFilterDropdown();
+    }
+  }
+
   ngOnInit() {
-    this.seoMeta.updateMeta({
-      title: 'IT Blog | Oakwood Systems',
-      description: 'Insights and articles on Microsoft solutions, Azure, Data & AI, cloud migration, and digital transformation from Oakwood Systems.',
-      canonicalPath: '/blog',
-    });
+    if (isPlatformBrowser(this.platformId)) {
+      this.isTabletOrMobile.set(window.innerWidth < this.MOBILE_BREAKPOINT);
+    }
+    if (this.isBlogs) {
+      this.seoMeta.updateMeta({
+        title: 'IT Blog | Oakwood Systems',
+        description: 'Insights and articles on Microsoft solutions, Azure, Data & AI, cloud migration, and digital transformation from Oakwood Systems.',
+        canonicalPath: '/blog',
+      });
+    } else {
+      this.seoMeta.updateMeta({
+        title: 'Case Studies | Oakwood Systems',
+        description: 'Explore real-world success stories and case studies from Oakwood Systems. See how we help organizations modernize, innovate, and achieve meaningful results.',
+        canonicalPath: '/resources/case-studies',
+      });
+    }
     this.loadFirstPage();
   }
 
   private loadFirstPage() {
+    const categoryId = this.isBlogs ? 'blog' : 'case-study';
     this.graphql
-      .getBlogsPaginated(INITIAL_LOAD_SIZE, null)
+      .getGenContentsPaginated(categoryId, INITIAL_LOAD_SIZE, null)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ nodes }) => {
+          console.log(nodes);
           if (nodes.length > 0) {
             this.posts.set({ nodes: this.transformNodes(nodes) });
           }
