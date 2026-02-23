@@ -29,7 +29,8 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   @Input() title: string | string[] = '';
   /** Descripción única o una por video (cambia con el índice del video actual). */
   @Input() description: string | string[] = '';
-  @Input() ctaPrimary?: { text: string; link: string; backgroundColor: string };
+  /** CTA principal: objeto único o array (uno por video, se muestra según currentVideoIndex). */
+  @Input() ctaPrimary?: { text: string; link: string; backgroundColor?: string } | { text: string; link: string; backgroundColor?: string }[];
   @Input() ctaSecondary?: { text: string; link: string; borderColor?: string };
   /** Offer details cards (duration, delivery, pricing, category). */
   @Input() offerdetails?: { offer: string; offervalue: string; icon?: string }[];
@@ -46,6 +47,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   readonly videoUrlsSignal = signal<string[]>(PLACEHOLDER_VIDEO_URLS);
   readonly titleSignal = signal<string | string[]>([]);
   readonly descriptionSignal = signal<string | string[]>([]);
+  readonly ctaPrimarySignal = signal<{ text: string; link: string; backgroundColor?: string } | { text: string; link: string; backgroundColor?: string }[] | undefined>(undefined);
   readonly currentVideoIndex = signal(0);
   readonly currentVideoUrl = computed(() => {
     const urls = this.videoUrlsSignal();
@@ -75,6 +77,14 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     if (Array.isArray(d) && d.length) return (d[idx] ?? d[0] ?? '') as string;
     return '';
   });
+  /** CTA principal a mostrar: si ctaPrimary es array, el que corresponde a currentVideoIndex; si no, el objeto. */
+  readonly currentCtaPrimary = computed((): { text: string; link: string; backgroundColor?: string } | undefined => {
+    const cta = this.ctaPrimarySignal();
+    if (!cta) return undefined;
+    const idx = this.currentVideoIndex();
+    if (Array.isArray(cta) && cta.length) return cta[idx] ?? cta[0];
+    return cta as { text: string; link: string; backgroundColor?: string };
+  });
   getIconPath(type: string): string {
     const paths: Record<string, string> = {
       'duration': 'M12 6v6m0 0v6m0-6h6m0 0h-6',
@@ -95,6 +105,9 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     }
     if (changes['description']) {
       this.descriptionSignal.set(this.description);
+    }
+    if (changes['ctaPrimary']) {
+      this.ctaPrimarySignal.set(this.ctaPrimary);
     }
     // No llamar loadVideo aquí: en SSR o antes de AfterViewInit el video no existe; se carga en ngAfterViewInit.
     if (changes['videoUrls'] || changes['loading']) {
@@ -121,6 +134,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     this.videoUrlsSignal.set(usePlaceholders ? PLACEHOLDER_VIDEO_URLS : this.videoUrls);
     this.titleSignal.set(this.title);
     this.descriptionSignal.set(this.description);
+    this.ctaPrimarySignal.set(this.ctaPrimary);
 
     setTimeout(() => {
       if (this.videoElement && this.videoUrlsSignal().length > 0) {
