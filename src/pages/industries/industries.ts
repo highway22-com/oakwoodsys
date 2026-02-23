@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
@@ -78,6 +78,7 @@ interface IndustriesContent {
 })
 export default class Industries implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
   private readonly seoMeta = inject(SeoMetaService);
   private routeSub?: Subscription;
@@ -136,6 +137,7 @@ export default class Industries implements OnInit, OnDestroy {
           });
         } else {
           this.error.set(slugValue ? `Industry "${slugValue}" not found` : null);
+          this.router.navigate(['/404']);
           this.seoMeta.updateMeta({
             title: 'Industries | Oakwood Systems',
             description: 'Explore how Oakwood Systems helps healthcare, education, and other industries with Microsoft and Azure solutions.',

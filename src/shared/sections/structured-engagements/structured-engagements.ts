@@ -114,7 +114,7 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
 `,
       borderColor: 'purple',
       category: 'Data and AI',
-      link: '/structured-engagement/data-readiness-assessment-ai',
+      link: '/structured-engagement/data-readiness-assessment-for-ai',
       linkText: 'View offer',
     },
     // Tab 2: Cloud and Infrastructure
@@ -129,7 +129,7 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
 `,
       borderColor: 'blue',
       category: 'Cloud and Infrastructure',
-      link: '/structured-engagement/application-migration-azure',
+      link: '/structured-engagement/application-migration-to-azure',
       linkText: 'View offer',
     },
     {
@@ -157,7 +157,7 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
 `,
       borderColor: 'green',
       category: 'Cloud and Infrastructure',
-      link: '/structured-engagement/microsoft-sentinel-poc',
+      link: '/structured-engagement/semisol-security-essentials-poc',
       linkText: 'View offer',
     },
     {
@@ -171,7 +171,7 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
 `,
       borderColor: 'purple',
       category: 'Cloud and Infrastructure',
-      link: '/structured-engagement/teams-voice-box',
+      link: '/structured-engagement/teams-voice-in-a-box',
       linkText: 'View offer',
     },
     // Tab 3: Application Innovation
@@ -186,7 +186,7 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
 `,
       borderColor: 'blue',
       category: 'Application Innovation',
-      link: '/structured-engagement/ai-application-modernization',
+      link: '/structured-engagement/ai-application-modernization-assessment',
       linkText: 'View offer',
     },
     {
@@ -228,7 +228,7 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
 `,
       borderColor: 'purple',
       category: 'Application Innovation',
-      link: '/structured-engagement/ai-agent-workshop',
+      link: '/structured-engagement/ai-agent-in-a-day-workshop',
       linkText: 'View offer',
     },
     // Tab 4: High Performance Computing (HPC)
@@ -257,7 +257,7 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
 `,
       borderColor: 'orange',
       category: 'High Performance Computing (HPC)',
-      link: '/structured-engagement/copilot-extensibility-workshop-hpc',
+      link: '/structured-engagement/azure-hpc-pro-poc',
       linkText: 'View offer',
     },
     {
@@ -395,6 +395,8 @@ export class StructuredEngagementsSectionComponent
       const tabs = this.section().tabs ?? [];
       const current = this.activeTab();
 
+      console.log(this.section(),"this.section()")
+
       // Only set from input if user hasn't manually selected a tab
       if (!this.userSelectedTab) {
         if (incomingActive && incomingActive !== current) {
@@ -415,6 +417,7 @@ export class StructuredEngagementsSectionComponent
 
   ngAfterViewInit() {
     this.viewReady = true;
+    console.log(this.section(),"section")
     if (isPlatformBrowser(this.platformId)) {
       this.updateUnderline();
       window.addEventListener('resize', this.updateUnderline, {

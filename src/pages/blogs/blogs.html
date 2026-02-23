@@ -1,6 +1,6 @@
 <app-video-hero [loading]="false" [hvh70]="true" [videoUrls]="videoHeroContent().videoUrls"
     [title]="videoHeroContent().title" [description]="videoHeroContent().description" [showIndicators]="false" />
-<div class="w-full bg-p-10 p-10">
+<div class="w-full  p-6">
     @if (featuredCaseStudy(); as featured) {
     <app-featured-case-study-cards [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
     }

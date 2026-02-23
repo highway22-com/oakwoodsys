@@ -81,7 +81,20 @@ export const routes: Routes = [
         component: Login
     },
     {
+        path: 'carrers',
+        loadComponent: () => import('../pages/carrers/carrers')
+    },
+    {
+        path: 'privacy-policy',
+        loadComponent: () => import('../pages/privacyAndPolicy/privacyAndPolicy')
+    },
+    {
+        path: '404',
+        loadComponent: () => import('../pages/page404/page404')
+    },
+    {
         path: '**',
-        redirectTo: '/'
+        redirectTo: '/404',
+        pathMatch: 'full'
     }
 ];
