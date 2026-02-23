@@ -1,0 +1,54 @@
+{
+    "type": "structuredEngagements",
+    "label": "How we get started",
+    "title": "Structured engagements",
+    "tabs": [
+        "Data and AI",
+        "Cloud and Infrastructure",
+        "Application Innovation",
+        "High Performance Computing (HPC)"
+    ],
+    "activeTab": "Data and AI",
+    "offers": [
+        {
+            "id": 1,
+            "title": "Sql server migration to Azure",
+            "description": "Modernize SQL Server workloads with a structured move to Azure SQL services, improving scalability, reliability, and long term cost efficiency for your data estate",
+            "link": "#",
+            "linkText": "View offer",
+            "borderColor": "blue",
+            "icon": "server"
+        },
+        {
+            "id": 2,
+            "title": "Unified data estate migration",
+            "description": "Consolidate siloed data into a connected cloud architecture using Azure Synapse or Fabric, creating a modern foundation for analytics, intelligence, and operational insight.",
+            "link": "#",
+            "linkText": "View offer",
+            "borderColor": "orange",
+            "icon": "database"
+        },
+        {
+            "id": 3,
+            "title": "Microsoft fabric POC",
+            "description": "Stand up a working Fabric environment that connects real data sources and allows your teams to explore unified analytics capabilities with hands on guidance.",
+            "link": "#",
+            "linkText": "View offer",
+            "borderColor": "green",
+            "icon": "diagram-project"
+        },
+        {
+            "id": 4,
+            "title": "Data readiness assessment for AI",
+            "description": "Understand whether your data is clean, connected, and governed well enough for AI initiatives, with clear recommendations to improve quality, structure, and readiness.",
+            "link": "#",
+            "linkText": "View offer",
+            "borderColor": "purple",
+            "icon": "circle-nodes"
+        }
+    ],
+    "cta": {
+        "text": "View all offers",
+        "backgroundColor": "#1A63C9"
+    }
+}

@@ -15,8 +15,8 @@
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "View Engagement",
-          "link": "/structured-engagement",
+          "text": "View case studies",
+          "link": "/resources/case-studies",
           "borderColor": "#1D69AC"
         }
       },
@@ -120,11 +120,7 @@
         "heading": "Build a more intelligent health system",
         "description": "Enhance collaboration, secure sensitive data, and improve patient outcomes with modern cloud solutions.",
         "primaryCta": {
-          "text": "View all Industries",
-          "link": "/industries"
-        },
-        "secondaryCta": {
-          "text": "View case studies",
+        "text": "View case studies",
           "link": "/resources/case-studies"
         }
       }
@@ -139,12 +135,12 @@
       ],
       "cta": {
         "primary": {
-          "text": "Schedule a Consultation",
+          "text": "Schedule a consultation",
           "link": "/contact-us"
         },
         "secondary": {
-          "text": "View Engagement",
-          "link": "/resources"
+          "text": "View case studies",
+          "link": "/resources/case-studies"
         }
       },
       "trustedLeaders": {
@@ -247,10 +243,6 @@
         "heading": "Transform how you design, build, and deliver",
         "description": "Enable efficiency, automation, and real-time insights across your manufacturing operations.",
          "primaryCta": {
-          "text": "View all Industries",
-          "link": "/industries"
-        },
-        "secondaryCta": {
           "text": "View case studies",
           "link": "/resources/case-studies"
         }
@@ -272,8 +264,8 @@
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "View resources",
-          "link": "/resources",
+          "text": "View case studies",
+          "link": "/resources/case-studies",
           "borderColor": "#FFFFFF"
         }
       },
@@ -377,10 +369,6 @@
         "heading": "Build a stronger future for the public you serve",
         "description": "Enable better outcomes with modern data, applications, and collaboration platforms.",
           "primaryCta": {
-          "text": "View all Industries",
-          "link": "/industries"
-        },
-        "secondaryCta": {
           "text": "View case studies",
           "link": "/resources/case-studies"
         }
@@ -402,8 +390,8 @@
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "View resources",
-          "link": "/resources",
+          "text": "View case studies",
+          "link": "/resources/case-studies",
           "borderColor": "#FFFFFF"
         }
       },
@@ -507,11 +495,7 @@
         "heading": "Outperform with data and modern technology",
         "description": "Enable unified data, smarter operations, and personalized experiences across every channel.",
          "primaryCta": {
-          "text": "View all Industries",
-          "link": "/industries"
-        },
-        "secondaryCta": {
-          "text": "View case studies",
+            "text": "View case studies",
           "link": "/resources/case-studies"
         }
 
@@ -532,8 +516,8 @@
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "Read more",
-          "link": "/resources",
+          "text": "View case studies",
+          "link": "/resources/case-studies",
           "borderColor": "#FFFFFF"
         }
       },
@@ -637,11 +621,7 @@
         "heading": "Power growth with intelligent, secure innovation",
         "description": "Improve risk management, efficiency and customer engagement with modern technology",
         "primaryCta": {
-          "text": "View all Industries",
-          "link": "/industries"
-        },
-        "secondaryCta": {
-          "text": "View case studies",
+            "text": "View case studies",
           "link": "/resources/case-studies"
         }
 
@@ -662,8 +642,8 @@
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "View resources",
-          "link": "/resources",
+          "text": "View case studies",
+          "link": "/resources/case-studies",
           "borderColor": "#FFFFFF"
         }
       },
@@ -766,11 +746,8 @@
       "ctaSection": {
         "heading": "Accelerate complex design workflows",
         "description": "Power faster simulations, reduce bottlenecks, and optimize compute performance on Azure.",
-         "primaryCta": {
-          "text": "View all Industries",
-          "link": "/industries"
-        },
-        "secondaryCta": {
+       
+        "primaryCta": {
           "text": "View case studies",
           "link": "/resources/case-studies"
         }
