@@ -13,34 +13,81 @@
         <!-- Two Column Layout -->
         @if (!loading() && !error() && displayedNodes().length > 0) {
         <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
-            <!-- Left Column: Service Lines (Figma / case-study-detail sidebar style) -->
-            <aside class="flex-auto lg:w-74 ">
-                <div class="sticky top-24">
+            <!-- Desktop: Left Column - Filter sidebar -->
+            @if (!isTabletOrMobile()) {
+            <aside class="flex-auto lg:w-74">
+                <div class="sticky top-24 ">
                     <div class="relative pl-4">
-                        <h2 class="text-base font-semibold uppercase tracking-wider
-                         text-gray-700/60 mb-6">
+                        <h2 class="text-base font-semibold uppercase tracking-wider text-gray-700/60 mb-6">
                             Filter by
                         </h2>
                         <div class="flex flex-col gap-3.5 py-2" aria-label="Service lines">
                             @for (item of serviceLines(); track item.link) {
-                            <button type="button" (click)="toggleTagFilter(item.slug)"
-                                class="flex  text-left text-base font-medium rounded transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-p-600 focus-visible:ring-offset-2">
-                                <span class="px-3 py-1.5 transition-colors"
-                                    [class.text-p-500]="!isTagSelected(item.slug)"
-                                    [class.bg-p-10]="!isTagSelected(item.slug)"
-                                    [class.text-white]="isTagSelected(item.slug)"
-                                    [class.bg-p-600]="isTagSelected(item.slug)"
-                                    [class.ring-2]="isTagSelected(item.slug)">{{ decodeHtmlEntities(item.label)
-                                    }}</span>
+                            <button type="button" (click)="toggleTagFilter(item.slug)" class="filter-tag-btn">
+                                <span class="filter-tag" [class.filter-tag--selected]="isTagSelected(item.slug)">{{
+                                    decodeHtmlEntities(item.label) }}</span>
                             </button>
                             }
                         </div>
                     </div>
                 </div>
             </aside>
+            }
 
-            <!-- Right Column: Blog Posts (blog-content = mismos estilos que case-study-detail) -->
-            <div class="flex-8/12">
+            <!-- Right Column: Blog Posts -->
+            <div class="flex-8/12 flex-1 min-w-0">
+                <!-- Mobile: Filter dropdown (multi-select) -->
+                @if (isTabletOrMobile()) {
+                <div class="filter-dropdown-container mb-6">
+                    <button type="button" (click)="toggleFilterDropdown()" class="filter-dropdown-trigger"
+                        [attr.aria-expanded]="filterDropdownOpen()" aria-haspopup="listbox"
+                        aria-label="Filter by service line">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M0 1.6875C0 0.773438 0.738281 0 1.6875 0H5.0625C5.97656 0 6.75 0.773438 6.75 1.6875V5.0625C6.75 6.01172 5.97656 6.75 5.0625 6.75H1.6875C0.738281 6.75 0 6.01172 0 5.0625V1.6875ZM1.6875 5.0625H5.0625V1.6875H1.6875V5.0625ZM0 10.6875C0 9.77344 0.738281 9 1.6875 9H5.0625C5.97656 9 6.75 9.77344 6.75 10.6875V14.0625C6.75 15.0117 5.97656 15.75 5.0625 15.75H1.6875C0.738281 15.75 0 15.0117 0 14.0625V10.6875ZM1.6875 14.0625H5.0625V10.6875H1.6875V14.0625ZM14.0625 0C14.9766 0 15.75 0.773438 15.75 1.6875V5.0625C15.75 6.01172 14.9766 6.75 14.0625 6.75H10.6875C9.73828 6.75 9 6.01172 9 5.0625V1.6875C9 0.773438 9.73828 0 10.6875 0H14.0625ZM14.0625 1.6875H10.6875V5.0625H14.0625V1.6875ZM9 10.6875C9 9.77344 9.73828 9 10.6875 9H14.0625C14.9766 9 15.75 9.77344 15.75 10.6875V14.0625C15.75 15.0117 14.9766 15.75 14.0625 15.75H10.6875C9.73828 15.75 9 15.0117 9 14.0625V10.6875ZM10.6875 14.0625H14.0625V10.6875H10.6875V14.0625Z"
+                                fill="#0D53A2" />
+                        </svg>
+
+                        <span class="font-medium ">Filter By</span>
+                        @if (selectedFiltersCount() > 0) {
+                        <span class="filter-dropdown-badge">{{ selectedFiltersCount() }}</span>
+                        }
+                        <svg class="w-4 h-4 transition-transform" [class.rotate-180]="filterDropdownOpen()" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    @if (filterDropdownOpen()) {
+                    <div class="filter-dropdown-panel" role="listbox">
+                        @for (item of serviceLines(); track item.link) {
+                        <button type="button" role="option" [attr.aria-selected]="isTagSelected(item.slug)"
+                            (click)="toggleTagFilter(item.slug)" class="filter-dropdown-option"
+                            [class.filter-dropdown-option--selected]="isTagSelected(item.slug)">
+                            <span class="filter-dropdown-check"
+                                [class.filter-dropdown-check--checked]="isTagSelected(item.slug)">
+                                @if (isTagSelected(item.slug)) {
+                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                }
+                            </span>
+                            {{ decodeHtmlEntities(item.label) }}
+                        </button>
+                        }
+                        @if (selectedFiltersCount() > 0) {
+                        <div class="filter-dropdown-footer">
+                            <button type="button" (click)="clearFilters()" class="filter-dropdown-clear">
+                                Clear filters
+                            </button>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+
                 <div class="max-w-none ">
                     <!-- Featured Post (First Post - Large) -->
 
@@ -48,8 +95,9 @@
                     <!-- Other Posts Grid (2 columns) -->
                     @if (filteredDisplayedNodes().length ) {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                        @for (post of filteredDisplayedNodes().slice(1); track post.id) {
-                        <app-blog-card [slug]="post.slug" [imageUrl]="post.featuredImage?.node?.sourceUrl ?? ''"
+                        @for (post of filteredDisplayedNodes(); track post.id) {
+                        <app-blog-card [slug]="post.slug" [linkBase]="detailPathBase()"
+                            [imageUrl]="post.featuredImage?.node?.sourceUrl ?? ''"
                             [imageAlt]="post.featuredImage?.node?.altText ?? post.title ?? 'Blog post'"
                             [tag]="post.primaryTag ?? (post.tags?.length ? post.tags[0] : null)"
                             [readingTimeMinutes]="readingTimeMinutes(post.content)" [title]="post.title ?? ''"
@@ -63,9 +111,16 @@
                     }
 
                     @if (filteredDisplayedNodes().length === 0) {
-                    <div class="text-center py-12">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">No posts match the selected filters</h3>
-                        <p class="text-gray-600 text-sm">Try selecting different tags or clear the selection.</p>
+                    <div class="flex flex-col items-center justify-center py-12">
+                        <div class="w-1/2 max-w-[200px]">
+                            <img src="/assets/empty.svg" alt="No posts match the selected filters"
+                                class="w-full h-auto">
+                        </div>
+                        <h3 class="sm:text-xl md:text-4xl font-light text-s-900 mt-6">No posts found for the selected
+                            filters</h3>
+                        <p class="font-segoe text-s-600 text-base mt-2 mb-6 text-center">Try selecting different tags or
+                            clear your selection to see all posts.</p>
+
                     </div>
                     }
 
@@ -76,16 +131,15 @@
 
         <!-- Empty State -->
         @if (!loading() && !error() && displayedNodes().length === 0) {
-        <div class="text-center py-12 sm:py-16 md:py-20">
-            <div class="inline-block w-16 h-16 sm:w-20 sm:h-20 bg-gray-100      flex items-center justify-center mb-4">
-                <svg class="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
+        <div class="flex flex-col items-center justify-center py-12">
+            <div class="w-1/2 max-w-[200px]">
+                <img src="/assets/empty.svg" alt="No posts match the selected filters" class="w-full h-auto">
             </div>
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">No posts found</h3>
-            <p class="text-gray-600 text-sm sm:text-base">Check back soon for new content.</p>
+            <h3 class="sm:text-xl md:text-4xl font-light text-s-900 mt-6">No posts found for the selected
+                filters</h3>
+            <p class="font-segoe text-s-600 text-base mt-2 mb-6 text-center">Try selecting different tags or
+                clear your selection to see all posts.</p>
+
         </div>
         }
 
