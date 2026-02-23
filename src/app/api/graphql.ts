@@ -107,6 +107,8 @@ export interface CmsSection {
   image?: { url?: string; alt?: string };
   /** Logos/empresas en la sección "Trusted by" (trustedBy). */
   companies?: Array<{ name?: string; type?: string; subtitle?: string; tagline?: string; logo?: string; trademark?: string }>;
+  /** ctas en hero (alternativa a root.ctas): title, videoUrl, description, btn por slide. */
+  ctas?: HeroCtaItem[];
   /** Pestañas y ofertas en la sección "Structured engagements" (structuredEngagements). */
   tabs?: string[];
   activeTab?: string;
@@ -118,10 +120,20 @@ export interface CmsSection {
   [key: string]: unknown;
 }
 
+/** CTA del hero (usado en ctas o hero.cta). */
+export interface HeroCtaItem {
+  title: string;
+  videoUrl: string;
+  description: string;
+  btn: { text: string; link: string; backgroundColor?: string };
+}
+
 /** Contenido de una página CMS (Oakwood CMS, archivos JSON en WordPress). */
 export interface CmsPageContent {
   page: string;
   videoUrls?: string[];
+  /** Hero con un item por video: title, videoUrl, description, btn. Sustituye hero section cuando existe. */
+  ctas?: HeroCtaItem[];
   sections: CmsSection[];
 }
 
