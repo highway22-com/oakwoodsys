@@ -395,6 +395,8 @@ export class StructuredEngagementsSectionComponent
       const tabs = this.section().tabs ?? [];
       const current = this.activeTab();
 
+      console.log(this.section(),"this.section()")
+
       // Only set from input if user hasn't manually selected a tab
       if (!this.userSelectedTab) {
         if (incomingActive && incomingActive !== current) {
@@ -415,6 +417,7 @@ export class StructuredEngagementsSectionComponent
 
   ngAfterViewInit() {
     this.viewReady = true;
+    console.log(this.section(),"section")
     if (isPlatformBrowser(this.platformId)) {
       this.updateUnderline();
       window.addEventListener('resize', this.updateUnderline, {

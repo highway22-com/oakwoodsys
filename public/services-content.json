@@ -79,24 +79,24 @@
         "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2025/12/s-data-and.ai-sa.png",
         "cards": [
           {
-            "icon": "/assets/database.png",
+            "icon": "Card1",
             "title": "Unified data estate framework",
             "description": "Oakwood engineers unify fragmented data systems into a governed, scalable, AI-ready architecture."
           },
           {
-            "icon": "/assets/toolbox.png",
+            "icon": "Card2",
             "title": "DataOps automation toolkit",
-            "description": "Our Team automates ingestion, transformation, testing, and governance to deliver faster, higher-quality data pipelines."
+            "description": "Our team automates ingestion, transformation, testing, and governance to deliver faster, higher-quality data pipelines."
           },
           {
-            "icon": "/assets/chart-diagram.png",
-            "title": "Business Intelligence maturity framework",
+            "icon": "Card3",
+            "title": "Business intelligence maturity framework",
             "description": "We help your organization scale analytics adoption with a structured model for governance, enablement, and trusted insights."
           },
           {
-            "icon": "/assets/square-binary.png",
+            "icon": "Card4",
             "title": "AI data playbook",
-            "description": "Our Team prepares your data for AI by automating cleansing, enrichment, and structuring to enable high-quality model training."
+            "description": "Our team prepares your data for AI by automating cleansing, enrichment, and structuring to enable high-quality model training."
           }
         ]
       },
@@ -192,23 +192,19 @@
         "headline": "Turn data into intelligent action",
         "subheadline": "Unlock insights, accelerate AI adoption, and build a smarter business.",
         "primaryCta": {
-          "text": "View all services",
-          "link": "/services"
-        },
-        "secondaryCta": {
-          "text": "Request a demo",
-          "link": "/contact-us"
+          "text": "View all case studies",
+          "link": "/resources/case-studies"
         }
       },
       "cta": {
         "primary": {
-          "text": "Schedule a Consultation",
+          "text": "Schedule a consultation",
           "link": "/contact-us",
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "View Resources",
-          "link": "/resources",
+          "text": "View case studies",
+          "link": "/resources/case-studies",
           "borderColor": "#FFFFFF"
         }
       }
@@ -290,24 +286,24 @@
         "backgroundImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
         "cards": [
           {
-            "icon": "/assets/cloud.png",
-            "title": "Accelerating sans blueprint",
-            "description": "Structured assessment and roadmap to accelerate your cloud adoption with clear milestones and best practices."
+            "icon": "Card1",
+            "title": "Azure landing zone blueprint",
+            "description": "Oakwood brings proven blueprints and frameworks that reduce migration risk, strengthen cloud governance, and accelerate your move to a secure and cost-effective Azure environment."
           },
           {
-            "icon": "/assets/cloud.png",
+            "icon": "Card2",
             "title": "Intelligent migration framework",
-            "description": "Data-driven migration planning and execution to move workloads to Azure with minimal risk and downtime."
+            "description": "Oakwood engineers translate your business priorities into proven migration patterns for predictable, low-risk cloud transformation."
           },
           {
-            "icon": "/assets/cloud.png",
-            "title": "Cloud governance playbook",
-            "description": "Policies, guardrails, and automation to maintain security and compliance across your cloud estate."
+            "icon": "Card3",
+            "title": "Migration factory model",
+            "description": "Our team accelerates server, database, and application migrations with repeatable processes that reduce timelines and uncertainty."
           },
           {
-            "icon": "/assets/cloud.png",
-            "title": "Cost optimization toolkit",
-            "description": "Right-sizing, reservations, and FinOps practices to reduce cost while improving performance."
+            "icon": "Card4",
+            "title": "Cost optimization playbook",
+            "description": "We eliminate waste, right-size infrastructure, and deliver measurable Azure savings without sacrificing performance."
           }
         ]
       },
@@ -356,7 +352,7 @@
         ]
       },
       "whyOakwood": {
-        "tagline": "UNLOCK THE FULL POTENTIAL OF YOUR DATA",
+        "tagline": "WHY OAKWOOD",
         "title": "Unlock the full potential of your data",
         "description": "From data warehousing and analytics to machine learning and AI, we help you leverage your data for competitive advantage.",
         "imageSrc": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&q=80",
@@ -397,23 +393,19 @@
         "headline": "Modernize your infrastructure with purpose",
         "subheadline": "Our cloud solutions are designed to deliver real business value, not just technology.",
         "primaryCta": {
-          "text": "Speak to an expert",
-          "link": "/contact-us"
-        },
-        "secondaryCta": {
-          "text": "View our services",
-          "link": "/services"
+           "text": "View all case studies",
+          "link": "/resources/case-studies"
         }
       },
       "cta": {
         "primary": {
-          "text": "Schedule a Consultation",
+          "text": "Schedule a consultation",
           "link": "/contact-us",
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "View Resources",
-          "link": "/resources",
+          "text": "View case studies",
+          "link": "/resources/case-studies",
           "borderColor": "#FFFFFF"
         }
       }
@@ -495,24 +487,24 @@
         "backgroundImage": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&q=80",
         "cards": [
           {
-            "icon": "/assets/app-innovation.png",
-            "title": "Agenda AI framework",
-            "description": "Our framework leverages Azure AI to provide intelligent solutions that accelerate business outcomes."
+            "icon": "Card1",
+            "title": "Agentic AI framework",
+            "description": "Our team deploys intelligent multi-agent AI systems that automate decisions, scale operations, and create continuous business value."
           },
           {
-            "icon": "/assets/app-innovation.png",
+            "icon": "Card2",
             "title": "Oakwood AI pattern library",
-            "description": "A comprehensive library of AI patterns and best practices for rapid deployment."
+            "description": "Oakwood engineers leverage proven AI design patterns to rapidly build secure, production-ready applications and copilots."
           },
           {
-            "icon": "/assets/app-innovation.png",
-            "title": "Oakwood AI application playbooks",
-            "description": "Step-by-step guides to build and deploy AI-powered applications efficiently."
+            "icon": "Card3",
+            "title": "Oakwood AI application playbook",
+            "description": "Our team guides you from idea to production-ready AI applications using structured frameworks and reusable development assets."
           },
           {
-            "icon": "/assets/app-innovation.png",
-            "title": "Oakwood AI copilots playbook",
-            "description": "Our playbook helps you implement and customize AI Copilots for enhanced productivity."
+            "icon": "Card4",
+            "title": "Oakwood AI copilot playbook",
+            "description": "We accelerate Copilot adoption with curated prompts, extensibility patterns, and integration templates tailored to your environment."
           }
         ]
       },
@@ -561,7 +553,7 @@
         ]
       },
       "whyOakwood": {
-        "tagline": "UNLOCK THE FULL POTENTIAL OF YOUR DATA",
+        "tagline": "WHY OAKWOOD",
         "title": "Unlock the full potential of your data",
         "description": "From modern applications to AI-powered solutions, we help you turn ideas into high-impact outcomes.",
         "imageSrc": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
@@ -597,23 +589,19 @@
         "headline": "Turn ideas into high-impact applications",
         "subheadline": "Our application and AI solutions are designed to deliver real business value and exceptional user experiences.",
         "primaryCta": {
-          "text": "Schedule a Consultation",
-          "link": "/contact-us"
-        },
-        "secondaryCta": {
-          "text": "View Resources",
-          "link": "/resources"
+           "text": "View case studies",
+          "link": "/resources/case-studies"
         }
       },
       "cta": {
         "primary": {
-          "text": "Schedule a Consultation",
+          "text": "Schedule a consultation",
           "link": "/contact-us",
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "View Resources",
-          "link": "/resources",
+          "text": "View case studies",
+          "link": "/resources/case-studies",
           "borderColor": "#FFFFFF"
         }
       }
@@ -695,24 +683,24 @@
         "backgroundImage": "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=1920&q=80",
         "cards": [
           {
-            "icon": "/assets/hpc.png",
+            "icon": "Card1",
             "title": "Hybrid HPC bursting framework",
-            "description": "Easily extend your on-prem HPC clusters to Azure for peak workloads with a proven bursting framework, reducing infrastructure costs."
+            "description": "Our team builds hybrid HPC environments that allow your on-prem clusters to burst into Azure using proven configurations for CycleCloud, Slurm, networking, storage, and job orchestration."
           },
           {
-            "icon": "/assets/hpc.png",
+            "icon": "Card2",
             "title": "HPC optimization and benchmarking toolkit",
-            "description": "Leverage our comprehensive toolkit to optimize and benchmark your HPC applications on Azure, ensuring maximum performance and cost-efficiency."
+            "description": "Oakwood engineers benchmark CPU and GPU workloads, analyze performance bottlenecks, and deliver tuning recommendations that improve speed, efficiency, and cost per job."
           },
           {
-            "icon": "/assets/hpc.png",
-            "title": "HPC compaction and resiliency blueprint",
-            "description": "Implement best practices for data compaction, high-availability, and disaster recovery for your critical HPC data on Azure."
+            "icon": "Card3",
+            "title": "HPC migration and readiness blueprint",
+            "description": "Our team guides you through HPC to Azure readiness using a structured approach that evaluates applications, data, network architecture, and workload performance drivers."
           },
           {
-            "icon": "/assets/hpc.png",
-            "title": "HPC operations automation library",
-            "description": "Automate common HPC operational tasks like job scheduling, resource allocation, and monitoring for streamlined management."
+            "icon": "Card4",
+            "title": "HPC operational automation library",
+            "description": "We streamline HPC operations with prebuilt scripts, pipelines, and automations for environment provisioning, job scheduling, cluster scaling, and workload telemetry."
           }
         ]
       },
@@ -761,7 +749,7 @@
         ]
       },
       "whyOakwood": {
-        "tagline": "UNLOCK THE FULL POTENTIAL OF YOUR DATA",
+        "tagline": "WHY OAKWOOD",
         "title": "Unlock the full potential of your data",
         "description": "We help you transform raw data into actionable insights through innovative data platforms, delivering a competitive edge.",
         "imageSrc": "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=1920&q=80",
@@ -797,23 +785,19 @@
         "headline": "Move faster with modern compute",
         "subheadline": "Ready to accelerate your HPC workloads and transform your business? Let's connect.",
         "primaryCta": {
-          "text": "Get started",
-          "link": "/contact-us"
-        },
-        "secondaryCta": {
-          "text": "Contact us",
-          "link": "/contact-us"
+          "text": "View case studies",
+          "link": "/resources/case-studies"
         }
       },
       "cta": {
         "primary": {
-          "text": "Schedule a Consultation",
+          "text": "Schedule a consultation",
           "link": "/contact-us",
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "View Resources",
-          "link": "/resources",
+          "text": "View case studies",
+          "link": "/resources/case-studies",
           "borderColor": "#FFFFFF"
         }
       }
@@ -895,24 +879,24 @@
         "backgroundImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
         "cards": [
           {
-            "icon": "/assets/modern-work.png",
+            "icon": "Card1",
             "title": "Copilot deployment accelerator",
-            "description": "Structured approach to assess, prepare, and deploy Copilot for Microsoft 365 with governance and adoption in mind."
+            "description": "Oakwood engineers deliver a secure, accelerated Copilot rollout aligned with Microsoft incentives and ready in weeks."
           },
           {
-            "icon": "/assets/modern-work.png",
+            "icon": "Card2",
             "title": "Secure power platform framework",
-            "description": "Govern and secure Power Platform environments alongside Microsoft 365 for low-code and automation."
+            "description": "Our team enables responsible Power Platform adoption with enterprise-grade governance, compliance, and guardrails."
           },
           {
-            "icon": "/assets/modern-work.png",
+            "icon": "Card3",
             "title": "Microsoft 365 license optimization playbook",
-            "description": "Right-size licensing and usage to maximize value and control costs across M365 workloads."
+            "description": "We reduce licensing overspend through data-driven optimization that aligns real usage to the right M365 mix."
           },
           {
-            "icon": "/assets/modern-work.png",
-            "title": "Zero trust baseline configuration",
-            "description": "Implement zero trust principles with Entra ID, Intune, and Defender for a secure modern workplace."
+            "icon": "Card4",
+            "title": "Zero trust baseline templates",
+            "description": "Oakwood engineers establish a hardened security posture using proven Zero Trust configurations across identity, devices, and applications."
           }
         ]
       },
@@ -961,7 +945,7 @@
         ]
       },
       "whyOakwood": {
-        "tagline": "UNLOCK THE FULL POTENTIAL OF YOUR DATA",
+        "tagline": "WHY OAKWOOD",
         "title": "Unlock the full potential of your data",
         "description": "From data warehousing to AI readiness, we help you leverage your data and platforms for competitive advantage.",
         "imageSrc": "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1920&q=80",
@@ -992,23 +976,19 @@
         "headline": "Redefine how your organization works",
         "subheadline": "Our Modern Work and Copilot solutions are designed to deliver a secure, productive, and AI ready workplace.",
         "primaryCta": {
-          "text": "Learn More",
-          "link": "/resources"
-        },
-        "secondaryCta": {
-          "text": "Request a Quote",
-          "link": "/contact-us"
+         "text": "View case studies",
+          "link": "/resources/case-studies"
         }
       },
       "cta": {
         "primary": {
-          "text": "Schedule a Consultation",
+          "text": "Schedule a consultation",
           "link": "/contact-us",
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "Learn More",
-          "link": "/resources",
+          "text": "View case studies",
+          "link": "/resources/case-studies",
           "borderColor": "#FFFFFF"
         }
       }
@@ -1090,24 +1070,24 @@
         "backgroundImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
         "cards": [
           {
-            "icon": "/assets/managed-services.png",
-            "title": "Proactive monitoring & alerting (Continuous optimization)",
-            "description": "Continuous monitoring, alerting, and optimization to keep your cloud and M365 environment healthy and cost-effective."
+            "icon": "Card1",
+            "title": "Proactive monitoring & alerting framework",
+            "description": "Our team detects issues earlier and resolves them faster with intelligent monitoring across cloud, security, and application layers."
           },
           {
-            "icon": "/assets/managed-services.png",
+            "icon": "Card2",
             "title": "Optimization toolkit",
-            "description": "Tools and playbooks to right-size resources, optimize licensing, and improve performance across Azure and M365."
+            "description": "Oakwood engineers continuously improve endpoint performance and Azure efficiency through automated, measurable enhancements."
           },
           {
-            "icon": "/assets/managed-services.png",
-            "title": "Automation foundry",
-            "description": "Automate routine operations, provisioning, and remediation to reduce manual effort and improve consistency."
+            "icon": "Card3",
+            "title": "Automation library",
+            "description": "We reduce manual effort and accelerate service delivery using prebuilt scripts, bots, and automated workflows."
           },
           {
-            "icon": "/assets/managed-services.png",
-            "title": "Service continuity (BDR / DR accelerator)",
-            "description": "Backup, disaster recovery, and business continuity frameworks to protect your critical workloads and data."
+            "icon": "Card4",
+            "title": "Service continuity & BCDR accelerator",
+            "description": "Our team strengthens operational resilience with proven continuity and disaster recovery patterns that minimize downtime and risk."
           }
         ]
       },
@@ -1156,7 +1136,7 @@
         ]
       },
       "whyOakwood": {
-        "tagline": "UNLOCK THE FULL POTENTIAL OF YOUR DATA",
+        "tagline": "WHY OAKWOOD",
         "title": "Unlock the full potential of your data",
         "description": "Our expert services and solutions empower your organization to leverage data for informed decisions and competitive advantage.",
         "imageSrc": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
@@ -1187,23 +1167,19 @@
         "headline": "Stay focused on growth while we manage the rest",
         "subheadline": "Let our experts handle your cloud and M365 operations, so you can concentrate on strategic initiatives.",
         "primaryCta": {
-          "text": "View Our Services",
-          "link": "/services"
-        },
-        "secondaryCta": {
-          "text": "Contact Us",
-          "link": "/contact-us"
+         "text": "View case studies",
+          "link": "/resources/case-studies"
         }
       },
       "cta": {
         "primary": {
-          "text": "Schedule a Consultation",
+          "text": "Schedule a consultation",
           "link": "/contact-us",
           "backgroundColor": "#1D69AC"
         },
         "secondary": {
-          "text": "Learn More",
-          "link": "/resources",
+          "text": "View case studies",
+          "link": "/resources/case-studies",
           "borderColor": "#FFFFFF"
         }
       }

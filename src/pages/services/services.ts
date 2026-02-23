@@ -6,9 +6,12 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { Subscription } from 'rxjs';
 import { VideoHero } from '../../shared/video-hero/video-hero';
+import { StructuredEngagementsSectionComponent } from '../../shared/sections/structured-engagements/structured-engagements';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { TrustedBySectionComponent } from "../../shared/sections/trusted-by/trusted-by";
+import { SvgIcons } from '../../shared/service-icons/service-icons';
+
 
 interface ServiceArea {
   icon: string;
@@ -16,6 +19,7 @@ interface ServiceArea {
   title: string;
   subtitle: string;
   features: string[];
+
 }
 
 interface ServiceAreasSection {
@@ -133,7 +137,7 @@ interface ServicesContent {
 
 @Component({
   selector: 'app-services',
-  imports: [CommonModule, RouterLink, VideoHero, FeaturedCaseStudySectionComponent, CtaSectionComponent, TrustedBySectionComponent],
+  imports: [CommonModule, RouterLink, VideoHero, FeaturedCaseStudySectionComponent, CtaSectionComponent, TrustedBySectionComponent,StructuredEngagementsSectionComponent],
   templateUrl: './services.html',
   styleUrl: './services.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -154,15 +158,52 @@ export default class Services implements OnInit, OnDestroy {
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   readonly structuredData = signal<any>(null);
+  readonly structuredEngagementSection = signal<any>(null);
+  readonly showStructuredEngagements = signal(true);
+
+    getIconSvg(iconKey: string) {
+      const svg = SvgIcons[iconKey] || '';
+      return this.sanitizer.bypassSecurityTrustHtml(svg);
+    }
 
   ngOnInit() {
     // Set default meta description for services pages
     this.setDefaultMetadata();
 
+    // Load structured engagement section from JSON
+    this.http.get<any>('/structured-engagement-section.json').subscribe({
+      next: (data) => {
+        this.structuredEngagementSection.set(data);
+      },
+      error: (error) => {
+        console.error('Error loading structured engagement section:', error);
+      }
+    });
+
     // Subscribe to route params to handle navigation changes
     this.routeSubscription = this.route.paramMap.subscribe(params => {
       const slugParam = params.get('slug');
       this.slug.set(slugParam);
+      // Hide structured engagements for specific slugs
+      if (slugParam === 'modern-work' || slugParam === 'managed-services') {
+        this.showStructuredEngagements.set(false);
+      } else {
+        this.showStructuredEngagements.set(true);
+      }
+      // Set activeTab on every navigation if structuredEngagementSection is loaded
+      const section = this.structuredEngagementSection();
+      if (section) {
+        if (slugParam === 'data-and-ai') {
+          section.activeTab = 'Data and AI';
+        } else if (slugParam === 'cloud-and-infrastructure') {
+          section.activeTab = 'Cloud and Infrastructure';
+        } else if (slugParam === 'application-innovation') {
+          section.activeTab = 'Application Innovation';
+        } else if (slugParam === 'high-performance-computing') {
+          section.activeTab = 'High Performance Computing (HPC)';
+        }
+        this.structuredEngagementSection.set({ ...section });
+      }
       this.loadContent();
     });
   }
