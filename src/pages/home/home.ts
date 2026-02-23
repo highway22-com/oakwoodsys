@@ -7,7 +7,7 @@ import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
-import type { CmsPageContent, CmsSection } from '../../app/api/graphql';
+import type { CmsPageContent, CmsSection, HeroCtaItem } from '../../app/api/graphql';
 import { TrustedBySectionComponent } from '../../shared/sections/trusted-by/trusted-by';
 import { StructuredEngagementsSectionComponent } from '../../shared/sections/structured-engagements/structured-engagements';
 import { LatestInsightsSectionComponent } from '../../shared/sections/latest-insights/latest-insights';
@@ -18,7 +18,7 @@ const DEFAULT_DESCRIPTION = 'As a Microsoft Solutions Partner specializing in Az
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, NgClass, FormsModule, VideoHero,ScrollAnimationComponent, FeaturedCaseStudySectionComponent, TrustedBySectionComponent, StructuredEngagementsSectionComponent, LatestInsightsSectionComponent, ButtonPrimaryComponent],
+  imports: [CommonModule, NgClass, FormsModule, VideoHero, ScrollAnimationComponent, FeaturedCaseStudySectionComponent, TrustedBySectionComponent, StructuredEngagementsSectionComponent, LatestInsightsSectionComponent, ButtonPrimaryComponent],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,8 +41,8 @@ export default class Home implements OnInit {
   readonly saving = signal(false);
   readonly saveSuccess = signal(false);
   readonly panelVisible = signal(false);
-    scrollAnimationVisible = signal(false);
-      scrollAnimationReverse = signal(false);
+  scrollAnimationVisible = signal(false);
+  scrollAnimationReverse = signal(false);
   jsonContent: string = '';
   readonly jsonError = signal<string | null>(null);
 
@@ -59,6 +59,7 @@ export default class Home implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
+          console.log(JSON.stringify(data, null, 2));
           if (data) {
             this.applyContent(data);
           } else {
@@ -69,7 +70,7 @@ export default class Home implements OnInit {
           this.loading.set(false);
         },
       });
-   this.lastScrollVisible = false;
+    this.lastScrollVisible = false;
     if (typeof window !== 'undefined') {
       window.addEventListener('scroll', this.handleScrollAnimation.bind(this));
       setTimeout(() => this.handleScrollAnimation(), 100);
@@ -80,7 +81,14 @@ export default class Home implements OnInit {
 
   private applyContent(data: CmsPageContent) {
     this.content.set(data);
-    if (data.videoUrls && data.videoUrls.length > 0) {
+    const heroSection = data.sections?.find(s => s.type === 'hero') as { ctas?: HeroCtaItem[] } | undefined;
+    const ctas = (data.ctas && data.ctas.length > 0) ? data.ctas : heroSection?.ctas;
+    if (ctas && ctas.length > 0) {
+      const urls = ctas.map((c: HeroCtaItem) => c.videoUrl).filter((url: string): url is string => typeof url === 'string' && url.trim().length > 0);
+      if (urls.length > 0) {
+        this.videoUrls.set(urls);
+      }
+    } else if (data.videoUrls && data.videoUrls.length > 0) {
       const links = data.videoUrls.filter((url): url is string => typeof url === 'string' && url.trim().length > 0);
       if (links.length > 0) {
         this.videoUrls.set(links);
@@ -96,6 +104,18 @@ export default class Home implements OnInit {
 
   getSection(type: string) {
     return this.content()?.sections.find(s => s.type === type);
+  }
+
+  /** ctas desde root o desde hero section (CMS puede guardarlos en uno u otro). */
+  private getCtas(): HeroCtaItem[] | undefined {
+    const data = this.content();
+    if (!data) return undefined;
+    const fromRoot = data.ctas;
+    if (fromRoot && Array.isArray(fromRoot) && fromRoot.length > 0) return fromRoot;
+    const hero = this.getSection('hero') as { ctas?: HeroCtaItem[] } | undefined;
+    const fromHero = hero?.ctas;
+    if (fromHero && Array.isArray(fromHero) && fromHero.length > 0) return fromHero;
+    return undefined;
   }
 
   /** Título de una sección como string (CMS puede devolver title como string o { line1, line2 }). */
@@ -119,8 +139,10 @@ export default class Home implements OnInit {
     return this.defaultFeaturedSlugs;
   }
 
-  /** Título del hero: string, array (uno por video) o vacío (desde sección hero). */
+  /** Título del hero: desde ctas (array) o sección hero. */
   heroTitle(): string | string[] {
+    const ctas = this.getCtas();
+    if (ctas && ctas.length > 0) return ctas.map(c => c.title);
     const section = this.getSection('hero');
     const t = section?.title;
     if (typeof t === 'string') return t || '';
@@ -129,8 +151,10 @@ export default class Home implements OnInit {
     return '';
   }
 
-  /** Descripción del hero (desde sección hero o vacío). */
+  /** Descripción del hero: desde ctas (array) o sección hero. */
   heroDescription(): string | string[] {
+    const ctas = this.getCtas();
+    if (ctas && ctas.length > 0) return ctas.map(c => c.description);
     const section = this.getSection('hero');
     const t = section?.description;
     if (typeof t === 'string') return t || '';
@@ -139,8 +163,16 @@ export default class Home implements OnInit {
     return '';
   }
 
-  /** CTA principal del hero (desde sección hero). */
-  heroCtaPrimary(): { text: string; link: string; backgroundColor: string } | undefined {
+  /** CTA principal del hero: array (uno por video) desde ctas, o único desde sección hero. */
+  heroCtaPrimary(): { text: string; link: string; backgroundColor?: string } | { text: string; link: string; backgroundColor?: string }[] | undefined {
+    const ctas = this.getCtas();
+    if (ctas && ctas.length > 0) {
+      return ctas.map(c => ({
+        text: c.btn.text,
+        link: c.btn.link,
+        backgroundColor: c.btn.backgroundColor ?? '#1A63C9',
+      }));
+    }
     const section = this.getSection('hero');
     return section ? this.getCtaPrimary(section) : undefined;
   }
@@ -174,13 +206,14 @@ export default class Home implements OnInit {
   }
 
   private updateMetadata(content: CmsPageContent) {
+    const ctas = content.ctas ?? (content.sections?.find(s => s.type === 'hero') as { ctas?: HeroCtaItem[] })?.ctas;
     const heroSection = content.sections?.find(s => s.type === 'hero');
-    const rawTitle = heroSection?.['title'];
+    const rawTitle = ctas?.length ? ctas[0]?.title : heroSection?.['title'];
     const heroTitle = typeof rawTitle === 'string' ? rawTitle
       : Array.isArray(rawTitle) ? (rawTitle[0] ?? '')
         : rawTitle && typeof rawTitle === 'object' ? [rawTitle.line1, rawTitle.line2].filter(Boolean).join(' ') ?? ''
           : '';
-    const heroDesc = (heroSection?.['description'] ?? '') as string;
+    const heroDesc = (ctas?.length ? ctas[0]?.description : heroSection?.['description'] ?? '') as string;
     const pageTitle = heroTitle ? `${heroTitle} | Oakwood Systems` : DEFAULT_TITLE;
     const description = heroDesc || DEFAULT_DESCRIPTION;
 
@@ -192,13 +225,15 @@ export default class Home implements OnInit {
   }
 
   private updateStructuredData(content: CmsPageContent) {
+    const ctas = content.ctas ?? (content.sections?.find(s => s.type === 'hero') as { ctas?: HeroCtaItem[] })?.ctas;
     const heroSection = content.sections?.find(s => s.type === 'hero');
-    const heroDesc = (heroSection?.['description'] ?? '') as string;
-    const heroTitle = typeof heroSection?.['title'] === 'string' ? heroSection.title
-      : Array.isArray(heroSection?.['title']) ? (heroSection.title[0] ?? '')
-        : heroSection?.title && typeof heroSection.title === 'object'
-          ? [heroSection.title.line1, heroSection.title.line2].filter(Boolean).join(' ') ?? ''
-          : DEFAULT_TITLE;
+    const heroDesc = (ctas?.length ? ctas[0]?.description : heroSection?.['description'] ?? '') as string;
+    const heroTitle = ctas?.length ? ctas[0]?.title
+      : typeof heroSection?.['title'] === 'string' ? heroSection.title
+        : Array.isArray(heroSection?.['title']) ? (heroSection.title[0] ?? '')
+          : heroSection?.title && typeof heroSection.title === 'object'
+            ? [heroSection.title.line1, heroSection.title.line2].filter(Boolean).join(' ') ?? ''
+            : DEFAULT_TITLE;
 
     const baseUrl = this.seoMeta.baseUrl;
     const structuredDataObj = {
@@ -281,8 +316,11 @@ export default class Home implements OnInit {
       // Update content in real-time
       this.content.set(parsed);
 
-      // Update video URLs if present (solo enlaces válidos no vacíos)
-      if (parsed.videoUrls && Array.isArray(parsed.videoUrls) && parsed.videoUrls.length > 0) {
+      // Update video URLs: desde ctas o videoUrls
+      if (parsed.ctas && Array.isArray(parsed.ctas) && parsed.ctas.length > 0) {
+        const urls = parsed.ctas.map((c: { videoUrl?: string }) => c.videoUrl).filter((url: unknown): url is string => typeof url === 'string' && url.trim().length > 0);
+        if (urls.length > 0) this.videoUrls.set(urls);
+      } else if (parsed.videoUrls && Array.isArray(parsed.videoUrls) && parsed.videoUrls.length > 0) {
         const links = parsed.videoUrls.filter((url: unknown): url is string => typeof url === 'string' && url.trim().length > 0);
         this.videoUrls.set(links);
       }
@@ -295,7 +333,7 @@ export default class Home implements OnInit {
     }
   }
 
-    handleScrollAnimation() {
+  handleScrollAnimation() {
     const el = document.querySelector('.scroll-animation-section');
     if (!el) return;
     const rect = el.getBoundingClientRect();
