@@ -187,9 +187,10 @@
           <!-- Icon -->
           <div class="mb-8 sm:mb-6 ">
             <div class="w-10">
-              <img [src]="card.icon" [alt]="card.title + ' solution accelerator icon'"
+              <span [innerHTML]="getIconSvg(card.icon)"></span>
+              <!-- <img [src]="card.icon" [alt]="card.title + ' solution accelerator icon'"
                 class="w-full h-auto object-contain text-[var(--Primary-500,#2A7EBF)] text-center text-[38px] font-light leading-normal"
-                loading="lazy" />
+                loading="lazy" /> -->
             </div>
           </div>
 
@@ -283,11 +284,17 @@
 </section>
 }
 
+
+@if (structuredEngagementSection() && showStructuredEngagements()) {
+  <app-structured-engagements [section]="structuredEngagementSection()" />
+}
+
+
 <!-- CTA Section -->
 @if (content()?.ctaSection) {
 <app-cta-section [title]="content()?.ctaSection?.headline ?? 'Let\'s move your vision forward'"
   [description]="  content()?.ctaSection?.subheadline  ?? 'Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.'"
-  [primaryText]="content()?.ctaSection?.primaryCta?.text ?? 'Talk to an expert'" primaryLink="/contact-us" />
+  [primaryText]="content()?.ctaSection?.primaryCta?.text ?? 'Talk to an expert'" primaryLink="/resources/case-studies" />
 
 }
 }

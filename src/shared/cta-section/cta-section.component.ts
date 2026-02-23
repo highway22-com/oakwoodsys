@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input , OnInit} from '@angular/core';
 import { ButtonPrimaryComponent } from "../button-primary/button-primary.component";
-
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 /** Lista de fondos para la sección CTA. Índice 0 = primero (45° derecha a izquierda). */
 export const CTA_GRADIENTS: readonly string[] = [
   /* 1: derecha a izquierda, 45°, #F0F7FA → #E5F2F7 → #E9ECF7 → #EDE6F6 */
@@ -18,7 +19,7 @@ export const CTA_GRADIENTS: readonly string[] = [
 @Component({
   selector: 'app-cta-section',
   standalone: true,
-  imports: [ButtonPrimaryComponent],
+  imports: [ButtonPrimaryComponent, CommonModule],
   templateUrl: './cta-section.component.html',
   styleUrl: './cta-section.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,6 +42,24 @@ export class CtaSectionComponent {
   readonly gradientIndex = input<number>(0);
   /** Valor de gradiente explícito; si existe, tiene prioridad sobre gradientIndex. */
   readonly backgroundGradientValue = input<string>('');
+   bgImg: string = '';
+  isIndustries: boolean = false;
+  isElse: boolean = false;
+
+  constructor(private router: Router) {}
+
+  ngOnInit() {
+    const url = this.router.url;
+    if (url === '/' || url === '/home') {
+      this.bgImg = '/bg-imgs/home-page-bg.jpg';
+    } else if (url.includes('services')) {
+      this.bgImg = '/bg-imgs/services-page-bg.jpg';
+    } else if (url.includes('industries')) {
+      this.bgImg = '/bg-imgs/industries-page-bg.jpg';
+    } else {
+      this.bgImg = '/bg-imgs/home-page-bg.jpg';
+    }
+  }
 
   /** Gradiente de fondo efectivo según gradientIndex. */
   readonly backgroundGradient = computed(() =>
