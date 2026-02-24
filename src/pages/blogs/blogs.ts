@@ -22,6 +22,7 @@ import { ButtonPrimaryComponent } from "../../shared/button-primary/button-prima
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { FeaturedCaseStudyCardsSectionComponent } from '../../shared/sections/featured-case-study-cards/featured-case-study';
+import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-study/featured-case-study-category';
 import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
@@ -93,6 +94,7 @@ const INITIAL_LOAD_SIZE = 100;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Blogs implements OnInit {
+  readonly FeaturedCaseStudyCategory = FeaturedCaseStudyCategory;
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seoMeta = inject(SeoMetaService);
   private readonly graphql = inject(GraphQLContentService);
@@ -110,15 +112,15 @@ export default class Blogs implements OnInit {
   readonly blogHeroBreadcrumbs = (): PageHeroBreadcrumb[] =>
     this.isBlogs
       ? [
-          { label: 'Home', routerLink: '/' },
-          { label: 'Resources' },
-          { label: 'IT Blog' },
-        ]
+        { label: 'Home', routerLink: '/' },
+        { label: 'Resources' },
+        { label: 'IT Blog' },
+      ]
       : [
-          { label: 'Home', routerLink: '/' },
-          { label: 'Resources' },
-          { label: 'Case Studies' },
-        ];
+        { label: 'Home', routerLink: '/' },
+        { label: 'Resources' },
+        { label: 'Case Studies' },
+      ];
 
   /** Path base para listado (blog o case-studies). */
   readonly listingPath = () => (this.isBlogs ? '/blog' : '/resources/case-studies');
@@ -160,15 +162,15 @@ export default class Blogs implements OnInit {
   } {
     return this.isBlogs
       ? {
-          videoUrls: ['https://oakwoodsys.com/wp-content/uploads/2026/02/Blogs.mp4'],
-          title: 'Discover our impact through realized projects',
-          description: "Explore Oakwood's case studies, blogs, webinars, and events.",
-        }
+        videoUrls: ['https://oakwoodsys.com/wp-content/uploads/2026/02/Blogs.mp4'],
+        title: 'Discover our impact through realized projects',
+        description: "Explore Oakwood's case studies, blogs, webinars, and events.",
+      }
       : {
-          videoUrls: ['https://oakwoodsys.com/wp-content/uploads/2026/02/Blogs.mp4'],
-          title: 'Real-world success stories',
-          description: 'See how Oakwood helps organizations modernize, innovate, and achieve meaningful results.',
-        };
+        videoUrls: ['https://oakwoodsys.com/wp-content/uploads/2026/02/Blogs.mp4'],
+        title: 'Real-world success stories',
+        description: 'See how Oakwood helps organizations modernize, innovate, and achieve meaningful results.',
+      };
   }
 
   toggleTagFilter(slug: string) {

@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { StructuredEngagementsSectionComponent } from '../../shared/sections/structured-engagements/structured-engagements';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
+import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-study/featured-case-study-category';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { TrustedBySectionComponent } from "../../shared/sections/trusted-by/trusted-by";
 import { SvgIcons } from '../../shared/service-icons/service-icons';
@@ -144,6 +145,7 @@ interface ServicesContent {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Services implements OnInit, OnDestroy {
+  readonly FeaturedCaseStudyCategory = FeaturedCaseStudyCategory;
   @ViewChild('logoCarousel', { static: false }) logoCarousel!: ElementRef<HTMLDivElement>;
 
   private readonly route = inject(ActivatedRoute);

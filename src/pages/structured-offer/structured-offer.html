@@ -162,7 +162,7 @@
 
 <!-- Featured Case Study Section -->
 @if (getSlugsForFeaturedSection().length) {
-<app-featured-case-study [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
+<app-featured-case-study [featuredCategory]="FeaturedCaseStudyCategory.CaseStudyServices" [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
 }
 
 <section #licensingSection class="mb-12 sm:mb-12 md:mb-16 lg:mb-20">

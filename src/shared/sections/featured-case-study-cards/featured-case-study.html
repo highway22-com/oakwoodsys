@@ -1,4 +1,4 @@
-<section class="w-full  min-h-[80vh] flex flex-col" aria-labelledby="featured-case-study-title">
+<section class="w-full  min-h-[50vh] flex flex-col" aria-labelledby="featured-case-study-title">
   <div class="flex-1 min-h-0">
     @if (currentSection(); as list) {
     @if (list[selectedIndex()]; as item) {
@@ -6,8 +6,9 @@
       <!-- Header row: label + pagination (mobile only) -->
       <div class="block lg:hidden order-1">
         <div class="flex flex-row items-center justify-between w-full gap-2 sm:gap-4 pt-6 mb-4">
-          <p class="font-inter font-semibold text-[14px] leading-[150%] tracking-normal uppercase text-[#2A7EBF] whitespace-nowrap">
-            {{ item.label ?? 'Featured Case Study' }}
+          <p
+            class="font-inter font-semibold text-[14px] leading-[150%] tracking-normal uppercase text-[#2A7EBF] whitespace-nowrap ">
+            {{ isBlogs ? 'Featured Blog' : 'Featured Case Study' }}
           </p>
           <div class="flex items-center gap-3">
             <span class="text-sm text-gray-500">
@@ -15,15 +16,15 @@
             </span>
             <div class="flex items-center gap-0">
               <button type="button" (click)="selectCaseStudy(selectedIndex() - 1)" [disabled]="selectedIndex() === 0"
-                [attr.aria-label]="'Previous case study'" [attr.aria-pressed]="selectedIndex() === 0"
+                [attr.aria-label]="(isBlogs ? 'Previous blog' : 'Previous case study')" [attr.aria-pressed]="selectedIndex() === 0"
                 class="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
               <button type="button" (click)="selectCaseStudy(selectedIndex() + 1)"
-                [disabled]="selectedIndex() >= list.length - 1" [attr.aria-label]="'Next case study'"
-                [attr.aria-pressed]="selectedIndex() === 1"
+                [disabled]="selectedIndex() >= list.length - 1" [attr.aria-label]="(isBlogs ? 'Next blog' : 'Next case study')"
+                [attr.aria-pressed]="selectedIndex() >= list.length - 1"
                 class="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -45,7 +46,7 @@
         <!-- Header row: label + pagination (desktop only) -->
         <div class="hidden lg:flex flex-row items-center justify-between w-full gap-2 sm:gap-4 mb-6">
           <p class="text-lg font-semibold uppercase text-p-700 whitespace-nowrap">
-            {{ item.label ?? 'Featured Case Study' }}
+            {{ isBlogs ? 'Featured Blog' : 'Featured Case Study' }}
           </p>
           <div class="flex items-center gap-3">
             <span class="text-sm text-gray-500">
@@ -53,15 +54,15 @@
             </span>
             <div class="flex items-center gap-1">
               <button type="button" (click)="selectCaseStudy(selectedIndex() - 1)" [disabled]="selectedIndex() === 0"
-                [attr.aria-label]="'Previous case study'" [attr.aria-pressed]="selectedIndex() === 0"
+                [attr.aria-label]="(isBlogs ? 'Previous blog' : 'Previous case study')" [attr.aria-pressed]="selectedIndex() === 0"
                 class="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
               <button type="button" (click)="selectCaseStudy(selectedIndex() + 1)"
-                [disabled]="selectedIndex() >= list.length - 1" [attr.aria-label]="'Next case study'"
-                [attr.aria-pressed]="selectedIndex() === 1"
+                [disabled]="selectedIndex() >= list.length - 1" [attr.aria-label]="(isBlogs ? 'Next blog' : 'Next case study')"
+                [attr.aria-pressed]="selectedIndex() >= list.length - 1"
                 class="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -94,7 +95,8 @@
             {{ item.cta?.primary?.text ?? 'Read more' }}
           </a>
           } @else if (item.cta?.primary) {
-          <span class="inline-flex items-center justify-center w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-p-700 text-white">
+          <span
+            class="inline-flex items-center justify-center w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-p-700 text-white">
             {{ item.cta?.primary?.text ?? 'Read more' }}
           </span>
           }
