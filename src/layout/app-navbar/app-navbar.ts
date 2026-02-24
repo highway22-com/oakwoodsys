@@ -59,8 +59,6 @@ export class AppNavbar implements OnInit, OnDestroy {
   private readonly graphql = inject(GraphQLContentService);
   private readonly router = inject(Router);
 
-  /** true cuando viewport < 768px (md breakpoint). Muestra hamburger + panel; si no, versión desktop. */
-  isTabletOrMobile = false;
   isMobileMenuOpen = false;
   mobileExpandedIndex: number | null = null;
   isScrolled = false;
@@ -119,7 +117,6 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
-      this.updateTabletOrMobile();
       this.checkScrollPosition();
       // Check current route
       this.updateContactSuccessStatus();
@@ -202,17 +199,6 @@ export class AppNavbar implements OnInit, OnDestroy {
     this.searchPanelOpen.set(false);
   }
 
-  private readonly MOBILE_BREAKPOINT = 768;
-
-  private updateTabletOrMobile() {
-    if (!isPlatformBrowser(this.platformId)) return;
-    this.isTabletOrMobile = window.innerWidth < this.MOBILE_BREAKPOINT;
-    if (!this.isTabletOrMobile) {
-      this.isMobileMenuOpen = false;
-      this.mobileExpandedIndex = null;
-      this.updateBodyScrollLock();
-    }
-  }
 
   private checkScrollPosition() {
     if (!isPlatformBrowser(this.platformId)) {

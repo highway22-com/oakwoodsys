@@ -11,9 +11,8 @@
             }
         </a>
 
-        @if (isTabletOrMobile) {
         <!-- Mobile/Tablet: solo botón hamburger que abre panel -->
-        <button type="button" class="p-2 -mr-2" (click)="toggleMobileMenu()" [attr.aria-expanded]="isMobileMenuOpen"
+        <button type="button" class="p-2 -mr-2 block md:hidden" (click)="toggleMobileMenu()" [attr.aria-expanded]="isMobileMenuOpen"
             aria-label="Abrir menú" [ngClass]="{
                 'text-white': !hasNavbarBackground,
                 'text-gray-900': hasNavbarBackground
@@ -28,9 +27,9 @@
             </svg>
             }
         </button>
-        } @else {
+
         <!-- Desktop: menú completo -->
-        <div class="flex items-center gap-6 lg:gap-8">
+        <div class="flex items-center gap-6 lg:gap-8 hidden md:flex">
             @for (item of menuItems(); track item.label;let i = $index) {
             <a [routerLink]="item.routerLink" (mouseenter)="handleMouseEnter(item)" [ngClass]="{
                     ' hover:text-primary-blue': !isScrolled,
@@ -51,7 +50,7 @@
             </a>
             }
         </div>
-        <div class="flex items-center gap-4 lg:gap-6">
+        <div class="flex items-center gap-4 lg:gap-6 hidden md:flex">
             <button type="button" class="search-panel-trigger" (click)="toggleSearchPanel()" [ngClass]="{
                     'text-white hover:text-primary-blue': !isNavbarDark,
                     'text-gray-900 hover:text-p-600': isNavbarDark
@@ -66,14 +65,14 @@
                 Contact
             </a>
         </div>
-        }
+        
     </div>
 </nav>
 
 <!-- Mobile: panel lateral (overlay + drawer) -->
-@if (isTabletOrMobile && isMobileMenuOpen) {
-<div class="fixed inset-0 z-40 bg-black/40" (click)="closeMobileMenu()" aria-hidden="true"></div>
-<div class="fixed top-0 right-0 h-full w-full max-w-sm z-50 bg-white shadow-xl overflow-y-auto animate-slide-in-right">
+@if ( isMobileMenuOpen) {
+<div class="fixed inset-0 z-40 bg-black/40 block md:hidden" (click)="closeMobileMenu()" aria-hidden="true"></div>
+<div class="fixed top-0 right-0 h-full w-full max-w-sm z-50 bg-white shadow-xl overflow-y-auto animate-slide-in-right block md:hidden">
 
     <div class="flex flex-col py-6 ">
         <div class="flex justify-between items-center px-4 border-b pb-4 border-gray-300/60">
@@ -158,7 +157,7 @@
     </div>
 </div>
 }
-@if (!isTabletOrMobile && hoveredIndex() === 0){
+@if (hoveredIndex() === 0){
 <div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(0)" (mouseleave)="onNavMouseLeave()" tabindex="0"
     (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
     <app-menu-list [content]="content()?.services ?? []" [featuredTitle]="featuredTitleServices()"
@@ -172,7 +171,7 @@
         [featuredTitle]="featuredTitleIndustries()"></app-menu-list>
 </div>
 }
-@if (!isTabletOrMobile && hoveredIndex() === 2){
+@if ( hoveredIndex() === 2){
 <div class=" flex flex-col nav--body" (mouseenter)="onMouseEnter(2)" (mouseleave)="onNavMouseLeave()" tabindex="0"
     (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
     <app-menu-list [content]="content()?.resources ?? []" [caseStudies]="featuredCaseStudies()"
