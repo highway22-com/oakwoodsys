@@ -55,8 +55,10 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
   @Input({ required: true }) featuredCategory!: FeaturedCaseStudyCategory;
   @Input({ required: false }) primaryTagSlug: string | undefined;
 
-  /** Slugs de case studies a mostrar. */
+  /** Slugs de case studies/blogs a mostrar (prioridad de selección). */
   @Input({ required: true }) slugsFeaturedCaseStudies!: string[];
+  /** Máximo de ítems a cargar (por defecto 10). Si hay más slugs, se rellenan con los más recientes. */
+  @Input({ required: false }) maxItems = 10;
 
   readonly caseStudiesData = signal<FeaturedCaseStudyCardsView[]>([]);
   readonly loading = signal(true);
@@ -126,12 +128,12 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
       return;
     }
 
-    const key = this.slugKey(slugs) + '|' + this.featuredCategory + '|' + (this.primaryTagSlug ?? '') + '|' + this.isBlogs;
+    const key = this.slugKey(slugs) + '|' + this.featuredCategory + '|' + (this.primaryTagSlug ?? '') + '|' + this.isBlogs + '|' + this.maxItems;
     if (key === this.lastSlugKey) return;
     this.lastSlugKey = key;
 
     this.loading.set(true);
-    const [slug1, slug2] = slugs.slice(0, 2);
+    const slugsToPick = slugs.slice(0, this.maxItems);
     const categorySlug = this.featuredCategory;
     const primaryTagSlug = this.primaryTagSlug;
 
@@ -156,13 +158,13 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
             );
             const bySlug = (s: string) => list.find((c) => c.slug === s);
             const picked: GenContentListNode[] = [];
-            const a = bySlug(slug1);
-            const b = bySlug(slug2);
-            if (a) picked.push(a);
-            if (b && b !== a) picked.push(b);
-            if (picked.length < 2) {
+            for (const slug of slugsToPick) {
+              const found = bySlug(slug);
+              if (found && !picked.includes(found)) picked.push(found);
+            }
+            if (picked.length < this.maxItems) {
               const rest = list.filter((c) => !picked.includes(c));
-              picked.push(...rest.slice(0, 2 - picked.length));
+              picked.push(...rest.slice(0, this.maxItems - picked.length));
             }
             const viewList = picked.map((n) => this.mapBlogNodeToView(n));
             this.caseStudiesData.set(viewList);
@@ -196,13 +198,13 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
             );
             const bySlug = (s: string) => list.find((c) => c.slug === s);
             const picked: CaseStudy[] = [];
-            const a = bySlug(slug1);
-            const b = bySlug(slug2);
-            if (a) picked.push(a);
-            if (b && b !== a) picked.push(b);
-            if (picked.length < 2) {
+            for (const slug of slugsToPick) {
+              const found = bySlug(slug);
+              if (found && !picked.includes(found)) picked.push(found);
+            }
+            if (picked.length < this.maxItems) {
               const rest = list.filter((c) => !picked.includes(c));
-              picked.push(...rest.slice(0, 2 - picked.length));
+              picked.push(...rest.slice(0, this.maxItems - picked.length));
             }
             const viewList = picked.map((cs) => this.mapCaseStudyToListView(cs));
             this.caseStudiesData.set(viewList);
