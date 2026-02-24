@@ -146,6 +146,31 @@ export class GraphQLContentService {
   }
 
   /**
+   * Lista de Gen Content por tag y categoría (blog o case-study).
+   * Útil para related posts por primaryTag.
+   */
+  getGenContentsByTagAndCategory(
+    tagSlug: string,
+    categorySlug: 'blog' | 'case-study',
+    limit = 6
+  ): Observable<GenContentListNode[]> {
+    if (!tagSlug?.trim()) return of([]);
+    return this.apollo
+      .query<GenContentsByTagAndCategoryResponse>({
+        query: GET_GEN_CONTENTS_BY_TAG_AND_CATEGORY,
+        variables: { tagSlug: tagSlug.trim(), categorySlug },
+        fetchPolicy: 'cache-first',
+      })
+      .pipe(
+        map((result) => {
+          const nodes = (result.data as GenContentsByTagAndCategoryResponse)?.genContents?.nodes ?? [];
+          return nodes.slice(0, limit);
+        }),
+        catchError(() => of([]))
+      );
+  }
+
+  /**
    * Slugs de los primeros N case studies filtrados por tag (primary tag).
    * Útil para featured case studies en páginas de servicio (ej. servicio "manufacturing" → case studies con tag manufacturing).
    */
