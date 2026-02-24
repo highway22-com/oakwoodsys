@@ -15,6 +15,7 @@ import type {
 } from '../../app/api/graphql';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudyCardsSectionComponent } from '../../shared/sections/featured-case-study-cards/featured-case-study';
+import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-study/featured-case-study-category';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { SeoMetaService } from '../../app/services/seo-meta.service';
@@ -112,6 +113,7 @@ interface CaseStudyDetail {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Resources implements OnInit {
+  readonly FeaturedCaseStudyCategory = FeaturedCaseStudyCategory;
     /** Returns sanitized iconSvg for filter icons */
     getSanitizediconSvg(iconSvg: string): SafeHtml {
       return this.sanitizer.bypassSecurityTrustHtml(iconSvg);

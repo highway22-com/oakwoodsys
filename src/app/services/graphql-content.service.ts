@@ -2,7 +2,7 @@ import { inject, Injectable, makeStateKey, PLATFORM_ID, signal, TransferState } 
 import { firstValueFrom } from 'rxjs';
 import { Apollo } from 'apollo-angular';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, catchError, tap, filter, switchMap, take } from 'rxjs/operators';
+import { map, catchError, tap, filter, switchMap, take, shareReplay } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import {
   GET_GEN_CONTENTS_BY_CATEGORY,
@@ -45,8 +45,13 @@ export class GraphQLContentService {
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly caseStudies = signal<CaseStudy[]>([]);
+  readonly blogs = signal<GenContentListNode[]>([]);
   readonly loading = signal<boolean>(false);
   readonly errors = signal<Error | null>(null);
+
+  /** Observables cacheados: primera suscripción dispara la carga, las siguientes reutilizan el resultado. */
+  private blogs$ = this.createBlogsStream();
+  private caseStudies$ = this.createCaseStudiesStream();
 
   /** Categorías y tags de Gen Content (cargados al inicio). Acceso global. */
   readonly genContentCategories = signal<GenContentTaxonomyTerm[]>([]);
@@ -106,11 +111,8 @@ export class GraphQLContentService {
     this.getGenContentsPaginated('blog', 10, null).subscribe();
   }
 
-  /** Lista de posts de blog (genContent categoría "blog"). Misma query que case studies, idType SLUG. */
-  getBlogs(): Observable<GenContentListNode[]> {
-    this.loading.set(true);
-    this.errors.set(null);
-
+  /** Stream de blogs (cache compartido). Primera suscripción carga; siguientes reutilizan. */
+  private createBlogsStream(): Observable<GenContentListNode[]> {
     return this.apollo
       .watchQuery<GenContentsByCategoryResponse>({
         query: GET_GEN_CONTENTS_BY_CATEGORY,
@@ -123,6 +125,7 @@ export class GraphQLContentService {
           const data = result.data as GenContentsByCategoryResponse | undefined;
           const nodes: GenContentListNode[] =
             data?.genContentCategory?.genContents?.nodes ?? [];
+          this.blogs.set(nodes);
           this.loading.set(false);
           return nodes;
         }),
@@ -130,8 +133,16 @@ export class GraphQLContentService {
           this.errors.set(error);
           this.loading.set(false);
           return of([]);
-        })
+        }),
+        shareReplay(1)
       );
+  }
+
+  /** Lista de posts de blog (genContent categoría "blog"). Usa cache compartido. */
+  getBlogs(): Observable<GenContentListNode[]> {
+    this.loading.set(true);
+    this.errors.set(null);
+    return this.blogs$;
   }
 
   /**
@@ -158,11 +169,8 @@ export class GraphQLContentService {
       );
   }
 
-  /** Lista de case studies: misma lógica que blog, filtro categoría "case-study". */
-  getCaseStudies(): Observable<CaseStudy[]> {
-    this.loading.set(true);
-    this.errors.set(null);
-
+  /** Stream de case studies (cache compartido). Primera suscripción carga; siguientes reutilizan. */
+  private createCaseStudiesStream(): Observable<CaseStudy[]> {
     return this.apollo
       .watchQuery<GenContentsByCategoryResponse>({
         query: GET_GEN_CONTENTS_BY_CATEGORY,
@@ -186,15 +194,24 @@ export class GraphQLContentService {
           this.errors.set(error);
           this.loading.set(false);
           return of([]);
-        })
+        }),
+        shareReplay(1)
       );
   }
 
+  /** Lista de case studies. Usa cache compartido. */
+  getCaseStudies(): Observable<CaseStudy[]> {
+    this.loading.set(true);
+    this.errors.set(null);
+    return this.caseStudies$;
+  }
+
   private genContentNodeToCaseStudy(n: GenContentListNode): CaseStudy {
-    const categoryName =
-      n.genContentCategories?.nodes?.[0]?.name ?? 'Case Study';
-    const categorySlug =
-      n.genContentCategories?.nodes?.[0]?.slug ?? 'case-study';
+    const rawNodes = n.genContentCategories?.nodes ?? [];
+    const categoryNodes =
+      rawNodes.length > 0
+        ? rawNodes.map((c) => ({ name: c.name, slug: c.slug }))
+        : [{ name: 'Case Study', slug: 'case-study' }];
     return {
       id: n.id,
       title: n.title,
@@ -210,8 +227,11 @@ export class GraphQLContentService {
         }
         : undefined,
       caseStudyCategories: {
-        nodes: [{ name: categoryName, slug: categorySlug }],
+        nodes: categoryNodes,
       },
+      genContentTags: n.genContentTags
+        ? { nodes: [...(n.genContentTags.nodes ?? [])] }
+        : undefined,
       caseStudyDetails: {
         tags: n.tags ?? undefined,
         cardDescription: n.excerpt ?? undefined,
