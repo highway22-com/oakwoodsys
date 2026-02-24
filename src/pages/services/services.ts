@@ -4,6 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
+import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { Subscription } from 'rxjs';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { StructuredEngagementsSectionComponent } from '../../shared/sections/structured-engagements/structured-engagements';
@@ -137,7 +138,7 @@ interface ServicesContent {
 
 @Component({
   selector: 'app-services',
-  imports: [CommonModule, RouterLink, VideoHero, FeaturedCaseStudySectionComponent, CtaSectionComponent, TrustedBySectionComponent,StructuredEngagementsSectionComponent],
+  imports: [CommonModule, RouterLink, VideoHero, FeaturedCaseStudySectionComponent, CtaSectionComponent, TrustedBySectionComponent, StructuredEngagementsSectionComponent],
   templateUrl: './services.html',
   styleUrl: './services.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -147,6 +148,7 @@ export default class Services implements OnInit, OnDestroy {
 
   private readonly route = inject(ActivatedRoute);
   private readonly http = inject(HttpClient);
+  private readonly graphql = inject(GraphQLContentService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly seoMeta = inject(SeoMetaService);
   readonly sanitizer = inject(DomSanitizer);
@@ -156,15 +158,17 @@ export default class Services implements OnInit, OnDestroy {
   readonly slug = signal<string | null>(null);
   readonly content = signal<ServiceContent | null>(null);
   readonly loading = signal(true);
+  /** Slugs de case studies por primary tag (cuando no vienen en featuredCaseStudySlugs). */
+  readonly featuredSlugsFromTag = signal<string[]>([]);
   readonly error = signal<string | null>(null);
   readonly structuredData = signal<any>(null);
   readonly structuredEngagementSection = signal<any>(null);
   readonly showStructuredEngagements = signal(true);
 
-    getIconSvg(iconKey: string) {
-      const svg = SvgIcons[iconKey] || '';
-      return this.sanitizer.bypassSecurityTrustHtml(svg);
-    }
+  getIconSvg(iconKey: string) {
+    const svg = SvgIcons[iconKey] || '';
+    return this.sanitizer.bypassSecurityTrustHtml(svg);
+  }
 
   ngOnInit() {
     // Set default meta description for services pages
@@ -293,13 +297,15 @@ export default class Services implements OnInit, OnDestroy {
     }
   }
 
-  /** Slugs para app-featured-case-study (desde contenido del servicio o por defecto). */
+  /** Slugs para app-featured-case-study: desde contenido JSON, por primary tag del servicio, o por defecto. */
   getSlugsForFeaturedSection(): string[] {
     const slugs = this.content()?.featuredCaseStudySlugs;
     if (Array.isArray(slugs) && slugs.length > 0) return slugs;
+    const fromTag = this.featuredSlugsFromTag();
+    if (fromTag.length > 0) return fromTag;
     return [
       'secure-azure-research-environment-architecture',
-      'secure-azure-research-environment-architecture',
+      'enterprise-reporting-and-data-roadmap-development',
     ];
   }
 
@@ -316,8 +322,18 @@ export default class Services implements OnInit, OnDestroy {
           this.content.set(serviceContent);
           this.updateMetadata(serviceContent);
           this.updateStructuredData(serviceContent);
+          // Si no hay slugs definidos en el JSON, obtener los 2 primeros case studies por primary tag = slug del servicio
+          if (!serviceContent.featuredCaseStudySlugs?.length && slugValue) {
+            this.graphql.getCaseStudySlugsByTag(slugValue, 2).subscribe({
+              next: (slugs) => this.featuredSlugsFromTag.set(slugs),
+              error: () => this.featuredSlugsFromTag.set([]),
+            });
+          } else {
+            this.featuredSlugsFromTag.set([]);
+          }
         } else {
           this.error.set(`Service "${slugValue}" not found`);
+          this.featuredSlugsFromTag.set([]);
           this.router.navigate(['/404']);
         }
         this.loading.set(false);
@@ -325,6 +341,7 @@ export default class Services implements OnInit, OnDestroy {
       error: (error) => {
         console.error('Error loading services content:', error);
         this.error.set('Failed to load service content');
+        this.featuredSlugsFromTag.set([]);
         this.loading.set(false);
       }
     });

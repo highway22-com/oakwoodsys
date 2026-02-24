@@ -40,7 +40,8 @@ export const routes: Routes = [
     },
     {
         path: 'resources/case-studies',
-        loadComponent: () => import('../pages/resources/resources-wordpress')
+        loadComponent: () => import('../pages/blogs/blogs'),
+        data: { isBlogs: false }
     },
     {
         path: 'resources',
