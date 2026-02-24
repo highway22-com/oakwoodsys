@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal, input, PLATFORM_ID, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal, input, PLATFORM_ID, NgZone, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Apollo, gql } from 'apollo-angular';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
+import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { GET_GEN_CONTENTS_BY_SLUGS, getPrimaryTagName } from '../../app/api/graphql';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { readingTimeMinutes } from '../../app/utils/reading-time.util';
@@ -60,6 +61,9 @@ export interface PostDetail {
   featuredImage?: { node: { sourceUrl: string; altText: string | null } } | null;
   showContactSection?: boolean;
   relatedBloqs?: PostDetail[];
+  relatedCaseStudies?: PostDetail[];
+  /** Posts relacionados por primaryTag (cargados por tag). */
+  relatedPosts?: PostDetail[];
   /** Head (Gen Content ACF oakwood_* — no chocar con otros plugins SEO). */
   headTitle?: string | null;
   headDescription?: string | null;
@@ -82,6 +86,7 @@ export default class Post implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly apollo = inject(Apollo);
+  private readonly graphql = inject(GraphQLContentService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seoMeta = inject(SeoMetaService);
   private readonly platformId = inject(PLATFORM_ID);
@@ -89,13 +94,18 @@ export default class Post implements OnInit, OnDestroy {
   private scrollListener?: () => void;
   private routeSub?: { unsubscribe(): void };
   readonly decodeHtmlEntities = decodeHtmlEntities;
-
+  readonly isCaseStudy = computed(() => this.router.url.startsWith('/resources/case-studies'));
   readonly post = signal<PostDetail | null>(null);
   readonly loading = signal(true);
   readonly error = signal<any>(null);
   readonly activeSection = signal<string>('');
   readonly tableOfContents = signal<{ id: string; text: string }[]>([]);
   readonly readingTimeMinutes = readingTimeMinutes;
+
+  /** Base de ruta para links de posts relacionados (blog o case-studies). */
+  getRelatedLinkBase(): string {
+    return this.router.url.startsWith('/resources/case-studies') ? '/resources/case-studies' : '/blog';
+  }
 
   /** Breadcrumbs: Home, (IT Blog | Case Studies), título del post. Basado en app.routes (blog vs resources/case-studies). */
   getBreadcrumbs(): { label: string; link?: string }[] {
@@ -110,6 +120,32 @@ export default class Post implements OnInit, OnDestroy {
     ];
   }
 
+  /** Carga relatedPosts por primaryTag (busca posts con el mismo tag). */
+  private loadRelatedPostsByTag(postData: PostDetail, currentSlug: string): void {
+    const primaryTag = postData.primaryTag;
+    if (!primaryTag?.trim()) return;
+    const tags = this.graphql.genContentTags();
+    const tagMatch = tags.find((t) => t.name?.toLowerCase() === primaryTag.trim().toLowerCase());
+    const tagSlug = tagMatch?.slug;
+    if (!tagSlug) return;
+    const isCaseStudy = this.router.url.startsWith('/resources/case-studies');
+    const categorySlug = isCaseStudy ? 'case-study' : 'blog';
+    this.graphql
+      .getGenContentsByTagAndCategory(tagSlug, categorySlug, 2)
+      .subscribe({
+        next: (nodes) => {
+          const filtered = nodes.filter((n) => n.slug !== currentSlug);
+          debugger
+          const raw = filtered as unknown as Record<string, unknown>[];
+          const related = this.mapRelatedBloqs(raw);
+          this.ngZone.run(() => {
+            const current = this.post();
+            if (current) this.post.set({ ...current, relatedPosts: related });
+          });
+        },
+      });
+  }
+
   private mapRelatedBloqs(raw: Record<string, unknown>[]): PostDetail[] {
     const defaultAuthor: PostAuthor = { node: { email: '', firstName: '', id: '' } };
     return raw.map((r) => {
@@ -120,7 +156,7 @@ export default class Post implements OnInit, OnDestroy {
         content: '',
         excerpt,
         slug: (r['slug'] as string) ?? '',
-        date: '',
+        date: (r['date'] as string) ?? '',
         author: defaultAuthor,
         sanitizedExcerpt: excerpt.trim()
           ? this.sanitizer.bypassSecurityTrustHtml(excerpt.trim())
@@ -276,6 +312,7 @@ export default class Post implements OnInit, OnDestroy {
                 },
               });
             }
+            this.loadRelatedPostsByTag(postData, slugValue);
             if (isPlatformBrowser(this.platformId)) {
               setTimeout(() => {
                 this.setupScrollListener();
