@@ -7,6 +7,7 @@ import { VideoHero } from '../../shared/video-hero/video-hero';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { TrustedBySectionComponent } from "../../shared/sections/trusted-by/trusted-by";
 import { FeaturedCaseStudySectionComponent } from "../../shared/sections/featured-case-study/featured-case-study";
+import { FeaturedCaseStudyCategory } from "../../shared/sections/featured-case-study/featured-case-study-category";
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 
 interface IndustryChallengeCard {
@@ -77,6 +78,7 @@ interface IndustriesContent {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Industries implements OnInit, OnDestroy {
+  readonly FeaturedCaseStudyCategory = FeaturedCaseStudyCategory;
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);

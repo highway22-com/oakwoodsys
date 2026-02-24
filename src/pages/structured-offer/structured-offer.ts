@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
+import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-study/featured-case-study-category';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 
 interface StructuredOfferSection {
@@ -1044,6 +1045,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StructuredOffer implements OnInit, OnDestroy {
+  readonly FeaturedCaseStudyCategory = FeaturedCaseStudyCategory;
   private readonly route = inject(ActivatedRoute);
   private readonly seoMeta = inject(SeoMetaService);
   private readonly platformId = inject(PLATFORM_ID);

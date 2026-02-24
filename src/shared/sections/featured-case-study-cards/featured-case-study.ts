@@ -4,9 +4,10 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { GraphQLContentService } from '../../../app/services/graphql-content.service';
-import type { CaseStudy } from '../../../app/api/graphql';
+import type { CaseStudy, GenContentListNode } from '../../../app/api/graphql';
 import { take } from 'rxjs/operators';
 import { decodeHtmlEntities } from '../../../app/utils/cast';
+import { FeaturedCaseStudyCategory } from '../featured-case-study/featured-case-study-category';
 
 /** Vista de un case study para el template (mapeado desde CaseStudy / Gen Content lista, misma estructura que post). */
 export interface FeaturedCaseStudyCardsView {
@@ -48,6 +49,12 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
   readonly titleText = 'Featured Case Study'
   readonly decodeHtmlEntities = decodeHtmlEntities;
 
+  /** true = blog, false = case studies/resources. */
+  @Input({ required: false }) isBlogs = true;
+  /** Categoría de featured (enum). Define el contexto: blog/resources, menu, industry, services, home. */
+  @Input({ required: true }) featuredCategory!: FeaturedCaseStudyCategory;
+  @Input({ required: false }) primaryTagSlug: string | undefined;
+
   /** Slugs de case studies a mostrar. */
   @Input({ required: true }) slugsFeaturedCaseStudies!: string[];
 
@@ -79,14 +86,22 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
   }
 
   ngOnInit(): void {
-    this.loadCaseStudies();
+    this.loadContent();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     const slugsChange = changes['slugsFeaturedCaseStudies'];
+    const categoryChange = changes['featuredCategory'];
+    const tagChange = changes['primaryTagSlug'];
+    const isBlogsChange = changes['isBlogs'];
     if (slugsChange && !slugsChange.firstChange) {
-      const key = this.slugKey(this.slugsFeaturedCaseStudies);
-      if (key !== this.lastSlugKey) this.loadCaseStudies();
+      this.loadContent();
+    } else if (categoryChange && !categoryChange.firstChange) {
+      this.loadContent();
+    } else if (tagChange && !tagChange.firstChange) {
+      this.loadContent();
+    } else if (isBlogsChange && !isBlogsChange.firstChange) {
+      this.loadContent();
     }
   }
 
@@ -103,50 +118,130 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
     }
   }
 
-  /** Carga case studies con la misma query que resources (GET_GEN_CONTENTS_BY_CATEGORY, case-study); estructura tipo post. */
-  private loadCaseStudies(): void {
+  /** Carga blogs o case studies según isBlogs; filtra por categoría y tag. */
+  private loadContent(): void {
     const slugs = this.slugsFeaturedCaseStudies;
     if (!slugs?.length) {
       this.loading.set(false);
       return;
     }
 
-    const key = this.slugKey(slugs);
+    const key = this.slugKey(slugs) + '|' + this.featuredCategory + '|' + (this.primaryTagSlug ?? '') + '|' + this.isBlogs;
     if (key === this.lastSlugKey) return;
     this.lastSlugKey = key;
 
     this.loading.set(true);
     const [slug1, slug2] = slugs.slice(0, 2);
+    const categorySlug = this.featuredCategory;
+    const primaryTagSlug = this.primaryTagSlug;
 
-    this.graphql
-      .getCaseStudies()
-      .pipe(take(1), takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (caseStudies) => {
-          const bySlug = (s: string) => caseStudies.find((c) => c.slug === s);
-          const picked: CaseStudy[] = [];
-          const a = bySlug(slug1);
-          const b = bySlug(slug2);
-          if (a) picked.push(a);
-          if (b && b !== a) picked.push(b);
-          if (picked.length < 2) {
-            const rest = caseStudies.filter((c) => !picked.includes(c));
-            picked.push(...rest.slice(0, 2 - picked.length));
-          }
-          const list = picked.map((cs) => this.mapCaseStudyToListView(cs));
-          this.caseStudiesData.set(list);
-          if (this.selectedIndex() >= list.length) {
-            this.selectedIndex.set(0);
-          }
-          this.loading.set(false);
-          this.cdr.markForCheck();
+    if (this.isBlogs) {
+      this.graphql
+        .getBlogs()
+        .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (nodes) => {
+            const filtered = [...nodes].filter((n) =>
+              n.genContentCategories?.nodes?.find((c) => c.slug === categorySlug)
+            );
+            let _list = filtered.length > 0 ? filtered : nodes;
+            if (primaryTagSlug) {
+              const byTag = [..._list].filter((n) =>
+                n.genContentTags?.nodes?.find((t) => t.slug === primaryTagSlug)
+              );
+              _list = byTag.length > 0 ? byTag : _list;
+            }
+            const list = [..._list].sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            );
+            const bySlug = (s: string) => list.find((c) => c.slug === s);
+            const picked: GenContentListNode[] = [];
+            const a = bySlug(slug1);
+            const b = bySlug(slug2);
+            if (a) picked.push(a);
+            if (b && b !== a) picked.push(b);
+            if (picked.length < 2) {
+              const rest = list.filter((c) => !picked.includes(c));
+              picked.push(...rest.slice(0, 2 - picked.length));
+            }
+            const viewList = picked.map((n) => this.mapBlogNodeToView(n));
+            this.caseStudiesData.set(viewList);
+            if (this.selectedIndex() >= viewList.length) this.selectedIndex.set(0);
+            this.loading.set(false);
+            this.cdr.markForCheck();
+          },
+          error: () => {
+            this.loading.set(false);
+            this.cdr.markForCheck();
+          },
+        });
+    } else {
+      this.graphql
+        .getCaseStudies()
+        .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (caseStudies) => {
+            const filtered = [...caseStudies].filter((n) =>
+              n.caseStudyCategories?.nodes?.find((c) => c.slug === categorySlug)
+            );
+            let _list = filtered.length > 0 ? filtered : caseStudies;
+            if (primaryTagSlug) {
+              const byTag = [..._list].filter((n) =>
+                n.genContentTags?.nodes?.find((t) => t.slug === primaryTagSlug)
+              );
+              _list = byTag.length > 0 ? byTag : _list;
+            }
+            const list = [..._list].sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            );
+            const bySlug = (s: string) => list.find((c) => c.slug === s);
+            const picked: CaseStudy[] = [];
+            const a = bySlug(slug1);
+            const b = bySlug(slug2);
+            if (a) picked.push(a);
+            if (b && b !== a) picked.push(b);
+            if (picked.length < 2) {
+              const rest = list.filter((c) => !picked.includes(c));
+              picked.push(...rest.slice(0, 2 - picked.length));
+            }
+            const viewList = picked.map((cs) => this.mapCaseStudyToListView(cs));
+            this.caseStudiesData.set(viewList);
+            if (this.selectedIndex() >= viewList.length) this.selectedIndex.set(0);
+            this.loading.set(false);
+            this.cdr.markForCheck();
+          },
+          error: () => {
+            this.loading.set(false);
+            this.cdr.markForCheck();
+          },
+        });
+    }
+  }
+
+  /** Mapea GenContentListNode (blog) a FeaturedCaseStudyCardsView. */
+  private mapBlogNodeToView(n: GenContentListNode): FeaturedCaseStudyCardsView {
+    const tag = n.genContentTags?.nodes?.[0]?.name ?? n.genContentCategories?.nodes?.[0]?.name ?? 'Blog';
+    return {
+      label: 'Featured Post',
+      tag,
+      title: n.title ?? '',
+      description: n.excerpt?.trim() ?? '',
+      image: {
+        url: n.featuredImage?.node?.sourceUrl,
+        alt: n.featuredImage?.node?.altText ?? undefined,
+      },
+      cta: {
+        primary: {
+          text: 'Read more',
+          link: `/blog/${n.slug}`,
+          backgroundColor: '#1e3a5f',
         },
-        error: () => {
-          console.error('Error loading case studies');
-          this.loading.set(false);
-          this.cdr.markForCheck();
+        secondary: {
+          text: 'View all blog',
+          link: '/blog',
         },
-      });
+      },
+    };
   }
 
   /** Mapea CaseStudy (lista Gen Content, misma estructura que post) a FeaturedCaseStudyCardsView. */

@@ -226,6 +226,10 @@ export interface CaseStudy {
   caseStudyCategories?: {
     nodes: CaseStudyCategoryNode[];
   };
+  /** Tags desde genContentTags (para filtrar por primaryTagSlug). */
+  genContentTags?: {
+    nodes: Array<{ name: string; slug: string }>;
+  };
   caseStudyDetails?: CaseStudyDetails;
   /** Head cuando la lista viene de Gen Content (GET_GEN_CONTENTS_BY_CATEGORY). */
   headTitle?: string | null;
@@ -276,6 +280,60 @@ export const GET_GEN_CONTENTS_FOR_SEARCH = gql`
       }
     }
   }
+`;
+
+const GEN_CONTENTS_FIELDS_SHORT = `
+  id
+  title
+  excerpt
+  slug
+  date
+  tags
+  primaryTagName
+  featuredImage {
+    node {
+      sourceUrl
+      altText
+    }
+  }
+  author {
+    node {
+      email
+      firstName
+      id
+    }
+  }
+  authorPerson {
+    id
+    name
+    firstName
+    position
+    picture
+    socialLinks {
+      platform
+      url
+    }
+  }
+  
+  genContentCategories {
+    nodes {
+      name
+      slug
+    }
+  }
+  genContentTags {
+    nodes {
+      name
+      slug
+    }
+  }
+  headTitle
+  headDescription
+  headCanonicalUrl
+  headGeoRegion
+  headGeoPlacename
+  headGeoPosition
+  headJsonLdData
 `;
 
 const GEN_CONTENTS_FIELDS = `
@@ -379,7 +437,7 @@ export const GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED = gql`
           endCursor
         }
         nodes {
-          ${GEN_CONTENTS_FIELDS}
+          ${GEN_CONTENTS_FIELDS_SHORT}
         }
       }
     }

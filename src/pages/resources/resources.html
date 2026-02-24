@@ -6,6 +6,8 @@
 <div class="w-full lg:bg-p-10 p-6 sm:p-10">
   @if (featuredCaseStudy(); as featured) {
     <app-featured-case-study-cards
+      [isBlogs]="false"
+      [featuredCategory]="FeaturedCaseStudyCategory.CaseStudyResources"
       [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()"
     />
   }
