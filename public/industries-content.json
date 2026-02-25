@@ -60,7 +60,7 @@
             "id": "02",
             "image": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&q=80",
             "title": "Data locked in silos",
-            "description": "Critical patient and operational data is often scattered across EMRs, imaging, and legacy systems."
+            "description": "Critical patient and operational data is often scattered across EHRs, imaging, and legacy systems."
           },
           {
             "id": "03",
@@ -76,24 +76,24 @@
         "subDescription": "Modernizing patient care, unifying data and strengthening collaboration to deliver safe, faster, and more connected patient care.",
         "cards": [
           {
-            "icon": "/assets/heal.png",
+            "icon": "healthService1",
             "title": "Unify the data estate",
             "description": "Oakwood brings clinical, operational, and financial data together to support real-time insights and AI readiness."
           },
           {
-            "icon": "/assets/heal.png",
+            "icon": "healthService2",
             "title": "Improve care team collaboration",
-            "description": "Harness modern communication, streamline collaboration, and maximize automation."
+            "description": "Oakwood modernizes communication, Teams based collaboration, and workflow automation."
           },
           {
-            "icon": "/assets/heal.png",
+            "icon": "healthService3",
             "title": "Modernize clinical and operational systems",
             "description": "Oakwood updates legacy applications, builds new digital tools, and integrates modern cloud solutions."
           },
           {
-            "icon": "/assets/heal.png",
+            "icon": "healthService4",
             "title": "Strengthen healthcare security and compliance",
-            "description": "Oakwood protects sensitive patient data with Microsoft security tools designed for regulated environments."
+            "description": "Oakwood protects sensitive health data with Microsoft security tools designed for regulated environments."
           }
         ],
         "cta": {
@@ -196,27 +196,27 @@
       "howWeImprove": {
         "sectionTitle": "MANUFACTURING TRANSFORMATION",
         "mainHeading": "How Oakwood powers smarter manufacturing operations",
-        "subDescription": "Modernizing patterns, unifying data, and retooling plant floor intelligence to drive safer, faster, and more efficient production.",
+        "subDescription": "Modernizing systems, unifying data, and enhancing plant-floor intelligence to drive safer, faster, and more efficient production.",
         "cards": [
           {
-            "icon": "/assets/manu.png",
+            "icon": "manufacturingService1",
             "title": "Modernize and integrate critical applications",
-            "description": "Oakwood optimizes core systems and connects them to modern cloud platforms."
+            "description": "Oakwood updates core systems and connects them to modern cloud platforms."
           },
           {
-            "icon": "/assets/manu.png",
+            "icon": "manufacturingService2",
             "title": "Enable data driven operations",
-            "description": "Oakwood unifies manufacturing, quality, and IoT sensor data for predictive and AI insights."
+            "description": "Oakwood unifies manufacturing, quality, and supply chain data for analytics and AI."
           },
           {
-            "icon": "/assets/manu.png",
+            "icon": "manufacturingService3",
             "title": "Enhance plant floor visibility",
-            "description": "Oakwood unifies workflows, dashboards, and IoT solutions that provide real-time operational insights."
+            "description": "Oakwood builds workflows, dashboards, and IoT solutions that provide real time operational insight."
           },
           {
-            "icon": "/assets/manu.png",
+            "icon": "manufacturingService4",
             "title": "Protect intellectual property and operational systems",
-            "description": "Oakwood deploys Microsoft security tools to reduce IoT/OT risk."
+            "description": "Oakwood deploys Microsoft security tools to reduce OT and IT risk."
           }
         ],
         "cta": {
@@ -297,7 +297,7 @@
       "industryChallenges": {
         "sectionTitle": "INDUSTRY CHALLENGES",
         "mainHeading": "Key challenges facing education and public sector organizations",
-        "subDescription": "Aging systems, rising security demands, and limited resources make it difficult to deliver modern, accessible digital services.",
+        "subDescription": "Education and public sector organizations face aging technology, tight budgets, and increasing expectations for secure, accessible digital services.",
         "cards": [
           {
             "id": "01",
@@ -325,24 +325,24 @@
         "subDescription": "Oakwood helps organizations modernize systems, enhancing security, and improving data access to deliver more accessible and efficient digital services.",
         "cards": [
           {
-            "icon": "/assets/educ.png",
+            "icon": "educationAndPublicService1",
             "title": "Modernize core systems and applications",
-            "description": "Oakwood optimizes outdated platforms and enables a cloud-first approach."
+            "description": "Oakwood updates outdated platforms and enables cloud forward operations."
           },
           {
-            "icon": "/assets/educ.png",
+            "icon": "educationAndPublicService2",
             "title": "Strengthen security and compliance",
-            "description": "Oakwood deploys Microsoft security tools required for public sector accreditation needs."
+            "description": "Oakwood deploys Microsoft security tools designed for public sector and education needs."
           },
           {
-            "icon": "/assets/educ.png",
+            "icon": "educationAndPublicService3",
             "title": "Unify and improve access to data",
             "description": "Oakwood builds data platforms that enable reporting, insights, and AI."
           },
           {
-            "icon": "/assets/educ.png",
+            "icon": "educationAndPublicService4",
             "title": "Enhance digital services for students and citizens",
-            "description": "Oakwood helps create intuitive, accessible user experiences."
+            "description": "Oakwood helps deliver intuitive, accessible user experiences."
           }
         ],
         "cta": {
@@ -377,8 +377,8 @@
     },
     "retail": {
       "slug": "retail",
-      "title": "Retail Powered by Data and Intelligent Technology",
-      "description": "Oakwood helps retailers unify data, modernize operations, and deliver personalized experiences that outperform the competition.",
+      "title": "Create Intelligent, Connected Retail Experiences",
+      "description": "Oakwood helps retailers improve customer engagement, optimize operations, and use data to make confident, real-time decisions.",
       "backgroundImage": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80",
       "videoUrls": [
         "https://oakwoodsys.com/wp-content/uploads/2026/02/In-Retail.mp4"
@@ -423,25 +423,25 @@
       "industryChallenges": {
         "sectionTitle": "INDUSTRY CHALLENGES",
         "mainHeading": "The critical obstacles retail teams face",
-        "subDescription": "Retailers face fragmented channels, disconnected inventory and customer data, and pressure to deliver seamless omnichannel experiences at speed.",
+        "subDescription": "Retailers must adapt to shifting customer expectations, shrinking margins, and the need for smarter, data driven operations across both online and in store environments.",
         "cards": [
           {
             "id": "01",
             "image": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80",
-            "title": "Fragmented omnichannel experiences",
-            "description": "Disconnected systems across stores, e-commerce, and fulfillment slow decisions and create inconsistent customer experiences."
+            "title": "Fragmented Customer Journeys",
+            "description": "Siloed online and in store systems limit personalization and consistency."
           },
           {
             "id": "02",
             "image": "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&q=80",
-            "title": "Data locked in silos",
-            "description": "Customer, inventory, and operational data is scattered across legacy and point solutions, limiting personalization and insights."
+            "title": "Inventory and Supply Chain Blind Spots",
+            "description": "Lack of real time visibility impacts forecasting and fulfillment."
           },
           {
             "id": "03",
             "image": "https://images.unsplash.com/photo-1556742111-a301076d9d18?w=800&q=80",
-            "title": "Legacy systems and scaling limits",
-            "description": "Outdated platforms and manual processes limit agility and make it hard to respond to demand and competition."
+            "title": "High Security and Fraud Pressure",
+            "description": "Rising digital transactions create new risks for retailers."
           }
         ]
       },
@@ -451,24 +451,24 @@
         "subDescription": "Unifying data, modernizing commerce and supply chain systems, and enabling AI-ready insights to drive growth and customer loyalty.",
         "cards": [
           {
-            "icon": "/assets/reta.png",
-            "title": "Unify customer and operational data",
-            "description": "Oakwood brings CRM, commerce, and inventory data together to support personalization and real-time decisions."
+            "icon": "retailService1",
+            "title": "Unify customer and commerce data",
+            "description": "Oakwood integrates data across POS, eCommerce, CRM, and loyalty systems."
           },
           {
-            "icon": "/assets/reta.png",
-            "title": "Modernize commerce and fulfillment",
-            "description": "Oakwood integrates modern cloud platforms to enable seamless omnichannel and flexible fulfillment."
+            "icon": "retailService2",
+            "title": "Improve store and back office operations",
+            "description": "Oakwood builds automated workflows and analytics for retail teams."
           },
           {
-            "icon": "/assets/reta.png",
-            "title": "Enable data-driven merchandising and demand",
-            "description": "Oakwood builds analytics and AI-ready data platforms for demand sensing and assortment optimization."
+            "icon": "retailService3",
+            "title": "Modernize digital shopping experiences",
+            "description": "Oakwood creates faster and more personalized experiences across channels."
           },
           {
-            "icon": "/assets/reta.png",
-            "title": "Strengthen security and compliance",
-            "description": "Oakwood protects customer and payment data with Microsoft security tools built for retail and PCI needs."
+            "icon": "retailService4",
+            "title": "Strengthen security across all retail touchpoints",
+            "description": "Oakwood protects customer data and payment systems using Microsoft security tools."
           }
         ],
         "cta": {
@@ -504,7 +504,7 @@
     "financial-services": {
       "slug": "financial-services",
       "title": "Secure, Compliant, Data Driven Financial Innovation",
-      "description": "Oakwood helps financial institutions modernize securely, unlock value from their data, and adapt at scale, with confidence.",
+      "description": "Oakwood helps financial institutions modernize securely, unlock value from their data, and adopt AI tools with confidence.",
       "backgroundImage": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80",
       "videoUrls": [
         "https://oakwoodsys.com/wp-content/uploads/2026/02/In-Finalcial-Services.mp4"
@@ -548,20 +548,20 @@
       },
       "industryChallenges": {
         "sectionTitle": "INDUSTRY CHALLENGES",
-        "mainHeading": "Key obstacles facing financial services organizations",
-        "subDescription": "Constantly changing regulations, siloed data, and legacy systems strain technology and data teams and limit personalization and modernization.",
+        "mainHeading": "Financial Services",
+        "subDescription": "Banks, credit unions, and financial services firms face evolving regulatory demands, rising consumer expectations, and legacy systems that limit speed and innovation.",
         "cards": [
           {
             "id": "01",
             "image": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80",
             "title": "Complex Regulatory Compliance",
-            "description": "Constantly changing regulations strain technology and data teams."
+            "description": "Constantly changing regulations strain technology and risk teams."
           },
           {
             "id": "02",
             "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
             "title": "Fragmented Customer Data",
-            "description": "Data lives across siloed, multiple systems which limits personalization and insights."
+            "description": "Data lives across multiple systems which limits personalization and insights."
           },
           {
             "id": "03",
@@ -577,24 +577,24 @@
         "subDescription": "Oakwood helps financial institutions strengthen compliance, modernize platforms, unify data, and enhance digital customer experience with Microsoft cloud and security tools.",
         "cards": [
           {
-            "icon": "/assets/fina.png",
+            "icon": "financialService1",
             "title": "Strengthen security and compliance posture",
-            "description": "Oakwood implements Microsoft tools that simplify KYC and regulatory requirements."
+            "description": "Oakwood implements Microsoft tools that support strict regulatory requirements.ss"
           },
           {
-            "icon": "/assets/fina.png",
+            "icon": "financialService2",
             "title": "Modernize legacy platforms",
-            "description": "Oakwood updates core systems and builds cloud-ready application ecosystems."
+            "description": "Oakwood updates core systems and builds cloud ready application ecosystems."
           },
           {
-            "icon": "/assets/fina.png",
+            "icon": "financialService3",
             "title": "Unify customer and transaction data",
-            "description": "Oakwood centralizes financial data to enable insightful and AI-driven insights."
+            "description": "Oakwood centralizes financial data to enable analytics and AI driven insights."
           },
           {
-            "icon": "/assets/fina.png",
-            "title": "Enhance digital customer experience",
-            "description": "Oakwood builds modern digital solutions that improve current engagement."
+            "icon": "financialService4",
+            "title": "Enhance digital customer experiences",
+            "description": "Oakwood builds modern digital solutions that improve speed and engagement."
           }
         ],
         "cta": {
@@ -630,7 +630,7 @@
     "eda": {
       "slug": "eda",
       "title": "Accelerate Chip Design with High Performance Engineering Workflows",
-      "description": "Oakwood enables semiconductor and EDA teams to run faster simulations, optimize compute environments, and gain security with scale HPC.",
+      "description": "Oakwood enables semiconductor and EDA teams to run faster simulations, optimize compute environments, and scale securely with Azure HPC.",
       "backgroundImage": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80",
       "videoUrls": [
         "https://oakwoodsys.com/wp-content/uploads/2026/02/In-Electronic-Design-Automation.mp4"
@@ -687,7 +687,7 @@
             "id": "02",
             "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80",
             "title": "Fragmented engineering environments",
-            "description": "Tools, workflows, and data pipelines are often siloed."
+            "description": "Tools, workflows, and data pipelines are often disjointed."
           },
           {
             "id": "03",
@@ -703,24 +703,24 @@
         "subDescription": "Modernizing HPC environments, streamlining engineering workflows, and enhancing data insight to help semiconductor teams innovate at speed and scale.",
         "cards": [
           {
-            "icon": "/assets/elec.png",
-            "title": "Modernize and scale HPC environments",
-            "description": "Oakwood builds and optimizes HPC environments using Azure-enabled infrastructure."
+            "icon": "electronicDesignAutomationService1",
+            "title": "Modernize and scale hpc environments",
+            "description": "Oakwood builds and optimizes HPC environments using Azure and hybrid infrastructure."
           },
           {
-            "icon": "/assets/elec.png",
+            "icon": "electronicDesignAutomationService2",
             "title": "Streamline engineering workflows",
-            "description": "Oakwood integrates simulation tools, data-tooling, and pipelines."
+            "description": "Oakwood integrates simulation tools, data systems, and pipelines."
           },
           {
-            "icon": "/assets/elec.png",
+            "icon": "electronicDesignAutomationService3",
             "title": "Enhance data and telemetry insight",
-            "description": "Oakwood provides insight into performance, cost, and utilization for engineering workloads."
+            "description": "Oakwood provides visibility into performance, cost, and utilization for engineering workloads."
           },
           {
-            "icon": "/assets/elec.png",
+            "icon": "electronicDesignAutomationService4",
             "title": "Protect high value IP and design assets",
-            "description": "Oakwood deploys Microsoft security tools tailored for engineering and semiconductor firms."
+            "description": "Oakwood deploys Microsoft security tools tailored to engineering and semiconductor firms."
           }
         ],
         "cta": {

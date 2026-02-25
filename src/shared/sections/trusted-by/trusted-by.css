@@ -1,3 +1,21 @@
+@keyframes trustedby-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (hover: hover) {
+  .animate-trustedby-scroll:hover {
+    animation-play-state: paused;
+  }
+}
+.animate-trustedby-scroll {
+  animation: trustedby-scroll 40s linear infinite;
+  will-change: transform;
+}
 /* Trusted By section - scrollbar hide for overflow-x-auto */
 .scrollbar-hide {
   scrollbar-width: none;

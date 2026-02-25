@@ -62,9 +62,10 @@
       @for (card of c.howWeImprove.cards; track card.title) {
       <div class="bg-white  p-6 border border-gray-100 shadow-sm">
         @if (card.icon) {
-        <img [src]="card.icon" [alt]="card.title" class="w-12 h-12 object-contain mb-4" />
+          <span  [innerHTML]="getIconSvg(card.icon || '')"></span>
+        <!-- <img [src]="card.icon" [alt]="card.title" class="w-12 h-12 object-contain mb-4" /> -->
         }
-        <h3 class="text-lg   text-gray-900 mb-2">{{ card.title }}</h3>
+        <h3 class="text-lg   text-gray-900 mb-2 pt-14">{{ card.title }}</h3>
         <p class="text-gray-600 text-sm">{{ card.description }}</p>
       </div>
       }

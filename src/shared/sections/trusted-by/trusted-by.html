@@ -3,17 +3,16 @@
     <h2 id="trusted-by-title" class="text-xl font-bold text-gray-700/80 text-center mb-8 sm:mb-12 md:mb-16">
       {{ title }}
     </h2>
-    <div class="relative" (mouseenter)="onCarouselMouseEnter()" (mouseleave)="onCarouselMouseLeave()">
+    <div class="flex items-center w-full px-2 bg-white" style="min-height:56px;">
       <button type="button"
-        class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-8 z-10 w-10 h-10 lg:w-12 lg:h-12      border-2 border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50 transition-colors duration-200 items-center justify-center shadow-md"
+        class="flex w-10 h-10 lg:w-12 lg:h-12 border-2 border-gray-300 bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200 items-center justify-center shadow-xl rounded-full p-0"
         aria-label="Anterior logos" (click)="scrollPrev()">
         <svg class="w-5 h-5 lg:w-6 lg:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
-      <div #scrollContainer class="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide"
-        style="scrollbar-width: none; -ms-overflow-style: none;" (scroll)="onScroll()">
-        <div class="flex items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-16 min-w-max md:min-w-0">
+      <div #logoScroll class="flex-1 overflow-hidden  px-4 md:mx-0 md:px-0">
+        <div #logoRow class="flex items-center gap-4 sm:gap-8 md:gap-12 lg:gap-16 min-w-max animate-trustedby-scroll hover:paused">
           @for (company of displayCompanies; track $index) {
           @if (getLogoUrl(company); as logoUrl) {
           <div class="shrink-0 opacity-70 hover:opacity-100 transition-opacity duration-200">
@@ -28,7 +27,7 @@
         </div>
       </div>
       <button type="button"
-        class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-8 z-10 w-10 h-10 lg:w-12 lg:h-12      border-2 border-gray-300 bg-white hover:border-blue-600 hover:bg-blue-50 transition-colors duration-200 items-center justify-center shadow-md"
+        class="flex w-10 h-10 lg:w-12 lg:h-12 border-2 border-gray-300 bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200 items-center justify-center shadow-xl rounded-full p-0"
         aria-label="Siguiente logos" (click)="scrollNext()">
         <svg class="w-5 h-5 lg:w-6 lg:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

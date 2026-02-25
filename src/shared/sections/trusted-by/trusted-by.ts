@@ -5,14 +5,10 @@ import {
   ElementRef,
   inject,
   Input,
-  OnChanges,
-  OnDestroy,
-  PLATFORM_ID,
-  SimpleChanges,
+  Renderer2,
   ViewChild,
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-
+import { CommonModule } from '@angular/common';
 /** Mapeo nombre empresa -> asset logo local (public/assets/logos). */
 const LOGO_BY_NAME: Record<string, string> = {
   'Microsoft': '/assets/logos/microsoft.png',
@@ -41,63 +37,72 @@ export interface TrustedByCompany {
   styleUrl: './trusted-by.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TrustedBySectionComponent implements AfterViewInit, OnChanges, OnDestroy {
+
+
+export class TrustedBySectionComponent implements AfterViewInit {
   @Input() title = '';
   @Input() companies: TrustedByCompany[] = [];
-  @ViewChild('scrollContainer') scrollContainer?: ElementRef<HTMLDivElement>;
 
-  private readonly platformId = inject(PLATFORM_ID);
-  private readonly scrollAmount = 280;
-  private autoScrollTimer: ReturnType<typeof setInterval> | null = null;
-  private readonly autoScrollIntervalMs = 30;
-  private readonly autoScrollPx = 1;
+  @ViewChild('logoRow') logoRow?: ElementRef<HTMLDivElement>;
+  @ViewChild('logoScroll') logoScroll?: ElementRef<HTMLDivElement>;
+  private renderer = inject(Renderer2);
+
+  ngAfterViewInit() {
+    // Pause animation on hover (for accessibility, also handled in CSS)
+    const row = this.logoRow?.nativeElement;
+    if (row) {
+      this.renderer.listen(row, 'mouseenter', () => {
+        row.style.animationPlayState = 'paused';
+      });
+      this.renderer.listen(row, 'mouseleave', () => {
+        row.style.animationPlayState = 'running';
+      });
+    }
+  }
+
+  scrollPrev() {
+    const scroll = this.logoScroll?.nativeElement;
+    const row = this.logoRow?.nativeElement;
+    if (scroll && row) {
+      // Pause animation
+      row.style.animation = 'none';
+      // If at start, jump to middle
+      if (scroll.scrollLeft <= 0) {
+        scroll.scrollLeft = scroll.scrollWidth / 3;
+      }
+      scroll.scrollBy({ left: -200, behavior: 'smooth' });
+      setTimeout(() => {
+        row.style.animation = '';
+      }, 600);
+    }
+  }
+
+  scrollNext() {
+    const scroll = this.logoScroll?.nativeElement;
+    const row = this.logoRow?.nativeElement;
+    if (scroll && row) {
+      // Pause animation
+      row.style.animation = 'none';
+      // If at end, jump to start
+      if (scroll.scrollLeft + scroll.offsetWidth >= scroll.scrollWidth) {
+        scroll.scrollLeft = scroll.scrollWidth / 3;
+      }
+      scroll.scrollBy({ left: 200, behavior: 'smooth' });
+      setTimeout(() => {
+        row.style.animation = '';
+      }, 600);
+    }
+  }
 
   /** Lista duplicada para carrusel infinito (bucle izquierda → derecha). */
   get displayCompanies(): TrustedByCompany[] {
     const list = this.companies ?? [];
-    return list.length ? [...list, ...list] : [];
-  }
-
-  ngAfterViewInit(): void {
-    this.startAutoScroll();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['companies'] && this.scrollContainer?.nativeElement) {
-      this.startAutoScroll();
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.stopAutoScroll();
-  }
-
-  private startAutoScroll(): void {
-    this.stopAutoScroll();
-    if (!isPlatformBrowser(this.platformId) || !this.companies?.length) return;
-    this.autoScrollTimer = setInterval(() => {
-      const el = this.scrollContainer?.nativeElement as HTMLElement | undefined;
-      if (!el || typeof el.scrollBy !== 'function') return;
-      el.scrollBy({ left: this.autoScrollPx, behavior: 'auto' });
-      this.onScroll();
-    }, this.autoScrollIntervalMs);
-  }
-
-  private stopAutoScroll(): void {
-    if (this.autoScrollTimer) {
-      clearInterval(this.autoScrollTimer);
-      this.autoScrollTimer = null;
-    }
-  }
-
-  /** Pausa la animación al pasar el ratón (para usar los botones). */
-  onCarouselMouseEnter(): void {
-    this.stopAutoScroll();
-  }
-
-  /** Reanuda la animación al salir el ratón. */
-  onCarouselMouseLeave(): void {
-    this.startAutoScroll();
+    if (!list.length) return [];
+    // Ensure the row is at least 2x the container width for seamless loop
+    // Estimate: if < 10 items, duplicate 3x; if < 20, duplicate 2x; else 1x
+    if (list.length < 10) return [...list, ...list, ...list];
+    if (list.length < 20) return [...list, ...list];
+    return [...list];
   }
 
   getLogoUrl(company: TrustedByCompany): string | undefined {
@@ -106,32 +111,5 @@ export class TrustedBySectionComponent implements AfterViewInit, OnChanges, OnDe
     if (name && LOGO_BY_NAME[name]) return LOGO_BY_NAME[name];
     return undefined;
   }
-
-  /** Ajusta la posición al cruzar la mitad para efecto infinito (bucle). */
-  onScroll(): void {
-    const el = this.scrollContainer?.nativeElement;
-    if (!el) return;
-    const half = el.scrollWidth / 2;
-    if (el.scrollLeft >= half) {
-      el.scrollLeft = el.scrollLeft - half;
-    }
-  }
-
-  scrollPrev(): void {
-    const el = this.scrollContainer?.nativeElement;
-    if (!el) return;
-    const half = el.scrollWidth / 2;
-    if (el.scrollLeft < this.scrollAmount) {
-      el.scrollLeft = half + el.scrollLeft;
-    }
-    el.scrollBy({ left: -this.scrollAmount, behavior: 'smooth' });
-    setTimeout(() => this.onScroll(), 350);
-  }
-
-  scrollNext(): void {
-    const el = this.scrollContainer?.nativeElement;
-    if (!el) return;
-    el.scrollBy({ left: this.scrollAmount, behavior: 'smooth' });
-    setTimeout(() => this.onScroll(), 350);
-  }
 }
+

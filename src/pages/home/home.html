@@ -77,38 +77,46 @@
   <section class="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-white-900" aria-labelledby="services-title">
     <div class=" mx-auto px-4 sm:px-6 md:px-8 lg:px-30">
       <div class="text-center mb-10 sm:mb-12 md:mb-16">
-        <p class="text-base sm:text-base       uppercase tracking-wider text-p-500/80 mb-1">
+        <p class="home-title sm:text-base uppercase tracking-wider mb-1">
           {{ section.label }}
         </p>
-        <h2 id="services-title" class="mb-1 text-s-900">
+        <h2 id="services-title" class="home-title-large mb-1 text-2xl sm:text-3xl md:text-4xl lg:text-[2.5rem] leading-tight sm:leading-snug">
           {{ section.title }}
         </h2>
-        <p class="p-segoe-description text-s-800/80">
+        <p class="home-text-medium">
           {{ section.description }}
         </p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
         @for (service of section.services; track service.id) {
         <article
-          class="group  border border-gray-200/20 p-20 sm:p-8 hover:border-gray-200/60 hover:bg-white transition-shadow duration-300 cursor-pointer">
-          <div class="pb-20">
+          class="group  border border-gray-200/20 p-8 sm:p-8 lg:p-12  hover:border-gray-200/60 hover:bg-white transition-shadow duration-300 cursor-pointer">
+          <div class="pb-16">
             <!-- Icon Container (Left) -->
-            <div
-              class="w-32 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 flex items-start justify-center relative">
-              <img [src]="service.icon" [alt]="service.title + ' service icon'" class=" w-30 h-auto object-cover"
-                loading="lazy" />
-            </div>
+              <div
+                class="w-32 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 flex items-start justify-center relative">
+                <span [innerHTML]="getIconSvg(service.icon || '')"></span>
+              </div>
           </div>
-          <h3 class="text-[2rem]        text-gray-900 w-full text-left leading-tight pb-8 wrap-break-word">
-            {{ service.title }}
+          <h3 class="home-title-semibold w-full text-left leading-tight pb-4 wrap-break-word">
+            <ng-container *ngIf="splitTwoLinerTitle(service.title || '') as parts">
+              <span>{{ parts[0] }}</span><br>
+              <span>{{ parts[1] }}</span>
+            </ng-container>
           </h3>
-          <p class="text-lg text-gray-600 mb-4 sm:mb-6 leading-relaxed font-segoe">
+          <p class="home-text-regular mb-6 leading-relaxed">
             {{ service.description }}
           </p>
           <a [href]="service.link"
-            class="flex items-center  text-xs sm:text-base text-gray-600        group-hover:text-p-500 transition-colors duration-200 ">
-            {{ service.linkText }} <i class="fa-solid fa-chevron-right pl-1.5" style="font-size: 1rem;"
-              aria-hidden="true"></i>
+            class="home-title-semibold-regular flex items-center gap-2 group-hover:text-p-500 transition-colors duration-200 align-middle">
+            <span class="align-middle">{{ service.linkText }}</span>
+            <span class="mt-[1.4px]">
+            <svg width="8" height="13" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg" class="align-middle">
+              <path d="M6.83594 5.60547C7.19141 5.93359 7.19141 6.50781 6.83594 6.83594L1.58594 12.0859C1.25781 12.4414 0.683594 12.4414 0.355469 12.0859C0 11.7578 0 11.1836 0.355469 10.8555L4.97656 6.20703L0.355469 1.58594C0 1.25781 0 0.683594 0.355469 0.355469C0.683594 0 1.25781 0 1.58594 0.355469L6.83594 5.60547Z" fill="#454545"/>
+            </svg>
+
+            </span>
+            
           </a>
         </article>
         }

@@ -1,0 +1,68 @@
+/* Home page title style */
+.home-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 18px;
+  line-height: 150%;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #2A7EBF;
+}
+
+/* Home page large centered title style */
+.home-title-large {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 50px;
+  line-height: 110%;
+  letter-spacing: 0;
+  text-align: center;
+  color: #000;
+}
+
+/* Home page medium Segoe UI centered text style */
+.home-text-medium {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 18px; /* Assuming 'Text Medium' is 18px, adjust if needed */
+  line-height: 150%;
+  letter-spacing: 0;
+  text-align: center;
+  color: #454545;
+}
+
+/* Home page Segoe UI regular 16px style */
+.home-text-regular {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0;
+  color: #454545;
+}
+
+/* Home page Inter semi-bold 32px style */
+.home-title-semibold {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 32px;
+  line-height: 130%;
+  letter-spacing: 0;
+  color: #242424;
+}
+
+/* Home page Inter semi-bold regular text style */
+.home-title-semibold-regular {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 16px; /* Assuming 'Text Regular' is 16px, adjust if needed */
+  line-height: 100%;
+  letter-spacing: 0;
+  color: #454545;
+}
