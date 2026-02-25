@@ -1,87 +1,102 @@
 @if (loading()) {
-  <div class="min-h-screen flex items-center justify-center">
-    <div class="animate-spin h-12 w-12 border-b-2 border-blue-600"></div>
-  </div>
+<div class="min-h-screen flex items-center justify-center">
+  <div class="animate-spin      h-12 w-12 border-b-2 border-blue-600"></div>
+</div>
 }
 
 @if (!loading() && error()) {
-  <div class="min-h-screen flex items-center justify-center">
-    <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-900 mb-4">Error</h1>
-      <p class="text-gray-600">{{ error() }}</p>
-    </div>
+<div class="min-h-screen flex items-center justify-center">
+  <div class="text-center">
+    <h1 class="text-2xl font-bold text-gray-900 mb-4">Error</h1>
+    <p class="text-gray-600">{{ error() }}</p>
   </div>
+</div>
 }
 
 @if (!loading() && !error() && content()) {
-  <!-- Structured Data for SEO -->
-  @if (structuredData()) {
-    <script
-      type="application/ld+json"
-      [innerHTML]="sanitizer.bypassSecurityTrustHtml(getStructuredDataJson())"
-    ></script>
-  }
+<!-- Structured Data for SEO -->
+@if (structuredData()) {
+<script type="application/ld+json" [innerHTML]="sanitizer.bypassSecurityTrustHtml(getStructuredDataJson())"></script>
+}
 
-  <!-- Hero Section with Video Background -->
-  @if (content()?.videoUrls && (content()?.videoUrls?.length ?? 0) > 0) {
-    <app-video-hero
-      [loading]="false"
-      [hvh70]="true"
-      [videoUrls]="content()?.videoUrls!"
-      [title]="content()!.title"
-      [description]="content()!.description"
-      [ctaPrimary]="content()!.cta.primary"
-      [ctaSecondary]="content()!.cta.secondary"
-    >
-    </app-video-hero>
-  } @else {
-    <!-- Fallback to Image Background if no videos -->
-    <section
-      class="relative min-h-screen w-full overflow-hidden"
-      aria-label="Hero section"
-    >
-      <div class="absolute inset-0 z-0">
-        @if (content()!.backgroundImage) {
-          <img
-            [src]="content()!.backgroundImage"
-            [alt]="content()!.title + ' - Oakwood Systems service background'"
-            class="absolute inset-0 w-full h-full object-cover"
-            loading="eager"
-          />
-        }
-        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
+<!-- Hero Section with Video Background -->
+@if (content()?.videoUrls && (content()?.videoUrls?.length ?? 0) > 0) {
+<app-video-hero [loading]="false" [hvh70]="true" [videoUrls]="content()?.videoUrls!" [title]="content()!.title"
+  [description]="content()!.description" [ctaPrimary]="content()!.cta.primary"
+  [ctaSecondary]="content()!.cta.secondary">
+</app-video-hero>
+} @else {
+<!-- Fallback to Image Background if no videos -->
+<section class="relative min-h-screen w-full overflow-hidden" aria-label="Hero section">
+  <div class="absolute inset-0 z-0">
+    @if (content()!.backgroundImage) {
+    <img [src]="content()!.backgroundImage" [alt]="content()!.title + ' - Oakwood Systems service background'"
+      class="absolute inset-0 w-full h-full object-cover" loading="eager" />
+    }
+    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
+  </div>
+  <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 h-screen flex items-center">
+    <div class="w-full max-w-2xl md:max-w-3xl">
+      <h1
+        class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4 sm:mb-6 md:mb-8   ">
+        {{ content()!.title }}
+      </h1>
+      <p
+        class="text-base sm:text-lg md:text-xl text-white mb-8 sm:mb-10 md:mb-12 max-w-xl md:max-w-2xl leading-relaxed   ">
+        {{ content()!.description }}
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 sm:gap-6">
+        <a [routerLink]="content()!.cta.primary.link"
+          class="inline-block text-center        px-6 sm:px-8 py-3 sm:py-4    transition-all duration-200 hover:opacity-90 hover:scale-105    text-white shadow-lg"
+          [style.background-color]="content()!.cta.primary.backgroundColor">
+          {{ content()!.cta.primary.text }}
+        </a>
+        <a [routerLink]="content()!.cta.secondary.link"
+          class="inline-block text-center        px-6 sm:px-8 py-3 sm:py-4    transition-all duration-200 hover:bg-white/10 hover:scale-105    text-white border-2"
+          [style.border-color]="content()!.cta.secondary.borderColor">
+          {{ content()!.cta.secondary.text }}
+        </a>
       </div>
+    </div>
+  </div>
+</section>
+}
+
+<!-- Main Description Section -->
+@if (content()?.mainDescription) {
+<section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="main-description">
+  <div class="px-0">
+    <div class="max-w-7xl mx-auto">
+      <p class="text-base sm:text-lg md:text-xl lg:text-4xl text-gray-700 font-normal leading-relaxed   text-center"
+        id="main-description">
+        {{ content()?.mainDescription?.text }}
+      </p>
+    </div>
+  </div>
+</section>
+}
+<!-- Service areas (Figma: WHERE WE EXCEL + 4 cards) -->
+@if (content()?.serviceAreas) {
+<section class="w-full overflow-hidden px-4 sm:px-6 md:px-8 lg:px-12 xl:px-32" aria-labelledby="service-areas-title">
+  <div class="flex flex-col lg:grid lg:grid-cols-2 min-h-[600px] lg:min-h-[720px] gap-8">
+    <!-- Left: banner con imagen y texto -->
+    <div class="relative min-h-[240px] sm:min-h-[320px] lg:min-h-full order-1 lg:order-1 flex-1">
+      <img [src]="content()?.serviceAreas?.backgroundImage ?? ''"
+        [alt]="(content()?.serviceAreas?.title ?? 'Service areas') + ' background'"
+        class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+      <div class="absolute inset-0 bg-slate-600/30"></div>
       <div
-        class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 h-screen flex items-center"
-      >
-        <div class="w-full max-w-2xl md:max-w-3xl">
-          <h1
-            class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4 sm:mb-6 md:mb-8"
-          >
-            {{ content()!.title }}
-          </h1>
-          <p
-            class="text-base sm:text-lg md:text-xl text-white mb-8 sm:mb-10 md:mb-12 max-w-xl md:max-w-2xl leading-relaxed"
-          >
-            {{ content()!.description }}
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 sm:gap-6">
-            <a
-              [routerLink]="content()!.cta.primary.link"
-              class="inline-block text-center px-6 sm:px-8 py-3 sm:py-4 transition-all duration-200 hover:opacity-90 hover:scale-105 text-white shadow-lg"
-              [style.background-color]="content()!.cta.primary.backgroundColor"
-            >
-              {{ content()!.cta.primary.text }}
-            </a>
-            <a
-              [routerLink]="content()!.cta.secondary.link"
-              class="inline-block text-center px-6 sm:px-8 py-3 sm:py-4 transition-all duration-200 hover:bg-white/10 hover:scale-105 text-white border-2"
-              [style.border-color]="content()!.cta.secondary.borderColor"
-            >
-              {{ content()!.cta.secondary.text }}
-            </a>
-          </div>
-        </div>
+        class="relative z-10 h-full flex flex-col justify-end px-4 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-12 md:py-16 lg:py-20">
+        <p class="text-xs sm:text-sm uppercase tracking-[0.2em] text-white/90 mb-2">
+          {{ content()?.serviceAreas?.tagline }}
+        </p>
+        <h2 id="service-areas-title"
+          class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight mb-3 sm:mb-4">
+          {{ content()?.serviceAreas?.title }}
+        </h2>
+        <p class="text-base sm:text-lg md:text-xl text-white/95 leading-relaxed max-w-xl">
+          {{ content()?.serviceAreas?.description }}
+        </p>
       </div>
     </div>
     <!-- Right: 4 cards -->
@@ -95,107 +110,13 @@
             class="text-[#3D3D3D] text-center text-[32px] sm:text-[40px] font-light leading-normal object-contain block"
             loading="lazy" />
           }
-        </div>
-      </div>
-    </section>
-  }
-
-  <!-- Solution Accelerators Section -->
-  @if (content()?.solutionAccelerators) {
-    <section class="w-full my-20" aria-labelledby="solution-accelerators-title">
-      <!-- Hero Banner -->
-      <div
-        class="relative min-h-[400px] sm:min-h-[500px] md:min-h-[60vh] w-full overflow-hidden"
-      >
-        <!-- Background Image/Video -->
-        <div class="absolute inset-0 z-0">
-          @if (
-            content()?.solutionAccelerators?.videoUrls &&
-            (content()?.solutionAccelerators?.videoUrls?.length ?? 0) > 0
-          ) {
-            <video
-              class="absolute inset-0 w-full h-full object-cover"
-              width="1920"
-              height="850"
-              autoplay
-              muted
-              playsinline
-              loop
-              aria-label="Solution accelerators background video"
-            >
-              <source
-                [src]="content()?.solutionAccelerators?.videoUrls?.[0] || ''"
-                type="video/mp4"
-              />
-              Your browser does not support the video tag.
-            </video>
-          } @else if (content()?.solutionAccelerators?.backgroundImage) {
-            <img
-              [src]="content()?.solutionAccelerators?.backgroundImage || ''"
-              [alt]="
-                (content()?.solutionAccelerators?.title ||
-                  'Solution accelerators') + ' background image'
-              "
-              class="absolute inset-0 w-full h-full object-cover"
-              loading="lazy"
-            />
-            <div class="absolute inset-0 bg-slate-700/20"></div>
-          }
-        </div>
-
-        <!-- Content -->
-        <div
-          class="absolute inset-0 z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 flex flex-col justify-end pb-12 sm:pb-16 md:pb-20"
-        >
-          <div class="w-full max-w-3xl md:max-w-4xl">
-            <h2
-              id="solution-accelerators-title"
-              class="text-[#FFF] text-[50px] font-normal leading-[120%] tracking-[-0.5px] mb-4 sm:mb-6"
-            >
-              {{ content()?.solutionAccelerators?.title }}
-            </h2>
-            <p class="text-white text-[18px] font-medium leading-[150%]">
-              {{ content()?.solutionAccelerators?.description }}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Cards Grid -->
-      <div class="w-full bg-p-30 py-12 sm:py-16 md:py-20">
-        <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
-            @for (
-              card of content()?.solutionAccelerators?.cards;
-              track card.title
-            ) {
-              <div
-                class="border-r border-[#D1D1D1] bg-[#F2F8FD] flex flex-col p-8 m-0"
-              >
-                <!-- Icon -->
-                <div class="mb-8 sm:mb-6">
-                  <div class="w-10">
-                    <span [innerHTML]="getIconSvg(card.icon)"></span>
-                    <!-- <img [src]="card.icon" [alt]="card.title + ' solution accelerator icon'"
-                class="w-full h-auto object-contain text-[var(--Primary-500,#2A7EBF)] text-center text-[38px] font-light leading-normal"
-                loading="lazy" /> -->
-                  </div>
-                </div>
-
-                <!-- Title -->
-                <h3
-                  class="text-[#242424] text-[28px] font-semibold leading-[140%] mb-3 sm:mb-4"
-                >
-                  {{ card.title }}
-                </h3>
-
-                <!-- Description -->
-                <p
-                  class="text-[#3D3D3D] text-[18px] font-normal leading-[150%]"
-                >
-                  {{ card.description }}
-                </p>
-              </div>
+          <div class="w-full pt-6 sm:pt-8 pb-2">
+            @for (badge of area.badges; track badge; let first = $first) {
+            <span
+              class="tag-badge bg-[#2A7EBF] text-white capitalize text-[12px] sm:text-[14px] font-semibold leading-normal rounded px-2 py-1"
+              [class.ml-3]="!first">
+              {{ badge }}
+            </span>
             }
           </div>
         </div>
@@ -257,24 +178,29 @@
           {{ content()?.solutionAccelerators?.description }}
         </p>
       </div>
-    </section>
-  }
+    </div>
+  </div>
 
-  <!-- Featured Case Study Section -->
-  @if (content()?.featuredCaseStudy) {
-    @if (getSlugsForFeaturedSection().length) {
-      <app-featured-case-study
-        [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()"
-      />
-    }
+  <!-- Cards Grid -->
+  <div class="w-full bg-p-30 py-12 sm:py-16 md:py-20  ">
+    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
+        @for (card of content()?.solutionAccelerators?.cards; track card.title) {
+        <div class="border-r border-[#D1D1D1] bg-[#F2F8FD] flex flex-col p-8 m-0">
+          <!-- Icon -->
+          <div class="mb-8 sm:mb-6 ">
+            <div class="w-10">
+              <span [innerHTML]="getIconSvg(card.icon)"></span>
+              <!-- <img [src]="card.icon" [alt]="card.title + ' solution accelerator icon'"
+                class="w-full h-auto object-contain text-[var(--Primary-500,#2A7EBF)] text-center text-[38px] font-light leading-normal"
+                loading="lazy" /> -->
+            </div>
+          </div>
 
-    <!-- Trusted Partners Section -->
-    @if (content()?.trustedPartners) {
-      <app-trusted-by
-        [title]="content()?.trustedPartners?.title ?? ''"
-        [companies]="content()?.trustedPartners?.partners ?? []"
-      />
-    }
+          <!-- Title -->
+          <h3 class="text-[#242424] text-[28px] font-semibold leading-[140%] mb-3 sm:mb-4">
+            {{ card.title }}
+          </h3>
 
           <!-- Description -->
           <p class="text-[#3D3D3D] text-[18px] font-normal leading-[150%]">
@@ -355,89 +281,12 @@
               {{ feature.description }}
             </p>
           </div>
-
-          <!-- Two Column Layout -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            <!-- Left Column: Image -->
-            <div
-              class="relative w-full h-full min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] overflow-hidden"
-            >
-              <img
-                [src]="content()?.whyOakwood?.imageSrc"
-                [alt]="
-                  (content()?.whyOakwood?.title || 'Why Oakwood') +
-                  ' - Team collaboration image'
-                "
-                class="absolute inset-0 w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
-
-            <!-- Right Column: Feature Cards Grid -->
-            <div class="flex flex-col">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                @for (
-                  feature of content()?.whyOakwood?.features;
-                  track feature.title
-                ) {
-                  <div
-                    class="rounded-lg bg-white p-6 sm:p-8 hover:shadow-lg transition-shadow duration-300"
-                  >
-                    <!-- Icon -->
-                    <div class="mb-4 sm:mb-6">
-                      <div class="w-8">
-                        <img
-                          [src]="feature.icon"
-                          [alt]="feature.title + ' feature icon'"
-                          class="w-full h-auto object-contain"
-                          loading="lazy"
-                        />
-                      </div>
-                    </div>
-
-                    <!-- Title -->
-                    <h3
-                      class="text-[#242424] font-['Inter'] text-[32px] font-semibold leading-[130%]-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3"
-                    >
-                      {{ feature.title }}
-                    </h3>
-
-                    <!-- Description -->
-                    <p
-                      class="text-[#242424] font-['Inter'] text-[20px] font-normal leading-[24px]"
-                    >
-                      {{ feature.description }}
-                    </p>
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
+          }
         </div>
-      </section>
-    }
-
-    @if (structuredEngagementSection() && showStructuredEngagements()) {
-      <app-structured-engagements [section]="structuredEngagementSection()" />
-    }
-
-    <!-- CTA Section -->
-    @if (content()?.ctaSection) {
-      <app-cta-section
-        [title]="
-          content()?.ctaSection?.headline ?? 'Let\'s move your vision forward'
-        "
-        [description]="
-          content()?.ctaSection?.subheadline ??
-          'Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.'
-        "
-        [primaryText]="
-          content()?.ctaSection?.primaryCta?.text ?? 'Talk to an expert'
-        "
-        primaryLink="/resources/case-studies"
-      />
-    }
-  }
+      </div>
+    </div>
+  </div>
+</section>
 }
 
 
