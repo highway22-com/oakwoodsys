@@ -89,6 +89,8 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
     this.cdr.markForCheck();
   }
 
+  private desktopScrollHandler: EventListener | null = null;
+
   ngOnInit(): void {
     this.loadCaseStudies();
   }
@@ -210,5 +212,36 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
         },
       },
     };
+  }
+
+  ngAfterViewInit(): void {
+    // Only attach on desktop
+    if (window.innerWidth >= 640) {
+      const section = document.querySelector('.featured-case-study-scroll');
+      if (section) {
+        this.desktopScrollHandler = (e: Event) => {
+          const evt = e as WheelEvent;
+          if (this.caseStudiesData().length < 2) return;
+          const idx = this.selectedIndex();
+          if (evt.deltaY > 0 && idx === 0) {
+            // Scroll down: go to second card
+            evt.preventDefault();
+            this.selectCaseStudy(1);
+          } else if (evt.deltaY < 0 && idx === 1) {
+            // Scroll up: go to first card
+            evt.preventDefault();
+            this.selectCaseStudy(0);
+          }
+        };
+        section.addEventListener('wheel', this.desktopScrollHandler, { passive: false });
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.desktopScrollHandler) {
+      const section = document.querySelector('.featured-case-study-scroll');
+      if (section) section.removeEventListener('wheel', this.desktopScrollHandler);
+    }
   }
 }

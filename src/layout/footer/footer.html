@@ -1,22 +1,22 @@
 <footer class="w-full bg-[#112740] py-12 sm:py-16 md:py-20" style="font-family: var(--font-segoe)!important;">
-  <div class="px-26">
+  <div class="px-12 md:px-20 lg:px-26">
     @if (loading()) {
     <div class="animate-pulse">
       <div class="h-8 bg-gray-700 rounded w-1/4 mb-8"></div>
     </div>
     } @else if (footerData(); as data) {
     <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[470px_1fr_1fr_1fr_1fr] gap-8 sm:gap-10 md:gap-12 mb-8 sm:mb-10 md:mb-12">
-      <div class="col-span-1 ">
+      class="flex flex-col lg:grid lg:grid-cols-[470px_1fr_1fr_1fr_1fr] gap-4 lg:gap-10 mb-8 sm:mb-10 md:mb-12">
+      <div class="mb-6 lg:mb-0 col-span-1 flex flex-col lg:justify-between lg:h-full">
         @if (data.logo) {
-        <div class="flex items-center gap-2 pt-10 sm:mb-8">
+        <div class="flex items-center gap-2 mb-8 lg:mb-6 lg:mt-0">
           <img src="/assets/logo.svg" alt="Oakwood" class="h-8 w-auto">
         </div>
         }
         @if (data.contact) {
-        <h3 class="text-white/60  text-base mb-4 sm:mb-6" style="font-family: var(--font-inter)!important;">{{
+        <h3 class="text-white/60  text-base mb-4" style="font-family: var(--font-inter)!important;">{{
           data.contact.heading }}</h3>
-        <div class="space-y-1 mb-14">
+        <div class="space-y-1 mb-4 lg:mb-14">
           @if (data.contact.phone) {
           <a target="_blank" [href]="data.contact.phone.link"
             class="block text-white/70 underline hover:text-blue-300 transition-colors duration-200">
@@ -32,7 +32,7 @@
         </div>
         }
         @if (data.socialMedia && data.socialMedia.length) {
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2  lg:mt-12 lg:mt-0">
           @for (social of data.socialMedia; track social.name) {
           <a target="_blank" [href]="socialUrls[social.icon]" [attr.aria-label]="social.name"
             class="w-8 h-8 sm:w-10 sm:h-10  rounded flex items-center justify-center  transition-colors duration-200 ">
@@ -62,24 +62,49 @@
         </div>
         }
       </div>
-      @for (group of linkGroups(); track group.title) {
-      @if (group.links.length) {
-      <div>
-        <h3 class="text-white  text-base mb-4 sm:mb-6 tracking-wide" style="font-family: var(--font-inter)!important;">
-          {{ group.title }}</h3>
-        <ul class="space-y-4">
-          @for (link of group.links; track link.text) {
-          @if (link.text !== 'Whitepapers' && link.text !== 'Events' && link.text !== 'Webinars') {
-          <li>
-            <a [routerLink]="link.routerLink" class="text-white/70 hover:text-blue-300 transition-colors duration-200">
-              {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
-            </a>
-          </li>
-          }
-          }
-        </ul>
-      </div>
-      }
+      @for (group of linkGroups(); let idx = $index; track group.title) {
+        @if (group.links.length) {
+          <!-- Mobile: Expandable group -->
+          <div class="w-full lg:hidden">
+            <button type="button"
+              class="w-full flex justify-between items-center py-4 focus:outline-none"
+              (click)="toggleGroup(idx)"
+              [attr.aria-expanded]="openGroupIdx() === idx ? 'true' : 'false'"
+              [attr.aria-controls]="'footer-group-' + idx">
+              <span class="text-white text-base tracking-wide" style="font-family: var(--font-inter)!important;">{{ group.title }}</span>
+              <svg class="w-5 h-5 text-white transition-transform duration-200" [ngClass]="{ 'rotate-180': openGroupIdx() === idx }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div *ngIf="openGroupIdx() === idx" id="footer-group-{{ idx }}" class="pl-2 pb-4">
+              <ul class="space-y-4">
+                @for (link of group.links; track link.text) {
+                  @if (link.text !== 'Whitepapers' && link.text !== 'Events' && link.text !== 'Webinars') {
+                  <li>
+                    <a [routerLink]="link.routerLink" class="text-white/70 hover:text-blue-300 transition-colors duration-200">
+                      {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
+                    </a>
+                  </li>
+                  }
+                }
+              </ul>
+            </div>
+          </div>
+          <!-- Desktop: Always expanded, each group in its own column -->
+          <div class="hidden lg:block col-span-1">
+            <h3 class="text-white  text-base mb-4 sm:mb-6 tracking-wide" style="font-family: var(--font-inter)!important;">
+              {{ group.title }}</h3>
+            <ul class="space-y-4">
+              @for (link of group.links; track link.text) {
+                @if (link.text !== 'Whitepapers' && link.text !== 'Events' && link.text !== 'Webinars') {
+                <li>
+                  <a [routerLink]="link.routerLink" class="text-white/70 hover:text-blue-300 transition-colors duration-200">
+                    {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
+                  </a>
+                </li>
+                }
+              }
+            </ul>
+          </div>
+        }
       }
     </div>
     <!-- @if (data.copyright || (data.policies && data.policies.length)) {

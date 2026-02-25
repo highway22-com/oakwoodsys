@@ -18,7 +18,7 @@
         "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2025/12/s-daa-h.jpg",
         "serviceAreas": [
           {
-            "icon": "/assets/sitemap.png",
+            "icon": "DataAIServiceCard1",
             "badges": [
               "Fabric",
               "Synapse"
@@ -32,7 +32,7 @@
             ]
           },
           {
-            "icon": "/assets/book-sparkles.png",
+            "icon": "DataAIServiceCard2",
             "badges": [
               "AML",
               "OPENAI"
@@ -46,7 +46,7 @@
             ]
           },
           {
-            "icon": "/assets/copilot.png",
+            "icon": "DataAIServiceCard3",
             "badges": [
               "Extensibility"
             ],
@@ -59,7 +59,7 @@
             ]
           },
           {
-            "icon": "/assets/chart-simple.png",
+            "icon": "DataAIServiceCard4",
             "badges": [
               "POWER BI"
             ],
@@ -227,7 +227,7 @@
         "backgroundImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
         "serviceAreas": [
           {
-            "icon": "/assets/cloud.png",
+            "icon": "CloudServiceCard1",
             "badges": [
               "SERVICE"
             ],
@@ -240,7 +240,7 @@
             ]
           },
           {
-            "icon": "/assets/cloud.png",
+            "icon": "CloudServiceCard2",
             "badges": [
               "SERVICE"
             ],
@@ -253,7 +253,7 @@
             ]
           },
           {
-            "icon": "/assets/cloud.png",
+            "icon": "CloudServiceCard3",
             "badges": [
               "SERVICE"
             ],
@@ -266,7 +266,7 @@
             ]
           },
           {
-            "icon": "/assets/cloud.png",
+            "icon": "CloudServiceCard4",
             "badges": [
               "SERVICE"
             ],
@@ -428,7 +428,7 @@
         "backgroundImage": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1920&q=80",
         "serviceAreas": [
           {
-            "icon": "/assets/app-innovation.png",
+            "icon": "ApplicationInnovationServiceCard1",
             "badges": [
               "SERVICE"
             ],
@@ -441,7 +441,7 @@
             ]
           },
           {
-            "icon": "/assets/app-innovation.png",
+            "icon": "ApplicationInnovationServiceCard2",
             "badges": [
               "SERVICE"
             ],
@@ -454,7 +454,7 @@
             ]
           },
           {
-            "icon": "/assets/app-innovation.png",
+            "icon": "ApplicationInnovationServiceCard3",
             "badges": [
               "SERVICE"
             ],
@@ -467,7 +467,7 @@
             ]
           },
           {
-            "icon": "/assets/app-innovation.png",
+            "icon": "ApplicationInnovationServiceCard4",
             "badges": [
               "SERVICE"
             ],
@@ -624,7 +624,7 @@
         "backgroundImage": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1920&q=80",
         "serviceAreas": [
           {
-            "icon": "/assets/hpc.png",
+            "icon": "HighPerformanceComputingServiceCard1",
             "badges": [
               "SERVICE"
             ],
@@ -637,7 +637,7 @@
             ]
           },
           {
-            "icon": "/assets/hpc.png",
+            "icon": "HighPerformanceComputingServiceCard2",
             "badges": [
               "SERVICE"
             ],
@@ -650,7 +650,7 @@
             ]
           },
           {
-            "icon": "/assets/hpc.png",
+            "icon": "HighPerformanceComputingServiceCard3",
             "badges": [
               "SERVICE"
             ],
@@ -663,7 +663,7 @@
             ]
           },
           {
-            "icon": "/assets/hpc.png",
+            "icon": "HighPerformanceComputingServiceCard4",
             "badges": [
               "SERVICE"
             ],
@@ -820,7 +820,7 @@
         "backgroundImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
         "serviceAreas": [
           {
-            "icon": "/assets/modern-work.png",
+            "icon": "ModernWordServiceCard1",
             "badges": [
               "SERVICE"
             ],
@@ -833,7 +833,7 @@
             ]
           },
           {
-            "icon": "/assets/modern-work.png",
+            "icon": "ModernWordServiceCard2",
             "badges": [
               "SERVICE"
             ],
@@ -846,7 +846,7 @@
             ]
           },
           {
-            "icon": "/assets/modern-work.png",
+            "icon": "ModernWordServiceCard3",
             "badges": [
               "SERVICE"
             ],
@@ -859,7 +859,7 @@
             ]
           },
           {
-            "icon": "/assets/modern-work.png",
+            "icon": "ModernWordServiceCard4",
             "badges": [
               "SERVICE"
             ],
@@ -1011,7 +1011,7 @@
         "backgroundImage": "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1920&q=80",
         "serviceAreas": [
           {
-            "icon": "/assets/managed-services.png",
+            "icon": "ManagedServicesServiceCard1",
             "badges": [
               "SERVICE"
             ],
@@ -1024,7 +1024,7 @@
             ]
           },
           {
-            "icon": "/assets/managed-services.png",
+            "icon": "ManagedServicesServiceCard2",
             "badges": [
               "SERVICE"
             ],
@@ -1037,7 +1037,7 @@
             ]
           },
           {
-            "icon": "/assets/managed-services.png",
+            "icon": "ManagedServicesServiceCard3",
             "badges": [
               "SERVICE"
             ],
@@ -1050,7 +1050,7 @@
             ]
           },
           {
-            "icon": "/assets/managed-services.png",
+            "icon": "ManagedServicesServiceCard4",
             "badges": [
               "SERVICE"
             ],
