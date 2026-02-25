@@ -2,7 +2,9 @@
     [title]="videoHeroContent().title" [description]="videoHeroContent().description" [showIndicators]="false" />
 <div class="w-full  p-6">
     @if (featuredCaseStudy(); as featured) {
-    <app-featured-case-study-cards [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
+    <app-featured-case-study-cards [isBlogs]="isBlogs"
+        [featuredCategory]="isBlogs ? FeaturedCaseStudyCategory.BlogResources : FeaturedCaseStudyCategory.CaseStudyResources"
+        [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
     }
 </div>
 <!-- Blog Posts Section -->

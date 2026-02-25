@@ -126,13 +126,19 @@ export class AppNavbar implements OnInit, OnDestroy {
       ).subscribe(() => this.updateContactSuccessStatus());
       // Cargar case studies y blogs solo en el cliente (GraphQL puede no estar disponible en SSR)
       this.graphql.getCaseStudies().subscribe((list) => {
-        const sorted = [...list].sort(
+        const filtered = [...list].filter(n =>
+          n.caseStudyCategories?.nodes?.find(c => c.slug === 'featured-case-study-menu')
+        );
+        const _list = filtered.length > 0 ? filtered : list;
+        const sorted = [..._list].sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
         this.featuredCaseStudies.set(sorted.slice(0, 2));
       });
       this.graphql.getBlogs().subscribe((list) => {
-        const sorted = [...list].sort(
+        const filtered = [...list].filter(n => n.genContentCategories?.nodes?.find(c => c.slug === 'featured-blog-menu'));
+        const _list = filtered.length > 0 ? filtered : list;
+        const sorted = [..._list].sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
         this.featuredBlogs.set(

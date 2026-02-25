@@ -5,6 +5,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
+import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-study/featured-case-study-category';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import type { CmsPageContent, CmsSection, HeroCtaItem } from '../../app/api/graphql';
@@ -45,6 +46,7 @@ export function splitTwoLinerTitle(title: string): [string, string] {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Home implements OnInit {
+  readonly FeaturedCaseStudyCategory = FeaturedCaseStudyCategory;
   readonly content = signal<CmsPageContent | null>(null);
   readonly loading = signal(true);
   readonly videoUrls = signal<string[]>([]);

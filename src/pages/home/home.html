@@ -126,7 +126,8 @@
   }
 
   @case ('featuredCaseStudy') {
-  <app-featured-case-study ngSkipHydration [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection(section)" />
+  <app-featured-case-study ngSkipHydration [featuredCategory]="FeaturedCaseStudyCategory.CaseStudyHome"
+    [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection(section)" />
   }
 
   @case ('trustedBy') {
@@ -156,7 +157,7 @@
           </div>
         </div>
       </div>
-      <app-scroll-animation [isVisible]="scrollAnimationVisible()" ></app-scroll-animation>
+      <app-scroll-animation [isVisible]="scrollAnimationVisible()"></app-scroll-animation>
     </div>
   </section>
   }

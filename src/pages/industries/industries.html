@@ -82,7 +82,9 @@
 
 <!-- Featured case study (misma lógica que resources: slugs → app-featured-case-study-cards) -->
 @if (getSlugsForFeaturedSection().length) {
-<app-featured-case-study [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
+<app-featured-case-study [primaryTagSlug]="slug() ?? undefined"
+  [featuredCategory]="FeaturedCaseStudyCategory.CaseStudyIndustry"
+  [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
 }
 
 <!-- CTA section -->
@@ -90,7 +92,6 @@
 <app-cta-section [title]="c.ctaSection.heading  ?? 'Let\'s move your vision forward'"
   [description]="  c.ctaSection.description  ?? 'Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.'"
   [primaryText]="c.ctaSection.primaryCta?.text ?? 'Talk to an expert'"
-  [primaryLink]="c.ctaSection.primaryCta!.link ?? '/contact-us'"
-  />
+  [primaryLink]="c.ctaSection.primaryCta!.link ?? '/contact-us'" />
 }
 }
