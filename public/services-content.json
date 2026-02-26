@@ -162,27 +162,27 @@
         "imageSrc": "https://oakwoodsys.com/wp-content/uploads/2026/02/wi.png",
         "features": [
           {
-            "icon": "/assets/w1.png",
+            "icon": "whyOakwoordDataAndAICardIcon1",
             "title": "AI ready data platforms",
             "description": "MLOps, vector search, and responsible AI controls built in."
           },
           {
-            "icon": "/assets/w2.png",
+            "icon": "whyOakwoordDataAndAICardIcon2",
             "title": "Microsoft centric expertise",
             "description": "Fabric, Synapse, AML, OpenAI, Purview, Power BI with deep implementation experience."
           },
           {
-            "icon": "/assets/w3.png",
+            "icon": "whyOakwoordDataAndAICardIcon3",
             "title": "Unified strategy to execution",
             "description": "Assess to Prove to Migrate to Manage with clear outcomes at each stage."
           },
           {
-            "icon": "/assets/w4.png",
+            "icon": "whyOakwoordDataAndAICardIcon4",
             "title": "Governed by design",
             "description": "Identity, lineage, auditing, and policy enforcement without slowing delivery."
           },
           {
-            "icon": "/assets/w5.png",
+            "icon": "whyOakwoordDataAndAICardIcon5",
             "title": "Full Lifecycle partnership",
             "description": "Roadmaps tied to measurable value like time to insight, cost, adoption, and reliability."
           }
@@ -358,35 +358,31 @@
         "imageSrc": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&q=80",
         "features": [
           {
-            "icon": "/assets/cloud.png",
+            "icon": "whyOakwoordCloudInfrastructureCardIcon1",
             "title": "Microsoft-centric approach",
-            "description": "Deep expertise in Azure and Microsoft stack for consistent, supported solutions."
+            "description": "100% focused on Azure infrastructure and ecosystem."
           },
           {
-            "icon": "/assets/cloud.png",
-            "title": "Security by default",
-            "description": "Identity, encryption, and compliance built into every engagement."
+            "icon": "whyOakwoordCloudInfrastructureCardIcon2",
+            "title": "End-to-end cloud lifecycle",
+            "description": "From assessment to migration to managed operations."
           },
           {
-            "icon": "/assets/cloud.png",
-            "title": "Data-driven decisions",
-            "description": "Insights and automation to optimize cost, performance, and governance."
+            "icon": "whyOakwoordCloudInfrastructureCardIcon3",
+            "title": "Secure by default",
+            "description": "Governance, RBAC, Defender for Cloud built into every deployment."
           },
           {
-            "icon": "/assets/cloud.png",
-            "title": "Scalability",
-            "description": "Architectures that grow with your business and workload demands."
+            "icon": "whyOakwoordCloudInfrastructureCardIcon4",
+            "title": "Hybrid expertise",
+            "description": "Experience with Azure Arc, ExpressRoute, VPN, and multi-cloud ops."
           },
           {
-            "icon": "/assets/cloud.png",
-            "title": "Hybrid-by-design",
-            "description": "Seamless integration between on-premises and cloud with Azure Arc and hybrid services."
-          },
-          {
-            "icon": "/assets/cloud.png",
-            "title": "Compliance-focused",
-            "description": "Frameworks and controls to meet industry and regulatory requirements."
+            "icon": "whyOakwoordCloudInfrastructureCardIcon5",
+            "title": "Outcome alignment",
+            "description": "Projects tied to measurable value—cost savings, agility, risk reduction."
           }
+        
         ]
       },
       "ctaSection": {
@@ -559,29 +555,29 @@
         "imageSrc": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
         "features": [
           {
-            "icon": "/assets/app-innovation.png",
-            "title": "Outcome-driven",
-            "description": "We focus on business results and measurable impact, not just technology delivery."
+            "icon": "whyOakwoordApplicationInnovationCardIcon1",
+            "title": "Outcomes first",
+            "description": "Faster delivery, higher reliability, and lower total cost."
           },
           {
-            "icon": "/assets/app-innovation.png",
-            "title": "Modern platforms",
-            "description": "Azure, Power Platform, and AI services for scalable, secure applications."
+            "icon": "whyOakwoordApplicationInnovationCardIcon2",
+            "title": "Modern patterns",
+            "description": "Containers, server less, APIs, and event driven design on Azure."
           },
           {
-            "icon": "/assets/app-innovation.png",
-            "title": "Deeper experience",
-            "description": "Expert teams with deep experience in application development and integration."
+            "icon": "whyOakwoordApplicationInnovationCardIcon3",
+            "title": "Developer experience",
+            "description": "Paved paths and tools that make the inner loop fast."
           },
           {
-            "icon": "/assets/app-innovation.png",
-            "title": "Fast and efficient delivery",
-            "description": "Agile delivery and accelerators to ship faster without compromising quality."
+            "icon": "whyOakwoordApplicationInnovationCardIcon4",
+            "title": "Security and observability",
+            "description": "Identity, policy, tracing, and metrics built into the platform."
           },
           {
-            "icon": "/assets/app-innovation.png",
-            "title": "Lifetime partnership",
-            "description": "Ongoing support and evolution to keep your applications aligned with your goals."
+            "icon": "whyOakwoordApplicationInnovationCardIcon5",
+            "title": "Lifecycle partnership",
+            "description": "From assessment to build to SRE and cost optimization."
           }
         ]
       },
@@ -755,29 +751,29 @@
         "imageSrc": "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=1920&q=80",
         "features": [
           {
-            "icon": "/assets/hpc.png",
-            "title": "Parallel throughput",
-            "description": "Achieve unprecedented data processing speeds."
+            "icon": "whyOakwoodHpcCardIcon1",
+            "title": "Scalable throughput",
+            "description": "Compute that scales with demand for AI and PLM workloads."
           },
           {
-            "icon": "/assets/hpc.png",
-            "title": "Transparent scale",
-            "description": "Scale data platforms effortlessly on demand."
+            "icon": "whyOakwoodHpcCardIcon2",
+            "title": "Transparent costs",
+            "description": "Upfront modeling of burst, storage, and network usage."
           },
           {
-            "icon": "/assets/hpc.png",
-            "title": "Cost-efficiency",
-            "description": "Optimize costs with flexible, usage-based pricing."
+            "icon": "whyOakwoodHpcCardIcon3",
+            "title": "Compliance first",
+            "description": "Governance and data protection built in from the start."
           },
           {
-            "icon": "/assets/hpc.png",
-            "title": "Performance enhanced",
-            "description": "Boost application performance across the board."
+            "icon": "whyOakwoodHpcCardIcon4",
+            "title": "Performance validated",
+            "description": "Proofs of concept that prove results under your workloads."
           },
           {
-            "icon": "/assets/hpc.png",
+            "icon": "whyOakwoodHpcCardIcon5",
             "title": "Hybrid flexibility",
-            "description": "Seamlessly integrate on-prem and cloud data sources."
+            "description": "Run workloads on-prem, in Azure, or across both seamlessly."
           }
         ]
       },
@@ -951,24 +947,29 @@
         "imageSrc": "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1920&q=80",
         "features": [
           {
-            "icon": "/assets/modern-work.png",
-            "title": "Data warehouse modernization",
-            "description": "Modernize legacy data estates for analytics and AI."
+            "icon": "whyOakwoodModernWorkCardIcon1",
+            "title": "Outcome focused",
+            "description": "Productivity, security, and employee experience with clear success metrics."
           },
           {
-            "icon": "/assets/modern-work.png",
-            "title": "Azure for startups",
-            "description": "Cloud foundations and scale for growing organizations."
+            "icon": "whyOakwoodModernWorkCardIcon2",
+            "title": "Secure by default",
+            "description": "Identity, data protection, and device standards built in."
           },
           {
-            "icon": "/assets/modern-work.png",
-            "title": "AI ready foundations",
-            "description": "Prepare data and governance for Copilot and AI workloads."
+            "icon": "whyOakwoodModernWorkCardIcon3",
+            "title": "AI Ready foundations",
+            "description": "Data access and governance tuned for Copilot value."
           },
           {
-            "icon": "/assets/modern-work.png",
+            "icon": "whyOakwoodModernWorkCardIcon4",
             "title": "Adoption expertise",
-            "description": "Drive adoption and value from Microsoft 365 and Copilot."
+            "description": "Change management that drives long term usage."
+          },
+            {
+            "icon": "whyOakwoodModernWorkCardIcon5",
+            "title": "Microsoft depth",
+            "description": "Teams, SharePoint, Viva, Intune, Entra ID, and Purview expertise."
           }
         ]
       },
@@ -1142,24 +1143,29 @@
         "imageSrc": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
         "features": [
           {
-            "icon": "/assets/managed-services.png",
-            "title": "Proactive threat hunting",
-            "description": "Identify and mitigate threats before they impact your environment."
+            "icon": "whyOakwoodManagedServicesCardIcon1",
+            "title": "Outcome based SLAs",
+            "description": "Availability, response time, security posture, and cost targets that matter."
           },
           {
-            "icon": "/assets/managed-services.png",
-            "title": "Security automation",
-            "description": "Automate security policies, compliance checks, and response playbooks."
+            "icon": "whyOakwoodManagedServicesCardIcon2",
+            "title": "Platform expertise",
+            "description": "Cloud, data, security, and application specialists under one roof."
           },
           {
-            "icon": "/assets/managed-services.png",
-            "title": "Continuous improvement",
-            "description": "Ongoing optimization and recommendations to improve performance and cost."
+            "icon": "whyOakwoodManagedServicesCardIcon3",
+            "title": "Proactive automation",
+            "description": "Automation and policy driven operations to prevent issues."
           },
           {
-            "icon": "/assets/managed-services.png",
-            "title": "Cloud stability",
-            "description": "Reliable, highly available operations so your business can run without interruption."
+            "icon": "whyOakwoodManagedServicesCardIcon4",
+            "title": "Clear visibility",
+            "description": "Dashboards and monthly reviews that show health and spend."
+          },
+            {
+            "icon": "whyOakwoodManagedServicesCardIcon5",
+            "title": "Continuous Improvement",
+            "description": "A roadmap that reduces risk and raises performance over time."
           }
         ]
       },

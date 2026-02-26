@@ -266,8 +266,9 @@
             <!-- Icon -->
             <div class="mb-4 sm:mb-6">
               <div class="w-8">
-                <img [src]="feature.icon" [alt]="feature.title + ' feature icon'" class="w-full h-auto object-contain"
-                  loading="lazy" />
+                  <span [innerHTML]="getIconSvg(feature.icon)"></span>
+                <!-- <img [src]="feature.icon" [alt]="feature.title + ' feature icon'" class="w-full h-auto object-contain"
+                  loading="lazy" /> -->
               </div>
             </div>
 
