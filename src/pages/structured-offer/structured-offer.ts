@@ -25,7 +25,6 @@ interface StructuredOfferContent {
   summary: string;
   duration?: string;      // e.g., "4 Weeks"
   delivery?: string;      // e.g., "Remote or Hybrid"
-  pricing?: string;       // e.g., "Custom"
   category?: string;      // e.g., "Data&AI"
   sections: StructuredOfferSection[];
 }
@@ -36,8 +35,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Oakwood’s SQL Server Migration Service provides a focused, end-to-end engagement for migrating SQL Server databases to Azure SQL Managed Instance or Azure SQL Database. It helps organizations modernize data environments, reduce licensing costs, and unlock Azure-native scalability, security, and analytics.',
     duration: '4 Weeks',
     delivery: 'Remote or Hybrid',
-    pricing: 'Custom',
-    category: 'data-and-ai',
+     category: 'Data & AI',
     sections: [
       {
         id: 'overview',
@@ -96,12 +94,11 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
   'microsoft-fabric-poc': {
 
 
-    title: 'Microsoft fabric POC',
+    title: 'Microsoft Fabric POC',
     summary: 'Stand up a production-ready Microsoft Fabric environment that consolidates data from multiple systems and enables unified business insights with a scalable, cost-effective architecture.',
     duration: '4 Weeks',
     delivery: 'Remote or Hybrid',
-    pricing: 'Custom',
-    category: 'data-and-ai',
+  category: 'Data & AI',
     sections: [
       {
         id: 'overview',
@@ -160,8 +157,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Assess whether your current data environment can effectively support AI initiatives and receive a practical roadmap to close readiness gaps.',
     duration: '4 Weeks',
     delivery: 'Remote or Hybrid',
-    pricing: '$20,000',
-    category: 'data-and-ai',
+  category: 'Data & AI',
     sections: [
       {
         id: 'overview',
@@ -220,8 +216,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Consolidate siloed data into a unified, scalable platform using Azure Synapse or Microsoft Fabric to enable analytics and AI at enterprise scale.',
     duration: '12–16 Weeks',
     delivery: 'Remote or Hybrid',
-    pricing: '$160,000 (Estimate)',
-    category: 'data-and-ai',
+     category: 'Data & AI',
     sections: [
       {
         id: 'overview',
@@ -282,8 +277,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Rapidly prototype and deploy a practical AI agent in a focused one-day workshop using Microsoft Copilot Studio and Power Platform.',
     duration: '1 Day (Onsite or Virtual)',
     delivery: 'Remote or Hybrid',
-    pricing: '$8,000',
-    category: 'application-innovation',
+  category: 'Application Innovation',
     sections: [
       {
         id: 'overview',
@@ -342,8 +336,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Evaluate your applications for AI integration opportunities and define practical modernization paths aligned to business outcomes.',
     duration: '6 Weeks',
     delivery: 'Remote or Hybrid',
-    pricing: '$30,000',
-    category: 'application-innovation',
+   category: 'Application Innovation',
     sections: [
       {
         id: 'overview',
@@ -404,8 +397,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Learn how to extend Microsoft Copilot beyond standard functionality through a focused workshop that aligns business priorities with practical extensibility options.',
     duration: '1–2 Days',
     delivery: 'Remote or Hybrid',
-    pricing: '$30,000',
-    category: 'application-innovation',
+   category: 'Application Innovation',
     sections: [
       {
         id: 'overview',
@@ -465,8 +457,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Build and validate a department-specific custom Copilot using a prototype-first approach before full-scale enterprise rollout.',
     duration: '8 Weeks',
     delivery: 'Remote or Hybrid',
-    pricing: '$90,000',
-    category: 'application-innovation',
+   category: 'Application Innovation',
     sections: [
       {
         id: 'overview',
@@ -528,8 +519,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Seamlessly migrate your applications to Azure with a structured, low-risk approach focused on performance, security, and cost efficiency.',
     duration: '8 Weeks',
     delivery: 'Remote or Hybrid',
-    pricing: '$100,000',
-    category: 'cloud-and-infrastructure',
+   category: 'Cloud & Infrastructure',
     sections: [
       {
         id: 'overview',
@@ -590,8 +580,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Validate Microsoft Sentinel as a cloud-native SIEM/SOAR foundation with a production-ready proof of concept focused on visibility, detection, and response.',
     duration: '4–6 Weeks',
     delivery: 'Remote or Hybrid',
-    pricing: '$20000',
-    category: 'cloud-and-infrastructure',
+   category: 'Cloud & Infrastructure',
     sections: [
       {
         id: 'overview',
@@ -654,8 +643,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Rapidly deploy Microsoft Teams Phone with a structured approach to modernize legacy voice systems and enable unified communications.',
     duration: '4–6 Weeks',
     delivery: 'Remote or Hybrid',
-    pricing: '$20000',
-    category: 'cloud-and-infrastructure',
+     category: 'Cloud & Infrastructure',
     sections: [
       {
         id: 'overview',
@@ -718,8 +706,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Transition from VMware to Azure with expert guidance and proven methodologies.',
     duration: '4–6 Weeks',
     delivery: 'Remote or Hybrid',
-    pricing: '$20000',
-    category: 'cloud-and-infrastructure',
+     category: 'Cloud & Infrastructure',
     sections: [
       {
         id: 'overview',
@@ -782,8 +769,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Assess your current HPC environment and validate feasibility, performance, and cost considerations for Azure HPC adoption.',
     duration: '3–5 Weeks',
     delivery: 'Remote or Hybrid',
-    pricing: '$20000',
-    category: 'high-performance-computing',
+      category: 'High Performance Computing (HPC)',
     sections: [
       {
         id: 'overview',
@@ -845,8 +831,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Comprehensive assessment to evaluate migration feasibility, performance potential, and cost considerations for moving HPC workloads to Azure.',
     duration: '3–5 Weeks',
     delivery: 'Remote or Hybrid',
-    pricing: '$20000',
-    category: 'high-performance-computing',
+         category: 'High Performance Computing (HPC)',
     sections: [
       {
         id: 'overview',
@@ -910,8 +895,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Deploy and validate an enterprise-scale Azure HPC environment for complex, compute-intensive workloads with advanced networking and storage architectures.',
     duration: '12 Weeks + 2 Weeks Optimization Support',
     delivery: 'Remote or Hybrid',
-    pricing: '$20000',
-    category: 'high-performance-computing',
+        category: 'High Performance Computing (HPC)',
     sections: [
       {
         id: 'overview',
@@ -975,8 +959,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
     summary: 'Deploy and validate a balanced Azure HPC environment for moderate workloads with container support, Slurm scheduling, and cost-effective scalability.',
     duration: '8 Weeks + 2 Weeks Optimization Support',
     delivery: 'Remote or Hybrid',
-    pricing: '$20000',
-    category: 'high-performance-computing',
+      category: 'High Performance Computing (HPC)',
     sections: [
       {
         id: 'overview',
@@ -1093,7 +1076,6 @@ export class StructuredOffer implements OnInit, OnDestroy {
     return [
       { offer: 'Duration', offervalue: data.duration ?? 'TBD', icon: 'duration' },
       { offer: 'Delivery', offervalue: data.delivery ?? 'TBD', icon: 'delivery' },
-      { offer: 'Pricing', offervalue: data.pricing ?? 'TBD', icon: 'pricing' },
       { offer: 'Category', offervalue: data.category ?? 'TBD', icon: 'category' }
     ];
   });
