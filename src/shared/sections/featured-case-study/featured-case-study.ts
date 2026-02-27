@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, Input, OnInit, OnChanges, SimpleChanges, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, Input, OnInit, OnChanges, SimpleChanges, computed, inject, signal, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { RouterLink } from '@angular/router';
@@ -47,6 +48,7 @@ export interface FeaturedCaseStudyView {
   ],
 })
 export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
   [x: string]: any;
   private readonly graphql = inject(GraphQLContentService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -215,25 +217,27 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
   }
 
   ngAfterViewInit(): void {
-    // Only attach on desktop
-    if (window.innerWidth >= 640) {
-      const section = document.querySelector('.featured-case-study-scroll');
-      if (section) {
-        this.desktopScrollHandler = (e: Event) => {
-          const evt = e as WheelEvent;
-          if (this.caseStudiesData().length < 2) return;
-          const idx = this.selectedIndex();
-          if (evt.deltaY > 0 && idx === 0) {
-            // Scroll down: go to second card
-            evt.preventDefault();
-            this.selectCaseStudy(1);
-          } else if (evt.deltaY < 0 && idx === 1) {
-            // Scroll up: go to first card
-            evt.preventDefault();
-            this.selectCaseStudy(0);
-          }
-        };
-        section.addEventListener('wheel', this.desktopScrollHandler, { passive: false });
+    if (isPlatformBrowser(this.platformId)) {
+      // Only attach on desktop
+      if (window.innerWidth >= 640) {
+        const section = document.querySelector('.featured-case-study-scroll');
+        if (section) {
+          this.desktopScrollHandler = (e: Event) => {
+            const evt = e as WheelEvent;
+            if (this.caseStudiesData().length < 2) return;
+            const idx = this.selectedIndex();
+            if (evt.deltaY > 0 && idx === 0) {
+              // Scroll down: go to second card
+              evt.preventDefault();
+              this.selectCaseStudy(1);
+            } else if (evt.deltaY < 0 && idx === 1) {
+              // Scroll up: go to first card
+              evt.preventDefault();
+              this.selectCaseStudy(0);
+            }
+          };
+          section.addEventListener('wheel', this.desktopScrollHandler, { passive: false });
+        }
       }
     }
   }

@@ -88,7 +88,7 @@
       <!-- CTA Buttons -->
       <div class="flex flex-wrap gap-4 pb-8 sm:pb-12">
         @if (currentCtaPrimary(); as cta) {
-        <div class="mb-3" [style.background-color]="cta.backgroundColor ?? undefined">
+        <div class="flex mb-3" >
           <app-button-primary [text]="cta.text" [link]="cta.link" [isBgDefault]="!cta.backgroundColor" />
         </div>
         }
