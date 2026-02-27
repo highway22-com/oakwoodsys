@@ -26,20 +26,22 @@
       <aside class="hidden sm:block lg:sticky lg:top-24 h-max mb-8 lg:mb-0">
         <p class="font-['Inter'] font-semibold text-[16px] leading-[150%] tracking-[0.05em] uppercase text-[#888888] mb-4">Table of contents</p>
         <nav class="space-y-2">
-          <button type="button" (click)="scrollToSection('overview')"
+          <a href="#overview"
+            (click)="$event.preventDefault(); scrollToSection('overview')"
             [class.focus-active]="activeSection() === 'overview'"
             [class.text-gray-700]="activeSection() !== 'overview'"
             class="p-3 block w-full font-['Inter'] font-medium text-[16px] leading-[150%] tracking-[0em] text-[#3D3D3D] text-left text-xl hover:text-p-500 transition-colors cursor-pointer">
             Overview
-          </button>
+          </a>
           @for (section of content()!.sections; track section.id) {
           @if (section.id !== 'overview') {
 
-              <button type="button" (click)="scrollToSection(section.id)"
+              <a [href]="'#' + section.id"
+                  (click)="$event.preventDefault(); scrollToSection(section.id)"
                   [class.focus-active]="activeSection() === section.id" [class.text-gray-700]="activeSection() !== section.id"
                   class="p-3 block w-full text-left font-['Inter'] font-medium text-[16px] leading-[150%] tracking-[0em] text-[#3D3D3D] hover:text-p-500 transition-colors cursor-pointer">
                   {{ section.title }}
-                </button>
+                </a>
             
       
           }

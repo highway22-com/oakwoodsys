@@ -128,7 +128,8 @@
                 Contents</h2>
               <nav class="space-y-2">
                 @for (item of tableOfContents(); track item.id) {
-                <a (click)="scrollToSection(item.id)"
+                <a [href]="'#' + item.id"
+                  (click)="$event.preventDefault(); scrollToSection(item.id)"
                   [class]="activeSection() === item.id
                      ? 'block px-3 py-2 text-[1.06rem] text-p-500 bg-p-30 font-semibold transition-colors cursor-pointer'
                      : 'block px-3 py-2 text-[1.06rem] text-gray-700 hover:text-p-500 hover:bg-p-30 transition-colors cursor-pointer'">
