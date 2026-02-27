@@ -437,8 +437,8 @@ export default class Post implements OnInit, OnDestroy {
       const origin = window.location.origin;
       if (!origin.includes('localhost')) return origin + this.router.url;
     }
-    // const canonical = p.headCanonicalUrl;
-    // if (canonical?.startsWith('http')) return canonical;
+    const canonical = p.headCanonicalUrl;
+    if (canonical?.startsWith('http')) return canonical;
     const path = this.isCaseStudy() ? `/resources/case-studies/${p.slug}` : `/blog/${p.slug}`;
     const base = this.seoMeta.baseUrl.replace(/\/$/, '');
     return base + (path.startsWith('/') ? path : '/' + path);
