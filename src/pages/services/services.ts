@@ -166,37 +166,37 @@ export default class Services implements OnInit, OnDestroy {
   readonly structuredData = signal<any>(null);
   readonly structuredEngagementSection = signal<any>(null);
   readonly showStructuredEngagements = signal(true);
-typewriterText = signal('');
-private typewriterTimeout: any;
+  typewriterText = signal('');
+  private typewriterTimeout: any;
 
-startTypewriter(text: string) {
-  this.typewriterText.set('');
-  if (this.typewriterTimeout) clearTimeout(this.typewriterTimeout);
-  let i = 0;
-  const type = () => {
-    if (i <= text.length) {
-      this.typewriterText.set(text.slice(0, i));
-      i++;
-      this.typewriterTimeout = setTimeout(type, 18);
-    }
-  };
-  setTimeout(type, 100); // Add a slight delay to ensure DOM is ready
-}
+  startTypewriter(text: string) {
+    this.typewriterText.set('');
+    if (this.typewriterTimeout) clearTimeout(this.typewriterTimeout);
+    let i = 0;
+    const type = () => {
+      if (i <= text.length) {
+        this.typewriterText.set(text.slice(0, i));
+        i++;
+        this.typewriterTimeout = setTimeout(type, 18);
+      }
+    };
+    setTimeout(type, 100); // Add a slight delay to ensure DOM is ready
+  }
   getIconSvg(iconKey: string) {
     const svg = SvgIcons[iconKey] || '';
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   }
 
   constructor() {
-  effect(() => {
-    const content = this.content();
-    if (content?.mainDescription?.text) {
-      this.startTypewriter(content.mainDescription.text);
-    } else {
-      this.typewriterText.set('');
-    }
-  });
-}
+    effect(() => {
+      const content = this.content();
+      if (content?.mainDescription?.text) {
+        this.startTypewriter(content.mainDescription.text);
+      } else {
+        this.typewriterText.set('');
+      }
+    });
+  }
 
   ngOnInit() {
 
@@ -227,13 +227,13 @@ startTypewriter(text: string) {
       // Set activeTab on every navigation if structuredEngagementSection is loaded
       const section = this.structuredEngagementSection();
       if (section) {
-        if (slugParam === 'data-and-ai') {
+        if (slugParam === 'data-ai-solutions') {
           section.activeTab = 'Data and AI';
         } else if (slugParam === 'cloud-and-infrastructure') {
           section.activeTab = 'Cloud and Infrastructure';
         } else if (slugParam === 'application-innovation') {
           section.activeTab = 'Application Innovation';
-        } else if (slugParam === 'high-performance-computing') {
+        } else if (slugParam === 'high-performance-computing-hpc') {
           section.activeTab = 'High Performance Computing (HPC)';
         }
         this.structuredEngagementSection.set({ ...section });

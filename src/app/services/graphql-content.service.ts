@@ -268,6 +268,7 @@ export class GraphQLContentService {
       headGeoPlacename: n.headGeoPlacename ?? undefined,
       headGeoPosition: n.headGeoPosition ?? undefined,
       headJsonLdData: n.headJsonLdData ?? undefined,
+      primaryTagName: n.primaryTagName ?? undefined,
     };
   }
 

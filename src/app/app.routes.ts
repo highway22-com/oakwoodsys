@@ -31,7 +31,7 @@ export const routes: Routes = [
     },
     {
         path: 'services',
-        redirectTo: '/services/data-and-ai',
+        redirectTo: '/services/data-ai-solutions',
         pathMatch: 'full'
     },
     {
@@ -60,7 +60,7 @@ export const routes: Routes = [
         path: 'structured-engagement',
         component: Structured
     },
-        {
+    {
         path: 'resources/structured-engagements',
         component: Structured
     },
