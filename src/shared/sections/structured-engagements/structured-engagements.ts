@@ -90,7 +90,7 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
       linkText: 'View offer',
     },
     {
-      title: 'Microsoft Fabric POC',
+      title: 'Microsoft Fabric PoC',
       description:
         'Stand up a working Fabric environment that connects your data sources and shows your team how to adopt OneLake, semantic models, and capabilities with hands-on guidance.',
       svgIcon: `<svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -147,9 +147,9 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
       linkText: 'View offer',
     },
     {
-      title: 'Microsoft sentinel security essentials POC',
+      title: 'Microsoft sentinel security essentials PoC',
       description:
-        'Evaluate Microsoft Sentinel in your environment with a structured POC that tests log-based SIEM and SOAR can improve threat detection and operational response.',
+        'Evaluate Microsoft Sentinel in your environment with a structured PoC that tests log-based SIEM and SOAR can improve threat detection and operational response.',
       svgIcon: `<svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect width="70" height="70" rx="10.6667" fill="#46DE9C" fill-opacity="0.16"/>
 <path d="M35 22.125L23.5625 26.9375C23.1875 27.125 22.9375 27.4375 23 27.75C23 33.5 25.375 43.375 34.625 47.75C34.875 47.875 35.125 47.875 35.3125 47.75C44.5625 43.3125 46.9375 33.5 47 27.75C47 27.4375 46.75 27.125 46.4375 26.9375L35 22.125ZM35.8125 19.1875L47.5625 24.1875C48.9375 24.8125 50 26.125 50 27.75C49.9375 34 47.375 45.3125 36.625 50.5C35.5625 51 34.375 51 33.3125 50.5C22.5625 45.3125 20 34 20 27.75C19.9375 26.125 21 24.8125 22.375 24.1875L34.125 19.1875C34.375 19.0625 34.6875 19 35 19C35.25 19 35.5625 19.0625 35.8125 19.1875Z" fill="#46DE9C"/>
@@ -233,7 +233,7 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
     },
     // Tab 4: High Performance Computing (HPC)
     {
-      title: 'Azure HPC core POC',
+      title: 'Azure HPC core PoC',
       description:
         'A guided introduction to Azure HPC designed for lightweight workloads, helping teams experience cloud-based performance with validating early technical decisions.',
       svgIcon: `<svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -261,7 +261,7 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
       linkText: 'View offer',
     },
     {
-      title: 'Azure HPC max POC',
+      title: 'Azure HPC max PoC',
       description:
         'A full scale Azure HPC proof of concept built for demanding workloads including virtualization, engineering, and AI to testing large-scale performance and efficiency.',
       svgIcon: `<svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -395,7 +395,7 @@ export class StructuredEngagementsSectionComponent
       const tabs = this.section().tabs ?? [];
       const current = this.activeTab();
 
-      console.log(this.section(),"this.section()")
+      console.log(this.section(), "this.section()")
 
       // Only set from input if user hasn't manually selected a tab
       if (!this.userSelectedTab) {
@@ -417,7 +417,7 @@ export class StructuredEngagementsSectionComponent
 
   ngAfterViewInit() {
     this.viewReady = true;
-    console.log(this.section(),"section")
+    console.log(this.section(), "section")
     if (isPlatformBrowser(this.platformId)) {
       this.updateUnderline();
       window.addEventListener('resize', this.updateUnderline, {

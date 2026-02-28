@@ -56,7 +56,7 @@ export class Industries {
     {
       id: '06',
       name: 'Electronic Design Automation (EDA)',
-      link: '/industries/eda',
+      link: '/industries/electronic-design-automation-eda',
       desc: 'Explore exciting opportunities to learn and connect with industry experts through our engaging webinars and conferences!',
       icon: '/assets/elec.png'
     }

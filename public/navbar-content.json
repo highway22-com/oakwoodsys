@@ -3,7 +3,7 @@
     {
       "slug": "services",
       "label": "Services",
-      "routerLink": "/services/data-and-ai",
+      "routerLink": "/services/data-ai-solutions",
       "index": 0,
       "hasDropdown": true
     },
@@ -34,7 +34,7 @@
       {
         "id": "01",
         "name": "Data & AI Solutions",
-        "link": "/services/data-and-ai",
+        "link": "/services/data-ai-solutions",
         "desc": "Unify, govern, and activate your data estate",
         "details": "Deliver real AI outcomes by unifying, governing, and activating your data estate to power intelligent innovation.",
         "icon": "/assets/graph.svg",
@@ -61,7 +61,7 @@
       {
         "id": "04",
         "name": "High-Performance Computing (HPC)",
-        "link": "/services/high-performance-computing",
+        "link": "/services/high-performance-computing-hpc",
         "desc": "Scale simulations, AI training, and PLM workloads",
         "details": "Scale simulations, AI training, and PLM workloads with the power of Azure HPC for maximum computational performance.",
         "icon": "/assets/high.svg",
@@ -125,7 +125,7 @@
       {
         "id": "06",
         "name": "Electronic Design Automation (EDA)",
-        "link": "/industries/eda",
+        "link": "/industries/electronic-design-automation-eda",
         "desc": "Explore exciting opportunities to learn and connect with industry experts through our engaging webinars and conferences!",
         "icon": "/assets/ele.svg"
       }
@@ -145,7 +145,7 @@
         "desc": "Discover our impact through realized projects",
         "icon": "/assets/fina.svg"
       },
-       {
+      {
         "id": "03",
         "name": "Structured Engagements",
         "link": "/resources/structured-engagements",

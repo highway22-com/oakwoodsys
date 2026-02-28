@@ -30,7 +30,7 @@
         },
         {
             "id": 3,
-            "title": "Microsoft Fabric POC",
+            "title": "Microsoft Fabric PoC",
             "description": "Stand up a working Fabric environment that connects real data sources and allows your teams to explore unified analytics capabilities with hands on guidance.",
             "link": "#",
             "linkText": "View offer",

@@ -46,18 +46,20 @@
               <h2 class="text-lg       uppercase tracking-wider text-gray-700/60 mb-4">Table of contents</h2>
               <nav class="space-y-2">
                 @for (item of getProcessedContent().tableOfContents; track item.id) {
-                <button type="button" (click)="scrollToSection(item.id)"
+                <a [href]="'#' + item.id"
+                  (click)="$event.preventDefault(); scrollToSection(item.id)"
                   [class.focus-active]="activeSection === item.id" [class.text-gray-700]="activeSection !== item.id"
                   class="p-3 block w-full text-left text-xl font-normal hover:text-p-500 transition-colors cursor-pointer">
                   {{ item.text }}
-                </button>
+                </a>
                 }
-                <button type="button" (click)="scrollToSection('related-resources')"
+                <a href="#related-resources"
+                  (click)="$event.preventDefault(); scrollToSection('related-resources')"
                   [class.focus-active]="activeSection === 'related-resources'"
                   [class.text-gray-700]="activeSection !== 'related-resources'"
                   class="p-3 block w-full text-left text-xl font-normal hover:text-p-500 transition-colors cursor-pointer">
                   Related Resources
-                </button>
+                </a>
               </nav>
             </div>
           </div>

@@ -261,7 +261,7 @@ function oakwood_bloq_create_default_category_terms() {
  */
 function oakwood_bloq_get_default_tag_terms() {
 	return array(
-		array( 'name' => 'High-Performance Computing (HPC)', 'slug' => 'high-performance-computing-hpc' ),
+		array( 'name' => 'High-Performance Computing (HPC)', 'slug' => 'high-performance-computing-hpc-hpc' ),
 		array( 'name' => 'Data & AI Solutions', 'slug' => 'data-ai-solutions' ),
 		array( 'name' => 'Cloud & Infrastructure', 'slug' => 'cloud-infrastructure' ),
 		array( 'name' => 'Application Innovation', 'slug' => 'application-innovation' ),

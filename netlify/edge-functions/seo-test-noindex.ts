@@ -1,9 +1,8 @@
 /**
- * Añade X-Robots-Tag: noindex para subdominios de desarrollo/staging.
- * seo-test.oakwoodsystemsgroup.com se indexa (para probar SEO en Google).
+ * Añade X-Robots-Tag: noindex solo para subdominios de desarrollo (no staging).
+ * staging y seo-test se indexan para probar SEO en Google.
  */
 const NOINDEX_HOSTS = [
-  "staging.oakwoodsystemsgroup.com",
   "preview.oakwoodsystemsgroup.com",
   "dev.oakwoodsystemsgroup.com",
 ];
