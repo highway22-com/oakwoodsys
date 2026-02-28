@@ -182,7 +182,7 @@
   >
     <div class="w-full max-w-6xl aspect-video">
       <iframe
-        class="w-full h-full "
+        class="w-full h-full"
         title="About Oakwood"
         src="https://www.youtube.com/embed/4UsqCp2pr3k?feature=oembed&amp;enablejsapi=1&amp;origin=https://oakwoodsys.com"
         frameborder="0"
@@ -322,19 +322,15 @@
   <!-- Our Mission Section -->
   <section
     class="relative py-12 sm:py-16 md:py-20 lg:py-24 flex items-center justify-center"
-    style="min-height: 400px"
+    style="min-height: 640px; background: #001258"
   >
-    <div
-      class="absolute inset-0 w-full h-full z-0"
-      style="background: #001258"
-    ></div>
+    <div class="absolute inset-0 w-full h-full z-0"></div>
     <img
-      src="/assets/our-mission-bg.png"
+      src="/assets/bg-our-mission-about-us.png"
       alt="Our Mission Background"
-      class="absolute inset-0 w-full h-full object-cover z-10"
-      style="opacity: 0.3; mix-blend-mode: plus-lighter"
+      class="absolute inset-0 w-full h-full z-10 bg-blend-linear-dodge"
+      style="mix-blend-mode: plus-lighter"
     />
-    <div class="absolute inset-0 bg-slate-900/60 z-10"></div>
     <div
       class="relative z-20 w-full flex flex-col items-center justify-center text-center mx-auto px-4 sm:px-6 md:px-8 lg:px-12"
     >
@@ -344,20 +340,24 @@
       >
         Our Mission & Values
       </p>
-      <h2
-        class="text-white font-inter font-normal text-[28px] sm:text-[50px] leading-[1.2] sm:leading-[1.1] tracking-normal text-center max-w-8xl mx-auto mb-6 sm:mb-10"
+      <p
+        class="text-white font-inter font-normal text-[28px] sm:text-[50px] leading-[1.2] sm:leading-[1.1] tracking-normal text-center max-w-[1400px] mx-auto mb-6 sm:mb-10"
       >
-        Deliver technology solutions with integrity,<br class="hidden sm:block" />
-        collaboration, and a relentless focus on real business outcomes.
-      </h2>
+        Deliver technology solutions with integrity, collaboration, and a
+        relentless focus on real business outcomes.
+      </p>
+
       <p
         class="text-white font-segoe font-normal text-[15px] sm:text-[26.67px] leading-[22px] sm:leading-[37.33px] tracking-normal text-center max-w-5xl mx-auto"
         style="line-height: 1.6"
       >
-        Oakwood’s mission is to help organizations realize what’s possible with the Microsoft Cloud and turn vision into reality.<br class="hidden sm:block" />
-        We believe technology should simplify, not complicate, and that real progress comes from trusted, transparent partnerships.<br class="hidden sm:block" />
-        Guided by integrity, curiosity, and ownership, our team delivers thoughtful, well-crafted solutions with pride.<br class="hidden sm:block" />
-        Transformation is a shared journey and we remain accountable, committed, and focused on creating lasting impact.
+        Oakwood’s mission is to help organizations realize what’s possible with
+        the Microsoft Cloud and turn vision into reality. We believe technology
+        should simplify, not complicate, and that real progress comes from
+        trusted, transparent partnerships. Guided by integrity, curiosity, and
+        ownership, our team delivers thoughtful, well-crafted solutions with
+        pride. Transformation is a shared journey and we remain accountable,
+        committed, and focused on creating lasting impact.
       </p>
     </div>
   </section>
@@ -383,7 +383,9 @@
         class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center"
       >
         <div>
-          <p class="text-primary-blue uppercase tracking-wider text-xs sm:text-sm mb-2">
+          <p
+            class="text-primary-blue uppercase tracking-wider text-xs sm:text-sm mb-2"
+          >
             {{ c.approachLabel }}
           </p>
           <h2
