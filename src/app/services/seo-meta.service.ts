@@ -6,7 +6,7 @@ export interface SeoMetaConfig {
   title: string;
   /** Descripción meta (para description, og:description, twitter:description) */
   description: string;
-  /** URL canónica de la página (ej: / o /services/data-and-ai) */
+  /** URL canónica de la página (ej: / o /services/data-ai-solutions) */
   canonicalPath?: string;
   /** Imagen OG (por defecto: msft_solutions_partner). Debe ser URL absoluta. */
   image?: string;

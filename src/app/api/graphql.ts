@@ -59,6 +59,17 @@ export function getPrimaryTagName(
   return (value as { name?: string }).name ?? null;
 }
 
+/** Obtiene el slug del primary tag buscando en genContentTags por nombre. */
+export function getPrimaryTagSlug(
+  primaryTagName: string | null | undefined,
+  genContentTags?: { nodes: Array<{ name: string; slug: string }> } | null
+): string | null {
+  const name = getPrimaryTagName(primaryTagName);
+  if (!name) return null;
+  const match = genContentTags?.nodes?.find((n) => n.name === name);
+  return match?.slug ?? genContentTags?.nodes?.[0]?.slug ?? null;
+}
+
 export interface GenContentsByCategoryResponse {
   genContentCategory?: {
     genContents?: { nodes: GenContentListNode[] };
@@ -239,6 +250,7 @@ export interface CaseStudy {
   headGeoPlacename?: string | null;
   headGeoPosition?: string | null;
   headJsonLdData?: string | null;
+  primaryTagName?: string | null;
 }
 
 /** Case study con contenido completo (GetCaseStudyBySlug). */

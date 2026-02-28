@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { GraphQLContentService } from '../../../app/services/graphql-content.service';
 import type { CaseStudy, GenContentListNode } from '../../../app/api/graphql';
+import { getPrimaryTagSlug } from '../../../app/api/graphql';
 import { take } from 'rxjs/operators';
 import { decodeHtmlEntities } from '../../../app/utils/cast';
 import { FeaturedCaseStudyCategory } from '../featured-case-study/featured-case-study-category';
@@ -148,8 +149,8 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
             );
             let _list = filtered.length > 0 ? filtered : nodes;
             if (primaryTagSlug) {
-              const byTag = [..._list].filter((n) =>
-                n.genContentTags?.nodes?.find((t) => t.slug === primaryTagSlug)
+              const byTag = [..._list].filter(
+                (n) => getPrimaryTagSlug(n.primaryTagName, n.genContentTags) === primaryTagSlug
               );
               _list = byTag.length > 0 ? byTag : _list;
             }
@@ -188,8 +189,8 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
             );
             let _list = filtered.length > 0 ? filtered : caseStudies;
             if (primaryTagSlug) {
-              const byTag = [..._list].filter((n) =>
-                n.genContentTags?.nodes?.find((t) => t.slug === primaryTagSlug)
+              const byTag = [..._list].filter(
+                (n) => getPrimaryTagSlug(n.primaryTagName, n.genContentTags) === primaryTagSlug
               );
               _list = byTag.length > 0 ? byTag : _list;
             }
