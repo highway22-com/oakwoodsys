@@ -1,3 +1,7 @@
+
+import { Router } from '@angular/router';
+
+
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal, DOCUMENT } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, NgClass, isPlatformBrowser } from '@angular/common';
@@ -14,8 +18,29 @@ import { StructuredEngagementsSectionComponent } from '../../shared/sections/str
 import { LatestInsightsSectionComponent } from '../../shared/sections/latest-insights/latest-insights';
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
 import { ScrollAnimationComponent } from '../../shared/scroll-animation-component/scroll-animation.component';
+import { SvgIcons } from '../../shared/service-icons/service-icons';
+import type { SafeHtml } from '@angular/platform-browser';
 const DEFAULT_TITLE = 'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
 const DEFAULT_DESCRIPTION = 'As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.';
+
+export function splitTwoLinerTitle(title: string): [string, string] {
+  if (!title) return [title, ''];
+  const words = title?.split(' ');
+  if (words.length < 2) return [title, ''];
+
+  // Case 1: If the second word is '&', split after it
+  if (words[1] === '&') {
+    return [words.slice(0, 2).join(' '), words.slice(2).join(' ')];
+  }
+
+  // Case 2: If the second word is the last word, split after the first word
+  if (words.length === 2) {
+    return [words[0], words[1]];
+  }
+
+  // Default: split after the first word
+  return [words[0], words.slice(1).join(' ')];
+}
 
 @Component({
   selector: 'app-home',
@@ -25,10 +50,17 @@ const DEFAULT_DESCRIPTION = 'As a Microsoft Solutions Partner specializing in Az
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Home implements OnInit {
+    private readonly router = inject(Router);
+
+    goToContactUs() {
+      this.router.navigate(['/contact-us']);
+    }
   readonly FeaturedCaseStudyCategory = FeaturedCaseStudyCategory;
   readonly content = signal<CmsPageContent | null>(null);
   readonly loading = signal(true);
   readonly videoUrls = signal<string[]>([]);
+
+  splitTwoLinerTitle = splitTwoLinerTitle;
 
   private readonly graphql = inject(GraphQLContentService);
   private readonly platformId = inject(PLATFORM_ID);
@@ -61,7 +93,7 @@ export default class Home implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
-          console.log(JSON.stringify(data, null, 2));
+          console.log(JSON.stringify(data, null, 2),"data here");
           if (data) {
             this.applyContent(data);
           } else {
@@ -104,8 +136,25 @@ export default class Home implements OnInit {
     this.loading.set(false);
   }
 
+   getIconSvg(iconKey: string) {
+    // Map PNG paths to SVG icon keys
+    const iconMap: { [key: string]: string } = {
+      '/assets/graph.png': 'Data_AI_Service',
+      '/assets/cloud.png': 'Cloud_Infrastructure_Service',
+      '/assets/app-innovation.png': 'Application_Innovation_Service',
+      '/assets/hpc.png': 'High_Performance_Computing_Service',
+      '/assets/modern-work.png': 'Modern_Workplace_Service',
+      '/assets/managed-services.png': 'Managed_Services',
+    };
+    const mappedKey = iconMap[iconKey] || iconKey;
+    const svg = SvgIcons[mappedKey] || '';
+    return this.sanitizer.bypassSecurityTrustHtml(svg);
+  }
   getSection(type: string) {
     return this.content()?.sections.find(s => s.type === type);
+  }
+    getSafeSvgIcon(svg?: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(svg ?? '');
   }
 
   /** ctas desde root o desde hero section (CMS puede guardarlos en uno u otro). */

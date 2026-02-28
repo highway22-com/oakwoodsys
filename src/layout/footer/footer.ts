@@ -1,3 +1,5 @@
+import { computed, effect, OnDestroy } from '@angular/core';
+ 
 import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule, NgClass } from '@angular/common';
@@ -58,11 +60,56 @@ export interface FooterSection {
   templateUrl: './footer.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Footer implements OnInit {
+export class Footer implements OnInit, OnDestroy {
   private readonly graphql = inject(GraphQLContentService);
 
   readonly footerData = signal<FooterSection | null>(null);
   readonly loading = signal(true);
+   // Track which group is open (mobile only)
+  readonly openGroupIdx = signal<number | null>(null);
+
+  // Detect if mobile (Tailwind: <1024px)
+  readonly isMobile = signal(false);
+
+  private resizeHandler: (() => void) | null = null;
+
+  ngOnInit() {
+    if (typeof window !== 'undefined') {
+      this.isMobile.set(window.innerWidth < 1024);
+      this.resizeHandler = () => {
+        this.isMobile.set(window.innerWidth < 1024);
+        if (!this.isMobile()) this.openGroupIdx.set(null);
+      };
+      window.addEventListener('resize', this.resizeHandler);
+    }
+    this.graphql.getCmsPageBySlug('footer').subscribe({
+      next: (data) => {
+        const section = this.extractFooterSection(data);
+        if (section) {
+          this.footerData.set(section);
+        } else {
+          this.loadFooterFromHome();
+        }
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loadFooterFromHome();
+        this.loading.set(false);
+      },
+    });
+  }
+
+  ngOnDestroy() {
+    if (typeof window !== 'undefined' && this.resizeHandler) {
+      window.removeEventListener('resize', this.resizeHandler);
+    }
+  }
+
+  // Toggle group open/close (mobile only)
+  toggleGroup(idx: number) {
+    if (!this.isMobile()) return;
+    this.openGroupIdx.set(this.openGroupIdx() === idx ? null : idx);
+  }
 
   /** Social media URLs mapped by icon name */
   readonly socialUrls: Record<string, string> = {
@@ -84,23 +131,7 @@ export class Footer implements OnInit {
     ];
   }
 
-  ngOnInit() {
-    this.graphql.getCmsPageBySlug('footer').subscribe({
-      next: (data) => {
-        const section = this.extractFooterSection(data);
-        if (section) {
-          this.footerData.set(section);
-        } else {
-          this.loadFooterFromHome();
-        }
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loadFooterFromHome();
-        this.loading.set(false);
-      },
-    });
-  }
+  
 
   private loadFooterFromHome() {
     this.loading.set(false);

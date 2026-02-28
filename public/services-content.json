@@ -18,11 +18,8 @@
         "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2025/12/s-daa-h.jpg",
         "serviceAreas": [
           {
-            "icon": "/assets/sitemap.png",
-            "badges": [
-              "Fabric",
-              "Synapse"
-            ],
+            "icon": "DataAIServiceCard1",
+            "badges": ["Fabric", "Synapse"],
             "title": "Unified data estate",
             "subtitle": "Modernize and consolidate into a governed lakehouse.",
             "features": [
@@ -32,11 +29,8 @@
             ]
           },
           {
-            "icon": "/assets/book-sparkles.png",
-            "badges": [
-              "AML",
-              "OPENAI"
-            ],
+            "icon": "DataAIServiceCard2",
+            "badges": ["AML", "OPENAI"],
             "title": "AI and Machine Learning",
             "subtitle": "From experiments to production ML and Generative AI.",
             "features": [
@@ -46,10 +40,8 @@
             ]
           },
           {
-            "icon": "/assets/copilot.png",
-            "badges": [
-              "Extensibility"
-            ],
+            "icon": "DataAIServiceCard3",
+            "badges": ["Extensibility"],
             "title": "Copilot readiness and extensibility",
             "subtitle": "Data, security, and plugins to realize Copilot value.",
             "features": [
@@ -59,10 +51,8 @@
             ]
           },
           {
-            "icon": "/assets/chart-simple.png",
-            "badges": [
-              "POWER BI"
-            ],
+            "icon": "DataAIServiceCard4",
+            "badges": ["POWER BI"],
             "title": "Analytics and visualization",
             "subtitle": "Trusted insights with governed semantics and BI at scale.",
             "features": [
@@ -162,27 +152,27 @@
         "imageSrc": "https://oakwoodsys.com/wp-content/uploads/2026/02/wi.png",
         "features": [
           {
-            "icon": "/assets/w1.png",
+            "icon": "whyOakwoordDataAndAICardIcon1",
             "title": "AI ready data platforms",
             "description": "MLOps, vector search, and responsible AI controls built in."
           },
           {
-            "icon": "/assets/w2.png",
+            "icon": "whyOakwoordDataAndAICardIcon2",
             "title": "Microsoft centric expertise",
             "description": "Fabric, Synapse, AML, OpenAI, Purview, Power BI with deep implementation experience."
           },
           {
-            "icon": "/assets/w3.png",
+            "icon": "whyOakwoordDataAndAICardIcon3",
             "title": "Unified strategy to execution",
             "description": "Assess to Prove to Migrate to Manage with clear outcomes at each stage."
           },
           {
-            "icon": "/assets/w4.png",
+            "icon": "whyOakwoordDataAndAICardIcon4",
             "title": "Governed by design",
             "description": "Identity, lineage, auditing, and policy enforcement without slowing delivery."
           },
           {
-            "icon": "/assets/w5.png",
+            "icon": "whyOakwoordDataAndAICardIcon5",
             "title": "Full Lifecycle partnership",
             "description": "Roadmaps tied to measurable value like time to insight, cost, adoption, and reliability."
           }
@@ -227,10 +217,8 @@
         "backgroundImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
         "serviceAreas": [
           {
-            "icon": "/assets/cloud.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "CloudServiceCard1",
+            "badges": ["Service"],
             "title": "Server & application migration",
             "subtitle": "Move workloads to Azure with minimal disruption and maximum reliability.",
             "features": [
@@ -240,10 +228,8 @@
             ]
           },
           {
-            "icon": "/assets/cloud.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "CloudServiceCard2",
+            "badges": ["Service"],
             "title": "Hybrid & multi-cloud management",
             "subtitle": "Unify on-premises and cloud with consistent governance and operations.",
             "features": [
@@ -253,10 +239,8 @@
             ]
           },
           {
-            "icon": "/assets/cloud.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "CloudServiceCard3",
+            "badges": ["Service"],
             "title": "Cloud security & governance",
             "subtitle": "Protect your cloud estate with identity, compliance, and threat detection.",
             "features": [
@@ -266,10 +250,8 @@
             ]
           },
           {
-            "icon": "/assets/cloud.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "CloudServiceCard4",
+            "badges": ["Service"],
             "title": "Virtual desktop & collaboration",
             "subtitle": "Deliver secure, high-performance virtual desktops and apps from the cloud.",
             "features": [
@@ -351,49 +333,11 @@
           }
         ]
       },
-      "whyOakwood": {
-        "tagline": "WHY OAKWOOD",
-        "title": "Unlock the full potential of your data",
-        "description": "From data warehousing and analytics to machine learning and AI, we help you leverage your data for competitive advantage.",
-        "imageSrc": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&q=80",
-        "features": [
-          {
-            "icon": "/assets/cloud.png",
-            "title": "Microsoft-centric approach",
-            "description": "Deep expertise in Azure and Microsoft stack for consistent, supported solutions."
-          },
-          {
-            "icon": "/assets/cloud.png",
-            "title": "Security by default",
-            "description": "Identity, encryption, and compliance built into every engagement."
-          },
-          {
-            "icon": "/assets/cloud.png",
-            "title": "Data-driven decisions",
-            "description": "Insights and automation to optimize cost, performance, and governance."
-          },
-          {
-            "icon": "/assets/cloud.png",
-            "title": "Scalability",
-            "description": "Architectures that grow with your business and workload demands."
-          },
-          {
-            "icon": "/assets/cloud.png",
-            "title": "Hybrid-by-design",
-            "description": "Seamless integration between on-premises and cloud with Azure Arc and hybrid services."
-          },
-          {
-            "icon": "/assets/cloud.png",
-            "title": "Compliance-focused",
-            "description": "Frameworks and controls to meet industry and regulatory requirements."
-          }
-        ]
-      },
       "ctaSection": {
         "headline": "Modernize your infrastructure with purpose",
         "subheadline": "Our cloud solutions are designed to deliver real business value, not just technology.",
         "primaryCta": {
-           "text": "View all case studies",
+          "text": "View all case studies",
           "link": "/resources/case-studies"
         }
       },
@@ -428,10 +372,8 @@
         "backgroundImage": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1920&q=80",
         "serviceAreas": [
           {
-            "icon": "/assets/app-innovation.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "ApplicationInnovationServiceCard1",
+            "badges": ["Service"],
             "title": "Application modernization",
             "subtitle": "Modernize existing applications, ensuring they are scalable, secure, and cost-effective.",
             "features": [
@@ -441,10 +383,8 @@
             ]
           },
           {
-            "icon": "/assets/app-innovation.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "ApplicationInnovationServiceCard2",
+            "badges": ["Service"],
             "title": "Custom app development / APIs",
             "subtitle": "Build bespoke applications and robust APIs tailored to your business needs.",
             "features": [
@@ -454,10 +394,8 @@
             ]
           },
           {
-            "icon": "/assets/app-innovation.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "ApplicationInnovationServiceCard3",
+            "badges": ["Service"],
             "title": "Power apps / Power platform",
             "subtitle": "Leverage Microsoft Power Platform for rapid application development and automation.",
             "features": [
@@ -467,10 +405,8 @@
             ]
           },
           {
-            "icon": "/assets/app-innovation.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "ApplicationInnovationServiceCard4",
+            "badges": ["Service"],
             "title": "Integration services (Azure Integration services)",
             "subtitle": "Seamlessly connect and unify data across disparate systems and applications.",
             "features": [
@@ -552,44 +488,11 @@
           }
         ]
       },
-      "whyOakwood": {
-        "tagline": "WHY OAKWOOD",
-        "title": "Unlock the full potential of your data",
-        "description": "From modern applications to AI-powered solutions, we help you turn ideas into high-impact outcomes.",
-        "imageSrc": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
-        "features": [
-          {
-            "icon": "/assets/app-innovation.png",
-            "title": "Outcome-driven",
-            "description": "We focus on business results and measurable impact, not just technology delivery."
-          },
-          {
-            "icon": "/assets/app-innovation.png",
-            "title": "Modern platforms",
-            "description": "Azure, Power Platform, and AI services for scalable, secure applications."
-          },
-          {
-            "icon": "/assets/app-innovation.png",
-            "title": "Deeper experience",
-            "description": "Expert teams with deep experience in application development and integration."
-          },
-          {
-            "icon": "/assets/app-innovation.png",
-            "title": "Fast and efficient delivery",
-            "description": "Agile delivery and accelerators to ship faster without compromising quality."
-          },
-          {
-            "icon": "/assets/app-innovation.png",
-            "title": "Lifetime partnership",
-            "description": "Ongoing support and evolution to keep your applications aligned with your goals."
-          }
-        ]
-      },
       "ctaSection": {
         "headline": "Turn ideas into high-impact applications",
         "subheadline": "Our application and AI solutions are designed to deliver real business value and exceptional user experiences.",
         "primaryCta": {
-           "text": "View case studies",
+          "text": "View case studies",
           "link": "/resources/case-studies"
         }
       },
@@ -624,10 +527,8 @@
         "backgroundImage": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1920&q=80",
         "serviceAreas": [
           {
-            "icon": "/assets/hpc.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "HighPerformanceComputingServiceCard1",
+            "badges": ["Service"],
             "title": "Hybrid HPC architecture and bursting",
             "subtitle": "Leverage existing on-prem HPC investments while extending to Azure for scalable, on-demand compute.",
             "features": [
@@ -637,10 +538,8 @@
             ]
           },
           {
-            "icon": "/assets/hpc.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "HighPerformanceComputingServiceCard2",
+            "badges": ["Service"],
             "title": "HPC performance benchmarking and tuning",
             "subtitle": "Optimize overall application performance and cost efficiency across a variety of compute platforms.",
             "features": [
@@ -650,10 +549,8 @@
             ]
           },
           {
-            "icon": "/assets/hpc.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "HighPerformanceComputingServiceCard3",
+            "badges": ["Service"],
             "title": "HPC migration & modernization",
             "subtitle": "Move your complex HPC workloads to Azure with confidence, leveraging modern tools and best practices.",
             "features": [
@@ -663,10 +560,8 @@
             ]
           },
           {
-            "icon": "/assets/hpc.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "HighPerformanceComputingServiceCard4",
+            "badges": ["Service"],
             "title": "Managed HPC services",
             "subtitle": "Ensure full stack HPC service delivery for your business.",
             "features": [
@@ -748,39 +643,7 @@
           }
         ]
       },
-      "whyOakwood": {
-        "tagline": "WHY OAKWOOD",
-        "title": "Unlock the full potential of your data",
-        "description": "We help you transform raw data into actionable insights through innovative data platforms, delivering a competitive edge.",
-        "imageSrc": "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=1920&q=80",
-        "features": [
-          {
-            "icon": "/assets/hpc.png",
-            "title": "Parallel throughput",
-            "description": "Achieve unprecedented data processing speeds."
-          },
-          {
-            "icon": "/assets/hpc.png",
-            "title": "Transparent scale",
-            "description": "Scale data platforms effortlessly on demand."
-          },
-          {
-            "icon": "/assets/hpc.png",
-            "title": "Cost-efficiency",
-            "description": "Optimize costs with flexible, usage-based pricing."
-          },
-          {
-            "icon": "/assets/hpc.png",
-            "title": "Performance enhanced",
-            "description": "Boost application performance across the board."
-          },
-          {
-            "icon": "/assets/hpc.png",
-            "title": "Hybrid flexibility",
-            "description": "Seamlessly integrate on-prem and cloud data sources."
-          }
-        ]
-      },
+
       "ctaSection": {
         "headline": "Move faster with modern compute",
         "subheadline": "Ready to accelerate your HPC workloads and transform your business? Let's connect.",
@@ -820,10 +683,8 @@
         "backgroundImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
         "serviceAreas": [
           {
-            "icon": "/assets/modern-work.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "ModernWordServiceCard1",
+            "badges": ["Service"],
             "title": "Copilot readiness and deployment",
             "subtitle": "Prepare your environment and deploy Microsoft Copilot for secure, productive AI in the flow of work.",
             "features": [
@@ -833,10 +694,8 @@
             ]
           },
           {
-            "icon": "/assets/modern-work.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "ModernWordServiceCard2",
+            "badges": ["Service"],
             "title": "Teams and SharePoint modernization",
             "subtitle": "Modernize collaboration with Teams and SharePoint for better communication and content management.",
             "features": [
@@ -846,10 +705,8 @@
             ]
           },
           {
-            "icon": "/assets/modern-work.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "ModernWordServiceCard3",
+            "badges": ["Service"],
             "title": "Endpoint management and security",
             "subtitle": "Protect devices and data with Intune, Entra ID, and conditional access.",
             "features": [
@@ -859,10 +716,8 @@
             ]
           },
           {
-            "icon": "/assets/modern-work.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "ModernWordServiceCard4",
+            "badges": ["Service"],
             "title": "Adoption and change management",
             "subtitle": "Drive adoption and ensure your workforce gets value from Microsoft 365 and Copilot.",
             "features": [
@@ -944,39 +799,12 @@
           }
         ]
       },
-      "whyOakwood": {
-        "tagline": "WHY OAKWOOD",
-        "title": "Unlock the full potential of your data",
-        "description": "From data warehousing to AI readiness, we help you leverage your data and platforms for competitive advantage.",
-        "imageSrc": "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1920&q=80",
-        "features": [
-          {
-            "icon": "/assets/modern-work.png",
-            "title": "Data warehouse modernization",
-            "description": "Modernize legacy data estates for analytics and AI."
-          },
-          {
-            "icon": "/assets/modern-work.png",
-            "title": "Azure for startups",
-            "description": "Cloud foundations and scale for growing organizations."
-          },
-          {
-            "icon": "/assets/modern-work.png",
-            "title": "AI ready foundations",
-            "description": "Prepare data and governance for Copilot and AI workloads."
-          },
-          {
-            "icon": "/assets/modern-work.png",
-            "title": "Adoption expertise",
-            "description": "Drive adoption and value from Microsoft 365 and Copilot."
-          }
-        ]
-      },
+
       "ctaSection": {
         "headline": "Redefine how your organization works",
         "subheadline": "Our Modern Work and Copilot solutions are designed to deliver a secure, productive, and AI ready workplace.",
         "primaryCta": {
-         "text": "View case studies",
+          "text": "View case studies",
           "link": "/resources/case-studies"
         }
       },
@@ -1011,10 +839,8 @@
         "backgroundImage": "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1920&q=80",
         "serviceAreas": [
           {
-            "icon": "/assets/managed-services.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "ManagedServicesServiceCard1",
+            "badges": ["Service"],
             "title": "Azure and Microsoft 365",
             "subtitle": "Optimize and scale your cloud infrastructure, reduce operational costs, and enhance security with expert support across Azure, Microsoft 365, SQL, and SharePoint. We help you:",
             "features": [
@@ -1024,10 +850,8 @@
             ]
           },
           {
-            "icon": "/assets/managed-services.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "ManagedServicesServiceCard2",
+            "badges": ["Service"],
             "title": "M365 managed services (Intune / Endpoint)",
             "subtitle": "Ensure your M365 environment is secure, compliant, and performing optimally. We provide comprehensive management for your Intune and Endpoint solutions, including:",
             "features": [
@@ -1037,10 +861,8 @@
             ]
           },
           {
-            "icon": "/assets/managed-services.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "ManagedServicesServiceCard3",
+            "badges": ["Service"],
             "title": "Essential support",
             "subtitle": "Timely support and expert guidance for critical issues. We offer:",
             "features": [
@@ -1050,10 +872,8 @@
             ]
           },
           {
-            "icon": "/assets/managed-services.png",
-            "badges": [
-              "SERVICE"
-            ],
+            "icon": "ManagedServicesServiceCard4",
+            "badges": ["Service"],
             "title": "Managed services complete",
             "subtitle": "Comprehensive managed services designed to proactively optimize your IT environment. Our services include:",
             "features": [
@@ -1135,39 +955,12 @@
           }
         ]
       },
-      "whyOakwood": {
-        "tagline": "WHY OAKWOOD",
-        "title": "Unlock the full potential of your data",
-        "description": "Our expert services and solutions empower your organization to leverage data for informed decisions and competitive advantage.",
-        "imageSrc": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80",
-        "features": [
-          {
-            "icon": "/assets/managed-services.png",
-            "title": "Proactive threat hunting",
-            "description": "Identify and mitigate threats before they impact your environment."
-          },
-          {
-            "icon": "/assets/managed-services.png",
-            "title": "Security automation",
-            "description": "Automate security policies, compliance checks, and response playbooks."
-          },
-          {
-            "icon": "/assets/managed-services.png",
-            "title": "Continuous improvement",
-            "description": "Ongoing optimization and recommendations to improve performance and cost."
-          },
-          {
-            "icon": "/assets/managed-services.png",
-            "title": "Cloud stability",
-            "description": "Reliable, highly available operations so your business can run without interruption."
-          }
-        ]
-      },
+
       "ctaSection": {
         "headline": "Stay focused on growth while we manage the rest",
         "subheadline": "Let our experts handle your cloud and M365 operations, so you can concentrate on strategic initiatives.",
         "primaryCta": {
-         "text": "View case studies",
+          "text": "View case studies",
           "link": "/resources/case-studies"
         }
       },

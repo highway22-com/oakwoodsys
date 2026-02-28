@@ -3,13 +3,14 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
+import { DomSanitizer } from '@angular/platform-browser';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { TrustedBySectionComponent } from "../../shared/sections/trusted-by/trusted-by";
 import { FeaturedCaseStudySectionComponent } from "../../shared/sections/featured-case-study/featured-case-study";
 import { FeaturedCaseStudyCategory } from "../../shared/sections/featured-case-study/featured-case-study-category";
 import { SeoMetaService } from '../../app/services/seo-meta.service';
-
+import { SvgIcons } from '../../shared/industries-icons/industries-icons';
 interface IndustryChallengeCard {
   id: string;
   image: string;
@@ -89,6 +90,7 @@ export default class Industries implements OnInit, OnDestroy {
   readonly content = signal<IndustryContent | null>(null);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
+  readonly sanitizer = inject(DomSanitizer);
 
   ngOnInit() {
     this.routeSub = this.route.paramMap.subscribe(params => {
@@ -115,6 +117,11 @@ export default class Industries implements OnInit, OnDestroy {
     if (!p) return undefined;
     return { text: p.text, link: p.link, backgroundColor: p.backgroundColor ?? '#1D69AC' };
   }
+
+    getIconSvg(iconKey: string) {
+      const svg = SvgIcons[iconKey] || '';
+      return this.sanitizer.bypassSecurityTrustHtml(svg);
+    }
 
   /** Slug de URL → clave en industries-content.json (para URLs amigables del navbar). */
   private static readonly SLUG_TO_KEY: Record<string, string> = {

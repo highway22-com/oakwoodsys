@@ -16,14 +16,16 @@
             </span>
             <div class="flex items-center gap-0">
               <button type="button" (click)="selectCaseStudy(selectedIndex() - 1)" [disabled]="selectedIndex() === 0"
-                [attr.aria-label]="(isBlogs ? 'Previous blog' : 'Previous case study')" [attr.aria-pressed]="selectedIndex() === 0"
+                [attr.aria-label]="(isBlogs ? 'Previous blog' : 'Previous case study')"
+                [attr.aria-pressed]="selectedIndex() === 0"
                 class="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
               <button type="button" (click)="selectCaseStudy(selectedIndex() + 1)"
-                [disabled]="selectedIndex() >= list.length - 1" [attr.aria-label]="(isBlogs ? 'Next blog' : 'Next case study')"
+                [disabled]="selectedIndex() >= list.length - 1"
+                [attr.aria-label]="(isBlogs ? 'Next blog' : 'Next case study')"
                 [attr.aria-pressed]="selectedIndex() >= list.length - 1"
                 class="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -54,14 +56,16 @@
             </span>
             <div class="flex items-center gap-1">
               <button type="button" (click)="selectCaseStudy(selectedIndex() - 1)" [disabled]="selectedIndex() === 0"
-                [attr.aria-label]="(isBlogs ? 'Previous blog' : 'Previous case study')" [attr.aria-pressed]="selectedIndex() === 0"
+                [attr.aria-label]="(isBlogs ? 'Previous blog' : 'Previous case study')"
+                [attr.aria-pressed]="selectedIndex() === 0"
                 class="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
               <button type="button" (click)="selectCaseStudy(selectedIndex() + 1)"
-                [disabled]="selectedIndex() >= list.length - 1" [attr.aria-label]="(isBlogs ? 'Next blog' : 'Next case study')"
+                [disabled]="selectedIndex() >= list.length - 1"
+                [attr.aria-label]="(isBlogs ? 'Next blog' : 'Next case study')"
                 [attr.aria-pressed]="selectedIndex() >= list.length - 1"
                 class="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

@@ -90,7 +90,7 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
       linkText: 'View offer',
     },
     {
-      title: 'Microsoft fabric POC',
+      title: 'Microsoft Fabric POC',
       description:
         'Stand up a working Fabric environment that connects your data sources and shows your team how to adopt OneLake, semantic models, and capabilities with hands-on guidance.',
       svgIcon: `<svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">

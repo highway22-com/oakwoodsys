@@ -5,7 +5,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Apollo, gql } from 'apollo-angular';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
-import { GET_GEN_CONTENTS_BY_SLUGS, getPrimaryTagName } from '../../app/api/graphql';
+import { GET_GEN_CONTENTS_BY_SLUGS, getPrimaryTagName, getAcfMediaUrl } from '../../app/api/graphql';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
@@ -99,6 +99,7 @@ export default class Post implements OnInit, OnDestroy {
   readonly loading = signal(true);
   readonly error = signal<any>(null);
   readonly activeSection = signal<string>('');
+  readonly linkCopied = signal(false);
   readonly tableOfContents = signal<{ id: string; text: string }[]>([]);
   readonly readingTimeMinutes = readingTimeMinutes;
 
@@ -135,7 +136,6 @@ export default class Post implements OnInit, OnDestroy {
       .subscribe({
         next: (nodes) => {
           const filtered = nodes.filter((n) => n.slug !== currentSlug);
-          debugger
           const raw = filtered as unknown as Record<string, unknown>[];
           const related = this.mapRelatedBloqs(raw);
           this.ngZone.run(() => {
@@ -242,6 +242,12 @@ export default class Post implements OnInit, OnDestroy {
               excerpt
               slug
               date
+              featuredImage {
+                node {
+                  sourceUrl
+                  altText
+                }
+              }
               author {
                 node {
                   email
@@ -339,12 +345,35 @@ export default class Post implements OnInit, OnDestroy {
     const title = post.headTitle || `${post.title} | Oakwood Systems`;
     const description = post.headDescription || post.excerpt || this.seoMeta.defaultDescription;
     const canonicalUrl = post.headCanonicalUrl || undefined;
+    const imgSrc = post.featuredImage?.node?.sourceUrl;
+    const image = imgSrc?.startsWith('http')
+      ? imgSrc
+      : imgSrc
+        ? `https://oakwoodsys.com${imgSrc.startsWith('/') ? '' : '/'}${imgSrc}`
+        : undefined;
+    const keywords = this.getSeoKeywords(post);
     this.seoMeta.updateMeta({
       title,
       description,
+      keywords,
+      keyphrase: post.primaryTag ?? undefined,
       canonicalPath: canonicalUrl ?? canonicalPath,
-      image: post.featuredImage?.node?.sourceUrl,
+      image,
+      imageAlt: post.featuredImage?.node?.altText ?? post.title,
+      ogType: 'article',
     });
+  }
+
+  /** Keywords SEO: primaryTag + tags del post, o default. */
+  private getSeoKeywords(post: PostDetail): string {
+    const parts: string[] = [];
+    if (post.primaryTag?.trim()) parts.push(post.primaryTag.trim());
+    if (post.tags?.length) {
+      for (const t of post.tags) {
+        if (t?.trim() && !parts.includes(t.trim())) parts.push(t.trim());
+      }
+    }
+    return parts.length > 0 ? parts.join(', ') : this.seoMeta.defaultKeywords;
   }
 
   ngOnDestroy() {
@@ -399,6 +428,49 @@ export default class Post implements OnInit, OnDestroy {
     this.scrollListener = () => updateActiveSection();
     window.addEventListener('scroll', this.scrollListener, { passive: true });
     setTimeout(() => updateActiveSection(), 200);
+  }
+
+  /** URL completa del post para compartir. La imagen (featuredImage) se usa en og:image vía updateSeoMeta. */
+  getShareUrl(): string {
+    const p = this.post();
+    if (!p) return this.seoMeta.baseUrl + '/';
+    if (isPlatformBrowser(this.platformId)) {
+      const origin = window.location.origin;
+      if (!origin.includes('localhost')) return origin + this.router.url;
+    }
+    // const canonical = p.headCanonicalUrl;
+    // if (canonical?.startsWith('http')) return canonical;
+    const path = this.isCaseStudy() ? `/resources/case-studies/${p.slug}` : `/blog/${p.slug}`;
+    const base = this.seoMeta.baseUrl.replace(/\/$/, '');
+    return base + (path.startsWith('/') ? path : '/' + path);
+  }
+
+  /** URL de Facebook Share (abre en nueva pestaña) */
+  getFacebookShareUrl(): string {
+    return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(this.getShareUrl())}`;
+  }
+
+  /** URL de Twitter/X Share (abre en nueva pestaña) */
+  getTwitterShareUrl(): string {
+    const url = this.getShareUrl();
+    const text = this.post()?.title ?? '';
+    return `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+  }
+
+  /** URL de LinkedIn Share (abre en nueva pestaña) */
+  getLinkedInShareUrl(): string {
+    return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(this.getShareUrl())}`;
+  }
+
+  /** Copia la URL del post al portapapeles. */
+  copyLinkToClipboard(event: Event): void {
+    event.preventDefault();
+    if (!isPlatformBrowser(this.platformId)) return;
+    const url = this.getShareUrl();
+    navigator.clipboard?.writeText(url).then(() => {
+      this.linkCopied.set(true);
+      setTimeout(() => this.linkCopied.set(false), 2000);
+    }).catch(() => { });
   }
 
   scrollToSection(sectionId: string): void {
