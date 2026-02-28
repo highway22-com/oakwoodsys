@@ -64,12 +64,14 @@
 
 <!-- Main Description Section -->
 @if (content()?.mainDescription) {
-<section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24" aria-labelledby="main-description">
+<section class="w-full bg-cover bg-center py-12 sm:py-16 md:py-20 lg:py-24 mb-10 lg:mb-20" aria-labelledby="main-description" style="background-image: url('/assets/bg-service-top-section.png');">
   <div class="px-0">
     <div class="max-w-7xl mx-auto">
-      <p class="text-base sm:text-lg md:text-xl lg:text-4xl text-gray-700 font-normal leading-relaxed   text-center"
+      <p class="text-[#242424] text-center font-['Inter'] 
+       text-[20px] sm:text-[24px] md:text-[28px] lg:text-[30px] 
+       font-normal leading-[150%] typewriter-effect"
         id="main-description">
-        {{ content()?.mainDescription?.text }}
+        {{ typewriterText() }}
       </p>
     </div>
   </div>
@@ -87,7 +89,7 @@
       <div class="absolute inset-0 bg-slate-600/30"></div>
       <div
         class="relative z-10 h-full flex flex-col justify-end px-4 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-12 md:py-16 lg:py-20">
-        <p class="text-xs sm:text-sm uppercase tracking-[0.2em] text-white/90 mb-2">
+        <p class="text-xs sm:text-sm  tracking-[0.2em] text-white/90 mb-2">
           {{ content()?.serviceAreas?.tagline }}
         </p>
         <h2 id="service-areas-title"

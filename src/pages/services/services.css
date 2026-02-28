@@ -1,3 +1,21 @@
+/* Typewriter effect: blinking cursor */
+.typewriter-effect {
+  position: relative;
+}
+.typewriter-effect::after {
+  content: '';
+  display: inline-block;
+  width: 1ch;
+  height: 1em;
+  background: currentColor;
+  margin-left: 2px;
+  animation: blink 1s steps(1) infinite;
+  vertical-align: bottom;
+}
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
 :host {
   display: block;
   width: 100%;
@@ -12,3 +30,4 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+

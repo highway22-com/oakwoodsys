@@ -60,6 +60,10 @@ export const routes: Routes = [
         path: 'structured-engagement',
         component: Structured
     },
+        {
+        path: 'resources/structured-engagements',
+        component: Structured
+    },
     {
         path: 'structured-engagement/:slug',
         component: StructuredOffer

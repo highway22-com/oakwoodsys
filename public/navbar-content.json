@@ -144,6 +144,13 @@
         "link": "/resources/case-studies",
         "desc": "Discover our impact through realized projects",
         "icon": "/assets/fina.svg"
+      },
+       {
+        "id": "03",
+        "name": "Structured Engagements",
+        "link": "/resources/structured-engagements",
+        "desc": "Oakwood’s SQL Server Migration to Azure engagement and helps organizations.",
+        "icon": "/assets/structured-engagement-megamenu-icon.svg"
       }
     ]
   }

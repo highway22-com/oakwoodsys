@@ -13,7 +13,7 @@ import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-s
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { TrustedBySectionComponent } from "../../shared/sections/trusted-by/trusted-by";
 import { SvgIcons } from '../../shared/service-icons/service-icons';
-
+import { effect } from '@angular/core';
 
 interface ServiceArea {
   icon: string;
@@ -166,13 +166,41 @@ export default class Services implements OnInit, OnDestroy {
   readonly structuredData = signal<any>(null);
   readonly structuredEngagementSection = signal<any>(null);
   readonly showStructuredEngagements = signal(true);
+typewriterText = signal('');
+private typewriterTimeout: any;
 
+startTypewriter(text: string) {
+  this.typewriterText.set('');
+  if (this.typewriterTimeout) clearTimeout(this.typewriterTimeout);
+  let i = 0;
+  const type = () => {
+    if (i <= text.length) {
+      this.typewriterText.set(text.slice(0, i));
+      i++;
+      this.typewriterTimeout = setTimeout(type, 18);
+    }
+  };
+  setTimeout(type, 100); // Add a slight delay to ensure DOM is ready
+}
   getIconSvg(iconKey: string) {
     const svg = SvgIcons[iconKey] || '';
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   }
 
+  constructor() {
+  effect(() => {
+    const content = this.content();
+    if (content?.mainDescription?.text) {
+      this.startTypewriter(content.mainDescription.text);
+    } else {
+      this.typewriterText.set('');
+    }
+  });
+}
+
   ngOnInit() {
+
+
     // Set default meta description for services pages
     this.setDefaultMetadata();
 

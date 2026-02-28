@@ -1,3 +1,7 @@
+
+import { Router } from '@angular/router';
+
+
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal, DOCUMENT } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, NgClass, isPlatformBrowser } from '@angular/common';
@@ -46,6 +50,11 @@ export function splitTwoLinerTitle(title: string): [string, string] {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Home implements OnInit {
+    private readonly router = inject(Router);
+
+    goToContactUs() {
+      this.router.navigate(['/contact-us']);
+    }
   readonly FeaturedCaseStudyCategory = FeaturedCaseStudyCategory;
   readonly content = signal<CmsPageContent | null>(null);
   readonly loading = signal(true);
