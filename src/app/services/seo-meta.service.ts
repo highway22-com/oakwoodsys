@@ -1,4 +1,4 @@
-import { inject, Injectable, DOCUMENT } from '@angular/core';
+import { inject, Injectable, DOCUMENT, isDevMode } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 
 export interface SeoMetaConfig {
@@ -120,6 +120,17 @@ export class SeoMetaService {
 
     // Canonical
     this.setCanonical(canonicalUrl);
+
+    // Debug: ver metadata actual en consola (solo en desarrollo)
+    if (isDevMode()) {
+      const metas = this.document.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"], meta[name="description"], meta[name="keywords"]');
+      const metaObj: Record<string, string> = {};
+      metas.forEach((m) => {
+        const attr = m.getAttribute('property') ?? m.getAttribute('name') ?? 'unknown';
+        metaObj[attr] = m.getAttribute('content') ?? '';
+      });
+      console.log('[SeoMeta] Actualizado:', { title, ogType, image, canonicalUrl, metaTags: metaObj });
+    }
   }
 
   private setCanonical(url: string): void {

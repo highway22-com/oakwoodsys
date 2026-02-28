@@ -14,17 +14,18 @@
       </p>
       }
     </div>
-    <div class="flex overflow-x-auto whitespace-nowrap gap-6 sm:gap-8 mb-10 sm:mb-12 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:whitespace-normal snap-x snap-mandatory">
+    <div
+      class="flex overflow-x-auto whitespace-nowrap gap-6 sm:gap-8 mb-10 sm:mb-12 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:whitespace-normal snap-x snap-mandatory">
       @if (loading()) {
       <p class="col-span-full text-center text-gray-500 py-8">Loading latest posts...</p>
       } @else if (articles().length === 0) {
       <p class="col-span-full text-center text-gray-500 py-8">No posts yet.</p>
       } @else {
       @for (post of articles(); track post.slug) {
-      <app-blog-card [slug]="post.slug" [imageUrl]="post.imageUrl" [imageAlt]="post.imageAlt"
-        [tag]="post.tag" [readingTimeMinutes]="post.readingTimeMinutes" [title]="post.title"
-        [excerptHtml]="post.excerptHtml" [authorDisplayName]="post.authorDisplayName"
-        [authorPicture]="post.authorPicture" [authorInitial]="post.authorInitial" [date]="post.date"
+      <app-blog-card [slug]="post.slug" [imageUrl]="post.imageUrl" [imageAlt]="post.imageAlt" [tag]="post.tag"
+        [readingTimeMinutes]="post.readingTimeMinutes" [title]="post.title" [excerptHtml]="post.excerptHtml"
+        [authorDisplayName]="post.authorDisplayName" [authorPicture]="post.authorPicture"
+        [authorInitial]="post.authorInitial" [date]="post.date"
         class="w-[75vw] h-[420px] sm:w-auto sm:h-auto md:w-auto md:h-auto snap-start mr-0 sm:mr-4 md:mr-0 flex-shrink-0" />
       }
       }
@@ -32,7 +33,8 @@
     @if (section().cta; as cta) {
     @if (cta.text) {
     <div class="px-0">
-      <app-button-primary [text]="cta.text" [link]="cta.link ?? '/blog'" [isTransparent]="true" [borderColor]="'black'" class="block w-full sm:w-auto" />
+      <app-button-primary [text]="cta.text" [link]="cta.link ?? '/blog'" [isTransparent]="true" [borderColor]="'black'"
+        class="block w-full sm:w-auto" />
     </div>
     }
     }
