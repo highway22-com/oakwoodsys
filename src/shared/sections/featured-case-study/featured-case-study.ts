@@ -6,6 +6,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ButtonPrimaryComponent } from '../../button-primary/button-primary.component';
 import { GraphQLContentService } from '../../../app/services/graphql-content.service';
 import type { CaseStudy } from '../../../app/api/graphql';
+import { getPrimaryTagSlug } from '../../../app/api/graphql';
 import { take } from 'rxjs/operators';
 import { decodeHtmlEntities } from '../../../app/utils/cast';
 import { FeaturedCaseStudyCategory } from './featured-case-study-category';
@@ -150,8 +151,8 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges, Aft
 
           let _list = filtered.length > 0 ? filtered : caseStudies;
           if (primaryTagSlug) {
-            const byTag = [..._list].filter((n) =>
-              n.genContentTags?.nodes?.find((t) => t.slug === primaryTagSlug)
+            const byTag = [..._list].filter(
+              (n) => getPrimaryTagSlug(n.primaryTagName, n.genContentTags) === primaryTagSlug
             );
             _list = byTag.length > 0 ? byTag : _list;
           }

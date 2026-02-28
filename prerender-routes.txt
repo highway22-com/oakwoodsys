@@ -37,7 +37,7 @@
 /resources/case-studies/application-modernization-for-wrap-up-insurance-solutions
 /resources/case-studies/secure-azure-research-environment-architecture-2
 /resources/case-studies/enterprise-reporting-and-data-roadmap-development
-/resources/case-studies/azure-high-performance-computing-environment
+/resources/case-studies/azure-high-performance-computing-hpc-environment
 /resources/case-studies/enhancing-rdms-system-with-azure-blob-storage
 /resources/case-studies/building-a-high-availability-azure-environment-for-hpc-at-scale
 /resources/case-studies/transforming-electronic-design-automation-in-manufacturing
@@ -47,10 +47,10 @@
 /industries/retail
 /industries/financial-services
 /industries/eda
-/services/data-and-ai
+/services/data-ai-solutions
 /services/cloud-and-infrastructure
 /services/application-innovation
-/services/high-performance-computing
+/services/high-performance-computing-hpc
 /services/modern-work
 /services/managed-services
 /structured-engagement/sql-server-migration-to-azure

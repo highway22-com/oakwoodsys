@@ -1,7 +1,7 @@
 {
   "services": {
-    "data-and-ai": {
-      "slug": "data-and-ai",
+    "data-ai-solutions": {
+      "slug": "data-ai-solutions",
       "title": "Data & AI",
       "description": "Unify, govern, and activate your data estate to deliver real AI outcomes.",
       "backgroundImage": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1920&q=80",
@@ -19,7 +19,10 @@
         "serviceAreas": [
           {
             "icon": "DataAIServiceCard1",
-            "badges": ["Fabric", "Synapse"],
+            "badges": [
+              "Fabric",
+              "Synapse"
+            ],
             "title": "Unified data estate",
             "subtitle": "Modernize and consolidate into a governed lakehouse.",
             "features": [
@@ -30,7 +33,10 @@
           },
           {
             "icon": "DataAIServiceCard2",
-            "badges": ["AML", "OPENAI"],
+            "badges": [
+              "AML",
+              "OPENAI"
+            ],
             "title": "AI and Machine Learning",
             "subtitle": "From experiments to production ML and Generative AI.",
             "features": [
@@ -41,7 +47,9 @@
           },
           {
             "icon": "DataAIServiceCard3",
-            "badges": ["Extensibility"],
+            "badges": [
+              "Extensibility"
+            ],
             "title": "Copilot readiness and extensibility",
             "subtitle": "Data, security, and plugins to realize Copilot value.",
             "features": [
@@ -52,7 +60,9 @@
           },
           {
             "icon": "DataAIServiceCard4",
-            "badges": ["POWER BI"],
+            "badges": [
+              "POWER BI"
+            ],
             "title": "Analytics and visualization",
             "subtitle": "Trusted insights with governed semantics and BI at scale.",
             "features": [
@@ -218,7 +228,9 @@
         "serviceAreas": [
           {
             "icon": "CloudServiceCard1",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Server & application migration",
             "subtitle": "Move workloads to Azure with minimal disruption and maximum reliability.",
             "features": [
@@ -229,7 +241,9 @@
           },
           {
             "icon": "CloudServiceCard2",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Hybrid & multi-cloud management",
             "subtitle": "Unify on-premises and cloud with consistent governance and operations.",
             "features": [
@@ -240,7 +254,9 @@
           },
           {
             "icon": "CloudServiceCard3",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Cloud security & governance",
             "subtitle": "Protect your cloud estate with identity, compliance, and threat detection.",
             "features": [
@@ -251,7 +267,9 @@
           },
           {
             "icon": "CloudServiceCard4",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Virtual desktop & collaboration",
             "subtitle": "Deliver secure, high-performance virtual desktops and apps from the cloud.",
             "features": [
@@ -373,7 +391,9 @@
         "serviceAreas": [
           {
             "icon": "ApplicationInnovationServiceCard1",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Application modernization",
             "subtitle": "Modernize existing applications, ensuring they are scalable, secure, and cost-effective.",
             "features": [
@@ -384,7 +404,9 @@
           },
           {
             "icon": "ApplicationInnovationServiceCard2",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Custom app development / APIs",
             "subtitle": "Build bespoke applications and robust APIs tailored to your business needs.",
             "features": [
@@ -395,7 +417,9 @@
           },
           {
             "icon": "ApplicationInnovationServiceCard3",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Power apps / Power platform",
             "subtitle": "Leverage Microsoft Power Platform for rapid application development and automation.",
             "features": [
@@ -406,7 +430,9 @@
           },
           {
             "icon": "ApplicationInnovationServiceCard4",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Integration services (Azure Integration services)",
             "subtitle": "Seamlessly connect and unify data across disparate systems and applications.",
             "features": [
@@ -509,11 +535,11 @@
         }
       }
     },
-    "high-performance-computing": {
+    "high-performance-computing-hpc": {
       "videoUrls": [
         "https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Hpc.mp4"
       ],
-      "slug": "high-performance-computing",
+      "slug": "high-performance-computing-hpc",
       "title": "High Performance Computing (HPC)",
       "description": "Scale simulations, AI training, and PLM workloads with the power of Azure HPC.",
       "backgroundImage": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1920&q=80",
@@ -528,7 +554,9 @@
         "serviceAreas": [
           {
             "icon": "HighPerformanceComputingServiceCard1",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Hybrid HPC architecture and bursting",
             "subtitle": "Leverage existing on-prem HPC investments while extending to Azure for scalable, on-demand compute.",
             "features": [
@@ -539,7 +567,9 @@
           },
           {
             "icon": "HighPerformanceComputingServiceCard2",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "HPC performance benchmarking and tuning",
             "subtitle": "Optimize overall application performance and cost efficiency across a variety of compute platforms.",
             "features": [
@@ -550,7 +580,9 @@
           },
           {
             "icon": "HighPerformanceComputingServiceCard3",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "HPC migration & modernization",
             "subtitle": "Move your complex HPC workloads to Azure with confidence, leveraging modern tools and best practices.",
             "features": [
@@ -561,7 +593,9 @@
           },
           {
             "icon": "HighPerformanceComputingServiceCard4",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Managed HPC services",
             "subtitle": "Ensure full stack HPC service delivery for your business.",
             "features": [
@@ -643,7 +677,6 @@
           }
         ]
       },
-
       "ctaSection": {
         "headline": "Move faster with modern compute",
         "subheadline": "Ready to accelerate your HPC workloads and transform your business? Let's connect.",
@@ -684,7 +717,9 @@
         "serviceAreas": [
           {
             "icon": "ModernWordServiceCard1",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Copilot readiness and deployment",
             "subtitle": "Prepare your environment and deploy Microsoft Copilot for secure, productive AI in the flow of work.",
             "features": [
@@ -695,7 +730,9 @@
           },
           {
             "icon": "ModernWordServiceCard2",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Teams and SharePoint modernization",
             "subtitle": "Modernize collaboration with Teams and SharePoint for better communication and content management.",
             "features": [
@@ -706,7 +743,9 @@
           },
           {
             "icon": "ModernWordServiceCard3",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Endpoint management and security",
             "subtitle": "Protect devices and data with Intune, Entra ID, and conditional access.",
             "features": [
@@ -717,7 +756,9 @@
           },
           {
             "icon": "ModernWordServiceCard4",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Adoption and change management",
             "subtitle": "Drive adoption and ensure your workforce gets value from Microsoft 365 and Copilot.",
             "features": [
@@ -799,7 +840,6 @@
           }
         ]
       },
-
       "ctaSection": {
         "headline": "Redefine how your organization works",
         "subheadline": "Our Modern Work and Copilot solutions are designed to deliver a secure, productive, and AI ready workplace.",
@@ -840,7 +880,9 @@
         "serviceAreas": [
           {
             "icon": "ManagedServicesServiceCard1",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Azure and Microsoft 365",
             "subtitle": "Optimize and scale your cloud infrastructure, reduce operational costs, and enhance security with expert support across Azure, Microsoft 365, SQL, and SharePoint. We help you:",
             "features": [
@@ -851,7 +893,9 @@
           },
           {
             "icon": "ManagedServicesServiceCard2",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "M365 managed services (Intune / Endpoint)",
             "subtitle": "Ensure your M365 environment is secure, compliant, and performing optimally. We provide comprehensive management for your Intune and Endpoint solutions, including:",
             "features": [
@@ -862,7 +906,9 @@
           },
           {
             "icon": "ManagedServicesServiceCard3",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Essential support",
             "subtitle": "Timely support and expert guidance for critical issues. We offer:",
             "features": [
@@ -873,7 +919,9 @@
           },
           {
             "icon": "ManagedServicesServiceCard4",
-            "badges": ["Service"],
+            "badges": [
+              "Service"
+            ],
             "title": "Managed services complete",
             "subtitle": "Comprehensive managed services designed to proactively optimize your IT environment. Our services include:",
             "features": [
@@ -955,7 +1003,6 @@
           }
         ]
       },
-
       "ctaSection": {
         "headline": "Stay focused on growth while we manage the rest",
         "subheadline": "Let our experts handle your cloud and M365 operations, so you can concentrate on strategic initiatives.",

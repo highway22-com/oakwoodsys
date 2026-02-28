@@ -231,10 +231,10 @@ export default class Blogs implements OnInit {
 
 
   private readonly defaultServiceLines: { label: string; link: string }[] = [
-    { label: 'Data & AI Solutions', link: '/services/data-and-ai' },
+    { label: 'Data & AI Solutions', link: '/services/data-ai-solutions' },
     { label: 'Cloud & Infrastructure', link: '/services/cloud-and-infrastructure' },
     { label: 'Application Innovation', link: '/services/application-innovation' },
-    { label: 'High-Performance Computing (HPC)', link: '/services/high-performance-computing' },
+    { label: 'High-Performance Computing (HPC)', link: '/services/high-performance-computing-hpc' },
     { label: 'Modern Work', link: '/services/modern-work' },
     { label: 'Managed Services', link: '/services/managed-services' },
   ];

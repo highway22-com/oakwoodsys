@@ -12,7 +12,7 @@ export class MicrosoftServices {
     {
       id: '01',
       name: 'Data & AI Solutions',
-      link: '/services/data-and-ai',
+      link: '/services/data-ai-solutions',
       desc: 'Unify, govern, and activate your data estate',
       details: 'Deliver real AI outcomes by unifying, governing, and activating your data estate to power intelligent innovation.',
       icon: '/assets/graph.png'
@@ -36,7 +36,7 @@ export class MicrosoftServices {
     {
       id: '04',
       name: 'High-Performance Computing (HPC)',
-      link: '/services/high-performance-computing',
+      link: '/services/high-performance-computing-hpc',
       desc: 'Scale simulations, AI training, and PLM workloads',
       details: 'Scale simulations, AI training, and PLM workloads with the power of Azure HPC for maximum computational performance.',
       icon: '/assets/hpc.png'
