@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, Input, OnInit, OnChanges, SimpleChanges, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, Input, OnInit, OnChanges, SimpleChanges, AfterViewInit, OnDestroy, computed, inject, signal, PLATFORM_ID } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ButtonPrimaryComponent } from '../../button-primary/button-primary.component';
 import { GraphQLContentService } from '../../../app/services/graphql-content.service';
 import type { CaseStudy } from '../../../app/api/graphql';
@@ -46,11 +46,12 @@ export interface FeaturedCaseStudyView {
     ]),
   ],
 })
-export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
+export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   [x: string]: any;
   private readonly graphql = inject(GraphQLContentService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly platformId = inject(PLATFORM_ID);
   readonly titleText = 'Featured Case Study'
 
   readonly decodeHtmlEntities = decodeHtmlEntities;
@@ -215,6 +216,7 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
   }
 
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     // Only attach on desktop
     if (window.innerWidth >= 640) {
       const section = document.querySelector('.featured-case-study-scroll');
@@ -239,9 +241,8 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
   }
 
   ngOnDestroy(): void {
-    if (this.desktopScrollHandler) {
-      const section = document.querySelector('.featured-case-study-scroll');
-      if (section) section.removeEventListener('wheel', this.desktopScrollHandler);
-    }
+    if (!isPlatformBrowser(this.platformId) || !this.desktopScrollHandler) return;
+    const section = document.querySelector('.featured-case-study-scroll');
+    if (section) section.removeEventListener('wheel', this.desktopScrollHandler);
   }
 }

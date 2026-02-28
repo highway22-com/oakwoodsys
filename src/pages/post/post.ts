@@ -5,7 +5,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Apollo, gql } from 'apollo-angular';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
-import { GET_GEN_CONTENTS_BY_SLUGS, getPrimaryTagName } from '../../app/api/graphql';
+import { GET_GEN_CONTENTS_BY_SLUGS, getPrimaryTagName, getAcfMediaUrl } from '../../app/api/graphql';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
@@ -99,6 +99,7 @@ export default class Post implements OnInit, OnDestroy {
   readonly loading = signal(true);
   readonly error = signal<any>(null);
   readonly activeSection = signal<string>('');
+  readonly linkCopied = signal(false);
   readonly tableOfContents = signal<{ id: string; text: string }[]>([]);
   readonly readingTimeMinutes = readingTimeMinutes;
 
@@ -437,8 +438,8 @@ export default class Post implements OnInit, OnDestroy {
       const origin = window.location.origin;
       if (!origin.includes('localhost')) return origin + this.router.url;
     }
-    const canonical = p.headCanonicalUrl;
-    if (canonical?.startsWith('http')) return canonical;
+    // const canonical = p.headCanonicalUrl;
+    // if (canonical?.startsWith('http')) return canonical;
     const path = this.isCaseStudy() ? `/resources/case-studies/${p.slug}` : `/blog/${p.slug}`;
     const base = this.seoMeta.baseUrl.replace(/\/$/, '');
     return base + (path.startsWith('/') ? path : '/' + path);
@@ -459,6 +460,17 @@ export default class Post implements OnInit, OnDestroy {
   /** URL de LinkedIn Share (abre en nueva pestaña) */
   getLinkedInShareUrl(): string {
     return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(this.getShareUrl())}`;
+  }
+
+  /** Copia la URL del post al portapapeles. */
+  copyLinkToClipboard(event: Event): void {
+    event.preventDefault();
+    if (!isPlatformBrowser(this.platformId)) return;
+    const url = this.getShareUrl();
+    navigator.clipboard?.writeText(url).then(() => {
+      this.linkCopied.set(true);
+      setTimeout(() => this.linkCopied.set(false), 2000);
+    }).catch(() => { });
   }
 
   scrollToSection(sectionId: string): void {
