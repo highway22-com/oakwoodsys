@@ -120,7 +120,7 @@
         "heading": "Build a more intelligent health system",
         "description": "Enhance collaboration, secure sensitive data, and improve patient outcomes with modern cloud solutions.",
         "primaryCta": {
-        "text": "View case studies",
+          "text": "View case studies",
           "link": "/resources/case-studies"
         }
       }
@@ -242,11 +242,10 @@
       "ctaSection": {
         "heading": "Transform how you design, build, and deliver",
         "description": "Enable efficiency, automation, and real-time insights across your manufacturing operations.",
-         "primaryCta": {
+        "primaryCta": {
           "text": "View case studies",
           "link": "/resources/case-studies"
         }
-
       }
     },
     "education": {
@@ -368,11 +367,10 @@
       "ctaSection": {
         "heading": "Build a stronger future for the public you serve",
         "description": "Enable better outcomes with modern data, applications, and collaboration platforms.",
-          "primaryCta": {
+        "primaryCta": {
           "text": "View case studies",
           "link": "/resources/case-studies"
         }
-
       }
     },
     "retail": {
@@ -494,11 +492,10 @@
       "ctaSection": {
         "heading": "Outperform with data and modern technology",
         "description": "Enable unified data, smarter operations, and personalized experiences across every channel.",
-         "primaryCta": {
-            "text": "View case studies",
+        "primaryCta": {
+          "text": "View case studies",
           "link": "/resources/case-studies"
         }
-
       }
     },
     "financial-services": {
@@ -621,14 +618,13 @@
         "heading": "Power growth with intelligent, secure innovation",
         "description": "Improve risk management, efficiency and customer engagement with modern technology",
         "primaryCta": {
-            "text": "View case studies",
+          "text": "View case studies",
           "link": "/resources/case-studies"
         }
-
       }
     },
-    "eda": {
-      "slug": "eda",
+    "electronic-design-automation-eda": {
+      "slug": "electronic-design-automation-eda",
       "title": "Accelerate Chip Design with High Performance Engineering Workflows",
       "description": "Oakwood enables semiconductor and EDA teams to run faster simulations, optimize compute environments, and scale securely with Azure HPC.",
       "backgroundImage": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80",
@@ -746,12 +742,10 @@
       "ctaSection": {
         "heading": "Accelerate complex design workflows",
         "description": "Power faster simulations, reduce bottlenecks, and optimize compute performance on Azure.",
-       
         "primaryCta": {
           "text": "View case studies",
           "link": "/resources/case-studies"
         }
-
       }
     }
   }

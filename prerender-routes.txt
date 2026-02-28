@@ -46,7 +46,7 @@
 /industries/education
 /industries/retail
 /industries/financial-services
-/industries/eda
+/industries/electronic-design-automation-eda
 /services/data-ai-solutions
 /services/cloud-and-infrastructure
 /services/application-innovation
