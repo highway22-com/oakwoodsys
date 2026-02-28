@@ -8,6 +8,7 @@ import { LatestInsightsSectionComponent, type LatestInsightsSection } from '../.
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
 import { ScrollAnimationComponent } from '../../shared/scroll-animation-component/scroll-animation.component';
+import { CommonModule } from '@angular/common';
 
 export interface AboutFeature {
   icon: string;
@@ -75,7 +76,7 @@ export interface AboutContent {
 
 @Component({
   selector: 'app-about-us',
-  imports: [VideoHero, LatestInsightsSectionComponent, CtaSectionComponent, ButtonPrimaryComponent, ScrollAnimationComponent, YoutubePlayerComponent, SafeUrlPipe],
+  imports: [CommonModule, VideoHero, LatestInsightsSectionComponent, CtaSectionComponent, ButtonPrimaryComponent, ScrollAnimationComponent, YoutubePlayerComponent, SafeUrlPipe],
   templateUrl: './about-us.html',
   styleUrl: './about-us.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
