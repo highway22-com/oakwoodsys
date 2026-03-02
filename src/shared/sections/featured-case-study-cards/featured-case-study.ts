@@ -17,6 +17,8 @@ export interface FeaturedCaseStudyCardsView {
   title?: string;
   description?: string;
   image?: { url?: string; alt?: string };
+  /** Slug del primary tag para enlazar al listado con filtro preseleccionado. */
+  primaryTagSlug?: string;
   cta?: {
     primary?: { text?: string; link?: string; backgroundColor?: string };
     secondary?: { text?: string; link?: string };
@@ -224,6 +226,9 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
   /** Mapea GenContentListNode (blog) a FeaturedCaseStudyCardsView. */
   private mapBlogNodeToView(n: GenContentListNode): FeaturedCaseStudyCardsView {
     const tag = n.genContentTags?.nodes?.[0]?.name ?? n.genContentCategories?.nodes?.[0]?.name ?? 'Blog';
+    const primaryTagSlug = getPrimaryTagSlug(n.primaryTagName, n.genContentTags);
+    const basePath = '/blog';
+    const secondaryLink = primaryTagSlug ? `${basePath}?primaryTag=${primaryTagSlug}` : basePath;
     return {
       label: 'Featured Post',
       tag,
@@ -233,6 +238,7 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
         url: n.featuredImage?.node?.sourceUrl,
         alt: n.featuredImage?.node?.altText ?? undefined,
       },
+      primaryTagSlug: primaryTagSlug ?? undefined,
       cta: {
         primary: {
           text: 'Read more',
@@ -241,7 +247,7 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
         },
         secondary: {
           text: 'View all blog',
-          link: '/blog',
+          link: secondaryLink,
         },
       },
     };
@@ -257,6 +263,9 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
       'Case Study';
     const description =
       cs.caseStudyDetails?.cardDescription?.trim() || cs.excerpt || '';
+    const primaryTagSlug = getPrimaryTagSlug(cs.primaryTagName, cs.genContentTags);
+    const basePath = '/resources/case-studies';
+    const secondaryLink = primaryTagSlug ? `${basePath}?primaryTag=${primaryTagSlug}` : basePath;
 
     return {
       label: 'Featured Case Study',
@@ -264,6 +273,7 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
       title: cs.title ?? '',
       description,
       image: { url: imageUrl, alt: imageAlt },
+      primaryTagSlug: primaryTagSlug ?? undefined,
       cta: {
         primary: {
           text: 'Read more',
@@ -272,7 +282,7 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
         },
         secondary: {
           text: 'View all case studies',
-          link: '/resources/case-studies',
+          link: secondaryLink,
         },
       },
     };

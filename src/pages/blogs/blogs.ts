@@ -132,12 +132,12 @@ export default class Blogs implements OnInit {
     const base = this.listingPath();
     const tags = this.graphql.genContentTags();
     if (tags.length > 0) {
-      return tags.map((t) => ({ label: t.name, slug: t.slug, link: `${base}?tag=${t.slug}` }));
+      return tags.map((t) => ({ label: t.name, slug: t.slug, link: `${base}?primaryTag=${t.slug}` }));
     }
-    return this.defaultServiceLines.map((s) => ({
-      ...s,
-      slug: s.link.split('/').filter(Boolean).pop() ?? s.label.toLowerCase().replace(/\s+/g, '-'),
-    }));
+    return this.defaultServiceLines.map((s) => {
+      const slug = s.link.split('/').filter(Boolean).pop() ?? s.label.toLowerCase().replace(/\s+/g, '-');
+      return { ...s, slug, link: `${base}?primaryTag=${slug}` };
+    });
   });
 
   /** Tags seleccionados para filtrar (slugs). Vacío = mostrar todo. */
@@ -325,6 +325,10 @@ export default class Blogs implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.isTabletOrMobile.set(window.innerWidth < this.MOBILE_BREAKPOINT);
     }
+    this.preselectFilterFromQueryParams();
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      this.preselectFilterFromQueryParams();
+    });
     if (this.isBlogs) {
       this.seoMeta.updateMeta({
         title: 'IT Blog | Oakwood Systems',
@@ -339,6 +343,14 @@ export default class Blogs implements OnInit {
       });
     }
     this.loadFirstPage();
+  }
+
+  /** Preselecciona el filtro desde query params (?primaryTag=slug o ?tag=slug). */
+  private preselectFilterFromQueryParams(): void {
+    const tag = this.route.snapshot.queryParamMap.get('primaryTag') ?? this.route.snapshot.queryParamMap.get('tag');
+    if (tag?.trim()) {
+      this.selectedTagSlugs.set(new Set([tag.trim()]));
+    }
   }
 
   private loadFirstPage() {

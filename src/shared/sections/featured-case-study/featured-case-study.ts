@@ -6,7 +6,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ButtonPrimaryComponent } from '../../button-primary/button-primary.component';
 import { GraphQLContentService } from '../../../app/services/graphql-content.service';
 import type { CaseStudy } from '../../../app/api/graphql';
-import { getPrimaryTagSlug } from '../../../app/api/graphql';
+import { getPrimaryTagName, getPrimaryTagSlug } from '../../../app/api/graphql';
 import { take } from 'rxjs/operators';
 import { decodeHtmlEntities } from '../../../app/utils/cast';
 import { FeaturedCaseStudyCategory } from './featured-case-study-category';
@@ -19,6 +19,10 @@ export interface FeaturedCaseStudyView {
   title?: string;
   description?: string;
   image?: { url?: string; alt?: string };
+  /** Nombre del primary tag para mostrar (ej. "Data & AI Solutions"). */
+  primaryTag?: string;
+  /** Slug del primary tag para enlazar al listado con filtro preseleccionado. */
+  primaryTagSlug?: string;
   cta?: {
     primary?: { text?: string; link?: string; backgroundColor?: string };
     secondary?: { text?: string; link?: string };
@@ -195,6 +199,10 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges, Aft
       'Case Study';
     const description =
       cs.caseStudyDetails?.cardDescription?.trim() || cs.excerpt || '';
+    const primaryTag = getPrimaryTagName(cs.primaryTagName) ?? cs.genContentTags?.nodes?.[0]?.name ?? null;
+    const primaryTagSlug = getPrimaryTagSlug(cs.primaryTagName, cs.genContentTags);
+    const basePath = '/resources/case-studies';
+    const secondaryLink = primaryTagSlug ? `${basePath}?primaryTag=${primaryTagSlug}` : basePath;
 
     return {
       label: 'Featured Case Study',
@@ -202,6 +210,8 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges, Aft
       title: cs.title ?? '',
       description,
       image: { url: imageUrl, alt: imageAlt },
+      primaryTag: primaryTag ?? undefined,
+      primaryTagSlug: primaryTagSlug ?? undefined,
       cta: {
         primary: {
           text: 'Read more',
@@ -210,7 +220,7 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges, Aft
         },
         secondary: {
           text: 'View all case studies',
-          link: '/resources/case-studies',
+          link: secondaryLink,
         },
       },
     };
