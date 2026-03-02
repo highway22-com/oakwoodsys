@@ -294,7 +294,9 @@
 .post-contact-form textarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  border-radius: 0.25rem;
+  border-radius: 6px;
+  border: 1px solid var(--Secondary-200, #D1D1D1);
+  background: var(--White, #FFF);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -319,13 +321,7 @@
   color: rgb(107 114 128);
 }
 
-/* Normal state */
-.post-contact-form input[type="text"]:not(.post-contact-form__input--error),
-.post-contact-form input[type="email"]:not(.post-contact-form__input--error),
-.post-contact-form textarea:not(.post-contact-form__input--error) {
-  border: 1px solid rgb(209 209 209);
-}
-
+/* Hover state */
 .post-contact-form input[type="text"]:not(.post-contact-form__input--error):hover,
 .post-contact-form input[type="email"]:not(.post-contact-form__input--error):hover,
 .post-contact-form textarea:not(.post-contact-form__input--error):hover {

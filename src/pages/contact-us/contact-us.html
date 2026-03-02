@@ -146,14 +146,14 @@
               <span class="text-xs text-[#D32F2F]">Message is required</span>
             }
           </label>
-          <!-- <div class="recaptcha-container">
+          @if (recaptchaEnabled) {
+          <div class="recaptcha-container">
             <div #recaptchaHost></div>
             @if (submitted && validationErrors.recaptcha) {
-              <span class="text-xs text-[#D32F2F]"
-                >Please verify that you are not a robot</span
-              >
+              <span class="text-xs text-[#D32F2F]">Please verify that you are not a robot</span>
             }
-          </div> -->
+          </div>
+          }
 
           <button
             type="submit"
