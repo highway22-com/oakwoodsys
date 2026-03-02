@@ -23,7 +23,8 @@ export const routes: Routes = [
     {
         path: 'blog',
         loadComponent: () => import('../pages/blogs/blogs'),
-        data: { isBlogs: true }
+        data: { isBlogs: true },
+        title: 'IT Blog'
     },
     {
         path: 'services/:slug',
@@ -41,7 +42,8 @@ export const routes: Routes = [
     {
         path: 'resources/case-studies',
         loadComponent: () => import('../pages/blogs/blogs'),
-        data: { isBlogs: false }
+        data: { isBlogs: false },
+        title: 'Case Studies'
     },
     {
         path: 'resources',
