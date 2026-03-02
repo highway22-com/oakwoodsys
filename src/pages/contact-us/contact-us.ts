@@ -33,12 +33,13 @@ export class ContactUs implements OnInit, AfterViewInit {
   submitted = false;
   isSubmitting = false;
   private recaptchaWidgetId: number | null = null;
+  readonly recaptchaEnabled = true;
   validationErrors = {
     fullName: false,
     email: false,
     company: false,
     message: false,
-    // recaptcha: false,
+    recaptcha: false,
   };
 
   constructor() {
@@ -58,7 +59,9 @@ export class ContactUs implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-   // this.initRecaptcha();
+    if (typeof window !== 'undefined' && this.recaptchaEnabled) {
+      setTimeout(() => this.initRecaptcha(), 400);
+    }
 
     if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
       if (this.licensingSection) {
@@ -129,41 +132,37 @@ export class ContactUs implements OnInit, AfterViewInit {
     }
   }
 
-  // private initRecaptcha(): void {
-  //   if (typeof window === 'undefined' || !this.recaptchaHost?.nativeElement) {
-  //     return;
-  //   }
+  private initRecaptcha(): void {
+    if (typeof window === 'undefined' || !this.recaptchaHost?.nativeElement) return;
 
-  //   const render = () => {
-  //     const grecaptcha = (window as any).grecaptcha;
-  //     if (!grecaptcha?.render || this.recaptchaWidgetId !== null) {
-  //       return;
-  //     }
+    const render = () => {
+      const grecaptcha = (window as any).grecaptcha;
+      if (!grecaptcha?.render || this.recaptchaWidgetId !== null) return;
 
-  //     this.recaptchaWidgetId = grecaptcha.render(this.recaptchaHost!.nativeElement, {
-  //       sitekey: '6Ld363wsAAAAADilL-6hQyg-0uEed1hl5ks5p8MU',
-  //       callback: (token: string) => {
-  //         this.ngZone.run(() => {
-  //           this.recaptchaToken = token;
-  //           this.validationErrors.recaptcha = false;
-  //           this.cdr.markForCheck();
-  //         });
-  //       },
-  //       'expired-callback': () => {
-  //         this.ngZone.run(() => {
-  //           this.recaptchaToken = null;
-  //           this.cdr.markForCheck();
-  //         });
-  //       },
-  //     });
-  //   };
+      this.recaptchaWidgetId = grecaptcha.render(this.recaptchaHost!.nativeElement, {
+        sitekey: '6Lcp8XwsAAAAAIrdZHBdw74jtoxwPxDRZW4F-rwu',
+        callback: (token: string) => {
+          this.ngZone.run(() => {
+            this.recaptchaToken = token;
+            this.validationErrors = { ...this.validationErrors, recaptcha: false };
+            this.cdr.markForCheck();
+          });
+        },
+        'expired-callback': () => {
+          this.ngZone.run(() => {
+            this.recaptchaToken = null;
+            this.cdr.markForCheck();
+          });
+        },
+      });
+    };
 
-  //   render();
-  //   if (this.recaptchaWidgetId === null) {
-  //     setTimeout(render, 300);
-  //     setTimeout(render, 1000);
-  //   }
-  // }
+    render();
+    if (this.recaptchaWidgetId === null) {
+      setTimeout(render, 500);
+      setTimeout(render, 1500);
+    }
+  }
 
   readonly heroTitle = "Let's move your vision forward";
   readonly heroDescription = "Your goals guide the work - our expertise makes theirs real.";
@@ -191,17 +190,21 @@ export class ContactUs implements OnInit, AfterViewInit {
   onSubmit() {
     this.submitted = true;
 
-    // Reset validation errors
-    //  recaptcha: !this.recaptchaToken,
     this.validationErrors = {
       fullName: !this.formModel.fullName,
       email: !this.formModel.email,
       company: !this.formModel.company,
       message: !this.formModel.message,
-    
+      recaptcha: this.recaptchaEnabled && !this.recaptchaToken,
     };
 
-    if (!this.formModel.fullName || !this.formModel.email || !this.formModel.company || !this.formModel.message ) {
+    if (
+      !this.formModel.fullName ||
+      !this.formModel.email ||
+      !this.formModel.company ||
+      !this.formModel.message ||
+      (this.recaptchaEnabled && !this.recaptchaToken)
+    ) {
       return;
     }
 
@@ -217,6 +220,7 @@ export class ContactUs implements OnInit, AfterViewInit {
     this.http.post<{ success: boolean }>('/api/contact', payload).subscribe({
       next: (res) => {
         this.isSubmitting = false;
+        this.cdr.markForCheck();
         if (res?.success) {
           this.resetForm();
           this.router.navigate(['/contact-success']);
@@ -226,7 +230,8 @@ export class ContactUs implements OnInit, AfterViewInit {
       },
       error: (err) => {
         this.isSubmitting = false;
-        console.error('Email sending failed:', err);
+        this.cdr.markForCheck();
+        console.error('Contact form error:', err);
         alert('Failed to send message. Please try again later.');
       },
     });
@@ -246,7 +251,7 @@ export class ContactUs implements OnInit, AfterViewInit {
       email: false,
       company: false,
       message: false,
-      // recaptcha: false,
+      recaptcha: false,
     };
     this.recaptchaToken = null;
     if (typeof window !== 'undefined' && this.recaptchaWidgetId !== null && (window as any).grecaptcha?.reset) {

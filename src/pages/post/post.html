@@ -365,16 +365,7 @@
                 <span class="post-contact-form__error-msg">Message is required</span>
                 }
               </div>
-              <div class="flex items-start">
-                <input type="checkbox" id="post-agree" name="agree" [(ngModel)]="formModel.agree"
-                  class="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-600" />
-                <label for="post-agree" class="ml-3 text-sm text-gray-700">
-                  I agree to receive communications from Oakwood.
-                </label>
-                @if (submitted && validationErrors.agree) {
-                <span class="block post-contact-form__error-msg">You must agree to receive communications</span>
-                }
-              </div>
+
               @if (recaptchaEnabled) {
               <div class="post-contact-form__recaptcha">
                 <div #recaptchaHost></div>

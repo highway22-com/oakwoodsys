@@ -110,13 +110,13 @@ export default class Post implements OnInit, OnDestroy {
   readonly readingTimeMinutes = readingTimeMinutes;
 
   /** Contact form (post page) */
-  formModel = { fullName: '', email: '', company: '', message: '', agree: false };
+  formModel = { fullName: '', email: '', company: '', message: '' };
   submitted = false;
   isSubmitting = false;
   recaptchaToken: string | null = null;
   private recaptchaWidgetId: number | null = null;
   readonly recaptchaEnabled = true;
-  validationErrors = { fullName: false, email: false, company: false, message: false, agree: false, recaptcha: false };
+  validationErrors = { fullName: false, email: false, company: false, message: false, recaptcha: false };
 
   /** Base de ruta para links de posts relacionados (blog o case-studies). */
   getRelatedLinkBase(): string {
@@ -498,7 +498,6 @@ export default class Post implements OnInit, OnDestroy {
       email: !this.formModel.email.trim() || !this.isValidEmail(this.formModel.email),
       company: false,
       message: !this.formModel.message.trim(),
-      agree: !this.formModel.agree,
       recaptcha: this.recaptchaEnabled && !this.recaptchaToken,
     };
 
@@ -507,7 +506,6 @@ export default class Post implements OnInit, OnDestroy {
       !this.formModel.email.trim() ||
       !this.isValidEmail(this.formModel.email) ||
       !this.formModel.message.trim() ||
-      !this.formModel.agree ||
       (this.recaptchaEnabled && !this.recaptchaToken)
     ) {
       return;
@@ -524,6 +522,7 @@ export default class Post implements OnInit, OnDestroy {
     this.http.post<{ success: boolean }>('/api/contact', payload).subscribe({
       next: (res) => {
         this.isSubmitting = false;
+        this.cdr.markForCheck();
         if (res?.success) {
           this.resetContactForm();
           this.router.navigate(['/contact-success']);
@@ -531,8 +530,10 @@ export default class Post implements OnInit, OnDestroy {
           alert('Failed to send message. Please try again later.');
         }
       },
-      error: () => {
+      error: (err) => {
         this.isSubmitting = false;
+        this.cdr.markForCheck();
+        console.error('Contact form error:', err);
         alert('Failed to send message. Please try again later.');
       },
     });
@@ -543,10 +544,10 @@ export default class Post implements OnInit, OnDestroy {
   }
 
   private resetContactForm(): void {
-    this.formModel = { fullName: '', email: '', company: '', message: '', agree: false };
+    this.formModel = { fullName: '', email: '', company: '', message: '' };
     this.submitted = false;
     this.recaptchaToken = null;
-    this.validationErrors = { fullName: false, email: false, company: false, message: false, agree: false, recaptcha: false };
+    this.validationErrors = { fullName: false, email: false, company: false, message: false, recaptcha: false };
     if (isPlatformBrowser(this.platformId) && this.recaptchaWidgetId !== null && (window as any).grecaptcha?.reset) {
       (window as any).grecaptcha.reset(this.recaptchaWidgetId);
     }
@@ -560,7 +561,7 @@ export default class Post implements OnInit, OnDestroy {
       if (!grecaptcha?.render || this.recaptchaWidgetId !== null) return;
 
       this.recaptchaWidgetId = grecaptcha.render(this.recaptchaHost!.nativeElement, {
-        sitekey: '6Ld363wsAAAAADilL-6hQyg-0uEed1hl5ks5p8MU',
+        sitekey: '6Lcp8XwsAAAAAIrdZHBdw74jtoxwPxDRZW4F-rwu',
         callback: (token: string) => {
           this.ngZone.run(() => {
             this.recaptchaToken = token;
