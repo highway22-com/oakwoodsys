@@ -331,36 +331,60 @@
             <p class="text-base sm:text-lg text-gray-700 mb-8 sm:mb-10 leading-relaxed">
               Get in touch with our team to discuss how we can help transform your business with innovative solutions.
             </p>
-            <form class="space-y-6">
+            <form (ngSubmit)="onSubmitContact()" class="post-contact-form space-y-6">
               <div>
-                <label for="email" class="block text-sm        text-gray-700 mb-2">Your email address</label>
-                <input type="email" id="email" name="email"
-                  class="w-full px-4 py-3 border border-gray-300    focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
-                  placeholder="your.email@example.com" />
+                <label for="post-fullName" class="block text-sm text-gray-700 mb-2">Your full name</label>
+                <input type="text" id="post-fullName" name="fullName" [(ngModel)]="formModel.fullName"
+                  [class.post-contact-form__input--error]="submitted && validationErrors.fullName"
+                  placeholder="Your name" />
+                @if (submitted && validationErrors.fullName) {
+                <span class="post-contact-form__error-msg">Full name is required</span>
+                }
               </div>
               <div>
-                <label for="company" class="block text-sm        text-gray-700 mb-2">Your company name</label>
-                <input type="text" id="company" name="company"
-                  class="w-full px-4 py-3 border border-gray-300    focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
+                <label for="post-email" class="block text-sm text-gray-700 mb-2">Work email address</label>
+                <input type="email" id="post-email" name="email" [(ngModel)]="formModel.email"
+                  [class.post-contact-form__input--error]="submitted && validationErrors.email"
+                  placeholder="your.email@example.com" />
+                @if (submitted && validationErrors.email) {
+                <span class="post-contact-form__error-msg">Valid email is required</span>
+                }
+              </div>
+              <div>
+                <label for="post-company" class="block text-sm text-gray-700 mb-2">Company Name</label>
+                <input type="text" id="post-company" name="company" [(ngModel)]="formModel.company"
+                  [class.post-contact-form__input--error]="submitted && validationErrors.company"
                   placeholder="Company Name" />
               </div>
               <div>
-                <label for="message" class="block text-sm        text-gray-700 mb-2">Your message</label>
-                <textarea id="message" name="message" rows="4"
-                  class="w-full px-4 py-3 border border-gray-300    focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors resize-none"
-                  placeholder="Tell us about your project..."></textarea>
+                <label for="post-message" class="block text-sm text-gray-700 mb-2">Message</label>
+                <textarea id="post-message" name="message" rows="4" [(ngModel)]="formModel.message" class="resize-none"
+                  [class.post-contact-form__input--error]="submitted && validationErrors.message"
+                  placeholder="Describe what you need help with or what you're planning next"></textarea>
+                @if (submitted && validationErrors.message) {
+                <span class="post-contact-form__error-msg">Message is required</span>
+                }
               </div>
               <div class="flex items-start">
-                <input type="checkbox" id="agree" name="agree"
+                <input type="checkbox" id="post-agree" name="agree" [(ngModel)]="formModel.agree"
                   class="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-600" />
-                <label for="agree" class="ml-3 text-sm text-gray-700">
+                <label for="post-agree" class="ml-3 text-sm text-gray-700">
                   I agree to receive communications from Oakwood.
                 </label>
+                @if (submitted && validationErrors.agree) {
+                <span class="block post-contact-form__error-msg">You must agree to receive communications</span>
+                }
               </div>
-              <button type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white       px-6 py-3    transition-colors duration-200">
-                Send Message
-              </button>
+              @if (recaptchaEnabled) {
+              <div class="post-contact-form__recaptcha">
+                <div #recaptchaHost></div>
+                @if (submitted && validationErrors.recaptcha) {
+                <span class="post-contact-form__error-msg">Please verify that you are not a robot</span>
+                }
+              </div>
+              }
+              <app-button-primary [text]="isSubmitting ? 'Sending...' : 'Send Message'" [disabled]="isSubmitting"
+                [type]="'submit'" />
             </form>
           </div>
         </div>

@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, NgZone, ViewChild, ElementRef, AfterViewInit, OnInit, signal, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { OfficeLocationsSectionComponent } from '../../shared/office-locations-section/office-locations-section.component';
 import { CTA_GRADIENTS, CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
-import emailjs from '@emailjs/browser';
 
 
 
@@ -26,6 +26,7 @@ export class ContactUs implements OnInit, AfterViewInit {
   private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly seoMeta = inject(SeoMetaService);
+  private readonly http = inject(HttpClient);
   showLicensingAnimation = signal(false);
   showContactImageAnimation = signal(false);
   showFormAnimation = signal(false);
@@ -41,9 +42,6 @@ export class ContactUs implements OnInit, AfterViewInit {
   };
 
   constructor() {
-    // Initialize EmailJS
-    emailjs.init('Xw-Lh8d6dJzqqA08R');
-
     // if (typeof window !== 'undefined') {
     //   (window as any)['onRecaptchaSuccess'] = (token: string) => {
     //     this.ngZone.run(() => this.onRecaptchaSuccess(token));
@@ -143,7 +141,7 @@ export class ContactUs implements OnInit, AfterViewInit {
   //     }
 
   //     this.recaptchaWidgetId = grecaptcha.render(this.recaptchaHost!.nativeElement, {
-  //       sitekey: '6Lcxz20sAAAAADeQNIyXPS7BCqu30dGRazhNwn8W',
+  //       sitekey: '6Ld363wsAAAAADilL-6hQyg-0uEed1hl5ks5p8MU',
   //       callback: (token: string) => {
   //         this.ngZone.run(() => {
   //           this.recaptchaToken = token;
@@ -208,27 +206,30 @@ export class ContactUs implements OnInit, AfterViewInit {
     }
 
     this.isSubmitting = true;
-// to_email: 'marketing@oakwoodsys.com', // Recipient email
-    const emailParams = {
-      to_email: this.formModel.email,
-      from_name: this.formModel.fullName,
-      from_email: this.formModel.email,
+
+    const payload = {
+      fullName: this.formModel.fullName,
+      email: this.formModel.email,
       company: this.formModel.company || 'Not provided',
       message: this.formModel.message,
     };
 
-    emailjs
-      .send('service_xelw36u', 'template_s238tmd', emailParams)
-      .then(() => {
+    this.http.post<{ success: boolean }>('/api/contact', payload).subscribe({
+      next: (res) => {
         this.isSubmitting = false;
-        this.resetForm();
-        this.router.navigate(['/contact-success']);
-      })
-      .catch((error: unknown) => {
+        if (res?.success) {
+          this.resetForm();
+          this.router.navigate(['/contact-success']);
+        } else {
+          alert('Failed to send message. Please try again later.');
+        }
+      },
+      error: (err) => {
         this.isSubmitting = false;
-        console.error('Email sending failed:', error);
+        console.error('Email sending failed:', err);
         alert('Failed to send message. Please try again later.');
-      });
+      },
+    });
   }
 
   private resetForm() {

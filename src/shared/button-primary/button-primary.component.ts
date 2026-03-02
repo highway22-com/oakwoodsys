@@ -22,6 +22,10 @@ export class ButtonPrimaryComponent {
   readonly isTransparent = input<boolean>(false);
   /** Color del borde: 'white' o 'black'. Si no se define, no se muestra borde. */
   readonly borderColor = input<'white' | 'black' | undefined>(undefined);
+  /** Si es true, el botón está deshabilitado. */
+  readonly disabled = input<boolean>(false);
+  /** Tipo del botón: 'button' o 'submit'. */
+  readonly type = input<'button' | 'submit'>('button');
 
   /** Color de fondo efectivo. */
   readonly effectiveBackgroundColor = computed(() => {
