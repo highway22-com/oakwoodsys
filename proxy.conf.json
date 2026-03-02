@@ -6,5 +6,21 @@
     "pathRewrite": {
       "^/api": ""
     }
+  },
+  "/api/contact": {
+    "target": "https://oakwoodsys.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/contact": "/wp-json/oakwood/v1/send-contact"
+    }
+  },
+  "/api/contact-fields": {
+    "target": "https://oakwoodsys.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/contact-fields": "/wp-json/oakwood/v1/contact-fields"
+    }
   }
 }

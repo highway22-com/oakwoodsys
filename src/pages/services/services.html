@@ -79,69 +79,66 @@
 }
 <!-- Service areas (Figma: WHERE WE EXCEL + 4 cards) -->
 @if (content()?.serviceAreas) {
-<section class="w-full overflow-hidden px-4 sm:px-6 md:px-8 lg:px-12 xl:px-32" aria-labelledby="service-areas-title">
-  <div class="flex flex-col lg:grid lg:grid-cols-2 min-h-[600px] lg:min-h-[720px] gap-8">
-    <!-- Left: banner con imagen y texto -->
-    <div class="relative min-h-[240px] sm:min-h-[320px] lg:min-h-full order-1 lg:order-1 flex-1">
-      <img [src]="content()?.serviceAreas?.backgroundImage ?? ''"
-        [alt]="(content()?.serviceAreas?.title ?? 'Service areas') + ' background'"
-        class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-      <div class="absolute inset-0 bg-slate-600/30"></div>
-      <div
-        class="relative z-10 h-full flex flex-col justify-end px-4 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-12 md:py-16 lg:py-20">
-        <p class="text-xs sm:text-sm  tracking-[0.2em] text-white/90 mb-2">
-          {{ content()?.serviceAreas?.tagline }}
-        </p>
-        <h2 id="service-areas-title"
-          class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight mb-3 sm:mb-4">
-          {{ content()?.serviceAreas?.title }}
-        </h2>
-        <p class="text-base sm:text-lg md:text-xl text-white/95 leading-relaxed max-w-xl">
-          {{ content()?.serviceAreas?.description }}
-        </p>
+<section class="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-32" aria-labelledby="service-areas-title">
+    <div class="flex flex-col lg:grid lg:grid-cols-2 min-h-[600px] lg:min-h-[720px] gap-16">
+      <!-- Left: banner con imagen y texto (sticky) -->
+      <div class="relative min-h-[240px] sm:min-h-[320px] lg:h-[75vh] lg:sticky lg:top-32 order-1 lg:order-1 flex-1">
+        <img [src]="content()?.serviceAreas?.backgroundImage ?? ''"
+          [alt]="(content()?.serviceAreas?.title ?? 'Service areas') + ' background'"
+          class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+        <!-- <div class="absolute inset-0 bg-slate-600/30"></div> -->
+        <div
+          class="relative z-10 h-full flex flex-col justify-end px-4 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-12 md:py-16 lg:py-20">
+          <p class="text-xs sm:text-sm  tracking-[0.2em] text-white/90 mb-2">
+            {{ content()?.serviceAreas?.tagline }}
+          </p>
+          <h2 id="service-areas-title"
+            class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight mb-3 sm:mb-4">
+            {{ content()?.serviceAreas?.title }}
+          </h2>
+          <p class="text-base sm:text-lg md:text-xl text-white/95 leading-relaxed max-w-xl">
+            {{ content()?.serviceAreas?.description }}
+          </p>
+        </div>
+      </div>
+      <!-- Right: 4 cards (no independent scroll) -->
+      <div class="flex flex-col gap-4 sm:gap-6 px-0 sm:px-4 md:px-8 lg:px-0 order-2 lg:order-2">
+        @for (area of content()?.serviceAreas?.serviceAreas ?? []; track area.title) {
+        <article
+          class="bg-white border border-[#D1D1D1] p-4 sm:p-6 md:p-8 flex flex-col gap-3 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+          <div class="flex flex-wrap items-center gap-2">
+            @if (area.icon) {
+                <span  [innerHTML]="getIconSvg(area.icon || '')"></span>
+            }
+            <div class="w-full pt-6 sm:pt-8 pb-2">
+              @for (badge of area.badges; track badge; let first = $first) {
+              <span
+                class="tag-badge bg-[#2A7EBF] text-white capitalize text-[12px] sm:text-[14px] font-semibold leading-normal rounded px-2 py-1"
+                [class.ml-3]="!first">
+                {{ badge }}
+              </span>
+              }
+            </div>
+          </div>
+          <h3
+            class="text-[var(--Secondary-950,#242424)] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold leading-[130%]">
+            {{ area.title }}
+          </h3>
+          <p class="text-[#242424] text-base sm:text-lg md:text-xl font-normal leading-[24px]">
+            {{ area.subtitle }}
+          </p>
+          @if (area.features?.length) {
+          <ul
+            class="list-disc list-outside pl-5 text-[#3D3D3D] text-sm sm:text-base font-normal leading-[26px] space-y-1.5 mt-1">
+            @for (feature of area.features; track feature) {
+            <li>{{ feature }}</li>
+            }
+          </ul>
+          }
+        </article>
+        }
       </div>
     </div>
-    <!-- Right: 4 cards -->
-    <div class="flex flex-col gap-4 sm:gap-6 px-0 sm:px-4 md:px-8 lg:px-0 order-2 lg:order-2 overflow-y-auto">
-      @for (area of content()?.serviceAreas?.serviceAreas ?? []; track area.title) {
-      <article
-        class="bg-white border border-[#D1D1D1] p-4 sm:p-6 md:p-8 flex flex-col gap-3 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-        <div class="flex flex-wrap items-center gap-2">
-          @if (area.icon) {
-              <span  [innerHTML]="getIconSvg(area.icon || '')"></span>
-          <!-- <img [src]="area.icon" [alt]="area.title + ' icon'"
-            class="text-[#3D3D3D] text-center text-[32px] sm:text-[40px] font-light leading-normal object-contain block"
-            loading="lazy" /> -->
-          }
-          <div class="w-full pt-6 sm:pt-8 pb-2">
-            @for (badge of area.badges; track badge; let first = $first) {
-            <span
-              class="tag-badge bg-[#2A7EBF] text-white capitalize text-[12px] sm:text-[14px] font-semibold leading-normal rounded px-2 py-1"
-              [class.ml-3]="!first">
-              {{ badge }}
-            </span>
-            }
-          </div>
-        </div>
-        <h3
-          class="text-[var(--Secondary-950,#242424)] text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold leading-[130%]">
-          {{ area.title }}
-        </h3>
-        <p class="text-[#242424] text-base sm:text-lg md:text-xl font-normal leading-[24px]">
-          {{ area.subtitle }}
-        </p>
-        @if (area.features?.length) {
-        <ul
-          class="list-disc list-outside pl-5 text-[#3D3D3D] text-sm sm:text-base font-normal leading-[26px] space-y-1.5 mt-1">
-          @for (feature of area.features; track feature) {
-          <li>{{ feature }}</li>
-          }
-        </ul>
-        }
-      </article>
-      }
-    </div>
-  </div>
 </section>
 }
 
@@ -185,11 +182,12 @@
   </div>
 
   <!-- Cards Grid -->
-  <div class="w-full bg-p-30 py-12 sm:py-16 md:py-20  ">
+  <div class="w-full bg-p-30   ">
     <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
-        @for (card of content()?.solutionAccelerators?.cards; track card.title) {
-        <div class="border-r border-[#D1D1D1] bg-[#F2F8FD] flex flex-col p-8 m-0">
+           @for (card of content()?.solutionAccelerators?.cards; track card.title; let last = $last; let first = $first) {
+           <div class="bg-[#F2F8FD] flex flex-col p-8 m-0"
+             [ngClass]="{'border-r border-[#D1D1D1]': !last, 'lg:pl-0': first}">
           <!-- Icon -->
           <div class="mb-8 sm:mb-6 ">
             <div class="w-10">

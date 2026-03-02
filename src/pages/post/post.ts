@@ -1,7 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal, input, PLATFORM_ID, NgZone, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal, input, PLATFORM_ID, NgZone, computed, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { Apollo, gql } from 'apollo-angular';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
@@ -10,6 +12,7 @@ import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { decodeHtmlEntities } from '../../app/utils/cast';
+import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
 interface PostAuthor {
   node: {
     email: string;
@@ -76,7 +79,7 @@ export interface PostDetail {
 
 @Component({
   selector: 'app-post',
-  imports: [RouterLink, CommonModule, DatePipe, CtaSectionComponent, BlogCardComponent],
+  imports: [RouterLink, CommonModule, DatePipe, FormsModule, CtaSectionComponent, BlogCardComponent, ButtonPrimaryComponent],
   templateUrl: './post.html',
   styleUrl: './post.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -91,6 +94,9 @@ export default class Post implements OnInit, OnDestroy {
   private readonly seoMeta = inject(SeoMetaService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly ngZone = inject(NgZone);
+  private readonly http = inject(HttpClient);
+  private readonly cdr = inject(ChangeDetectorRef);
+  @ViewChild('recaptchaHost') recaptchaHost?: ElementRef<HTMLElement>;
   private scrollListener?: () => void;
   private routeSub?: { unsubscribe(): void };
   readonly decodeHtmlEntities = decodeHtmlEntities;
@@ -102,6 +108,15 @@ export default class Post implements OnInit, OnDestroy {
   readonly linkCopied = signal(false);
   readonly tableOfContents = signal<{ id: string; text: string }[]>([]);
   readonly readingTimeMinutes = readingTimeMinutes;
+
+  /** Contact form (post page) */
+  formModel = { fullName: '', email: '', company: '', message: '' };
+  submitted = false;
+  isSubmitting = false;
+  recaptchaToken: string | null = null;
+  private recaptchaWidgetId: number | null = null;
+  readonly recaptchaEnabled = true;
+  validationErrors = { fullName: false, email: false, company: false, message: false, recaptcha: false };
 
   /** Base de ruta para links de posts relacionados (blog o case-studies). */
   getRelatedLinkBase(): string {
@@ -304,6 +319,9 @@ export default class Post implements OnInit, OnDestroy {
               this.post.set(postData);
               if (toc.length > 0) this.activeSection.set(toc[0].id);
             });
+            if (isPlatformBrowser(this.platformId) && this.recaptchaEnabled) {
+              setTimeout(() => this.initRecaptcha(), 400);
+            }
             this.updateSeoMeta(postData, slugValue);
             const relatedSlugs = (raw['relatedBloqSlugs'] as string[] | null | undefined) ?? [];
             if (relatedSlugs.length > 0 && data?.genContent) {
@@ -471,6 +489,100 @@ export default class Post implements OnInit, OnDestroy {
       this.linkCopied.set(true);
       setTimeout(() => this.linkCopied.set(false), 2000);
     }).catch(() => { });
+  }
+
+  onSubmitContact(): void {
+    this.submitted = true;
+    this.validationErrors = {
+      fullName: !this.formModel.fullName.trim(),
+      email: !this.formModel.email.trim() || !this.isValidEmail(this.formModel.email),
+      company: false,
+      message: !this.formModel.message.trim(),
+      recaptcha: this.recaptchaEnabled && !this.recaptchaToken,
+    };
+
+    if (
+      !this.formModel.fullName.trim() ||
+      !this.formModel.email.trim() ||
+      !this.isValidEmail(this.formModel.email) ||
+      !this.formModel.message.trim() ||
+      (this.recaptchaEnabled && !this.recaptchaToken)
+    ) {
+      return;
+    }
+
+    this.isSubmitting = true;
+    const payload = {
+      fullName: this.formModel.fullName.trim(),
+      email: this.formModel.email.trim(),
+      company: this.formModel.company.trim() || 'Not provided',
+      message: this.formModel.message.trim(),
+    };
+
+    this.http.post<{ success: boolean }>('/api/contact', payload).subscribe({
+      next: (res) => {
+        this.isSubmitting = false;
+        this.cdr.markForCheck();
+        if (res?.success) {
+          this.resetContactForm();
+          this.router.navigate(['/contact-success']);
+        } else {
+          alert('Failed to send message. Please try again later.');
+        }
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.cdr.markForCheck();
+        console.error('Contact form error:', err);
+        alert('Failed to send message. Please try again later.');
+      },
+    });
+  }
+
+  private isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  private resetContactForm(): void {
+    this.formModel = { fullName: '', email: '', company: '', message: '' };
+    this.submitted = false;
+    this.recaptchaToken = null;
+    this.validationErrors = { fullName: false, email: false, company: false, message: false, recaptcha: false };
+    if (isPlatformBrowser(this.platformId) && this.recaptchaWidgetId !== null && (window as any).grecaptcha?.reset) {
+      (window as any).grecaptcha.reset(this.recaptchaWidgetId);
+    }
+  }
+
+  private initRecaptcha(): void {
+    if (!isPlatformBrowser(this.platformId) || !this.recaptchaHost?.nativeElement) return;
+
+    const render = () => {
+      const grecaptcha = (window as any).grecaptcha;
+      if (!grecaptcha?.render || this.recaptchaWidgetId !== null) return;
+
+      this.recaptchaWidgetId = grecaptcha.render(this.recaptchaHost!.nativeElement, {
+        sitekey: '6Lcp8XwsAAAAAIrdZHBdw74jtoxwPxDRZW4F-rwu',
+        callback: (token: string) => {
+          this.ngZone.run(() => {
+            this.recaptchaToken = token;
+            this.validationErrors = { ...this.validationErrors, recaptcha: false };
+            this.cdr.markForCheck();
+          });
+        },
+        'expired-callback': () => {
+          this.ngZone.run(() => {
+            this.recaptchaToken = null;
+            this.cdr.markForCheck();
+          });
+        },
+      });
+    };
+
+    render();
+    if (this.recaptchaWidgetId === null) {
+      setTimeout(render, 500);
+      setTimeout(render, 1500);
+    }
   }
 
   scrollToSection(sectionId: string): void {

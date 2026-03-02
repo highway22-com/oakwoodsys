@@ -287,3 +287,74 @@
 .blog-content p+figure {
   margin-top: 1.5rem;
 }
+
+/* Post contact form */
+.post-contact-form input[type="text"],
+.post-contact-form input[type="email"],
+.post-contact-form textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--Secondary-200, #D1D1D1);
+  background: var(--White, #FFF);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.post-contact-form input::placeholder,
+.post-contact-form textarea::placeholder {
+  color: rgb(107 114 128); /* gray-500 */
+}
+
+.post-contact-form input::-webkit-input-placeholder,
+.post-contact-form textarea::-webkit-input-placeholder {
+  color: rgb(107 114 128);
+}
+
+.post-contact-form input::-moz-placeholder,
+.post-contact-form textarea::-moz-placeholder {
+  color: rgb(107 114 128);
+}
+
+.post-contact-form input:-ms-input-placeholder,
+.post-contact-form textarea:-ms-input-placeholder {
+  color: rgb(107 114 128);
+}
+
+/* Hover state */
+.post-contact-form input[type="text"]:not(.post-contact-form__input--error):hover,
+.post-contact-form input[type="email"]:not(.post-contact-form__input--error):hover,
+.post-contact-form textarea:not(.post-contact-form__input--error):hover {
+  border-color: rgb(109 109 109);
+}
+
+.post-contact-form input[type="text"]:not(.post-contact-form__input--error):focus,
+.post-contact-form input[type="email"]:not(.post-contact-form__input--error):focus,
+.post-contact-form textarea:not(.post-contact-form__input--error):focus {
+  border-color: rgb(37 99 235);
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 0.5);
+}
+
+/* Error state */
+.post-contact-form__input--error {
+  border: 2px solid #D32F2F !important;
+}
+
+.post-contact-form__input--error:focus {
+  border-color: #D32F2F !important;
+  box-shadow: 0 0 0 2px rgb(211 47 47 / 0.5);
+}
+
+.post-contact-form .post-contact-form__error-msg {
+  font-size: 0.75rem;
+  color: #D32F2F;
+}
+
+.post-contact-form__recaptcha {
+  margin: 1rem 0;
+}
+
+.post-contact-form__recaptcha .post-contact-form__error-msg {
+  display: block;
+  margin-top: 0.5rem;
+}

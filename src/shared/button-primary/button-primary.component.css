@@ -2,3 +2,8 @@
 :host ::ng-deep .button-primary__trigger--transparent {
   background-color: transparent !important;
 }
+
+:host ::ng-deep button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
