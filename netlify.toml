@@ -31,6 +31,20 @@
   status = 200
   force = true
 
+# Proxy formulario de contacto → WordPress wp_mail
+[[redirects]]
+  from = "/api/contact"
+  to = "https://oakwoodsys.com/wp-json/oakwood/v1/send-contact"
+  status = 200
+  force = true
+
+# Configuración de campos del formulario (para formularios dinámicos)
+[[redirects]]
+  from = "/api/contact-fields"
+  to = "https://oakwoodsys.com/wp-json/oakwood/v1/contact-fields"
+  status = 200
+  force = true
+
 # SPA: rutas sin archivo estático sirven index.html (Angular Router)
 [[redirects]]
   from = "/*"

@@ -22,11 +22,13 @@ if (!defined('ABSPATH')) {
  */
 function oakwood_get_allowed_origins() {
     return apply_filters('oakwood_allowed_origins', [
-        'http://localhost:4200',           // Desarrollo local Angular
-        'http://localhost:3000',           // Desarrollo alternativo
-        'https://oakwoodsys.com',          // Producción (reemplaza con tu dominio)
-        'https://www.oakwoodsys.com',      // Producción con www
-        'https://oakwoodsys.netlify.app',    // Netlify (reemplaza con tu URL)
+        'http://localhost:4200',             // Desarrollo local Angular
+        'http://localhost:3000',             // Desarrollo alternativo
+        'https://oakwoodsys.com',             // Producción
+        'https://www.oakwoodsys.com',         // Producción con www
+        'https://oakwoodsys.netlify.app',     // Netlify
+        'https://oakwoodsystemsgroup.com',   // Dominio principal
+        'https://www.oakwoodsystemsgroup.com',
     ]);
 }
 

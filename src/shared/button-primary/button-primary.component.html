@@ -19,8 +19,10 @@
 
 } @else {
 <div class="flex">
-  <button type="button" [class]="triggerClasses()"
+  <button [type]="type()" [class]="triggerClasses()"
     [style.background-color]="effectiveBackgroundColor()"
+    [disabled]="disabled()"
+    [attr.aria-disabled]="disabled()"
     (click)="buttonClick.emit()">
     <span class="flex justify-center items-center py-4 px-8">
       <div class="flex items-center transition-all duration-200 group-hover:-translate-x-2 pl-5">{{ text() }}</div>
