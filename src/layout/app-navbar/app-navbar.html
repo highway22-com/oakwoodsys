@@ -231,7 +231,7 @@
               </h4>
               @if (item.snippet) {
               <p class="text-sm text-gray-600 line-clamp-2 mt-0.5">
-                {{ item.snippet }}
+                {{ item.snippet | slice:0:120 }}<span *ngIf="item.snippet.length > 120">...</span>
               </p>
               }
             </div>
