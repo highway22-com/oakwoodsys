@@ -45,6 +45,19 @@
   status = 200
   force = true
 
+# Sitemap y robots: servir archivos estáticos (antes del catch-all SPA)
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap.xml"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/robots.txt"
+  to = "/robots.txt"
+  status = 200
+  force = true
+
 # SPA: rutas sin archivo estático sirven index.html (Angular Router)
 [[redirects]]
   from = "/*"
