@@ -98,7 +98,7 @@ export class SeoMetaService {
     this.metaService.updateTag({ property: 'og:title', content: title });
     this.metaService.updateTag({ property: 'og:description', content: description });
     this.metaService.updateTag({ property: 'og:url', content: canonicalUrl });
-    this.metaService.updateTag({ property: 'og:site_name', content: DEFAULT_TITLE });
+    this.metaService.updateTag({ property: 'og:site_name', content: 'Oakwood Systems Group' });
     this.metaService.updateTag({ property: 'article:publisher', content: 'https://www.facebook.com/OakwoodSys/' });
     this.metaService.updateTag({ property: 'og:image', content: image });
     this.metaService.updateTag({ property: 'og:image:width', content: String(imageWidth) });
