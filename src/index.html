@@ -8,16 +8,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
   <meta name="google-site-verification" content="bIlZ4KtT37VQm_wNuPeatuhW-oW-Z8iGmi2oSqbmjbA" />
+  <!-- Bing Webmaster: reemplaza con tu código de verificación de Bing Webmaster Tools -->
+  <meta name="msvalidate.01" content="TU_CODIGO_BING" />
   <meta name="description"
     content="As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.">
   <meta name="keywords"
     content="Microsoft Solutions Partner, Azure Consulting, Azure Cloud services, St. Louis, Kansas City, cloud migration, Data & AI, Microsoft 365, Power BI, Azure Synapse, digital transformation, managed IT services">
   <link rel="canonical" href="https://oakwoodsystemsgroup.com/">
+  <!-- Open Graph (default para home; SeoMetaService actualiza en páginas internas) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Oakwood Systems Group">
+  <meta property="og:title" content="Microsoft Solutions Partner | Azure Consulting | St. Louis, MO">
+  <meta property="og:description" content="As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.">
+  <meta property="og:url" content="https://oakwoodsystemsgroup.com/">
+  <meta property="og:image" content="https://oakwoodsys.com/wp-content/uploads/2023/06/msft_solutions_partner_yoast_seo.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="675">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@OakwoodInsights">
+  <meta name="twitter:title" content="Microsoft Solutions Partner | Azure Consulting | St. Louis, MO">
+  <meta name="twitter:description" content="As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.">
+  <meta name="twitter:image" content="https://oakwoodsys.com/wp-content/uploads/2023/06/msft_solutions_partner_yoast_seo.png">
   <link rel="icon" href="favicon.svg" type="image/svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Precarga conexión a WordPress (vídeos / medios) -->
   <link rel="preconnect" href="https://oakwoodsys.com" crossorigin>
+  <!-- Preconnect para scripts de analytics (mejora rendimiento) -->
+  <link rel="preconnect" href="https://www.googletagmanager.com">
+  <link rel="preconnect" href="https://cxppusa1rdrect01sa02cdn-endpoint.azureedge.net">
+  <link rel="dns-prefetch" href="https://lftracker.leadfeeder.com">
+  <link rel="dns-prefetch" href="https://www.chatbase.co">
   <!-- use 200 -->
   <!-- Inter: fuente principal con todos los pesos (100-900); necesaria para font-thin y font-light -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
@@ -28,11 +50,58 @@
     integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <!-- JSON-LD: Organization + WebSite para resultados enriquecidos (Google/Bing) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://oakwoodsystemsgroup.com/#organization",
+        "name": "Oakwood Systems Group",
+        "url": "https://oakwoodsystemsgroup.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://oakwoodsys.com/wp-content/uploads/2018/06/cropped-logo2-2.png"
+        },
+        "description": "As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.",
+        "sameAs": [
+          "https://www.linkedin.com/company/oakwood-systems-group",
+          "https://twitter.com/OakwoodInsights",
+          "https://www.facebook.com/OakwoodSys/"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+1-314-824-3000",
+          "contactType": "customer service",
+          "email": "marketing@oakwoodsys.com",
+          "areaServed": "US"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://oakwoodsystemsgroup.com/#website",
+        "url": "https://oakwoodsystemsgroup.com",
+        "name": "Oakwood Systems Group",
+        "description": "Microsoft Solutions Partner | Azure Consulting | St. Louis, MO. We drive business innovation and modernization for our clients.",
+        "publisher": { "@id": "https://oakwoodsystemsgroup.com/#organization" },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": { "@type": "EntryPoint", "urlTemplate": "https://oakwoodsystemsgroup.com/blog?q={search_term_string}" },
+          "query-input": "required name=search_term_string"
+        }
+      }
+    ]
+  }
+  </script>
+</head>
 
+<body>
+  <app-root></app-root>
+
+  <!-- Scripts de analytics al final del body (no bloquean el render inicial) -->
   <!-- Dynamics CRM / MSCI Analytics -->
-  <!-- Dynamics CRM: -->
-
-  <script>
+  <script defer>
     (function (a, t, i) { var e = "MSCI"; var s = "Analytics"; var o = e + "queue"; a[o] = a[o] || []; var r = a[e] || function (n) { var t = {}; t[s] = {}; function e(e) { while (e.length) { var r = e.pop(); t[s][r] = function (e) { return function () { a[o].push([e, n, arguments]) } }(r) } } var r = "track"; var i = "set"; e([r + "Event", r + "View", r + "Action", i + "Config", i + "Property", i + "User", "initialize", "teardown"]); return t }(i.name); var n = i.name; if (!a[e]) { a[n] = r[s]; a[o].push(["new", n]); setTimeout(function () { var e = "script"; var r = t.createElement(e); r.async = 1; r.src = i.src; var n = t.getElementsByTagName(e)[0]; n.parentNode.insertBefore(r, n) }, 1) } else { a[n] = new r[s] } if (i.user) { a[n].setUser(i.user) } if (i.props) { for (var c in i.props) { a[n].setProperty(c, i.props[c]) } } a[n].initialize(i.cfg) })(window, document, {
 
       src: "https://cxppusa1rdrect01sa02cdn-endpoint.azureedge.net/webtracking/WebTracking/WebTracking.bundle.js",
@@ -54,9 +123,7 @@
     });
   </script>
 
-  <!-- Google Analytics: -->
-
-  <!-- Google tag (gtag.js) -->
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-0BS8T310YP"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -66,9 +133,8 @@
     gtag('config', 'G-0BS8T310YP');
   </script>
 
-  <!-- Dealfront/Leadfeeder: -->
-
-  <script>
+  <!-- Dealfront / Leadfeeder -->
+  <script defer>
     (function () {
 
       window.ldfdr = window.ldfdr || {};
@@ -86,9 +152,8 @@
     })();
   </script>
 
-  Chatbase:
-
-  <script id="chatbot-script-js-after">
+  <!-- Chatbase (carga diferida tras load del documento) -->
+  <script id="chatbot-script-js-after" defer>
     (function () {
       if (!window.chatbase || window.chatbase("getState") !== "initialized") {
         window.chatbase = (...arguments) => {
@@ -120,10 +185,6 @@
       }
     })();
   </script>
-</head>
-
-<body>
-  <app-root></app-root>
 </body>
 
 </html>
