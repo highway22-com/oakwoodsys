@@ -256,21 +256,11 @@ export default class Home implements OnInit {
     };
   }
 
-  private updateMetadata(content: CmsPageContent) {
-    const ctas = content.ctas ?? (content.sections?.find(s => s.type === 'hero') as { ctas?: HeroCtaItem[] })?.ctas;
-    const heroSection = content.sections?.find(s => s.type === 'hero');
-    const rawTitle = ctas?.length ? ctas[0]?.title : heroSection?.['title'];
-    const heroTitle = typeof rawTitle === 'string' ? rawTitle
-      : Array.isArray(rawTitle) ? (rawTitle[0] ?? '')
-        : rawTitle && typeof rawTitle === 'object' ? [rawTitle.line1, rawTitle.line2].filter(Boolean).join(' ') ?? ''
-          : '';
-    const heroDesc = (ctas?.length ? ctas[0]?.description : heroSection?.['description'] ?? '') as string;
-    const pageTitle = heroTitle ? `${heroTitle} | Oakwood Systems` : DEFAULT_TITLE;
-    const description = heroDesc || DEFAULT_DESCRIPTION;
-
+  private updateMetadata(_content: CmsPageContent) {
+    // Home siempre usa los valores SEO de index.html para consistencia en Google
     this.seoMeta.updateMeta({
-      title: pageTitle,
-      description,
+      title: DEFAULT_TITLE,
+      description: DEFAULT_DESCRIPTION,
       canonicalPath: '/',
     });
   }
