@@ -41,12 +41,62 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://oakwoodsystemsgroup.com/services/cloud-and-infrastructure</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsystemsgroup.com/services/application-innovation</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsystemsgroup.com/services/high-performance-computing-hpc</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsystemsgroup.com/services/modern-work</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsystemsgroup.com/services/managed-services</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://oakwoodsystemsgroup.com/industries</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://oakwoodsystemsgroup.com/industries/healthcare</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsystemsgroup.com/industries/manufacturing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsystemsgroup.com/industries/education-public-sector</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsystemsgroup.com/industries/retail</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsystemsgroup.com/industries/financial-services</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsystemsgroup.com/industries/electronic-design-automation-eda</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
