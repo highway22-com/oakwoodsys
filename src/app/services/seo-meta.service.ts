@@ -26,7 +26,7 @@ export interface SeoMetaConfig {
   keyphrase?: string;
 }
 
-const BASE_URL = 'https://staging.oakwoodsystemsgroup.com';
+const BASE_URL = 'https://oakwoodsystemsgroup.com';
 const DEFAULT_TITLE = 'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
 const DEFAULT_DESCRIPTION = 'As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.';
 const DEFAULT_KEYWORDS = 'Microsoft Solutions Partner, Azure Consulting, Azure Cloud services, St. Louis, Kansas City, cloud migration, Data & AI, Microsoft 365, Power BI, Azure Synapse, digital transformation, managed IT services';
