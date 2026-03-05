@@ -98,7 +98,7 @@
               @for (link of group.links; track link.text) {
                 @if (link.text !== 'Whitepapers' && link.text !== 'Events' && link.text !== 'Webinars') {
                 <li>
-                  <a [routerLink]="link.routerLink" class="text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200">
+                  <a [routerLink]="link.routerLink" class="text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200 whitespace-nowrap">
                     {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
                   </a>
                 </li>

@@ -40,36 +40,45 @@
       "imageAlt": "Our technology stack"
     }
   ],
-  "partnerLogos": [
-    {
-      "src": "/assets/logos/microsoft.png",
-      "alt": "Microsoft"
+  "partnerLogos": {
+    "title": "Our Clients",
+     "partners": [
+       {
+            "name": "Microsoft",
+            "logo": "/assets/logos/microsoft.png",
+            "alt": "Microsoft"
+          },
+          {
+            "name": "ARCO",
+            "logo": "/assets/logos/arco.png",
+            "alt": "ARCO Construction"
+          },
+          {
+            "name": "Applied Materials",
+            "logo": "/assets/logos/applied-materials.png",
+            "alt": "Applied Materials"
+          },
+          {
+            "name": "Clarios",
+            "logo": "/assets/logos/clarios.png",
+            "alt": "Clarios"
+          },
+          {
+            "name": "onsemi",
+            "logo": "/assets/logos/onsemi.png",
+            "alt": "onsemi"
+          },
+          {
+            "name": "Duke University",
+            "logo": "/assets/logos/duke-university.png",
+            "alt": "Duke University"
+          },
+          {
+            "name": "BJC HealthCare",
+            "logo": "/assets/logos/bjc-healthcare.png",
+            "alt": "BJC HealthCare"
+          }]
     },
-    {
-      "src": "/assets/logos/arco.png",
-      "alt": "ARCO"
-    },
-    {
-      "src": "/assets/logos/bjc-healthcare.png",
-      "alt": "BJC Healthcare"
-    },
-    {
-      "src": "/assets/logos/clarios.png",
-      "alt": "Clarios"
-    },
-    {
-      "src": "/assets/logos/onsemi.png",
-      "alt": "Onsemi"
-    },
-    {
-      "src": "/assets/logos/duke-university.png",
-      "alt": "Duke University"
-    },
-    {
-      "src": "/assets/logos/applied-materials.png",
-      "alt": "Applied Materials"
-    }
-  ],
   "videoSectionTitle": "About Oakwood",
   "videoSectionDescription": "Learn about Oakwood, who we are, where we came from, and what drives us.",
   "videoSectionImage": "/assets/s-daa-h.jpg",
