@@ -9,6 +9,7 @@ import { CtaSectionComponent } from "../../shared/cta-section/cta-section.compon
 import { TrustedBySectionComponent } from "../../shared/sections/trusted-by/trusted-by";
 import { FeaturedCaseStudySectionComponent } from "../../shared/sections/featured-case-study/featured-case-study";
 import { FeaturedCaseStudyCategory } from "../../shared/sections/featured-case-study/featured-case-study-category";
+import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { SvgIcons } from '../../shared/industries-icons/industries-icons';
 interface IndustryChallengeCard {
@@ -73,7 +74,7 @@ interface IndustriesContent {
 
 @Component({
   selector: 'app-industries',
-  imports: [CommonModule, RouterLink, VideoHero, CtaSectionComponent, TrustedBySectionComponent, FeaturedCaseStudySectionComponent],
+  imports: [CommonModule, RouterLink, VideoHero, CtaSectionComponent, TrustedBySectionComponent, FeaturedCaseStudySectionComponent, ButtonPrimaryComponent],
   templateUrl: './industries.html',
   styleUrl: './industries.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
