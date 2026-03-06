@@ -1,5 +1,10 @@
 /* Featured Case Study section - scroll a la izquierda con colores p-700 / p-100 */
 
+/* Fade del contenido (tag, título, descripción, CTAs) al cambiar de slide */
+.featured-case-study__text-fade {
+  transition: opacity 0.5s ease-out;
+}
+
 .featured-case-study-image-wrap {
   position: relative;
 }

@@ -49,6 +49,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   readonly descriptionSignal = signal<string | string[]>([]);
   readonly ctaPrimarySignal = signal<{ text: string; link: string; backgroundColor?: string } | { text: string; link: string; backgroundColor?: string }[] | undefined>(undefined);
   readonly currentVideoIndex = signal(0);
+  readonly textFadeOpacity = signal(1);
   readonly currentVideoUrl = computed(() => {
     const urls = this.videoUrlsSignal();
     const index = this.currentVideoIndex();
@@ -212,13 +213,22 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
 
   switchToVideo(index: number) {
     const urls = this.videoUrlsSignal();
-    if (index >= 0 && index < urls.length) {
+    if (index < 0 || index >= urls.length || index === this.currentVideoIndex()) return;
+    if (!isPlatformBrowser(this.platformId)) {
       this.currentVideoIndex.set(index);
       this.loadVideo(urls[index]);
-
-      // Reset the carousel timer
       this.startVideoCarousel();
+      return;
     }
+
+    // Fade out texto (0.5s, debe coincidir con CSS)
+    this.textFadeOpacity.set(0);
+    setTimeout(() => {
+      this.currentVideoIndex.set(index);
+      this.loadVideo(urls[index]);
+      this.startVideoCarousel();
+      setTimeout(() => this.textFadeOpacity.set(1), 50);
+    }, 200);
   }
 
   private nextVideo() {
