@@ -6,6 +6,7 @@ import { SafeUrlPipe } from '../../app/youtube-player/safe-url.pipe';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { LatestInsightsSectionComponent, type LatestInsightsSection } from '../../shared/sections/latest-insights/latest-insights';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
+import { TrustedBySectionComponent } from '../../shared/sections/trusted-by/trusted-by';
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
 import { ScrollAnimationComponent } from '../../shared/scroll-animation-component/scroll-animation.component';
 import { CommonModule } from '@angular/common';
@@ -50,7 +51,7 @@ export interface AboutContent {
   aboutTitle: string;
   aboutDescription: string;
   aboutFeatures: AboutFeature[];
-  partnerLogos: { src: string; alt: string }[];
+  partnerLogos: { title: string; partners: { name: string; logo: string; alt: string }[] };
   videoSectionTitle: string;
   videoSectionDescription: string;
   videoSectionImage: string;
@@ -76,7 +77,7 @@ export interface AboutContent {
 
 @Component({
   selector: 'app-about-us',
-  imports: [CommonModule, VideoHero, LatestInsightsSectionComponent, CtaSectionComponent, ButtonPrimaryComponent, ScrollAnimationComponent, YoutubePlayerComponent, SafeUrlPipe],
+  imports: [CommonModule, VideoHero, LatestInsightsSectionComponent, CtaSectionComponent, ButtonPrimaryComponent, ScrollAnimationComponent, YoutubePlayerComponent, SafeUrlPipe,TrustedBySectionComponent],
   templateUrl: './about-us.html',
   styleUrl: './about-us.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

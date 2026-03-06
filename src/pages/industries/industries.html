@@ -1,97 +1,194 @@
 @if (loading()) {
-<div class="min-h-screen flex items-center justify-center">
-  <div class="animate-spin h-12 w-12 border-b-2 border-blue-600"></div>
-</div>
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="animate-spin h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
 }
 
 @if (!loading() && error()) {
-<div class="min-h-screen flex items-center justify-center">
-  <p class="text-gray-600">{{ error() }}</p>
-</div>
+  <div class="min-h-screen flex items-center justify-center">
+    <p class="text-gray-600">{{ error() }}</p>
+  </div>
 }
 
 @if (!loading() && !error() && content(); as c) {
-<!-- Hero -->
-<app-video-hero [loading]="false" [videoUrls]="c.videoUrls ?? []" [title]="c.title" [description]="c.description"
-  [ctaPrimary]="getCtaPrimary(c)" [ctaSecondary]="c.cta?.secondary" [hvh70]="true" />
+  <!-- Hero -->
+  <app-video-hero
+    [loading]="false"
+    [videoUrls]="c.videoUrls ?? []"
+    [title]="c.title"
+    [description]="c.description"
+    [ctaPrimary]="getCtaPrimary(c)"
+    [ctaSecondary]="c.cta?.secondary"
+    [hvh70]="true"
+  />
 
-<!-- Trusted leaders -->
-@if (c.trustedLeaders?.partners?.length) {
-<app-trusted-by [title]="c.trustedLeaders!.title ?? '' " [companies]="c.trustedLeaders!.partners ?? []" />
+  <!-- Trusted leaders -->
+  @if (c.trustedLeaders?.partners?.length) {
+    <app-trusted-by
+      [title]="c.trustedLeaders!.title ?? ''"
+      [companies]="c.trustedLeaders!.partners ?? []"
+    />
+  }
 
-}
-
-<!-- Industry challenges -->
-@if (c.industryChallenges) {
-<section class="py-16 md:py-24 bg-white" aria-labelledby="challenges-title">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <p class="text-sm   uppercase tracking-wider text-gray-400 mb-2">{{ c.industryChallenges.sectionTitle }}
-    </p>
-    <h2 id="challenges-title" class="text-3xl sm:text-4xl   text-gray-900 mb-4 max-w-2xl">
-      {{ c.industryChallenges.mainHeading }}
-    </h2>
-    <p class="text-lg text-gray-600 mb-12 max-w-2xl">{{ c.industryChallenges.subDescription }}</p>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      @for (card of c.industryChallenges.cards; track card.id) {
-      <article class="  overflow-hidden border border-gray-100 shadow-sm">
-        <div class="aspect-video bg-gray-100 relative">
-          <img [src]="card.image" [alt]="card.title" class="w-full h-full object-cover" loading="lazy" />
-          <span class="absolute top-4 left-4 text-4xl   text-white/90">{{ card.id }}</span>
+  <!-- Industry challenges -->
+  @if (c.industryChallenges) {
+    <section class="py-16 md:py-24 bg-white" aria-labelledby="challenges-title">
+      <div class="mx-auto px-4 sm:px-6 md:px-8 lg:px-22">
+        <p
+          class="text-[color:var(--Modern-Blue,#0D53A2)] font-inter text-[18px] font-semibold leading-[27px] uppercase mb-2"
+        >
+          {{ c.industryChallenges.sectionTitle }}
+        </p>
+        <h2
+          id="challenges-title"
+          class="text-[color:var(--Black,#000)] font-inter text-[40px] lg:text-[50px] font-normal leading-[55px] mb-2"
+        >
+          {{ c.industryChallenges.mainHeading }}
+        </h2>
+        <p
+          class="text-[color:var(--Secondary-800,#454545)] font-['Segoe UI'] text-[18px] font-normal leading-[27px] mb-14"
+        >
+          {{ c.industryChallenges.subDescription }}
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          @for (card of c.industryChallenges.cards; track card.id) {
+            <article class="overflow-hidden border border-gray-100 shadow-sm">
+              @if (card.id === "02") {
+                <div class="aspect-[18/9] p-4 lg:p-10">
+                  <span
+                    class="text-[color:var(--Secondary-500,#6D6D6D)] font-inter text-[18px] font-normal leading-normal pt-4"
+                    >/{{ card.id }}</span
+                  >
+                  <h3
+                    class="text-[color:var(--Secondary-950,#242424)] font-inter text-[28px] font-semibold leading-[36.4px] py-4"
+                  >
+                    {{ card.title }}
+                  </h3>
+                  <p
+                    class="text-[color:var(--Secondary-900,#3D3D3D)] font-inter text-[18px] font-normal leading-[27px]"
+                  >
+                    {{ card.description }}
+                  </p>
+                </div>
+                <div class="aspect-[18/9] bg-gray-100 relative">
+                  <img
+                    [src]="card.image"
+                    [alt]="card.title"
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              } @else {
+                <div class="aspect-[18/9] bg-gray-100 relative">
+                  <img
+                    [src]="card.image"
+                    [alt]="card.title"
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="aspect-[18/9] p-4 lg:p-10">
+                  <span
+                    class="text-[color:var(--Secondary-500,#6D6D6D)] font-inter text-[18px] font-normal leading-normal pt-4"
+                    >/{{ card.id }}</span
+                  >
+                  <h3
+                    class="text-[color:var(--Secondary-950,#242424)] font-inter text-[28px] font-semibold leading-[36.4px] py-4"
+                  >
+                    {{ card.title }}
+                  </h3>
+                  <p
+                    class="text-[color:var(--Secondary-900,#3D3D3D)] font-inter text-[18px] font-normal leading-[27px]"
+                  >
+                    {{ card.description }}
+                  </p>
+                </div>
+              }
+            </article>
+          }
         </div>
-        <div class="p-6">
-          <h3 class="text-xl   text-gray-900 mb-2">{{ card.title }}</h3>
-          <p class="text-gray-600">{{ card.description }}</p>
-        </div>
-      </article>
-      }
-    </div>
-  </div>
-</section>
-}
-
-<!-- How we improve / Healthcare transformation -->
-@if (c.howWeImprove) {
-<section class="py-16 md:py-24 bg-gray-50" aria-labelledby="improve-title">
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <p class="text-sm   uppercase tracking-wider text-gray-400 mb-2">{{ c.howWeImprove.sectionTitle }}</p>
-    <h2 id="improve-title" class="text-3xl sm:text-4xl   text-gray-900 mb-4 max-w-2xl">
-      {{ c.howWeImprove.mainHeading }}
-    </h2>
-    <p class="text-lg text-gray-600 mb-12 max-w-2xl">{{ c.howWeImprove.subDescription }}</p>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-      @for (card of c.howWeImprove.cards; track card.title) {
-      <div class="bg-white  p-6 border border-gray-100 shadow-sm">
-        @if (card.icon) {
-          <span  [innerHTML]="getIconSvg(card.icon || '')"></span>
-        <!-- <img [src]="card.icon" [alt]="card.title" class="w-12 h-12 object-contain mb-4" /> -->
-        }
-        <h3 class="text-lg   text-gray-900 mb-2 pt-14">{{ card.title }}</h3>
-        <p class="text-gray-600 text-sm">{{ card.description }}</p>
       </div>
-      }
-    </div>
-    @if (c.howWeImprove.cta) {
-    <a [routerLink]="c.howWeImprove.cta.link"
-      class="inline-block px-6 py-3   border-2 border-blue-600  text-p-500 hover:bg-p-500 hover:text-white transition">
-      {{ c.howWeImprove.cta.text }}
-    </a>
-    }
-  </div>
-</section>
-}
+    </section>
+  }
 
-<!-- Featured case study (misma lógica que resources: slugs → app-featured-case-study-cards) -->
-@if (getSlugsForFeaturedSection().length) {
-<app-featured-case-study [primaryTagSlug]="slug() ?? undefined"
-  [featuredCategory]="FeaturedCaseStudyCategory.CaseStudyIndustry"
-  [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
-}
+  <!-- How we improve / Healthcare transformation -->
+  @if (c.howWeImprove) {
+    <section
+      class="py-16 md:py-24"
+      style="background: var(--Primary-50, #f2f8fd)"
+      aria-labelledby="improve-title"
+    >
+      <div class="mx-auto px-4 sm:px-6 md:px-8 lg:px-22">
+        <p
+          class="text-[color:var(--Primary,#2A7EBF)] font-inter text-center text-[14px] lg:text-[18px] font-semibold leading-[27px] uppercase mb-2"
+        >
+          {{ c.howWeImprove.sectionTitle }}
+        </p>
+        <h2
+          id="improve-title"
+          class="text-[color:var(--Black,#000)] text-center font-[Inter] text-[32px] lg:text-[50px] font-normal leading-[55px] tracking-[-0.64px] mb-4"
+        >
+          {{ c.howWeImprove.mainHeading }}
+        </h2>
+        <p
+          class="text-[color:var(--Secondary-800,#454545)] text-center font-[Segoe\ UI] text-[16px] lg:text-[18px] font-normal leading-[27px] mb-14"
+        >
+          {{ c.howWeImprove.subDescription }}
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+          @for (card of c.howWeImprove.cards; track card.title) {
+            <div class="bg-white p-8 rounded-[8px]">
+              @if (card.icon) {
+                <span [innerHTML]="getIconSvg(card.icon || '')"></span>
+                <!-- <img [src]="card.icon" [alt]="card.title" class="w-12 h-12 object-contain mb-4" /> -->
+              }
+              <h3
+                class="text-[color:var(--Secondary-950,#242424)] font-inter text-[24px] font-semibold leading-[31.2px] mb-4 pt-22"
+              >
+                {{ card.title }}
+              </h3>
+              <p
+                class="text-[color:var(--Secondary-900,#3D3D3D)] font-inter text-[16px] font-normal leading-[24px]"
+              >
+                {{ card.description }}
+              </p>
+            </div>
+          }
+        </div>
+        @if (c.howWeImprove.cta) {
+          <div class="flex justify-center">
+            <app-button-primary
+              [text]="c.howWeImprove.cta.text"
+              [link]="c.howWeImprove.cta.link"
+              [isTransparent]="true"
+              [borderColor]="'black'"
+              class="block w-full sm:w-auto"
+            />
+          </div>
+        }
+      </div>
+    </section>
+  }
 
-<!-- CTA section -->
-@if (c.ctaSection) {
-<app-cta-section [title]="c.ctaSection.heading  ?? 'Let\'s move your vision forward'"
-  [description]="  c.ctaSection.description  ?? 'Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.'"
-  [primaryText]="c.ctaSection.primaryCta?.text ?? 'Talk to an expert'"
-  [primaryLink]="c.ctaSection.primaryCta!.link ?? '/contact-us'" />
-}
+  <!-- Featured case study (misma lógica que resources: slugs → app-featured-case-study-cards) -->
+  @if (getSlugsForFeaturedSection().length) {
+    <app-featured-case-study
+      [primaryTagSlug]="slug() ?? undefined"
+      [featuredCategory]="FeaturedCaseStudyCategory.CaseStudyIndustry"
+      [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()"
+    />
+  }
+
+  <!-- CTA section -->
+  @if (c.ctaSection) {
+    <app-cta-section
+      [title]="c.ctaSection.heading ?? 'Let\'s move your vision forward'"
+      [description]="
+        c.ctaSection.description ??
+        'Connect with a team committed to helping you modernize, innovate, and achieve meaningful results.'
+      "
+      [primaryText]="c.ctaSection.primaryCta?.text ?? 'Talk to an expert'"
+      [primaryLink]="c.ctaSection.primaryCta!.link ?? '/contact-us'"
+    />
+  }
 }
