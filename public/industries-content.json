@@ -47,7 +47,7 @@
       },
       "industryChallenges": {
         "sectionTitle": "INDUSTRY CHALLENGES",
-        "mainHeading": "The critical obstacles healthcare teams face",
+        "mainHeading": "Healthcare",
         "subDescription": "Healthcare teams face rising patient expectations, increasing complexity across clinical systems, and growing pressure to deliver safe, coordinated, cost effective care.",
         "cards": [
           {
@@ -170,7 +170,7 @@
       },
       "industryChallenges": {
         "sectionTitle": "INDUSTRY CHALLENGES",
-        "mainHeading": "The critical obstacles manufacturing teams face",
+        "mainHeading": "Manufacturing",
         "subDescription": "Manufacturers are navigating supply chain disruptions, labor shortages, and the need to modernize systems without slowing production.",
         "cards": [
           {
@@ -295,7 +295,7 @@
       },
       "industryChallenges": {
         "sectionTitle": "INDUSTRY CHALLENGES",
-        "mainHeading": "Key challenges facing education and public sector organizations",
+        "mainHeading": "Public Sector",
         "subDescription": "Education and public sector organizations face aging technology, tight budgets, and increasing expectations for secure, accessible digital services.",
         "cards": [
           {
@@ -420,7 +420,7 @@
       },
       "industryChallenges": {
         "sectionTitle": "INDUSTRY CHALLENGES",
-        "mainHeading": "The critical obstacles retail teams face",
+        "mainHeading": "Retail",
         "subDescription": "Retailers must adapt to shifting customer expectations, shrinking margins, and the need for smarter, data driven operations across both online and in store environments.",
         "cards": [
           {
@@ -545,7 +545,7 @@
       },
       "industryChallenges": {
         "sectionTitle": "INDUSTRY CHALLENGES",
-        "mainHeading": "Financial Services",
+        "mainHeading": "Services",
         "subDescription": "Banks, credit unions, and financial services firms face evolving regulatory demands, rising consumer expectations, and legacy systems that limit speed and innovation.",
         "cards": [
           {
@@ -670,7 +670,7 @@
       },
       "industryChallenges": {
         "sectionTitle": "INDUSTRY CHALLENGES",
-        "mainHeading": "Key challenges facing semiconductor and EDA organizations",
+        "mainHeading": "Electronic Design Automation (EDA)",
         "subDescription": "Semiconductor and EDA organizations are under pressure to shorten design cycles, manage rising computational demands and protect valuable intellectual property.",
         "cards": [
           {
