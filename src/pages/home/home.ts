@@ -1,8 +1,15 @@
-
 import { Router } from '@angular/router';
 
-
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal, DOCUMENT } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  PLATFORM_ID,
+  signal,
+  DOCUMENT,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, NgClass, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -12,16 +19,22 @@ import { FeaturedCaseStudySectionComponent } from '../../shared/sections/feature
 import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-study/featured-case-study-category';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
-import type { CmsPageContent, CmsSection, HeroCtaItem } from '../../app/api/graphql';
+import type {
+  CmsPageContent,
+  CmsSection,
+  HeroCtaItem,
+} from '../../app/api/graphql';
 import { TrustedBySectionComponent } from '../../shared/sections/trusted-by/trusted-by';
 import { StructuredEngagementsSectionComponent } from '../../shared/sections/structured-engagements/structured-engagements';
 import { LatestInsightsSectionComponent } from '../../shared/sections/latest-insights/latest-insights';
-import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
+import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
 import { ScrollAnimationComponent } from '../../shared/scroll-animation-component/scroll-animation.component';
 import { SvgIcons } from '../../shared/service-icons/service-icons';
 import type { SafeHtml } from '@angular/platform-browser';
-const DEFAULT_TITLE = 'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
-const DEFAULT_DESCRIPTION = 'As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.';
+const DEFAULT_TITLE =
+  'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
+const DEFAULT_DESCRIPTION =
+  'As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.';
 
 export function splitTwoLinerTitle(title: string): [string, string] {
   if (!title) return [title, ''];
@@ -44,17 +57,28 @@ export function splitTwoLinerTitle(title: string): [string, string] {
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, NgClass, FormsModule, VideoHero, ScrollAnimationComponent, FeaturedCaseStudySectionComponent, TrustedBySectionComponent, StructuredEngagementsSectionComponent, LatestInsightsSectionComponent, ButtonPrimaryComponent],
+  imports: [
+    CommonModule,
+    NgClass,
+    FormsModule,
+    VideoHero,
+    ScrollAnimationComponent,
+    FeaturedCaseStudySectionComponent,
+    TrustedBySectionComponent,
+    StructuredEngagementsSectionComponent,
+    LatestInsightsSectionComponent,
+    ButtonPrimaryComponent,
+  ],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Home implements OnInit {
-    private readonly router = inject(Router);
+  private readonly router = inject(Router);
 
-    goToContactUs() {
-      this.router.navigate(['/contact-us']);
-    }
+  goToContactUs() {
+    this.router.navigate(['/contact-us']);
+  }
   readonly FeaturedCaseStudyCategory = FeaturedCaseStudyCategory;
   readonly content = signal<CmsPageContent | null>(null);
   readonly loading = signal(true);
@@ -80,7 +104,7 @@ export default class Home implements OnInit {
   jsonContent: string = '';
   readonly jsonError = signal<string | null>(null);
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -93,7 +117,7 @@ export default class Home implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
-          console.log(JSON.stringify(data, null, 2),"data here");
+          console.log(JSON.stringify(data, null, 2), 'data here');
           if (data) {
             this.applyContent(data);
           } else {
@@ -115,15 +139,26 @@ export default class Home implements OnInit {
 
   private applyContent(data: CmsPageContent) {
     this.content.set(data);
-    const heroSection = data.sections?.find(s => s.type === 'hero') as { ctas?: HeroCtaItem[] } | undefined;
-    const ctas = (data.ctas && data.ctas.length > 0) ? data.ctas : heroSection?.ctas;
+    const heroSection = data.sections?.find((s) => s.type === 'hero') as
+      | { ctas?: HeroCtaItem[] }
+      | undefined;
+    const ctas =
+      data.ctas && data.ctas.length > 0 ? data.ctas : heroSection?.ctas;
     if (ctas && ctas.length > 0) {
-      const urls = ctas.map((c: HeroCtaItem) => c.videoUrl).filter((url: string): url is string => typeof url === 'string' && url.trim().length > 0);
+      const urls = ctas
+        .map((c: HeroCtaItem) => c.videoUrl)
+        .filter(
+          (url: string): url is string =>
+            typeof url === 'string' && url.trim().length > 0,
+        );
       if (urls.length > 0) {
         this.videoUrls.set(urls);
       }
     } else if (data.videoUrls && data.videoUrls.length > 0) {
-      const links = data.videoUrls.filter((url): url is string => typeof url === 'string' && url.trim().length > 0);
+      const links = data.videoUrls.filter(
+        (url): url is string =>
+          typeof url === 'string' && url.trim().length > 0,
+      );
       if (links.length > 0) {
         this.videoUrls.set(links);
       }
@@ -136,24 +171,26 @@ export default class Home implements OnInit {
     this.loading.set(false);
   }
 
-   getIconSvg(iconKey: string) {
+  getIconSvg(iconKey: string) {
     // Map PNG paths to SVG icon keys
     const iconMap: { [key: string]: string } = {
-      '/assets/graph.png': 'Data_AI_Service',
-      '/assets/cloud.png': 'Cloud_Infrastructure_Service',
-      '/assets/app-innovation.png': 'Application_Innovation_Service',
-      '/assets/hpc.png': 'High_Performance_Computing_Service',
-      '/assets/modern-work.png': 'Modern_Workplace_Service',
-      '/assets/managed-services.png': 'Managed_Services',
+      '/assets/ai.svg': 'Data_AI_Service',
+      '/assets/cloud.svg': 'Cloud_Infrastructure_Service',
+      '/assets/application.svg': 'Application_Innovation_Service',
+      '/assets/hpc.svg': 'High_Performance_Computing_Service',
+      '/assets/modern.svg': 'Modern_Workplace_Service',
+      '/assets/services.svg': 'Managed_Services',
     };
     const mappedKey = iconMap[iconKey] || iconKey;
+
+    console.log(iconKey,"iconKey", mappedKey, "mappedKey");
     const svg = SvgIcons[mappedKey] || '';
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   }
   getSection(type: string) {
-    return this.content()?.sections.find(s => s.type === type);
+    return this.content()?.sections.find((s) => s.type === type);
   }
-    getSafeSvgIcon(svg?: string): SafeHtml {
+  getSafeSvgIcon(svg?: string): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(svg ?? '');
   }
 
@@ -162,10 +199,14 @@ export default class Home implements OnInit {
     const data = this.content();
     if (!data) return undefined;
     const fromRoot = data.ctas;
-    if (fromRoot && Array.isArray(fromRoot) && fromRoot.length > 0) return fromRoot;
-    const hero = this.getSection('hero') as { ctas?: HeroCtaItem[] } | undefined;
+    if (fromRoot && Array.isArray(fromRoot) && fromRoot.length > 0)
+      return fromRoot;
+    const hero = this.getSection('hero') as
+      | { ctas?: HeroCtaItem[] }
+      | undefined;
     const fromHero = hero?.ctas;
-    if (fromHero && Array.isArray(fromHero) && fromHero.length > 0) return fromHero;
+    if (fromHero && Array.isArray(fromHero) && fromHero.length > 0)
+      return fromHero;
     return undefined;
   }
 
@@ -173,7 +214,8 @@ export default class Home implements OnInit {
   getSectionTitle(section: CmsSection): string {
     const t = section?.title;
     if (typeof t === 'string') return t;
-    if (t && typeof t === 'object') return [t.line1, t.line2].filter(Boolean).join(' ') || '';
+    if (t && typeof t === 'object')
+      return [t.line1, t.line2].filter(Boolean).join(' ') || '';
     return '';
   }
 
@@ -193,32 +235,39 @@ export default class Home implements OnInit {
   /** Título del hero: desde ctas (array) o sección hero. */
   heroTitle(): string | string[] {
     const ctas = this.getCtas();
-    if (ctas && ctas.length > 0) return ctas.map(c => c.title);
+    if (ctas && ctas.length > 0) return ctas.map((c) => c.title);
     const section = this.getSection('hero');
     const t = section?.title;
     if (typeof t === 'string') return t || '';
-    if (Array.isArray(t)) return t.filter((s): s is string => typeof s === 'string');
-    if (t && typeof t === 'object' && !Array.isArray(t)) return [t.line1, t.line2].filter(Boolean).join(' ') || '';
+    if (Array.isArray(t))
+      return t.filter((s): s is string => typeof s === 'string');
+    if (t && typeof t === 'object' && !Array.isArray(t))
+      return [t.line1, t.line2].filter(Boolean).join(' ') || '';
     return '';
   }
 
   /** Descripción del hero: desde ctas (array) o sección hero. */
   heroDescription(): string | string[] {
     const ctas = this.getCtas();
-    if (ctas && ctas.length > 0) return ctas.map(c => c.description);
+    if (ctas && ctas.length > 0) return ctas.map((c) => c.description);
     const section = this.getSection('hero');
     const t = section?.description;
     if (typeof t === 'string') return t || '';
-    if (Array.isArray(t)) return t.filter((s): s is string => typeof s === 'string');
-    if (t && typeof t === 'object' && !Array.isArray(t)) return [t.line1, t.line2].filter(Boolean).join(' ') || '';
+    if (Array.isArray(t))
+      return t.filter((s): s is string => typeof s === 'string');
+    if (t && typeof t === 'object' && !Array.isArray(t))
+      return [t.line1, t.line2].filter(Boolean).join(' ') || '';
     return '';
   }
 
   /** CTA principal del hero: array (uno por video) desde ctas, o único desde sección hero. */
-  heroCtaPrimary(): { text: string; link: string; backgroundColor?: string } | { text: string; link: string; backgroundColor?: string }[] | undefined {
+  heroCtaPrimary():
+    | { text: string; link: string; backgroundColor?: string }
+    | { text: string; link: string; backgroundColor?: string }[]
+    | undefined {
     const ctas = this.getCtas();
     if (ctas && ctas.length > 0) {
-      return ctas.map(c => ({
+      return ctas.map((c) => ({
         text: c.btn.text,
         link: c.btn.link,
         backgroundColor: c.btn.backgroundColor ?? '#1A63C9',
@@ -229,30 +278,36 @@ export default class Home implements OnInit {
   }
 
   /** CTA secundario del hero (desde sección hero). */
-  heroCtaSecondary(): { text: string; link: string; borderColor: string } | undefined {
+  heroCtaSecondary():
+    | { text: string; link: string; borderColor: string }
+    | undefined {
     const section = this.getSection('hero');
     return section ? this.getCtaSecondary(section) : undefined;
   }
 
   /** Normaliza ctaPrimary para app-video-hero (text, link, backgroundColor requeridos). */
-  getCtaPrimary(section: CmsSection): { text: string; link: string; backgroundColor: string } | undefined {
+  getCtaPrimary(
+    section: CmsSection,
+  ): { text: string; link: string; backgroundColor: string } | undefined {
     const cta = section.cta;
     if (!cta) return undefined;
     return {
-      text: (cta.text ?? ''),
-      link: (cta.link ?? '/contact-us'),
-      backgroundColor: (cta.backgroundColor ?? ''),
+      text: cta.text ?? '',
+      link: cta.link ?? '/contact-us',
+      backgroundColor: cta.backgroundColor ?? '',
     };
   }
 
   /** Normaliza ctaSecondary para app-video-hero (text, link, borderColor requeridos). */
-  getCtaSecondary(section: CmsSection): { text: string; link: string; borderColor: string } | undefined {
+  getCtaSecondary(
+    section: CmsSection,
+  ): { text: string; link: string; borderColor: string } | undefined {
     const cta = section.ctaSecondary;
     if (!cta) return undefined;
     return {
-      text: (cta.text ?? ''),
-      link: (cta.link ?? '#'),
-      borderColor: (cta.borderColor ?? ''),
+      text: cta.text ?? '',
+      link: cta.link ?? '#',
+      borderColor: cta.borderColor ?? '',
     };
   }
 
@@ -266,14 +321,27 @@ export default class Home implements OnInit {
   }
 
   private updateStructuredData(content: CmsPageContent) {
-    const ctas = content.ctas ?? (content.sections?.find(s => s.type === 'hero') as { ctas?: HeroCtaItem[] })?.ctas;
-    const heroSection = content.sections?.find(s => s.type === 'hero');
-    const heroDesc = (ctas?.length ? ctas[0]?.description : heroSection?.['description'] ?? '') as string;
-    const heroTitle = ctas?.length ? ctas[0]?.title
-      : typeof heroSection?.['title'] === 'string' ? heroSection.title
-        : Array.isArray(heroSection?.['title']) ? (heroSection.title[0] ?? '')
+    const ctas =
+      content.ctas ??
+      (
+        content.sections?.find((s) => s.type === 'hero') as {
+          ctas?: HeroCtaItem[];
+        }
+      )?.ctas;
+    const heroSection = content.sections?.find((s) => s.type === 'hero');
+    const heroDesc = (
+      ctas?.length ? ctas[0]?.description : (heroSection?.['description'] ?? '')
+    ) as string;
+    const heroTitle = ctas?.length
+      ? ctas[0]?.title
+      : typeof heroSection?.['title'] === 'string'
+        ? heroSection.title
+        : Array.isArray(heroSection?.['title'])
+          ? (heroSection.title[0] ?? '')
           : heroSection?.title && typeof heroSection.title === 'object'
-            ? [heroSection.title.line1, heroSection.title.line2].filter(Boolean).join(' ') ?? ''
+            ? ([heroSection.title.line1, heroSection.title.line2]
+                .filter(Boolean)
+                .join(' ') ?? '')
             : DEFAULT_TITLE;
 
     const baseUrl = this.seoMeta.baseUrl;
@@ -290,22 +358,23 @@ export default class Home implements OnInit {
           description: heroDesc || DEFAULT_DESCRIPTION,
           breadcrumb: { '@id': `${baseUrl}/#breadcrumb` },
           inLanguage: 'en-US',
-          potentialAction: [{ '@type': 'ReadAction', target: [`${baseUrl}/`] }]
+          potentialAction: [{ '@type': 'ReadAction', target: [`${baseUrl}/`] }],
         },
         {
           '@type': 'BreadcrumbList',
           '@id': `${baseUrl}/#breadcrumb`,
-          itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home' }]
+          itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home' }],
         },
         {
           '@type': 'WebSite',
           '@id': `${baseUrl}/#website`,
           url: `${baseUrl}/`,
           name: DEFAULT_TITLE,
-          description: 'Microsoft Solutions Partner in St. Louis and Kansas City',
+          description:
+            'Microsoft Solutions Partner in St. Louis and Kansas City',
           publisher: { '@id': `${baseUrl}/#organization` },
           alternateName: 'Microsoft Solutions Partner - Oakwood',
-          inLanguage: 'en-US'
+          inLanguage: 'en-US',
         },
         {
           '@type': 'Organization',
@@ -317,21 +386,21 @@ export default class Home implements OnInit {
             '@type': 'ImageObject',
             url: 'https://oakwoodsys.com/wp-content/uploads/2018/06/cropped-logo2-2.png',
             width: 1270,
-            height: 185
+            height: 185,
           },
           sameAs: [
             'https://www.facebook.com/OakwoodSys/',
             'https://x.com/OakwoodInsights',
             'https://www.linkedin.com/company/oakwood-systems-group',
-            'https://www.youtube.com/user/oakwoodinnovates'
+            'https://www.youtube.com/user/oakwoodinnovates',
           ],
           contactPoint: {
             '@type': 'ContactPoint',
             contactType: 'Customer Service',
-            url: `${baseUrl}/contact-us`
-          }
-        }
-      ]
+            url: `${baseUrl}/contact-us`,
+          },
+        },
+      ],
     };
 
     this.structuredData.set(structuredDataObj);
@@ -359,10 +428,22 @@ export default class Home implements OnInit {
 
       // Update video URLs: desde ctas o videoUrls
       if (parsed.ctas && Array.isArray(parsed.ctas) && parsed.ctas.length > 0) {
-        const urls = parsed.ctas.map((c: { videoUrl?: string }) => c.videoUrl).filter((url: unknown): url is string => typeof url === 'string' && url.trim().length > 0);
+        const urls = parsed.ctas
+          .map((c: { videoUrl?: string }) => c.videoUrl)
+          .filter(
+            (url: unknown): url is string =>
+              typeof url === 'string' && url.trim().length > 0,
+          );
         if (urls.length > 0) this.videoUrls.set(urls);
-      } else if (parsed.videoUrls && Array.isArray(parsed.videoUrls) && parsed.videoUrls.length > 0) {
-        const links = parsed.videoUrls.filter((url: unknown): url is string => typeof url === 'string' && url.trim().length > 0);
+      } else if (
+        parsed.videoUrls &&
+        Array.isArray(parsed.videoUrls) &&
+        parsed.videoUrls.length > 0
+      ) {
+        const links = parsed.videoUrls.filter(
+          (url: unknown): url is string =>
+            typeof url === 'string' && url.trim().length > 0,
+        );
         this.videoUrls.set(links);
       }
 
@@ -370,7 +451,10 @@ export default class Home implements OnInit {
       this.updateMetadata(parsed);
       this.updateStructuredData(parsed);
     } catch (error) {
-      this.jsonError.set('JSON inválido: ' + (error instanceof Error ? error.message : 'Error desconocido'));
+      this.jsonError.set(
+        'JSON inválido: ' +
+          (error instanceof Error ? error.message : 'Error desconocido'),
+      );
     }
   }
 
@@ -378,8 +462,10 @@ export default class Home implements OnInit {
     const el = document.querySelector('.scroll-animation-section');
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-    const visible = rect.top < windowHeight * 0.7 && rect.bottom > windowHeight * 0.3;
+    const windowHeight =
+      window.innerHeight || document.documentElement.clientHeight;
+    const visible =
+      rect.top < windowHeight * 0.7 && rect.bottom > windowHeight * 0.3;
     this.scrollAnimationReverse.set(this.lastScrollVisible && !visible);
     this.scrollAnimationVisible.set(visible);
     this.lastScrollVisible = visible;
@@ -397,16 +483,19 @@ export default class Home implements OnInit {
       return;
     }
 
-    navigator.clipboard.writeText(this.jsonContent).then(
-      () => {
-        this.saveSuccess.set(true);
-        setTimeout(() => this.saveSuccess.set(false), 3000);
-      },
-      () => {
-        alert('No se pudo copiar al portapapeles.');
-      }
-    ).finally(() => {
-      this.saving.set(false);
-    });
+    navigator.clipboard
+      .writeText(this.jsonContent)
+      .then(
+        () => {
+          this.saveSuccess.set(true);
+          setTimeout(() => this.saveSuccess.set(false), 3000);
+        },
+        () => {
+          alert('No se pudo copiar al portapapeles.');
+        },
+      )
+      .finally(() => {
+        this.saving.set(false);
+      });
   }
 }
