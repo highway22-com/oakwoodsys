@@ -37,7 +37,7 @@
         "link": "/services/data-ai-solutions",
         "desc": "Unify, govern, and activate your data estate",
         "details": "Deliver real AI outcomes by unifying, governing, and activating your data estate to power intelligent innovation.",
-        "icon": "/assets/graph.svg",
+        "icon": "/assets/ai.svg",
         "iconSize": "38px"
       },
       {
@@ -46,7 +46,7 @@
         "link": "/services/cloud-and-infrastructure",
         "desc": "Modernize, secure, and optimize your cloud",
         "details": "Modernize, secure, and optimize your cloud estate with Oakwood and Microsoft Azure for scalable, reliable infrastructure.",
-        "icon": "/assets/modern.svg",
+        "icon": "/assets/cloud.svg",
         "iconSize": "38px"
       },
       {
@@ -55,7 +55,7 @@
         "link": "/services/application-innovation",
         "desc": "Ship faster, run safer, and scale efficiently",
         "details": "Ship faster, run safer, and scale efficiently with modern applications on Azure built for performance and reliability.",
-        "icon": "/assets/app-innovation.svg",
+        "icon": "/assets/application.svg",
         "iconSize": "38px"
       },
       {
@@ -64,8 +64,8 @@
         "link": "/services/high-performance-computing-hpc",
         "desc": "Scale simulations, AI training, and PLM workloads",
         "details": "Scale simulations, AI training, and PLM workloads with the power of Azure HPC for maximum computational performance.",
-        "icon": "/assets/high.svg",
-        "iconSize": "38px"
+        "icon": "/assets/hpc.svg",
+        "iconSize": "30px"
       },
       {
         "id": "05",
@@ -82,7 +82,7 @@
         "link": "/services/managed-services",
         "desc": "Keep your Microsoft cloud running fast and secure",
         "details": "Keep your Microsoft cloud running fast, secure, and cost effective with Oakwood managed services and expert support.",
-        "icon": "/assets/mana.svg",
+        "icon": "/assets/services.svg",
         "iconSize": "38px"
       }
     ],
@@ -127,7 +127,7 @@
         "name": "Electronic Design Automation (EDA)",
         "link": "/industries/electronic-design-automation-eda",
         "desc": "Explore exciting opportunities to learn and connect with industry experts through our engaging webinars and conferences!",
-        "icon": "/assets/ele.svg"
+        "icon": "/assets/eda.svg"
       }
     ],
     "resources": [
@@ -150,7 +150,7 @@
         "name": "Structured Engagements",
         "link": "/resources/structured-engagements",
         "desc": "Oakwood’s SQL Server Migration to Azure engagement and helps organizations.",
-        "icon": "/assets/structured-engagement-megamenu-icon.svg"
+        "icon": "/assets/struct.svg"
       }
     ]
   }
