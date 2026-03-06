@@ -7,14 +7,9 @@
                 class="flex w-full group hover:bg-slate-50 transition-all duration-300 relative overflow-hidden  p-5 max-h-[150px] ">
                 <div class="flex flex-row ">
                     <!-- Icon Container (Left) -->
-                    <div class="pr-5">
-                        <div class="flex items-start justify-center relative">
-                            @if(industry?.iconSize){
-                            <img [src]="industry.icon" [alt]="industry.name" class="w-[38px]  object-cover" />
-                            } @else{
-                            <img [src]="industry.icon" [alt]="industry.name"
-                                class="w-[32px] h-[32px] object-contain shrink-0" />
-                            }
+                    <div class="pr-5 shrink-0">
+                        <div class="size-7 flex items-center justify-center">
+                            <img [src]="industry.icon" [alt]="industry.name" class="size-7 object-contain" />
                         </div>
                     </div>
                     <!-- Text Content (Right) -->
