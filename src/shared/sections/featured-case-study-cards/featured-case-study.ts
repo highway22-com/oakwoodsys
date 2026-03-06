@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, Input, OnInit, OnChanges, SimpleChanges, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, Input, OnInit, OnChanges, PLATFORM_ID, SimpleChanges, computed, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { RouterLink } from '@angular/router';
@@ -49,6 +50,7 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
   private readonly graphql = inject(GraphQLContentService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly platformId = inject(PLATFORM_ID);
   readonly titleText = 'Featured Case Study'
   readonly decodeHtmlEntities = decodeHtmlEntities;
 
@@ -66,6 +68,8 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
   readonly caseStudiesData = signal<FeaturedCaseStudyCardsView[]>([]);
   readonly loading = signal(true);
   readonly selectedIndex = signal(0);
+  /** Opacidad para fade del contenido (título, descripción, CTAs) al cambiar de slide. */
+  readonly textFadeOpacity = signal(1);
   /** Progreso de scroll 0 (arriba) a 1 (abajo) para transición de imagen. */
   readonly scrollProgress = signal(0);
   /** Clave que cambia en cada selección para forzar que la animación se ejecute. */
@@ -116,11 +120,20 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
 
   selectCaseStudy(index: number): void {
     const list = this.caseStudiesData();
-    if (index >= 0 && index < list.length) {
+    if (index < 0 || index >= list.length || index === this.selectedIndex()) return;
+    if (!isPlatformBrowser(this.platformId)) {
       this.selectedIndex.set(index);
       this.animationKey.update((k) => k + 1);
       this.cdr.markForCheck();
+      return;
     }
+    this.textFadeOpacity.set(0);
+    setTimeout(() => {
+      this.selectedIndex.set(index);
+      this.animationKey.update((k) => k + 1);
+      setTimeout(() => this.textFadeOpacity.set(1), 50);
+      this.cdr.markForCheck();
+    }, 200);
   }
 
   /** Carga blogs o case studies según isBlogs; filtra por categoría y tag. */

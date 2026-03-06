@@ -20,18 +20,20 @@
       md:items-center md:text-center"
   >
     <div class="w-full min-w-0 flex flex-col items-start text-left md:items-left md:text-left">
-      <!-- Title -->
-      <h1
-        class="text-white mb-4 md:mb-6 w-full max-w-[20ch] sm:max-w-[22ch] lg:max-w-[24ch] xl:max-w-[50vw] text-[clamp(2rem,6vw,4.4rem)] leading-[1.08] break-words"
-      >
-        {{ currentTitle() }}
-      </h1>
+      <div class="video-hero__text-fade w-full" [style.opacity]="textFadeOpacity()">
+        <!-- Title -->
+        <h1
+          class="text-white mb-4 md:mb-6 w-full max-w-[20ch] sm:max-w-[22ch] lg:max-w-[24ch] xl:max-w-[50vw] text-[clamp(2rem,6vw,4.4rem)] leading-[1.08] break-words"
+        >
+          {{ currentTitle() }}
+        </h1>
 
-      <!-- Description -->
-      <p class="md:text-xl text-white/80 pb-6 font-light w-full max-w-xl md:max-w-2xl lg:max-w-3xl leading-relaxed font-segoe break-words"
-        style="font-weight: 100;">
-        {{ currentDescription() }}
-      </p>
+        <!-- Description -->
+        <p class="md:text-xl text-white/80 pb-6 font-light w-full max-w-xl md:max-w-2xl lg:max-w-3xl leading-relaxed font-segoe break-words"
+          style="font-weight: 100;">
+          {{ currentDescription() }}
+        </p>
+      </div>
 
       <!-- Offer Details Cards -->
       @if (offerdetails && offerdetails.length > 0) {
@@ -87,7 +89,7 @@
       }
 
       <!-- CTA Buttons -->
-      <div class="flex flex-wrap gap-4 pb-8 sm:pb-12">
+      <div class="video-hero__text-fade flex flex-wrap gap-4 pb-8 sm:pb-12" [style.opacity]="textFadeOpacity()">
         @if (currentCtaPrimary(); as cta) {
         <div class="flex mb-3" >
           <app-button-primary [text]="cta.text" [link]="cta.link" [isBgDefault]="!cta.backgroundColor" />
