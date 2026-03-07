@@ -1,5 +1,5 @@
 <section
-  class="w-full bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900 min-h-screen overflow-x-hidden relative"
+  class=" bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900 lg:min-h-screen overflow-x-hidden relative"
   aria-labelledby="structured-engagements-title"
 >
   <div class="absolute inset-0 structured-engagements__bg-base"></div>
@@ -13,19 +13,19 @@
 
   <div class="px-4 sm:px-6 md:px-8 lg:px-18 relative z-10 py-12">
     <div class="text-center mb-8 sm:mb-10 md:mb-12">
-      <p class="text-base uppercase tracking-wider text-p-200 pb-4">
+      <p class="text-[var(--Primary-400,#53A2DD)] font-['Inter'] text-[14px] lg:text-[18px] font-semibold leading-[150%] uppercase tracking-wider text-p-200 pb-4">
         {{ section().label }}
       </p>
       <h2
         id="structured-engagements-title"
-        class="text-xl sm:text-4xl md:text-5xl lg:text-5xl text-white mb-6 sm:mb-8 md:mb-10"
+        class="text-white font-['Inter'] text-[32px] lg:text-[50px] font-normal leading-[110%] tracking-[-0.5px] mb-6 sm:mb-8 md:mb-10"
       >
         {{ getTitle(section()) }}
       </h2>
       @if (section().tabs?.length) {
         <div
           #tabList
-          class="structured-tabs flex w-full justify-start lg:justify-center gap-4 sm:gap-6 mb-8 sm:mb-10 md:mb-12 overflow-x-auto whitespace-nowrap pb-2"
+          class="structured-tabs flex w-full justify-start lg:justify-center gap-4 sm:gap-6 mb-8 sm:mb-10 md:mb-20 lg:mb-20 overflow-x-auto whitespace-nowrap pb-2"
         >
           @for (tab of section().tabs; track tab) {
             <button
@@ -61,7 +61,7 @@
     >
       @for (offer of filteredOffers(); track offer.id || $index) {
         <div
-          class="structured-engagements__card structured-engagements__card-border group cursor-pointer rounded-md min-w-[240px] sm:min-h-[300px] md:min-w-0 md:min-h-0 md:min-h-[unset] md:min-w-[unset]"
+          class="structured-engagements__card structured-engagements__card-border group cursor-pointer rounded-md min-w-[260px] sm:min-h-[20vh] md:min-w-0 md:min-h-0 md:min-h-[46vh] md:min-w-[unset]"
           [attr.data-border]="normalizeBorderColor(offer.borderColor)"
           [ngClass]="getOfferCardClasses(offer.borderColor, $index)"
         >
@@ -88,11 +88,11 @@
                 ></i>
               }
             </div>
-            <h3 class="text-base sm:text-lg text-white/90 pt-10 pb-4">
+            <h3 class="text-white font-['Inter'] text-[20px] lg:text-[26px] font-semibold leading-[130%] pt-10 pb-4">
               {{ offer.title }}
             </h3>
             <p
-              class="text-sm sm:text-[13px] text-gray-300 mb-3 font-segoe pb-2"
+              class="text-[var(--Secondary-25,#FBFBFB)] font-['Segoe_UI'] text-[14px] lg:text-[16px] font-normal leading-[140%] mb-3 font-segoe pb-2"
               style="line-height: 140%"
             >
               {{ offer.description }}
@@ -100,7 +100,7 @@
             @if (offer.link) {
               <a
                 [href]="offer.link"
-                class="mt-auto self-start text-sm sm:text-base text-gray-300 hover:text-white transition-colors duration-200 inline-flex items-center"
+                class="mt-auto self-start text-white font-['Inter'] text-[var(--Text-Sizes-Text-Regular,16px)] font-semibold leading-normal hover:text-white transition-colors duration-200 inline-flex items-center"
               >
                 {{ offer.linkText ?? "Learn more" }}
                 <svg
@@ -123,7 +123,7 @@
         <!-- Desktop: Button in grid position -->
         @if ($index === 0 && section().cta) {
           <div class="hidden lg:block lg:col-start-1 lg:row-start-2">
-            <div class="bg-p-700 inline-block mb-3">
+            <div class="bg-p-700 inline-block mb-3 px-4">
               <app-button-primary
                 [text]="section().cta?.text ?? ''"
                 [link]="section().cta?.link ?? '/structured-engagement'"

@@ -94,7 +94,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
   'microsoft-fabric-poc': {
 
 
-    title: 'Microsoft Fabric POC',
+    title: 'Microsoft Fabric PoC',
     summary: 'Stand up a production-ready Microsoft Fabric environment that consolidates data from multiple systems and enables unified business insights with a scalable, cost-effective architecture.',
     duration: '4 Weeks',
     delivery: 'Remote or Hybrid',
@@ -103,7 +103,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
       {
         id: 'overview',
         title: 'Overview',
-        body: 'This Microsoft Fabric POC delivers a production-oriented foundation that unifies data from priority sources and prepares your organization for enterprise analytics and BI expansion.'
+        body: 'This Microsoft Fabric PoC delivers a production-oriented foundation that unifies data from priority sources and prepares your organization for enterprise analytics and BI expansion.'
       },
       {
         id: 'what-you-will-gain',
@@ -118,7 +118,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
       {
         id: 'what-is-included',
         title: 'What Is Included',
-        body: 'The POC includes implementation and practical deliverables for immediate analytics readiness.',
+        body: 'The PoC includes implementation and practical deliverables for immediate analytics readiness.',
         bullets: [
           'Production implemented Fabric workspace.',
           'Two data sources transformed and ready for BI.',
@@ -576,7 +576,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
   ,
   'semisol-security-essentials-poc': {
 
-    title: 'Semisol security essentials POC',
+    title: 'Semisol security essentials PoC',
     summary: 'Validate Microsoft Sentinel as a cloud-native SIEM/SOAR foundation with a production-ready proof of concept focused on visibility, detection, and response.',
     duration: '4–6 Weeks',
     delivery: 'Remote or Hybrid',
@@ -612,7 +612,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
       {
         id: 'engagement-timeline',
         title: 'Engagement Timeline',
-        body: 'Week 1 – Discovery & Design: Review current security tooling and logging, define threat scenarios and compliance requirements, establish POC scope and success criteria. Weeks 2–3 – Build & Integration: Deploy Sentinel workspace, connect priority data sources, configure analytics rules and automation. Week 4 – Validation & Roadmap: Validate detections and workflows, review dashboards and alerts, deliver scaling roadmap. Overall Duration: 4–6 Weeks.'
+        body: 'Week 1 – Discovery & Design: Review current security tooling and logging, define threat scenarios and compliance requirements, establish PoC scope and success criteria. Weeks 2–3 – Build & Integration: Deploy Sentinel workspace, connect priority data sources, configure analytics rules and automation. Week 4 – Validation & Roadmap: Validate detections and workflows, review dashboards and alerts, deliver scaling roadmap. Overall Duration: 4–6 Weeks.'
       },
       {
         id: 'who-this-offer-is-for',
@@ -765,7 +765,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
 
   'azure-hpc-core-poc': {
 
-    title: 'Azure HPC core POC',
+    title: 'Azure HPC core PoC',
     summary: 'Assess your current HPC environment and validate feasibility, performance, and cost considerations for Azure HPC adoption.',
     duration: '3–5 Weeks',
     delivery: 'Remote or Hybrid',
@@ -783,7 +783,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
           'Migration Clarity: Clear understanding of how your current HPC environment aligns with Azure HPC capabilities.',
           'Performance Insights: Visibility into expected scalability, burst capacity, and performance potential.',
           'Cost Transparency: High-level cost comparison and optimization opportunities in Azure.',
-          'Reduced Risk: Informed decision-making before committing to a POC or full migration.'
+          'Reduced Risk: Informed decision-making before committing to a PoC or full migration.'
         ]
       },
       {
@@ -818,7 +818,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
         bullets: [
           'Access to relevant HPC infrastructure documentation and technical stakeholders.',
           'Understanding that this engagement focuses on assessment and planning (not workload migration).',
-          'Detailed performance testing or benchmarking may require a follow-on POC.',
+          'Detailed performance testing or benchmarking may require a follow-on PoC.',
           'Final scope dependent on environment size and complexity.'
         ]
       }
@@ -871,7 +871,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
         title: 'Who This Offer Is For',
         bullets: [
           'Organizations with on-premises or hybrid HPC environments considering migration to Azure.',
-          'Teams needing clarity on feasibility, performance, and costs before committing to POC or full migration.',
+          'Teams needing clarity on feasibility, performance, and costs before committing to PoC or full migration.',
           'IT and infrastructure leaders planning large-scale HPC cloud adoption.'
         ]
       },
@@ -891,7 +891,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
 
   'azure-hpc-max-poc': {
 
-    title: 'Azure HPC MAX POC',
+    title: 'Azure HPC MAX PoC',
     summary: 'Deploy and validate an enterprise-scale Azure HPC environment for complex, compute-intensive workloads with advanced networking and storage architectures.',
     duration: '12 Weeks + 2 Weeks Optimization Support',
     delivery: 'Remote or Hybrid',
@@ -945,7 +945,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
         bullets: [
           'Azure subscription with sufficient HPC compute capacity.',
           'Clearly defined large-scale workloads for testing.',
-          'Understanding that job execution volume will be limited during the POC.',
+          'Understanding that job execution volume will be limited during the PoC.',
           'Agreement to evaluate production deployment or decommissioning at conclusion.'
         ]
       }
@@ -955,7 +955,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
 
   'azure-hpc-pro-poc': {
 
-    title: 'Azure HPC PRO POC',
+    title: 'Azure HPC PRO PoC',
     summary: 'Deploy and validate a balanced Azure HPC environment for moderate workloads with container support, Slurm scheduling, and cost-effective scalability.',
     duration: '8 Weeks + 2 Weeks Optimization Support',
     delivery: 'Remote or Hybrid',
@@ -1009,7 +1009,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
         bullets: [
           'Access to existing HPC infrastructure documentation and stakeholders.',
           'Defined moderate-scale workloads for testing.',
-          'Understanding that job execution volume will be limited during the POC.',
+          'Understanding that job execution volume will be limited during the PoC.',
           'Agreement to evaluate production deployment or decommissioning at conclusion.'
         ]
       }

@@ -1,5 +1,10 @@
 /* Video Hero Component Styles */
 
+/* Fadeout del texto (título y descripción) al cambiar de slide */
+.video-hero__text-fade {
+  transition: opacity 0.5s ease-out;
+}
+
 /* Overlay: gradiente solo en esquina inferior izquierda (~30% de la pantalla).
    El resto es transparente para ver el video de fondo. */
 .video-hero__gradient {

@@ -1,3 +1,4 @@
+
 import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal, input, PLATFORM_ID, NgZone, computed, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
@@ -134,6 +135,15 @@ export default class Post implements OnInit, OnDestroy {
       { label: parentLabel, link: parentLink },
       { label: title || 'Article' },
     ];
+  }
+
+    /** Returns true if the contact section should be shown (not on case studies). */
+  shouldShowContactSection(): boolean {
+    if (isPlatformBrowser(this.platformId)) {
+      return !window.location.pathname.includes('resources/case-studies/');
+    }
+    // On server, default to true (or adjust as needed for SSR)
+    return true;
   }
 
   /** Carga relatedPosts por primaryTag (busca posts con el mismo tag). */

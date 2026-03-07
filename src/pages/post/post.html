@@ -310,11 +310,11 @@
   </section>
 
   <!-- Contact Form Section (oculta si Gen Content tiene showContactSection = false) -->
-
+  @if (shouldShowContactSection()) {
   <section
     class="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-r from-purple-50 via-blue-50 to-blue-100 overflow-x-hidden">
     <div class="container mx-auto px-1 sm:px-6 md:px-8 lg:px-12">
-      <div class="max-w-7xl mx-auto">
+ 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <!-- Left Column: Image -->
           <div class="relative w-full h-full    overflow-hidden">
@@ -379,9 +379,10 @@
             </form>
           </div>
         </div>
-      </div>
+   
     </div>
   </section>
+  }
 
   <!-- Related case studies -->
   @if ((p.relatedPosts && p.relatedPosts.length > 0) || (p.relatedBloqs && p.relatedBloqs.length > 0)) {

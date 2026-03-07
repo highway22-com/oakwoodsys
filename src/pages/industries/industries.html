@@ -157,12 +157,13 @@
         </div>
         @if (c.howWeImprove.cta) {
           <div class="flex justify-center">
-            <a
-              [routerLink]="c.howWeImprove.cta.link"
-              class="inline-block px-6 py-3 border-2 border-[color:var(--Secondary-800,#454545)] text-[color:var(--Secondary-900,#3D3D3D)] font-inter text-[16px] font-semibold leading-normal transition"
-            >
-              {{ c.howWeImprove.cta.text }}
-            </a>
+            <app-button-primary
+              [text]="c.howWeImprove.cta.text"
+              [link]="c.howWeImprove.cta.link"
+              [isTransparent]="true"
+              [borderColor]="'black'"
+              class="block w-full sm:w-auto"
+            />
           </div>
         }
       </div>
