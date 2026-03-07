@@ -291,10 +291,10 @@ export default class Resources implements OnInit {
     const c = this.pageContent()?.videoHero;
     return {
       videoUrls: c?.videoUrls?.length ? c.videoUrls : [
-        'https://oakwoodsys.com/wp-content/uploads/2025/12/home.mp4',
-        'https://oakwoodsys.com/wp-content/uploads/2025/12/1.mp4',
-        'https://oakwoodsys.com/wp-content/uploads/2025/12/2.mp4',
-        'https://oakwoodsys.com/wp-content/uploads/2025/12/4.mp4',
+        'https://oakwoodsystemsgroup.com/wp-content/uploads/2025/12/home.mp4',
+        'https://oakwoodsystemsgroup.com/wp-content/uploads/2025/12/1.mp4',
+        'https://oakwoodsystemsgroup.com/wp-content/uploads/2025/12/2.mp4',
+        'https://oakwoodsystemsgroup.com/wp-content/uploads/2025/12/4.mp4',
       ],
       title: c?.title ?? 'Turn Data and AI Into Real Business Outcomes',
       description: c?.description ?? 'Explore case studies and insights from projects built on Azure.',

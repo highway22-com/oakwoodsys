@@ -384,7 +384,7 @@ export default class Home implements OnInit {
           url: `${baseUrl}/`,
           logo: {
             '@type': 'ImageObject',
-            url: 'https://oakwoodsys.com/wp-content/uploads/2018/06/cropped-logo2-2.png',
+            url: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2018/06/cropped-logo2-2.png',
             width: 1270,
             height: 185,
           },

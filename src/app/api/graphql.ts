@@ -1,7 +1,7 @@
 import { gql } from 'apollo-angular';
 
 /**
- * Modelos y queries GraphQL para oakwoodsys.com/graphql (WPGraphQL + ACF).
+ * Modelos y queries GraphQL para oakwoodsystemsgroup.com/graphql (WPGraphQL + ACF).
  * Bloqs y Case Studies (lista): misma lógica genContentCategory(id: $categoryId, idType: SLUG) — filtro "blog" o "case-study".
  * Case Studies (detalle): caseStudyBy(slug).
  * Oakwood CMS: cmsPage(slug) devuelve el JSON de la página (home, services, about-us, blog, industries).

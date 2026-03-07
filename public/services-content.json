@@ -6,7 +6,7 @@
       "description": "Unify, govern, and activate your data estate to deliver real AI outcomes.",
       "backgroundImage": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1920&q=80",
       "videoUrls": [
-        "https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Data-Ai.mp4"
+        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Services-Data-Ai.mp4"
       ],
       "mainDescription": {
         "text": "Oakwood unites your data and accelerates your AI journey using Microsoft Fabric, Synapse, Power BI, and Azure AI. We help you turn insight into action so your organization can make better decisions and innovate faster."
@@ -15,7 +15,7 @@
         "tagline": "WHERE WE EXCEL",
         "title": "Service areas",
         "description": "Leading Microsoft Azure Solution Partner for Cloud Consulting Services",
-        "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2026/03/data-ai-service.png",
+        "backgroundImage": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/data-ai-service.png",
         "serviceAreas": [
           {
             "icon": "DataAIServiceCard1",
@@ -76,7 +76,7 @@
       "solutionAccelerators": {
         "title": "Solution accelerators",
         "description": "Oakwood engineers use tested data and AI frameworks that unify your data estate, automate quality and governance, and prepare your organization for analytics and AI at scale.",
-        "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2026/03/solution-accelerator-data-ai.png",
+        "backgroundImage": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/solution-accelerator-data-ai.png",
         "cards": [
           {
             "icon": "Card1",
@@ -159,7 +159,7 @@
         "tagline": "WHY OAKWOOD",
         "title": "Unlock the full potential of your data",
         "description": "Discover how Oakwood transforms your data into strategic advantage through trusted expertise, modern platforms, and cutting-edge AI capabilities.",
-        "imageSrc": "https://oakwoodsys.com/wp-content/uploads/2026/02/wi.png",
+        "imageSrc": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/wi.png",
         "features": [
           {
             "icon": "whyOakwoordDataAndAICardIcon1",
@@ -211,7 +211,7 @@
     },
     "cloud-and-infrastructure": {
       "videoUrls": [
-        "https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Clound-Infrastructure.mp4"
+        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Services-Clound-Infrastructure.mp4"
       ],
       "slug": "cloud-and-infrastructure",
       "title": "Cloud & Infrastructure",
@@ -224,7 +224,7 @@
         "tagline": "OUR SERVICES",
         "title": "Service areas",
         "description": "We specialize in delivering comprehensive cloud services designed to meet your specific business needs.",
-        "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2026/03/service-cloud-infrastructure.png",
+        "backgroundImage": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/service-cloud-infrastructure.png",
         "serviceAreas": [
           {
             "icon": "CloudServiceCard1",
@@ -283,7 +283,7 @@
       "solutionAccelerators": {
         "title": "Solution accelerators",
         "description": "Expedite your cloud journey with predefined frameworks and proven methodologies.",
-        "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2026/03/solution-accelerator-cloud-infrastructure.png",
+        "backgroundImage": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/solution-accelerator-cloud-infrastructure.png",
         "cards": [
           {
             "icon": "Card1",
@@ -374,7 +374,7 @@
     },
     "application-innovation": {
       "videoUrls": [
-        "https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Application-Innovation.mp4"
+        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Services-Application-Innovation.mp4"
       ],
       "slug": "application-innovation",
       "title": "Application Innovation",
@@ -387,7 +387,7 @@
         "tagline": "OUR SERVICES",
         "title": "Service areas",
         "description": "We specialize in application modernization, custom development, and integration to accelerate your digital transformation.",
-        "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2026/03/application-innovation-service.png",
+        "backgroundImage": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/application-innovation-service.png",
         "serviceAreas": [
           {
             "icon": "ApplicationInnovationServiceCard1",
@@ -446,7 +446,7 @@
       "solutionAccelerators": {
         "title": "Solution accelerators",
         "description": "Expedite your application and AI journey with predefined frameworks and proven methodologies.",
-        "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2026/03/solution-accelerator-application-innovation.png",
+        "backgroundImage": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/solution-accelerator-application-innovation.png",
         "cards": [
           {
             "icon": "Card1",
@@ -537,7 +537,7 @@
     },
     "high-performance-computing-hpc": {
       "videoUrls": [
-        "https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Hpc.mp4"
+        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Services-Hpc.mp4"
       ],
       "slug": "high-performance-computing-hpc",
       "title": "High Performance Computing (HPC)",
@@ -550,7 +550,7 @@
         "tagline": "OUR SERVICES",
         "title": "Service areas",
         "description": "We specialize in hybrid HPC, performance optimization, migration, and managed HPC services for Azure.",
-        "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2026/03/hpc-service.png",
+        "backgroundImage": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/hpc-service.png",
         "serviceAreas": [
           {
             "icon": "HighPerformanceComputingServiceCard1",
@@ -609,7 +609,7 @@
       "solutionAccelerators": {
         "title": "Solution accelerators",
         "description": "Our solution accelerators are pre-built modules for various HPC use cases, providing a jumpstart to your Azure HPC environment and reducing time to value.",
-        "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2026/03/solution-accelerator-hpc.png",
+        "backgroundImage": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/solution-accelerator-hpc.png",
         "cards": [
           {
             "icon": "Card1",
@@ -700,7 +700,7 @@
     },
     "modern-work": {
       "videoUrls": [
-        "https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Modern-Work.mp4"
+        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Services-Modern-Work.mp4"
       ],
       "slug": "modern-work",
       "title": "Modern Work",
@@ -713,7 +713,7 @@
         "tagline": "OUR SERVICES",
         "title": "Service areas",
         "description": "We specialize in Copilot readiness, Teams and SharePoint, endpoint security, and adoption to maximize your Microsoft 365 investment.",
-        "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2026/03/modern-work-service-2.png",
+        "backgroundImage": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/modern-work-service-2.png",
         "serviceAreas": [
           {
             "icon": "ModernWordServiceCard1",
@@ -772,7 +772,7 @@
       "solutionAccelerators": {
         "title": "Solution accelerators",
         "description": "Pre-built frameworks and playbooks to accelerate your Modern Work and Copilot journey.",
-        "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2026/03/solution-accelerator-modernwork.png",
+        "backgroundImage": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/solution-accelerator-modernwork.png",
         "cards": [
           {
             "icon": "Card1",
@@ -863,7 +863,7 @@
     },
     "managed-services": {
       "videoUrls": [
-        "https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Managed-Services.mp4"
+        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Services-Managed-Services.mp4"
       ],
       "slug": "managed-services",
       "title": "Managed Services",
@@ -876,7 +876,7 @@
         "tagline": "OUR SERVICES",
         "title": "Service areas",
         "description": "We specialize in Azure, M365, Intune, and end-to-end managed services to keep your cloud running at peak performance.",
-        "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2026/03/managed-services.png",
+        "backgroundImage": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/managed-services.png",
         "serviceAreas": [
           {
             "icon": "ManagedServicesServiceCard1",
@@ -935,7 +935,7 @@
       "solutionAccelerators": {
         "title": "Solution accelerators",
         "description": "Our proven methodologies, tools, and expertise accelerate your path to success. We help you unlock the full potential of your Microsoft investments, ensuring rapid deployment and optimal performance.",
-        "backgroundImage": "https://oakwoodsys.com/wp-content/uploads/2026/03/solution-accelerator-managed-services.png",
+        "backgroundImage": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/solution-accelerator-managed-services.png",
         "cards": [
           {
             "icon": "Card1",

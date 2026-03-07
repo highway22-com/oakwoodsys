@@ -5,164 +5,25 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# ========== PRIMERO: Proxy WordPress (antes que cualquier otra regla) ==========
-# Si estas rutas no van primero, caen en /* → index.html y Angular redirige a /404
-# Propuesta C: oakwoodsys.com → Netlify. /wp-admin, /graphql, etc. → proxy a 160.153.0.191
-[[redirects]]
-  from = "/wp-admin"
-  to = "http://160.153.0.191/wp-admin"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/wp-admin/"
-  to = "http://160.153.0.191/wp-admin/"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/wp-admin/*"
-  to = "http://160.153.0.191/wp-admin/:splat"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/wp-login.php"
-  to = "http://160.153.0.191/wp-login.php"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/graphql"
-  to = "http://160.153.0.191/graphql"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/wp-json/*"
-  to = "http://160.153.0.191/wp-json/:splat"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/wp-content/*"
-  to = "http://160.153.0.191/wp-content/:splat"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/wp-includes/*"
-  to = "http://160.153.0.191/wp-includes/:splat"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-# Resto de archivos PHP y rutas de WordPress en raíz
-[[redirects]]
-  from = "/wp-cron.php"
-  to = "http://160.153.0.191/wp-cron.php"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/wp-comments-post.php"
-  to = "http://160.153.0.191/wp-comments-post.php"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/wp-trackback.php"
-  to = "http://160.153.0.191/wp-trackback.php"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/xmlrpc.php"
-  to = "http://160.153.0.191/xmlrpc.php"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/wp-activate.php"
-  to = "http://160.153.0.191/wp-activate.php"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/wp-signup.php"
-  to = "http://160.153.0.191/wp-signup.php"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/wp-mail.php"
-  to = "http://160.153.0.191/wp-mail.php"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/wp-load.php"
-  to = "http://160.153.0.191/wp-load.php"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/license.txt"
-  to = "http://160.153.0.191/license.txt"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-[[redirects]]
-  from = "/readme.html"
-  to = "http://160.153.0.191/readme.html"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
-# index.php de WordPress (peticiones con ?p=123, etc.)
-[[redirects]]
-  from = "/index.php"
-  to = "http://160.153.0.191/index.php"
-  status = 200
-  force = true
-  headers = {Host = "oakwoodsys.com"}
-
+# oakwoodsys.com → Angular. WordPress en oakwoodsystemsgroup.com.
+# Proxy solo para API (GraphQL, contact) — evita CORS
 [[redirects]]
   from = "/api/graphql"
-  to = "http://160.153.0.191/graphql"
+  to = "https://oakwoodsystemsgroup.com/graphql"
   status = 200
   force = true
-  headers = {Host = "oakwoodsys.com"}
 
 [[redirects]]
   from = "/api/contact"
-  to = "http://160.153.0.191/wp-json/oakwood/v1/send-contact"
+  to = "https://oakwoodsystemsgroup.com/wp-json/oakwood/v1/send-contact"
   status = 200
   force = true
-  headers = {Host = "oakwoodsys.com"}
 
 [[redirects]]
   from = "/api/contact-fields"
-  to = "http://160.153.0.191/wp-json/oakwood/v1/contact-fields"
+  to = "https://oakwoodsystemsgroup.com/wp-json/oakwood/v1/contact-fields"
   status = 200
   force = true
-  headers = {Host = "oakwoodsys.com"}
 
 # Redirección /home → / (canonical home)
 [[redirects]]

@@ -14,7 +14,7 @@ import { SeoMetaService } from '../../app/services/seo-meta.service';
 export class Structured implements OnInit {
   private readonly seoMeta = inject(SeoMetaService);
   readonly heroVideoUrls = [
-    'https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Data-Ai.mp4'
+    'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Services-Data-Ai.mp4'
   ];
   readonly heroTitle = 'Structured Engagements';
   readonly heroDescription = 'Drive efficiency and innovation with tailored, strategic engagements designed to align technology solutions with your unique business goals.';

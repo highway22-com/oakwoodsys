@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
-const GRAPHQL_URL = 'https://oakwoodsys.com/graphql';
+const GRAPHQL_URL = 'https://oakwoodsystemsgroup.com/graphql';
 
 const BLOG_SLUGS_QUERY = `query GetSlugsForPrerender {
   blog: genContentCategory(id: "blog", idType: SLUG) {

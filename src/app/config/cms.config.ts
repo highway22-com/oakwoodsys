@@ -1,5 +1,5 @@
 /**
- * Propuesta C: Todo en oakwoodsys.com.
- * Netlify hace proxy de /wp-admin, /graphql, /wp-content a la IP de WordPress.
+ * CMS WordPress en oakwoodsystemsgroup.com.
+ * oakwoodsys.com → Angular. API GraphQL y contact se proxean a oakwoodsystemsgroup.com.
  */
-export const CMS_BASE_URL = 'https://oakwoodsys.com';
+export const CMS_BASE_URL = 'https://oakwoodsystemsgroup.com';
