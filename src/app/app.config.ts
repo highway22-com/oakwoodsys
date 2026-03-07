@@ -4,6 +4,7 @@ import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from 
 import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
+import { CMS_BASE_URL } from './config/cms.config';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideApollo } from 'apollo-angular';
@@ -15,7 +16,7 @@ import { GraphQLContentService } from './services/graphql-content.service';
 const GRAPHQL_URI_BROWSER = '/api/graphql';
 const GRAPHQL_URI_SERVER = isDevMode()
   ? 'http://localhost:4200/api/graphql'
-  : 'https://oakwoodsys.com/graphql';
+  : `${CMS_BASE_URL}/graphql`;
 
 export const appConfig: ApplicationConfig = {
   providers: [

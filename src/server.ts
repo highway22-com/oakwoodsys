@@ -1,4 +1,5 @@
-import { AngularAppEngine, createRequestHandler } from '@angular/ssr'
+import { AngularAppEngine, createRequestHandler } from '@angular/ssr';
+import { CMS_BASE_URL } from './app/config/cms.config';
 import { getContext } from '@netlify/angular-runtime/context.mjs'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
@@ -283,7 +284,7 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
 
     try {
       const body = await request.json();
-      const graphqlUrl = 'https://oakwoodsys.com/graphql';
+      const graphqlUrl = `${CMS_BASE_URL}/graphql`;
 
       const timeoutController = new AbortController();
       const timeoutId = setTimeout(() => timeoutController.abort(), 30000); // 30 second timeout
@@ -462,7 +463,7 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
     }
 
     // Fallback to external URL
-    const externalUrl = 'https://oakwoodsys.com/wp-content/uploads/2025/12/home-content.json';
+    const externalUrl = `${CMS_BASE_URL}/wp-content/uploads/2025/12/home-content.json`;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);

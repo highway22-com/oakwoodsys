@@ -42,43 +42,44 @@
   ],
   "partnerLogos": {
     "title": "Our Clients",
-     "partners": [
-       {
-            "name": "Microsoft",
-            "logo": "/assets/logos/microsoft.png",
-            "alt": "Microsoft"
-          },
-          {
-            "name": "ARCO",
-            "logo": "/assets/logos/arco.png",
-            "alt": "ARCO Construction"
-          },
-          {
-            "name": "Applied Materials",
-            "logo": "/assets/logos/applied-materials.png",
-            "alt": "Applied Materials"
-          },
-          {
-            "name": "Clarios",
-            "logo": "/assets/logos/clarios.png",
-            "alt": "Clarios"
-          },
-          {
-            "name": "onsemi",
-            "logo": "/assets/logos/onsemi.png",
-            "alt": "onsemi"
-          },
-          {
-            "name": "Duke University",
-            "logo": "/assets/logos/duke-university.png",
-            "alt": "Duke University"
-          },
-          {
-            "name": "BJC HealthCare",
-            "logo": "/assets/logos/bjc-healthcare.png",
-            "alt": "BJC HealthCare"
-          }]
-    },
+    "partners": [
+      {
+        "name": "Microsoft",
+        "logo": "/assets/logos/microsoft.png",
+        "alt": "Microsoft"
+      },
+      {
+        "name": "ARCO",
+        "logo": "/assets/logos/arco.png",
+        "alt": "ARCO Construction"
+      },
+      {
+        "name": "Applied Materials",
+        "logo": "/assets/logos/applied-materials.png",
+        "alt": "Applied Materials"
+      },
+      {
+        "name": "Clarios",
+        "logo": "/assets/logos/clarios.png",
+        "alt": "Clarios"
+      },
+      {
+        "name": "onsemi",
+        "logo": "/assets/logos/onsemi.png",
+        "alt": "onsemi"
+      },
+      {
+        "name": "Duke University",
+        "logo": "/assets/logos/duke-university.png",
+        "alt": "Duke University"
+      },
+      {
+        "name": "BJC HealthCare",
+        "logo": "/assets/logos/bjc-healthcare.png",
+        "alt": "BJC HealthCare"
+      }
+    ]
+  },
   "videoSectionTitle": "About Oakwood",
   "videoSectionDescription": "Learn about Oakwood, who we are, where we came from, and what drives us.",
   "videoSectionImage": "/assets/s-daa-h.jpg",
@@ -131,27 +132,27 @@
     {
       "title": "Ownership and accountability",
       "description": "Oakwood teams are trusted to own outcomes, not just complete tasks. Responsibilities are clearly defined, and decisions are made close to the work. When challenges arise, they surface early and are addressed directly and transparently.",
-      "icon":"ownership"
+      "icon": "ownership"
     },
     {
       "title": "Craftsmanship in delivery",
       "description": "Oakwood prioritizes thoughtful design, clean architecture, and disciplined execution. The team invests time upfront to understand environments, constraints, and long-term impact. This approach reduces rework and leads to more durable solutions.",
-      "icon":"craftsmanship"
+      "icon": "craftsmanship"
     },
     {
       "title": "Learning is part of the job",
       "description": "Technology evolves quickly, and Oakwood expects its teams to evolve with it. Continuous learning, certification, and hands-on experience are part of day-to-day work. Staying current is essential to maintaining client trust and delivering high-quality outcomes.",
-      "icon":"learning"
+      "icon": "learning"
     },
     {
       "title": "Flexibility supported by clear expectations",
-      "description":"Oakwood operates with flexibility while maintaining clear expectations around communication, delivery, and accountability. Teams balance autonomy with responsibility, ensuring work is performed thoughtfully, on time, and with attention to detail.",
-      "icon":"flexibility"
+      "description": "Oakwood operates with flexibility while maintaining clear expectations around communication, delivery, and accountability. Teams balance autonomy with responsibility, ensuring work is performed thoughtfully, on time, and with attention to detail.",
+      "icon": "flexibility"
     },
     {
       "title": "Built for long-term partnerships",
-      "description":"Oakwood is designed for repeat engagements and lasting relationships. Teams focus on building environments and solutions that can grow and adapt over time. Long-term success and client trust matter more than short-term wins.",
-      "icon":"partnerships"
+      "description": "Oakwood is designed for repeat engagements and lasting relationships. Teams focus on building environments and solutions that can grow and adapt over time. Long-term success and client trust matter more than short-term wins.",
+      "icon": "partnerships"
     }
   ],
   "insightsLabel": "FROM THE BLOG",

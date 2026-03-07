@@ -104,7 +104,7 @@ export default class Home implements OnInit {
   jsonContent: string = '';
   readonly jsonError = signal<string | null>(null);
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -183,7 +183,7 @@ export default class Home implements OnInit {
     };
     const mappedKey = iconMap[iconKey] || iconKey;
 
-    console.log(iconKey,"iconKey", mappedKey, "mappedKey");
+    console.log(iconKey, "iconKey", mappedKey, "mappedKey");
     const svg = SvgIcons[mappedKey] || '';
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   }
@@ -340,8 +340,8 @@ export default class Home implements OnInit {
           ? (heroSection.title[0] ?? '')
           : heroSection?.title && typeof heroSection.title === 'object'
             ? ([heroSection.title.line1, heroSection.title.line2]
-                .filter(Boolean)
-                .join(' ') ?? '')
+              .filter(Boolean)
+              .join(' ') ?? '')
             : DEFAULT_TITLE;
 
     const baseUrl = this.seoMeta.baseUrl;
@@ -453,7 +453,7 @@ export default class Home implements OnInit {
     } catch (error) {
       this.jsonError.set(
         'JSON inválido: ' +
-          (error instanceof Error ? error.message : 'Error desconocido'),
+        (error instanceof Error ? error.message : 'Error desconocido'),
       );
     }
   }

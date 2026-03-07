@@ -31,24 +31,59 @@
   status = 301
   force = true
 
-# Proxy GraphQL (CMS pages, case studies, etc.) – solo estático, sin servidor Node
+# Propuesta C: Proxy WordPress directo a IP (sin subdominios)
+# oakwoodsys.com → Netlify. /wp-admin, /graphql, etc. → proxy a 160.153.0.191
+[[redirects]]
+  from = "/wp-admin/*"
+  to = "http://160.153.0.191/wp-admin/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/wp-login.php"
+  to = "http://160.153.0.191/wp-login.php"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/graphql"
+  to = "http://160.153.0.191/graphql"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/wp-json/*"
+  to = "http://160.153.0.191/wp-json/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/wp-content/*"
+  to = "http://160.153.0.191/wp-content/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/wp-includes/*"
+  to = "http://160.153.0.191/wp-includes/:splat"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/api/graphql"
-  to = "https://oakwoodsys.com/graphql"
+  to = "http://160.153.0.191/graphql"
   status = 200
   force = true
 
-# Proxy formulario de contacto → WordPress wp_mail
 [[redirects]]
   from = "/api/contact"
-  to = "https://oakwoodsys.com/wp-json/oakwood/v1/send-contact"
+  to = "http://160.153.0.191/wp-json/oakwood/v1/send-contact"
   status = 200
   force = true
 
-# Configuración de campos del formulario (para formularios dinámicos)
 [[redirects]]
   from = "/api/contact-fields"
-  to = "https://oakwoodsys.com/wp-json/oakwood/v1/contact-fields"
+  to = "http://160.153.0.191/wp-json/oakwood/v1/contact-fields"
   status = 200
   force = true
 

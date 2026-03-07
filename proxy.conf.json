@@ -1,6 +1,6 @@
 {
   "/api/graphql": {
-    "target": "https://oakwoodsys.com",
+    "target": "http://160.153.0.191",
     "secure": true,
     "changeOrigin": true,
     "pathRewrite": {
@@ -8,7 +8,7 @@
     }
   },
   "/api/contact": {
-    "target": "https://oakwoodsys.com",
+    "target": "http://160.153.0.191",
     "secure": true,
     "changeOrigin": true,
     "pathRewrite": {
@@ -16,7 +16,7 @@
     }
   },
   "/api/contact-fields": {
-    "target": "https://oakwoodsys.com",
+    "target": "http://160.153.0.191",
     "secure": true,
     "changeOrigin": true,
     "pathRewrite": {
