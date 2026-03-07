@@ -334,6 +334,64 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
     }
   }
 
+  // API endpoint for contact form (proxy to WordPress)
+  if (pathname === '/api/contact') {
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Content-Type': 'application/json'
+    };
+    if (request.method === 'OPTIONS') {
+      return new Response('', { status: 200, headers: corsHeaders });
+    }
+    if (request.method !== 'POST') {
+      return Response.json({ error: 'Method not allowed' }, { status: 405, headers: corsHeaders });
+    }
+    try {
+      const body = await request.text();
+      const contactUrl = `${CMS_BASE_URL}/wp-json/oakwood/v1/send-contact`;
+      const response = await fetch(contactUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body
+      });
+      const data = await response.json().catch(() => ({}));
+      return Response.json(data, {
+        status: response.status,
+        headers: corsHeaders
+      });
+    } catch (error: any) {
+      console.error('[contact] Proxy error:', error);
+      return Response.json(
+        { success: false, message: error?.message ?? 'Failed to send contact' },
+        { status: 500, headers: corsHeaders }
+      );
+    }
+  }
+
+  // API endpoint for contact fields config (proxy to WordPress)
+  if (pathname === '/api/contact-fields') {
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Content-Type': 'application/json'
+    };
+    if (request.method === 'OPTIONS') {
+      return new Response('', { status: 200, headers: corsHeaders });
+    }
+    try {
+      const fieldsUrl = `${CMS_BASE_URL}/wp-json/oakwood/v1/contact-fields`;
+      const response = await fetch(fieldsUrl);
+      const data = await response.json().catch(() => []);
+      return Response.json(data, { headers: corsHeaders });
+    } catch (error: any) {
+      console.error('[contact-fields] Proxy error:', error);
+      return Response.json([], { status: 200, headers: corsHeaders });
+    }
+  }
+
   // API endpoint for home-content proxy (bypasses CORS)
   if (pathname === '/api/home-content') {
     // CORS headers for all responses
