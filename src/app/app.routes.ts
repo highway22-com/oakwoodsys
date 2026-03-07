@@ -98,8 +98,8 @@ export const routes: Routes = [
         path: '404',
         loadComponent: () => import('../pages/page404/page404')
     },
-    // {
-    //     path: '**',
-    //     loadComponent: () => import('../pages/page404/page404')
-    // }
+    {
+        path: '**',
+        loadComponent: () => import('../pages/page404/page404')
+    }
 ];
