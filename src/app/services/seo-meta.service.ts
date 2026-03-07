@@ -26,11 +26,11 @@ export interface SeoMetaConfig {
   keyphrase?: string;
 }
 
-const BASE_URL = 'https://oakwoodsystemsgroup.com';
+const BASE_URL = 'https://oakwoodsys.com';
 const DEFAULT_TITLE = 'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
 const DEFAULT_DESCRIPTION = 'As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.';
 const DEFAULT_KEYWORDS = 'Microsoft Solutions Partner, Azure Consulting, Azure Cloud services, St. Louis, Kansas City, cloud migration, Data & AI, Microsoft 365, Power BI, Azure Synapse, digital transformation, managed IT services';
-const DEFAULT_OG_IMAGE = 'https://oakwoodsystemsgroup.com/assets/og-image.png';
+const DEFAULT_OG_IMAGE = 'https://oakwoodsys.com/assets/og-image.png';
 
 /** Longitud recomendada para meta description (Google ~155 chars). */
 const META_DESCRIPTION_MAX_LENGTH = 155;

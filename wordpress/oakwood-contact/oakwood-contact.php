@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Oakwood Contact
  * Plugin URI: https://oakwoodsys.com
- * Description: Endpoint REST para enviar formularios de contacto vía wp_mail. Usado por Angular (oakwoodsystemsgroup.com).
+ * Description: Endpoint REST para enviar formularios de contacto vía wp_mail. Usado por Angular (oakwoodsys.com).
  * Version: 1.0.0
  * Author: Aetro
  * Author URI: https://oakwoodsys.com

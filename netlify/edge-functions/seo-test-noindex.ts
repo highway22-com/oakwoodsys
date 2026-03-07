@@ -3,8 +3,8 @@
  * staging y seo-test se indexan para probar SEO en Google.
  */
 const NOINDEX_HOSTS = [
-  "preview.oakwoodsystemsgroup.com",
-  "dev.oakwoodsystemsgroup.com",
+  "preview.oakwoodsys.com",
+  "dev.oakwoodsys.com",
 ];
 
 export default async (request: Request, context: { next: () => Promise<Response> }) => {
