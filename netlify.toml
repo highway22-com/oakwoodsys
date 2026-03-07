@@ -5,6 +5,13 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Redirección /home → / (canonical home)
+[[redirects]]
+  from = "/home"
+  to = "/"
+  status = 301
+  force = true
+
 # Redirección de dominio: www y HTTP → HTTPS en dominio principal
 [[redirects]]
   from = "https://www.oakwoodsys.com/*"
