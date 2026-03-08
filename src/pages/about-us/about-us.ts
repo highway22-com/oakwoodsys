@@ -127,7 +127,7 @@ export default class AboutUs implements OnInit {
     this.seoMeta.updateMeta({
       title: 'About Us | Oakwood Systems',
       description: 'Learn about Oakwood Systems, a Microsoft Solutions Partner driving business innovation and modernization with Azure and cloud services.',
-      canonicalPath: '/about-us',
+      canonicalPath: '/about',
     });
     this.http.get<AboutContent>('/about-content.json').subscribe({
       next: (data) => {
@@ -135,7 +135,7 @@ export default class AboutUs implements OnInit {
         this.seoMeta.updateMeta({
           title: `${data.heroTitle} | Oakwood Systems`,
           description: data.heroDescription,
-          canonicalPath: '/about-us',
+          canonicalPath: '/about',
         });
         this.loading.set(false);
       },

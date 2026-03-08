@@ -357,6 +357,9 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
         body
       });
       const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        console.warn('[contact] WordPress returned', response.status, JSON.stringify(data));
+      }
       return Response.json(data, {
         status: response.status,
         headers: corsHeaders

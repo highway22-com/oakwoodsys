@@ -71,7 +71,7 @@ export const routes: Routes = [
         component: StructuredOffer
     },
     {
-        path: 'about-us',
+        path: 'about',
         loadComponent: () => import('../pages/about-us/about-us')
     },
     {
