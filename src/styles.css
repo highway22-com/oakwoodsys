@@ -206,6 +206,32 @@ body.mobile-menu-open {
     display: none;
 }
 
+/* Custom blue scrollbar for filter sidebar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #2a7ebf #e0f0ff; /* thumb, track */
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  background: #e0f0ff;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #2a7ebf;
+  border-radius: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
+}
+
+/* Hide arrow buttons on featured case study scrollbar */
+.featured-case-study-scroll::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
+}
+
 
 
 .nav--body {

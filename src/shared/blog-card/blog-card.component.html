@@ -1,12 +1,13 @@
 <a [routerLink]="[linkBase(), slug()]"
     class="group bg-[#FFFFFF]/80 overflow-hidden transition-shadow duration-300 h-full flex flex-col hover:outline-gray-300 hover:outline hover:bg-p-30">
     <!-- Post Image -->
-    <div class="relative w-full min-w-[220px] max-w-[340px] sm:min-w-0 sm:max-w-none overflow-hidden bg-white px-2 pt-2 pb-0 sm:px-12 lg:px-6 lg:pt-6 sm:pt-2 py-5">
-        <div class="relative w-full aspect-square overflow-hidden ">
+    <div class="relative w-full min-w-[220px] max-w-[340px] sm:min-w-0 sm:max-w-none overflow-hidden bg-transparent group-hover:bg-p-30 transition-colors duration-300 px-2 pt-2 pb-0 sm:px-12 lg:px-6 lg:pt-6 sm:pt-2 py-5 ">
+        <div class="relative w-full aspect-video overflow-hidden" >
             <img [src]="effectiveImageUrl()" [alt]="imageAlt()"
-                class="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-110" />
+                class="w-full h-full object-cover object-top transition-transform duration-300 ease-out group-hover:scale-110" />
         </div>
     </div>
+
 
     <!-- Post Content -->
     <div class="p-5 sm:p-6 flex flex-col flex-grow">
@@ -14,14 +15,14 @@
         <div class="flex items-center mb-4 flex-wrap gap-2">
             <div class="flex items-center gap-2 flex-wrap">
                 @if (tag()) {
-                <span class="tag-badge mr-2">{{ decodeHtmlEntities(tag()!) }}</span>
+                <span class="tag-badge text-[#1D69AC] font-inter text-sm font-semibold leading-[150%] mr-2">{{ decodeHtmlEntities(tag()!) }}</span>
                 }
             </div>
-            <span class="text-xs text-s-600">{{ readingTimeMinutes() }} min read</span>
+            <span class="text-[#5D5D5D] font-inter text-xs font-normal leading-[150%]">{{ readingTimeMinutes() }} min read</span>
         </div>
 
         <!-- Title -->
-        <h3 class="text-lg sm:text-2xl text-s-900 mb-3 sm:mb-4 leading-tight pb-10">
+        <h3 class="text-black font-inter text-[24px] font-medium leading-[130%] tracking-[-0.24px] lg:text-[28px] lg:tracking-[-0.28px] mb-3 sm:mb-4  pb-10">
             {{ title() || 'Blog Post Title' }}
         </h3>
 
@@ -56,11 +57,11 @@
 
         <!-- Read More -->
         <div
-            class="font-inter font-semibold text-base leading-none tracking-normal text-[#454545] transition-colors duration-200 inline-flex items-center gap-3 mt-auto pb-2">
+            class="font-inter font-semibold text-base leading-none tracking-normal text-[#454545] group-hover:text-[#2A7EBF] transition-colors duration-200 inline-flex items-center gap-3 mt-auto pb-2">
             <span class="align-middle">{{ readMoreText() }}</span>
             <span class="align-middle flex items-center mt-[0.35px]">
                 <svg width="8" height="13" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6.83594 5.60547C7.19141 5.93359 7.19141 6.50781 6.83594 6.83594L1.58594 12.0859C1.25781 12.4414 0.683594 12.4414 0.355469 12.0859C0 11.7578 0 11.1836 0.355469 10.8555L4.97656 6.20703L0.355469 1.58594C0 1.25781 0 0.683594 0.355469 0.355469C0.683594 0 1.25781 0 1.58594 0.355469L6.83594 5.60547Z" fill="#454545"/>
+                  <path d="M6.83594 5.60547C7.19141 5.93359 7.19141 6.50781 6.83594 6.83594L1.58594 12.0859C1.25781 12.4414 0.683594 12.4414 0.355469 12.0859C0 11.7578 0 11.1836 0.355469 10.8555L4.97656 6.20703L0.355469 1.58594C0 1.25781 0 0.683594 0.355469 0.355469C0.683594 0 1.25781 0 1.58594 0.355469L6.83594 5.60547Z" fill="currentColor"/>
                 </svg>
             </span>
         </div>
