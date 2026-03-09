@@ -1,0 +1,341 @@
+/* ─────────────────────────────────────────────
+   Featured Case Study — Snap Scroll Component
+   ───────────────────────────────────────────── */
+
+/* ── SECTION SHELL ── */
+:host {
+  display: block;
+  position: relative;
+  height: 80vh;
+  overflow: hidden;
+}
+
+.fcs-snap-section {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  padding-left: clamp(16px, 4vw, 80px);
+  padding-right: clamp(16px, 4vw, 80px);
+}
+
+/* ── SNAP WRAPPER — the ONLY scrollable element ── */
+.fcs-snap-wrapper {
+  flex: 1;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.fcs-snap-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── EACH SLIDE ── */
+.fcs-case-slide {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 4px 1fr;
+  position: relative;
+  overflow: hidden;
+  padding: clamp(24px, 4vh, 56px) 0;
+  align-items: stretch;
+}
+
+/* ── IMAGE SIDE ── */
+.fcs-case-image {
+  padding: 0 clamp(16px, 3vw, 48px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fcs-case-image-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.fcs-case-image-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+  pointer-events: none;
+  user-select: none;
+}
+
+.fcs-case-slide:hover .fcs-case-image-inner img {
+  transform: scale(1.03);
+}
+
+.fcs-case-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ── DIVIDER (slim vertical progress bar) ── */
+.fcs-divider {
+  position: relative;
+  width: 4px;
+  background: #e2e8f0;
+  z-index: 10;
+  overflow: visible;
+}
+
+/* Filled (blue) portion — height driven by [style.height] binding */
+.fcs-divider-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-p-700, #1e3a5f);
+  transition: height 0.4s ease;
+  min-height: 0;
+}
+
+/* Chevron buttons — float centred on the bar */
+.fcs-chevron {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid #cbd5e1;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  padding: 0;
+  z-index: 20;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.fcs-chevron--up  { top: 10px; }
+.fcs-chevron--down { bottom: 10px; }
+
+.fcs-chevron:hover:not(:disabled) {
+  background: var(--color-p-700, #1e3a5f);
+  border-color: var(--color-p-700, #1e3a5f);
+  box-shadow: 0 2px 8px rgba(30,58,95,0.25);
+}
+
+.fcs-chevron:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.fcs-chevron svg {
+  width: 11px;
+  height: 11px;
+  stroke: var(--color-p-700, #1e3a5f);
+  transition: stroke 0.2s;
+}
+
+.fcs-chevron:hover:not(:disabled) svg {
+  stroke: #fff;
+}
+
+/* ── CONTENT SIDE ── */
+.fcs-case-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 56px 52px;
+  overflow: hidden;
+
+  /* Enter animation */
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
+}
+
+.fcs-case-image-inner {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* When slide is active: reveal both halves */
+.fcs-case-slide--active .fcs-case-content,
+.fcs-case-slide--active .fcs-case-image-inner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── CONTENT — label ── */
+.fcs-content-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--color-p-700, #1e3a5f);
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+
+/* ── CONTENT — pills ── */
+.fcs-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.fcs-pill {
+  padding: 5px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #444;
+  background: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.2px;
+}
+
+.fcs-pill--primary {
+  background: var(--color-p-700, #1e3a5f);
+  color: #fff;
+  border-color: var(--color-p-700, #1e3a5f);
+}
+
+/* ── CONTENT — heading ── */
+.fcs-content-heading {
+  font-size: clamp(28px, 3.5vw, 46px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+}
+
+/* ── CONTENT — description ── */
+.fcs-content-desc {
+  font-size: 15px;
+  line-height: 1.75;
+  color: #666;
+  max-width: 420px;
+  margin-bottom: 36px;
+}
+
+/* ── CONTENT — CTAs ── */
+.fcs-content-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.fcs-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
+  background: var(--color-p-700, #1e3a5f);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.fcs-btn-primary:hover {
+  background: var(--color-p-800, #162c48);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.fcs-btn-link {
+  font-size: 13px;
+  color: #888;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.2s;
+}
+
+.fcs-btn-link:hover {
+  color: #1a1a1a;
+}
+
+.fcs-btn-link svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+}
+
+/* ── PROGRESS BAR (fixed bottom) ── */
+.fcs-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--color-p-700, #1e3a5f);
+  transition: width 0.4s ease;
+  z-index: 100;
+}
+
+/* ── SLIDE COUNTER (fixed bottom-right) ── */
+.fcs-slide-counter {
+  position: absolute;
+  bottom: 18px;
+  right: 28px;
+  font-size: 12px;
+  color: #aaa;
+  z-index: 100;
+  letter-spacing: 1px;
+  pointer-events: none;
+}
+
+.fcs-slide-counter span {
+  color: var(--color-p-700, #1e3a5f);
+  font-weight: 700;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .fcs-case-slide {
+    grid-template-columns: 1fr;
+    grid-template-rows: 45vh 4px 1fr;
+  }
+
+  .fcs-divider {
+    width: 100%;
+    height: 4px;
+  }
+
+  .fcs-divider-fill {
+    top: 0; left: 0; bottom: 0;
+    width: var(--fill-w, 0%);
+    height: 100% !important;
+  }
+
+  .fcs-chevron--up  { top: 50%; left: 10px;  transform: translateY(-50%) rotate(90deg); }
+  .fcs-chevron--down { top: 50%; right: 10px; left: auto; transform: translateY(-50%) rotate(90deg); }
+
+  .fcs-case-content {
+    padding: 28px 20px;
+  }
+
+  .fcs-content-heading {
+    font-size: clamp(22px, 6vw, 32px);
+  }
+}

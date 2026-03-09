@@ -1,0 +1,100 @@
+<section class="fcs-snap-section" aria-labelledby="fcs-snap-heading">
+
+  <!-- ── SNAP WRAPPER - the only scrolling element ── -->
+  <div class="fcs-snap-wrapper" #snapWrapper>
+
+    @for (item of items(); track trackByIndex($index); let slideIdx = $index) {
+
+    <div
+      class="fcs-case-slide"
+      [class.fcs-case-slide--active]="activeIndex() === slideIdx"
+      [attr.data-index]="slideIdx"
+      #caseSlide
+    >
+
+      <!-- ── LEFT: IMAGE ── -->
+      <div class="fcs-case-image">
+        <div class="fcs-case-image-inner">
+          <img
+            [src]="item.image.url"
+            [alt]="item.image.alt"
+            loading="lazy"
+          />
+          <div class="fcs-case-image-overlay" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <!-- ── CENTRE: DIVIDER (acts as fake scrollbar) ── -->
+      <div class="fcs-divider" aria-hidden="true">
+        <!-- Progress fill -->
+        <div class="fcs-divider-fill" [style.height]="progressWidth()"></div>
+      </div>
+
+      <!-- ── RIGHT: CONTENT (styled like featured-case-study-cards) ── -->
+      <div class="fcs-case-content">
+
+        <!-- Label -->
+        <p class="fcs-content-label">Featured Case Study</p>
+
+        <!-- Pills / tags -->
+        @if (item.pills?.length) {
+        <div class="fcs-pills">
+          @for (pill of item.pills; track $index; let pillFirst = $first) {
+          <span class="fcs-pill" [class.fcs-pill--primary]="pillFirst">
+            {{ pill }}
+          </span>
+          }
+        </div>
+        }
+
+        <!-- Title -->
+        <h2 id="fcs-snap-heading" class="fcs-content-heading">
+          {{ item.title }}
+        </h2>
+
+        <!-- Description -->
+        <div
+          class="fcs-content-desc"
+          [innerHTML]="item.description"
+        ></div>
+
+        <!-- CTAs -->
+        <div class="fcs-content-actions">
+          @if (item.cta.primary.link) {
+          <a
+            [routerLink]="item.cta.primary.link"
+            class="fcs-btn-primary"
+          >
+            {{ item.cta.primary.text }}
+          </a>
+          }
+          @if (item.cta.secondary) {
+          <a
+            [routerLink]="item.cta.secondary.link"
+            class="fcs-btn-link"
+          >
+            {{ item.cta.secondary.text }}
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+          }
+        </div>
+
+      </div><!-- /fcs-case-content -->
+
+    </div><!-- /fcs-case-slide -->
+
+    }
+
+  </div><!-- /fcs-snap-wrapper -->
+
+  ── PROGRESS BAR ──
+  <div class="fcs-progress-bar" [style.width]="progressWidth()" aria-hidden="true"></div>
+
+  <!-- ── SLIDE COUNTER ── -->
+  <div class="fcs-slide-counter" aria-live="polite">
+    <span>{{ pad(activeIndex() + 1) }}</span> / {{ pad(total) }}
+  </div>
+
+</section>

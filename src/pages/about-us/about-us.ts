@@ -10,6 +10,7 @@ import { TrustedBySectionComponent } from '../../shared/sections/trusted-by/trus
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
 import { ScrollAnimationComponent } from '../../shared/scroll-animation-component/scroll-animation.component';
 import { CommonModule } from '@angular/common';
+import { FeaturedCaseStudySnapComponent } from '../../shared/sections/featured-case-study-snap/featured-case-study-snap';
 
 export interface AboutFeature {
   icon: string;
@@ -77,7 +78,7 @@ export interface AboutContent {
 
 @Component({
   selector: 'app-about-us',
-  imports: [CommonModule, VideoHero, LatestInsightsSectionComponent, CtaSectionComponent, ButtonPrimaryComponent, ScrollAnimationComponent, YoutubePlayerComponent, SafeUrlPipe,TrustedBySectionComponent],
+  imports: [CommonModule, VideoHero, LatestInsightsSectionComponent, CtaSectionComponent, ButtonPrimaryComponent, ScrollAnimationComponent, YoutubePlayerComponent, SafeUrlPipe, TrustedBySectionComponent, FeaturedCaseStudySnapComponent],
   templateUrl: './about-us.html',
   styleUrl: './about-us.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
