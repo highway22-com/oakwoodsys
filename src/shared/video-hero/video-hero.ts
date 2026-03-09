@@ -31,7 +31,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   @Input() description: string | string[] = '';
   /** CTA principal: objeto único o array (uno por video, se muestra según currentVideoIndex). */
   @Input() ctaPrimary?: { text: string; link: string; backgroundColor?: string } | { text: string; link: string; backgroundColor?: string }[];
-  @Input() ctaSecondary?: { text: string; link: string; borderColor?: string };
+  @Input() ctaSecondary?: { text: string; link: string; queryParams?: Record<string, string>; borderColor?: string };
   /** Offer details cards (duration, delivery, pricing, category). */
   @Input() offerdetails?: { offer: string; offervalue: string; icon?: string }[];
   /** Centra título, descripción y CTAs (ej. página Contact Us). */

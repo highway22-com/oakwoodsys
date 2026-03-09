@@ -14,6 +14,8 @@ export class ButtonPrimaryComponent {
   readonly text = input<string>('');
   /** Si se define, se renderiza como enlace con routerLink en lugar de botón. */
   readonly link = input<string | undefined>(undefined);
+  /** Query params opcionales (evita codificar ? y = en el path). */
+  readonly queryParams = input<Record<string, string> | undefined>(undefined);
   /** Color de fondo (ej. hex o var(--color-p-700)). Si no se define, se usa var(--color-p-700). */
   readonly backgroundColor = input<string | undefined>(undefined);
   /** Si es true, se usa el color por defecto del tema (var(--color-p-700)); si es false, se usa backgroundColor si se pasó. */

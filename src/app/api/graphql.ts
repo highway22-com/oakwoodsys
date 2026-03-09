@@ -298,6 +298,7 @@ const GEN_CONTENTS_FIELDS_SHORT = `
   id
   title
   excerpt
+  content
   slug
   date
   tags

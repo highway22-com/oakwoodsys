@@ -172,7 +172,13 @@ export default class Services implements OnInit, OnDestroy {
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   }
 
- 
+  /** ctaSecondary con link (path) + queryParams usando slug del servicio. */
+  getCtaSecondary(c: ServiceContent): { text: string; link: string; queryParams?: Record<string, string>; borderColor?: string } | undefined {
+    const s = c.cta?.secondary;
+    if (!s) return undefined;
+    const queryParams = c.slug ? { primaryTag: c.slug } : undefined;
+    return { text: s.text, link: s.link, queryParams, borderColor: s.borderColor };
+  }
 
   ngOnInit() {
 

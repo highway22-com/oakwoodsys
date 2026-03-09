@@ -119,7 +119,15 @@ export default class Industries implements OnInit, OnDestroy {
     return { text: p.text, link: p.link, backgroundColor: p.backgroundColor ?? '#1D69AC' };
   }
 
-    getIconSvg(iconKey: string) {
+  /** ctaSecondary con link (path) + queryParams usando slug del industry. */
+  getCtaSecondary(c: IndustryContent): { text: string; link: string; queryParams?: Record<string, string>; borderColor?: string } | undefined {
+    const s = c.cta?.secondary;
+    if (!s) return undefined;
+    const queryParams = c.slug ? { primaryTag: c.slug } : undefined;
+    return { text: s.text, link: s.link, queryParams, borderColor: s.borderColor };
+  }
+
+  getIconSvg(iconKey: string) {
       const svg = SvgIcons[iconKey] || '';
       return this.sanitizer.bypassSecurityTrustHtml(svg);
     }
