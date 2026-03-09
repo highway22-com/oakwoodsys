@@ -9,7 +9,7 @@
 </div>
 <!-- Blog Posts Section -->
 <section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24">
-    <div class="px-4 sm:px-6 md:px-8 lg:px-36">
+    <div class="px-4 sm:px-6 md:px-8 lg:px-20">
         <!-- Loading State -->
 
         <!-- Two Column Layout -->
@@ -23,7 +23,7 @@
                         <h2 class="text-base font-semibold uppercase tracking-wider text-gray-700/60 mb-6">
                             Filter by
                         </h2>
-                        <div class="flex flex-col gap-3.5 py-2 max-h-[calc(100vh-10rem)] overflow-y-auto" aria-label="Service lines">
+                        <div class="flex flex-col gap-3.5 py-2 max-h-[calc(100vh-10rem)] overflow-y-auto custom-scrollbar" aria-label="Service lines">
                             @for (item of serviceLines(); track item.link) {
                             <button type="button" (click)="toggleTagFilter(item.slug)" class="filter-tag-btn">
                                 <span class="filter-tag" [class.filter-tag--selected]="isTagSelected(item.slug)">{{
