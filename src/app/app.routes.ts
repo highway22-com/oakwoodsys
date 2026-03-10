@@ -87,7 +87,7 @@ export const routes: Routes = [
         component: Login
     },
     {
-        path: 'carrers',
+        path: 'careers',
         loadComponent: () => import('../pages/carrers/carrers')
     },
     {
