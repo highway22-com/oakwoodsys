@@ -62,3 +62,22 @@
   opacity: 0.9;
   border-radius: 0;
 }
+
+/* ── Desktop sticky scroll layout ── */
+
+/* Outer: height 200svh provides scroll distance; inner sticks */
+.fcs-desktop-scroll-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.fcs-desktop-sticky {
+  position: sticky;
+  top: 12.5vh; /* (100vh - 75vh) / 2 — centres the panel in the viewport */
+  min-height: 75vh;
+}
+
+/* Smooth cross-fade between panels on scroll */
+.fcs-desktop-sticky .fcs-fade-panel {
+  transition: opacity 400ms ease-out;
+}
