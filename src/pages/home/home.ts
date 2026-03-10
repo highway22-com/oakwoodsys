@@ -79,6 +79,14 @@ export default class Home implements OnInit {
   goToContactUs() {
     this.router.navigate(['/contact-us']);
   }
+
+  navigateTo(link: string) {
+    if (link?.startsWith('http')) {
+      window.open(link, '_blank');
+    } else {
+      this.router.navigateByUrl(link);
+    }
+  }
   readonly FeaturedCaseStudyCategory = FeaturedCaseStudyCategory;
   readonly content = signal<CmsPageContent | null>(null);
   readonly loading = signal(true);
