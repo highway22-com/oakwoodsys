@@ -80,8 +80,9 @@ export default class Home implements OnInit {
     this.router.navigate(['/contact-us']);
   }
 
-  navigateTo(link: string) {
-    if (link?.startsWith('http')) {
+  navigateTo(link: string | undefined) {
+    if (!link) return;
+    if (link.startsWith('http')) {
       window.open(link, '_blank');
     } else {
       this.router.navigateByUrl(link);
