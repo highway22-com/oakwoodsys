@@ -1,5 +1,5 @@
 import { computed, effect, OnDestroy } from '@angular/core';
- 
+
 import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule, NgClass } from '@angular/common';
@@ -65,10 +65,7 @@ export class Footer implements OnInit, OnDestroy {
 
   readonly footerData = signal<FooterSection | null>(null);
   readonly loading = signal(true);
-   // Track which group is open (mobile only)
   readonly openGroupIdx = signal<number | null>(null);
-
-  // Detect if mobile (Tailwind: <1024px)
   readonly isMobile = signal(false);
 
   private resizeHandler: (() => void) | null = null;
@@ -131,7 +128,7 @@ export class Footer implements OnInit, OnDestroy {
     ];
   }
 
-  
+
 
   private loadFooterFromHome() {
     this.loading.set(false);
@@ -143,7 +140,7 @@ export class Footer implements OnInit, OnDestroy {
     if (!data) return null;
     // Si el contenido de la página es directamente la sección footer (type === 'footer')
     if ((data as { type?: string }).type === 'footer') {
-    
+
       return data as unknown as FooterSection;
     }
     // Si viene dentro de sections[] (p. ej. { page: 'footer', sections: [{ type: 'footer', ... }] })
