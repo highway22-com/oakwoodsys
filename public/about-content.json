@@ -88,12 +88,12 @@
   "teamDescription": "Oakwood's leadership team brings decades of experience, expertise, and a passion for technology to help our clients achieve their goals.",
   "teamMembers": [
     {
-      "name": "Charles Ruecker",
+      "name": "Charles Windsor",
       "title": "CEO",
       "image": "/assets/people/charles.png"
     },
     {
-      "name": "Jeff Rudden",
+      "name": "Jeff Reddin",
       "title": "VP, Sales",
       "image": "/assets/people/jeff.png"
     },
@@ -114,7 +114,7 @@
     },
     {
       "name": "John Trease",
-      "title": "Director of App & AI",
+      "title": "Director of App Innovation & AI",
       "image": "/assets/people/john.png"
     },
     {

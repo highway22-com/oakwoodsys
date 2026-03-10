@@ -96,7 +96,8 @@
         @if (ctaSecondary) {
         <!-- Secondary Button -->
         <div class="flex  mb-3">
-          <app-button-primary [text]="ctaSecondary.text" [link]="ctaSecondary.link" [isTransparent]="true"
+          <app-button-primary [text]="ctaSecondary.text" [link]="ctaSecondary.link"
+            [queryParams]="ctaSecondary.queryParams ?? {}" [isTransparent]="true"
             [borderColor]="'white'" />
         </div>
 
