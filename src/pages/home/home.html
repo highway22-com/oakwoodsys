@@ -92,7 +92,8 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
         @for (service of section.services; track service.id) {
         <article
-          class="group  border border-gray-200/20 p-8 sm:p-8 lg:p-10  hover:border-gray-200/60 hover:bg-white transition-shadow duration-300 cursor-pointer">
+          class="group  border border-gray-200/20 p-8 sm:p-8 lg:p-10  hover:border-gray-200/60 hover:bg-white transition-shadow duration-300 cursor-pointer"
+          (click)="navigateTo(service.link)">
          <div class="pb-16 shrink-0">
             <div class="size-15 lg:size-22 flex items-center justify-center bg-p-30 rounded-lg">
               <img [src]="service.icon" [alt]="service.title" class="size-8 lg:size-10" />
