@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://oakwoodsys.com/</loc>
@@ -5,13 +6,23 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://oakwoodsys.com/resources</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/careers</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://oakwoodsys.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://oakwoodsys.com/contact-us</loc>
-    <changefreq>monthly</changefreq>
+    <loc>https://oakwoodsys.com/resources/case-studies</loc>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
@@ -20,14 +31,9 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://oakwoodsys.com/resources</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/case-studies</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://oakwoodsys.com/contact-us</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://oakwoodsys.com/services</loc>
@@ -101,11 +107,6 @@
   </url>
   <url>
     <loc>https://oakwoodsys.com/structured-engagement</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/careers</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
