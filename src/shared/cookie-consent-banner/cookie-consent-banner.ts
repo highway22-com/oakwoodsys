@@ -23,7 +23,7 @@ export class CookieConsentBanner {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      if (sessionStorage.getItem(STORAGE_KEY) !== 'true') {
+      if (localStorage.getItem(STORAGE_KEY) !== 'true') {
         this.visible.set(true);
       }
     }
@@ -31,7 +31,7 @@ export class CookieConsentBanner {
 
   accept(): void {
     if (isPlatformBrowser(this.platformId)) {
-      sessionStorage.setItem(STORAGE_KEY, 'true');
+      localStorage.setItem(STORAGE_KEY, 'true');
       this.visible.set(false);
     }
   }
