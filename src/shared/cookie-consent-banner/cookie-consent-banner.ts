@@ -19,13 +19,13 @@ const STORAGE_KEY = 'oakwood-cookie-consent';
 })
 export class CookieConsentBanner {
   private readonly platformId = inject(PLATFORM_ID);
-
-  readonly visible = signal(true);
+  readonly visible = signal(false);
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      this.visible.set(!(stored === 'true'));
+      if (localStorage.getItem(STORAGE_KEY) !== 'true') {
+        this.visible.set(true);
+      }
     }
   }
 
