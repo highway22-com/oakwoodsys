@@ -258,7 +258,14 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
   }
   const pathname = new URL(request.url).pathname;
 
-  // Servir sitemap.xml androbots.txt 
+  // WordPress admin: redirigir a oakwoodsystemsgroup.com
+  if (pathname === '/wp-admin' || pathname === '/wp-admin/' || pathname.startsWith('/wp-admin/')) {
+    const targetPath = pathname === '/wp-admin' || pathname === '/wp-admin/' ? '' : pathname.slice(10);
+    const targetUrl = `https://oakwoodsystemsgroup.com/wp-admin${targetPath ? '/' + targetPath : '/'}`;
+    return Response.redirect(targetUrl, 301);
+  }
+
+  // Servir sitemap.xml y robots.txt 
   if (pathname === '/sitemap.xml' || pathname === '/robots.txt') {
     const fileName = pathname.slice(1);
     const contentType = pathname === '/sitemap.xml' ? 'application/xml' : 'text/plain';
