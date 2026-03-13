@@ -1,4 +1,4 @@
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import {
   ChangeDetectionStrategy,
@@ -61,6 +61,7 @@ export function splitTwoLinerTitle(title: string): [string, string] {
     CommonModule,
     NgClass,
     FormsModule,
+    RouterLink,
     VideoHero,
     ScrollAnimationComponent,
     FeaturedCaseStudySectionComponent,
@@ -75,6 +76,7 @@ export function splitTwoLinerTitle(title: string): [string, string] {
 })
 export default class Home implements OnInit {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   goToContactUs() {
     this.router.navigate(['/contact-us']);
@@ -104,7 +106,7 @@ export default class Home implements OnInit {
   readonly posts = signal<any>(null);
   readonly error = signal<any>(null);
   readonly structuredData = signal<any>(null);
-  readonly isAdmin = signal(false);
+  readonly editMode = signal(false);
   readonly saving = signal(false);
   readonly saveSuccess = signal(false);
   readonly panelVisible = signal(false);
@@ -116,10 +118,11 @@ export default class Home implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('admin_token');
-      this.isAdmin.set(!!token);
-    }
+    this.route.queryParams
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        this.editMode.set(params['edit'] === 'true');
+      });
 
     // Contenido desde servicio (precargado en APP_INITIALIZER vía homePageContent$)
     this.graphql.homePageContent$
@@ -163,16 +166,8 @@ export default class Home implements OnInit {
       if (urls.length > 0) {
         this.videoUrls.set(urls);
       }
-    } else if (data.videoUrls && data.videoUrls.length > 0) {
-      const links = data.videoUrls.filter(
-        (url): url is string =>
-          typeof url === 'string' && url.trim().length > 0,
-      );
-      if (links.length > 0) {
-        this.videoUrls.set(links);
-      }
     }
-    if (this.isAdmin()) {
+    if (this.editMode()) {
       this.jsonContent = JSON.stringify(data, null, 2);
     }
     this.updateMetadata(data);
@@ -180,22 +175,6 @@ export default class Home implements OnInit {
     this.loading.set(false);
   }
 
-  getIconSvg(iconKey: string) {
-    // Map PNG paths to SVG icon keys
-    const iconMap: { [key: string]: string } = {
-      '/assets/ai.svg': 'Data_AI_Service',
-      '/assets/cloud.svg': 'Cloud_Infrastructure_Service',
-      '/assets/application.svg': 'Application_Innovation_Service',
-      '/assets/hpc.svg': 'High_Performance_Computing_Service',
-      '/assets/modern.svg': 'Modern_Workplace_Service',
-      '/assets/services.svg': 'Managed_Services',
-    };
-    const mappedKey = iconMap[iconKey] || iconKey;
-
-    console.log(iconKey, "iconKey", mappedKey, "mappedKey");
-    const svg = SvgIcons[mappedKey] || '';
-    return this.sanitizer.bypassSecurityTrustHtml(svg);
-  }
   getSection(type: string) {
     return this.content()?.sections.find((s) => s.type === type);
   }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnInit, OnDestroy, AfterViewInit, signal, inject, ViewChild, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, OnDestroy, AfterViewInit, signal, inject, ViewChild, PLATFORM_ID, input, effect } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -13,7 +13,6 @@ import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-s
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { TrustedBySectionComponent } from "../../shared/sections/trusted-by/trusted-by";
 import { SvgIcons } from '../../shared/service-icons/service-icons';
-import { effect } from '@angular/core';
 
 interface ServiceArea {
   icon: string;
@@ -131,7 +130,7 @@ interface ServiceContent {
   };
 }
 
-interface ServicesContent {
+export interface ServicesContent {
   services: {
     [key: string]: ServiceContent;
   };
@@ -157,6 +156,11 @@ export default class Services implements OnInit, OnDestroy {
   private routeSubscription?: Subscription;
   private autoScrollInterval?: any;
   private readonly router = inject(Router);
+  /** Cuando se proporciona, se usa en lugar de cargar (para preview en edit) */
+  readonly contentOverride = input<ServicesContent | null>(null);
+  /** Slug del service a mostrar en preview (ej: data-ai-solutions) */
+  readonly slugOverride = input<string | null>(null);
+
   readonly slug = signal<string | null>(null);
   readonly content = signal<ServiceContent | null>(null);
   readonly loading = signal(true);
@@ -167,6 +171,19 @@ export default class Services implements OnInit, OnDestroy {
   readonly structuredEngagementSection = signal<any>(null);
   readonly showStructuredEngagements = signal(true);
  
+  constructor() {
+    effect(() => {
+      const override = this.contentOverride();
+      const slugOverride = this.slugOverride();
+      if (override?.services && slugOverride && override.services[slugOverride]) {
+        const serviceContent = override.services[slugOverride];
+        this.content.set(serviceContent);
+        this.slug.set(slugOverride);
+        this.loading.set(false);
+      }
+    });
+  }
+
   getIconSvg(iconKey: string) {
     const svg = SvgIcons[iconKey] || '';
     return this.sanitizer.bypassSecurityTrustHtml(svg);
@@ -186,14 +203,16 @@ export default class Services implements OnInit, OnDestroy {
     // Set default meta description for services pages
     this.setDefaultMetadata();
 
-    // Load structured engagement section from JSON
-    this.http.get<any>('/structured-engagement-section.json').subscribe({
+    // Load structured engagement section from CMS (GraphQL) or fallback to JSON
+    this.graphql.getStructuredEngagementsContent().subscribe({
       next: (data) => {
-        this.structuredEngagementSection.set(data);
+        if (data) {
+          this.structuredEngagementSection.set(data);
+        } else {
+          this.loadStructuredEngagementFromStaticFile();
+        }
       },
-      error: (error) => {
-        console.error('Error loading structured engagement section:', error);
-      }
+      error: () => this.loadStructuredEngagementFromStaticFile(),
     });
 
     // Subscribe to route params to handle navigation changes
@@ -221,6 +240,13 @@ export default class Services implements OnInit, OnDestroy {
         this.structuredEngagementSection.set({ ...section });
       }
       this.loadContent();
+    });
+  }
+
+  private loadStructuredEngagementFromStaticFile() {
+    this.http.get<any>('/structured-engagement-section.json').subscribe({
+      next: (data) => this.structuredEngagementSection.set(data),
+      error: (err) => console.error('Error loading structured engagement section:', err),
     });
   }
 
@@ -322,40 +348,56 @@ export default class Services implements OnInit, OnDestroy {
   }
 
   private loadContent() {
+    if (this.contentOverride()) {
+      this.loading.set(false);
+      return;
+    }
     this.loading.set(true);
     this.error.set(null);
 
-    // Load services content from JSON
-    this.http.get<ServicesContent>('/services-content.json').subscribe({
+    this.graphql.getServicesContent().subscribe({
       next: (data) => {
-        const slugValue = this.slug();
-        if (slugValue && data.services[slugValue]) {
-          const serviceContent = data.services[slugValue];
-          this.content.set(serviceContent);
-          this.updateMetadata(serviceContent);
-          this.updateStructuredData(serviceContent);
-          // Si no hay slugs definidos en el JSON, obtener los 2 primeros case studies por primary tag = slug del servicio
-          if (!serviceContent.featuredCaseStudySlugs?.length && slugValue) {
-            this.graphql.getCaseStudySlugsByTag(slugValue, 2).subscribe({
-              next: (slugs) => this.featuredSlugsFromTag.set(slugs),
-              error: () => this.featuredSlugsFromTag.set([]),
-            });
-          } else {
-            this.featuredSlugsFromTag.set([]);
-          }
+        if (data?.services) {
+          this.applyServicesContent(data as ServicesContent);
         } else {
-          this.error.set(`Service "${slugValue}" not found`);
-          this.featuredSlugsFromTag.set([]);
-          this.router.navigate(['/404']);
+          this.loadServicesFromStaticFile();
         }
-        this.loading.set(false);
       },
-      error: (error) => {
-        console.error('Error loading services content:', error);
+      error: () => this.loadServicesFromStaticFile(),
+    });
+  }
+
+  private applyServicesContent(data: ServicesContent) {
+    const slugValue = this.slug();
+    if (slugValue && data.services[slugValue]) {
+      const serviceContent = data.services[slugValue];
+      this.content.set(serviceContent);
+      this.updateMetadata(serviceContent);
+      this.updateStructuredData(serviceContent);
+      if (!serviceContent.featuredCaseStudySlugs?.length && slugValue) {
+        this.graphql.getCaseStudySlugsByTag(slugValue, 2).subscribe({
+          next: (slugs) => this.featuredSlugsFromTag.set(slugs),
+          error: () => this.featuredSlugsFromTag.set([]),
+        });
+      } else {
+        this.featuredSlugsFromTag.set([]);
+      }
+    } else {
+      this.error.set(`Service "${slugValue}" not found`);
+      this.featuredSlugsFromTag.set([]);
+      this.router.navigate(['/404']);
+    }
+    this.loading.set(false);
+  }
+
+  private loadServicesFromStaticFile() {
+    this.http.get<ServicesContent>('/services-content.json').subscribe({
+      next: (data) => this.applyServicesContent(data),
+      error: () => {
         this.error.set('Failed to load service content');
         this.featuredSlugsFromTag.set([]);
         this.loading.set(false);
-      }
+      },
     });
   }
 }

@@ -1,6 +1,4 @@
-import { computed, effect, OnDestroy } from '@angular/core';
-
-import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, signal, inject, input, effect } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule, NgClass } from '@angular/common';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
@@ -63,12 +61,25 @@ export interface FooterSection {
 export class Footer implements OnInit, OnDestroy {
   private readonly graphql = inject(GraphQLContentService);
 
+  /** Cuando se proporciona, se usa en lugar de cargar desde CMS (para preview en edit) */
+  readonly dataOverride = input<FooterSection | null>(null);
+
   readonly footerData = signal<FooterSection | null>(null);
   readonly loading = signal(true);
   readonly openGroupIdx = signal<number | null>(null);
   readonly isMobile = signal(false);
 
   private resizeHandler: (() => void) | null = null;
+
+  constructor() {
+    effect(() => {
+      const override = this.dataOverride();
+      if (override) {
+        this.footerData.set(override);
+        this.loading.set(false);
+      }
+    });
+  }
 
   ngOnInit() {
     if (typeof window !== 'undefined') {
@@ -78,6 +89,12 @@ export class Footer implements OnInit, OnDestroy {
         if (!this.isMobile()) this.openGroupIdx.set(null);
       };
       window.addEventListener('resize', this.resizeHandler);
+    }
+    const override = this.dataOverride();
+    if (override) {
+      this.footerData.set(override);
+      this.loading.set(false);
+      return;
     }
     this.graphql.getCmsPageBySlug('footer').subscribe({
       next: (data) => {

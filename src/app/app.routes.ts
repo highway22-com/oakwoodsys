@@ -87,6 +87,14 @@ export const routes: Routes = [
         component: Login
     },
     {
+        path: 'edit',
+        loadComponent: () => import('../pages/edit-dashboard/edit-dashboard')
+    },
+    {
+        path: 'edit/:slug',
+        loadComponent: () => import('../pages/edit-page/edit-page')
+    },
+    {
         path: 'careers',
         loadComponent: () => import('../pages/carrers/carrers')
     },

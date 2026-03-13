@@ -401,6 +401,60 @@ export class GraphQLContentService {
   }
 
   /**
+   * Contenido de industries desde CMS (slug: industries). Misma estructura que industries-content.json.
+   */
+  getIndustriesContent(): Observable<{ industries: Record<string, unknown> } | null> {
+    return this.getCmsPageBySlug('industries').pipe(
+      map((data) => data as { industries: Record<string, unknown> } | null)
+    );
+  }
+
+  /**
+   * Contenido de services desde CMS (slug: services). Misma estructura que services-content.json.
+   */
+  getServicesContent(): Observable<{ services: Record<string, unknown> } | null> {
+    return this.getCmsPageBySlug('services').pipe(
+      map((data) => data as { services: Record<string, unknown> } | null)
+    );
+  }
+
+  /**
+   * Contenido del menú/navbar desde CMS (slug: menu). Misma estructura que navbar-content.json.
+   */
+  getMenuContent(): Observable<{ menu: unknown[]; content?: Record<string, unknown> } | null> {
+    return this.getCmsPageBySlug('menu').pipe(
+      map((data) => data as { menu: unknown[]; content?: Record<string, unknown> } | null)
+    );
+  }
+
+  /**
+   * Contenido de resources desde CMS (slug: resources). Misma estructura que resources-content.json.
+   */
+  getResourcesContent(): Observable<Record<string, unknown> | null> {
+    return this.getCmsPageBySlug('resources').pipe(
+      map((data) => data as Record<string, unknown> | null)
+    );
+  }
+
+  /**
+   * Contenido de structured-engagements desde CMS (slug: structured-engagements). Misma estructura que structured-engagement-section.json.
+   */
+  getStructuredEngagementsContent(): Observable<Record<string, unknown> | null> {
+    return this.getCmsPageBySlug('structured-engagements').pipe(
+      map((data) => data as Record<string, unknown> | null)
+    );
+  }
+
+  /**
+   * Contenido de about desde CMS (slug: about). Misma estructura que about-content.json.
+   */
+  getAboutContent(): Observable<Record<string, unknown> | null> {
+    return this.getCmsPageBySlug('about').pipe(
+      map((data) => data as Record<string, unknown> | null)
+    );
+  }
+
+  /**
    * Service lines para sidebar/filtros (blogs, etc.). Obtiene desde CMS: home (services section) → footer (links.services).
    */
   getServiceLines(): Observable<{ label: string; link: string }[]> {

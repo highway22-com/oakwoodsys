@@ -27,6 +27,14 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server,
   },
   {
+    path: 'edit',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'edit/:slug',
+    renderMode: RenderMode.Server,
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender,
   },

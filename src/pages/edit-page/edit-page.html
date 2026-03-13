@@ -1,0 +1,93 @@
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+  @if (!loading()) {
+  <!-- Toggle Button (como en home) -->
+  <button (click)="togglePanel()"
+    class="fixed right-4 top-4 z-[60] bg-p-500 hover:bg-blue-700 text-white px-4 py-[11.5px] mt-[11px] shadow-lg transition-colors duration-200 flex items-center gap-2">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+    </svg>
+    <span>{{ panelVisible() ? 'Hide' : '' }}</span>
+  </button>
+  }
+
+  <!-- Right Sidebar: JSON Editor (mostrar/ocultar como en home) -->
+  @if (panelVisible()) {
+  <div class="fixed right-0 top-0 h-full w-1/2 border-l border-gray-300 flex flex-col bg-white z-50 shadow-2xl">
+    <div class="bg-gray-100 border-b border-gray-300 px-4 py-3 flex items-center justify-between pt-20">
+      <h2 class="text-lg text-gray-800">JSON Editor</h2>
+      <div class="flex items-center gap-3">
+        @if (saveSuccess()) {
+        <span class="bg-green-500 text-white px-3 py-1 rounded text-sm">✓ Copied!</span>
+        }
+        <button (click)="copyToClipboard()" [disabled]="saving() || !!jsonError()"
+          class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded transition-colors duration-200 flex items-center gap-2">
+          @if (saving()) {
+          <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          <span>Copiando...</span>
+          } @else {
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+          <span>Copiar al portapapeles</span>
+          }
+        </button>
+      </div>
+    </div>
+    @if (jsonError()) {
+    <div class="bg-red-50 border-b border-red-200 px-4 py-2">
+      <p class="text-red-600 text-sm">{{ jsonError() }}</p>
+    </div>
+    }
+    <textarea [ngModel]="jsonContentStr()" (ngModelChange)="onJsonChange($event)"
+      class="flex-1 w-full p-4 font-mono text-sm border-0 resize-none focus:outline-none"
+      placeholder="Edita el contenido JSON aquí..."></textarea>
+  </div>
+  }
+
+  <!-- Main content: header + vista previa -->
+  <main class="relative w-full transition-all duration-200" [ngClass]="{'pr-[50%]': panelVisible()}" role="main">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <a [routerLink]="['/edit']" [queryParams]="{ edit: 'true' }"
+          class="text-blue-600 hover:text-blue-700 text-sm mb-2 inline-block">← Volver al listado</a>
+        <h1 class="text-2xl font-bold text-gray-900">Editar: {{ label() }}</h1>
+        <p class="text-sm text-gray-500">{{ slug() }}</p>
+      </div>
+    </div>
+
+    @if (loading()) {
+    <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
+      <p class="text-gray-500">Cargando contenido...</p>
+    </div>
+    } @else {
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Vista previa</label>
+      <div class="border border-gray-200 rounded-lg bg-white overflow-auto min-h-[70vh]">
+        @if (slug() === 'footer' && parsedFooterData(); as footerData) {
+        <app-footer [dataOverride]="footerData" />
+        } @else if (slug() === 'menu' && parsedNavbarData(); as menuData) {
+        <app-navbar [contentOverride]="menuData" [previewMode]="true" />
+        } @else if (slug() === 'industries' && parsedIndustriesData(); as industriesData) {
+        <app-industries [contentOverride]="industriesData" [slugOverride]="industriesPreviewSlug()" />
+        } @else if (slug() === 'services' && parsedServicesData(); as servicesData) {
+        <app-services [contentOverride]="servicesData" [slugOverride]="servicesPreviewSlug()" />
+        } @else if (slug() === 'structured-engagements' && parsedStructuredEngagementsData(); as seData) {
+        <app-structured-engagements [section]="seData" />
+        } @else if (slug() === 'home') {
+        <div class="p-4 text-gray-500 text-sm">Para editar Home, usa el enlace desde el listado.</div>
+        } @else if (slug() === 'resources' || slug() === 'about') {
+        <div class="p-4 text-gray-500 text-sm">Edita el JSON y copia al portapapeles para actualizar el CMS. Vista previa completa en las páginas /resources y /about.</div>
+        } @else {
+        <div class="p-4 text-gray-500 text-sm">Edita el JSON para ver la vista previa (footer, menu, industries, services o structured-engagements).</div>
+        }
+      </div>
+    </div>
+    }
+  </main>
+</div>
