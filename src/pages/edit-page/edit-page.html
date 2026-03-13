@@ -14,10 +14,10 @@
   @if (panelVisible()) {
   <div class="fixed right-0 top-0 h-full w-1/2 border-l border-gray-300 flex flex-col bg-white z-50 shadow-2xl">
     <div class="bg-gray-100 border-b border-gray-300 px-4 py-3 flex items-center justify-between pt-20">
-      <h2 class="text-lg text-gray-800">JSON Editor</h2>
+      <h2 class="text-lg text-gray-800">JSON Editor (copy to clipboard to update the CMS)</h2>
       <div class="flex items-center gap-3">
         @if (saveSuccess()) {
-        <span class="bg-green-500 text-white px-3 py-1 rounded text-sm">✓ Copied!</span>
+        <span class="bg-green-500 text-white px-3 py-1 rounded text-sm">✓ Copied to clipboard!</span>
         }
         <button (click)="copyToClipboard()" [disabled]="saving() || !!jsonError()"
           class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded transition-colors duration-200 flex items-center gap-2">
@@ -28,13 +28,13 @@
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
             </path>
           </svg>
-          <span>Copiando...</span>
+          <span>Copying to clipboard...</span>
           } @else {
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
           </svg>
-          <span>Copiar al portapapeles</span>
+          <span>Copy to clipboard (copy to clipboard to update the CMS)</span>
           }
         </button>
       </div>
@@ -46,7 +46,7 @@
     }
     <textarea [ngModel]="jsonContentStr()" (ngModelChange)="onJsonChange($event)"
       class="flex-1 w-full p-4 font-mono text-sm border-0 resize-none focus:outline-none"
-      placeholder="Edita el contenido JSON aquí..."></textarea>
+      placeholder="Edit the JSON here..."></textarea>
   </div>
   }
 
@@ -55,19 +55,19 @@
     <div class="flex items-center justify-between mb-6">
       <div>
         <a [routerLink]="['/edit']" [queryParams]="{ edit: 'true' }"
-          class="text-blue-600 hover:text-blue-700 text-sm mb-2 inline-block">← Volver al listado</a>
-        <h1 class="text-2xl font-bold text-gray-900">Editar: {{ label() }}</h1>
+          class="text-blue-600 hover:text-blue-700 text-sm mb-2 inline-block">← Bacl to list</a>
+        <h1 class="text-2xl font-bold text-gray-900">Edit: {{ label() }}</h1>
         <p class="text-sm text-gray-500">{{ slug() }}</p>
       </div>
     </div>
 
     @if (loading()) {
     <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
-      <p class="text-gray-500">Cargando contenido...</p>
+      <p class="text-gray-500">Loading...</p>
     </div>
     } @else {
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">Vista previa</label>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Preview</label>
       <div class="border border-gray-200 rounded-lg bg-white overflow-auto min-h-[70vh]">
         @if (slug() === 'footer' && parsedFooterData(); as footerData) {
         <app-footer [dataOverride]="footerData" />
@@ -80,11 +80,13 @@
         } @else if (slug() === 'structured-engagements' && parsedStructuredEngagementsData(); as seData) {
         <app-structured-engagements [section]="seData" />
         } @else if (slug() === 'home') {
-        <div class="p-4 text-gray-500 text-sm">Para editar Home, usa el enlace desde el listado.</div>
+        <div class="p-4 text-gray-500 text-sm">To edit Home, use the link from the list.</div>
         } @else if (slug() === 'resources' || slug() === 'about') {
-        <div class="p-4 text-gray-500 text-sm">Edita el JSON y copia al portapapeles para actualizar el CMS. Vista previa completa en las páginas /resources y /about.</div>
+        <div class="p-4 text-gray-500 text-sm">Edit the JSON and copy to clipboard to update the CMS. Preview complete
+          on the pages /resources and /about.</div>
         } @else {
-        <div class="p-4 text-gray-500 text-sm">Edita el JSON para ver la vista previa (footer, menu, industries, services o structured-engagements).</div>
+        <div class="p-4 text-gray-500 text-sm">Edit the JSON to see the preview (footer, menu, industries, services or
+          structured-engagements).</div>
         }
       </div>
     </div>
