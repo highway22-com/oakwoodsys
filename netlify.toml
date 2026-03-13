@@ -32,6 +32,19 @@
   status = 301
   force = true
 
+# WordPress admin: oakwoodsys.com/wp-admin → oakwoodsystemsgroup.com/wp-admin
+[[redirects]]
+  from = "/wp-admin"
+  to = "https://oakwoodsystemsgroup.com/wp-admin"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/wp-admin/*"
+  to = "https://oakwoodsystemsgroup.com/wp-admin/:splat"
+  status = 301
+  force = true
+
 # Redirección de dominio: www y HTTP → HTTPS en dominio principal
 [[redirects]]
   from = "https://www.oakwoodsys.com/*"
