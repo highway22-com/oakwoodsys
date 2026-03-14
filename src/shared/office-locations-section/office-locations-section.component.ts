@@ -19,8 +19,8 @@ interface OfficeLocation {
 export class OfficeLocationsSectionComponent {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly officeImageByName: Record<string, string> = {
-    'St. Louis Office': 'St. Louis Office.png',
-    'Kansas City Office': 'Kansas City Office.png',
+    'St. Louis Office': 'Louis_Office.png',
+    'Kansas City Office': 'Kansas_City_Office.png',
   };
 
   readonly offices: OfficeLocation[] = [
