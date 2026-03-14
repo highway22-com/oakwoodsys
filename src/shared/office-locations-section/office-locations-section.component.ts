@@ -18,6 +18,10 @@ interface OfficeLocation {
 })
 export class OfficeLocationsSectionComponent {
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly officeImageByName: Record<string, string> = {
+    'St. Louis Office': 'St. Louis Office.png',
+    'Kansas City Office': 'Kansas City Office.png',
+  };
 
   readonly offices: OfficeLocation[] = [
     {
@@ -40,5 +44,10 @@ export class OfficeLocationsSectionComponent {
 
   getMapUrl(url: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+
+  getOfficeImage(name: string): string {
+    const fileName = this.officeImageByName[name] ?? 'contact-us-new-pic.png';
+    return `assets/${fileName}`;
   }
 }

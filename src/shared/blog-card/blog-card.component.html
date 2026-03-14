@@ -1,5 +1,5 @@
 <a [routerLink]="[linkBase(), slug()]"
-    class="group bg-[#FFFFFF]/80 overflow-hidden transition-shadow duration-300 h-full flex flex-col hover:outline-gray-300 hover:outline hover:bg-p-30">
+    class="group min-w-0 whitespace-normal bg-[#FFFFFF]/80 overflow-hidden transition-shadow duration-300 flex-1 flex flex-col hover:outline-gray-300 hover:outline hover:bg-p-30">
     <!-- Post Image -->
     <div class="relative w-full min-w-[220px] max-w-[340px] sm:min-w-0 sm:max-w-none overflow-hidden bg-transparent group-hover:bg-p-30 transition-colors duration-300 px-2 pt-2 pb-0 sm:px-12 lg:px-6 lg:pt-6 sm:pt-2 py-5 ">
         <div class="relative w-full aspect-video overflow-hidden" >
@@ -22,7 +22,7 @@
         </div>
 
         <!-- Title -->
-        <h3 class="text-black font-inter text-[24px] font-medium leading-[130%] tracking-[-0.24px] lg:text-[28px] lg:tracking-[-0.28px] mb-3 sm:mb-4  pb-10">
+        <h3 class="min-w-0 whitespace-normal break-words text-black font-inter text-[20px] sm:text-[24px] font-medium leading-[130%] tracking-[-0.2px] sm:tracking-[-0.24px] lg:text-[28px] lg:tracking-[-0.28px] mb-3 sm:mb-4 pb-10">
             {{ title() || 'Blog Post Title' }}
         </h3>
 
