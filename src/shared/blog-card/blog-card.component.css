@@ -1,1 +1,3 @@
-/* Estilos heredan de .tag-badge y Tailwind global. */
+:host {
+	display: flex;
+}
