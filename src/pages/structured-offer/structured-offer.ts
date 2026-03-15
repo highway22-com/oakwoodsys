@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
 import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-study/featured-case-study-category';
+import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 
 interface StructuredOfferSection {
@@ -1022,7 +1023,7 @@ const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {
 @Component({
   selector: 'app-structured-offer',
   standalone: true,
-  imports: [CommonModule, RouterLink, VideoHero, FormsModule, FeaturedCaseStudySectionComponent],
+  imports: [CommonModule, RouterLink, VideoHero, FormsModule, FeaturedCaseStudySectionComponent, CtaSectionComponent],
   templateUrl: './structured-offer.html',
   styleUrl: './structured-offer.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
