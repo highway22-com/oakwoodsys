@@ -34,7 +34,7 @@
 
       <!-- Offer Details Cards -->
       @if (offerdetails && offerdetails.length > 0) {
-      <div class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-8 pb-2">
+      <div class="w-full grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-8 pb-2">
         @for (item of offerdetails; track item.offer) {
         <div class="min-w-0 w-full flex flex-col bg-white/10 px-4 sm:px-6 py-3 rounded"
           style="backdrop-filter: blur(8px);">
@@ -74,11 +74,11 @@
             }
             }
             <p
-              class="font-['Segoe UI'] font-normal text-[16px] leading-[120%] tracking-[0.01em] text-[#E7E7E7] break-words">
+              class="font-['Segoe UI'] font-normal text-[14px] sm:text-[16px] leading-[120%] tracking-[0.01em] text-[#E7E7E7] break-words">
               {{ item.offer }}</p>
           </div>
           <p
-            class="font-['Segoe UI'] font-semibold text-[24px] leading-[130%] tracking-[0em] align-middle text-[#F6F6F6] mt-2 break-words [overflow-wrap:anywhere]">
+            class="font-['Segoe UI'] font-semibold text-[18px] sm:text-[24px] leading-[130%] tracking-[0em] align-middle text-[#F6F6F6] mt-2 break-words [overflow-wrap:anywhere]">
             {{ item.offervalue }}</p>
         </div>
         }
