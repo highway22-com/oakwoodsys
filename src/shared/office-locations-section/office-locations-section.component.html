@@ -21,7 +21,7 @@
             @for (office of offices; track office.name) {
             <article class="contact-office-card       overflow-hidden shadow-md border border-gray-100">
                 <div class="contact-office-header relative overflow-hidden">
-                    <img src="/assets/{{office.name }}.png" alt="{{ office.name }}" class="w-full h-[380px] sm:h-[360px] md:h-[380px] lg:h-[420px] inset-0
+                    <img [src]="getOfficeImage(office.name)" alt="{{ office.name }}" class="w-full h-[380px] sm:h-[360px] md:h-[380px] lg:h-[420px] inset-0
               bg-[linear-gradient(218deg,rgba(62,97,162,0)_28.65%,rgba(62,97,162,0.63)_78.59%)]
               opacity-40 object-cover" />
 

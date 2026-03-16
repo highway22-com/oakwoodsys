@@ -50,9 +50,9 @@
         >
           {{ c.industryChallenges.subDescription }}
         </p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="flex overflow-x-auto gap-4 sm:gap-6 md:grid md:grid-cols-3 md:gap-8 md:overflow-visible snap-x snap-mandatory pb-2">
           @for (card of c.industryChallenges.cards; track card.id) {
-            <article class="overflow-hidden border border-gray-100 shadow-sm">
+            <article class="w-[82vw] max-w-[330px] md:w-auto md:max-w-none flex-shrink-0 snap-start overflow-hidden border border-gray-100 shadow-sm">
               @if (card.id === "02") {
                 <div class="aspect-[18/9] p-4 lg:p-10">
                   <span
