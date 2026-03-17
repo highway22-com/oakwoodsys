@@ -374,15 +374,28 @@ export default class Services implements OnInit, OnDestroy {
   }
 
   private loadFromGraphQLOrStatic() {
-    this.graphql.getServicesContent().pipe(take(1)).subscribe({
-      next: (data) => {
-        if (data?.services) {
-          this.applyServicesContent(data as ServicesContent);
-        } else {
-          this.loadServicesFromStaticFile();
-        }
-      },
-      error: () => this.loadServicesFromStaticFile(),
+    const slugValue = this.slug();
+    if (!slugValue) {
+      this.loading.set(false);
+      return;
+    }
+    // 1) Usar contenido precargado en APP_INITIALIZER (servicesContent$) si está disponible
+    this.graphql.servicesContent$.pipe(take(1)).subscribe((preloaded) => {
+      if (preloaded?.services && preloaded.services[slugValue]) {
+        this.applyServicesContent(preloaded as ServicesContent);
+        return;
+      }
+      // 2) Si no hay precarga, hacer petición GraphQL directa
+      this.graphql.getServicesContent().pipe(take(1)).subscribe({
+        next: (data) => {
+          if (data?.services) {
+            this.applyServicesContent(data as ServicesContent);
+          } else {
+            this.loadServicesFromStaticFile();
+          }
+        },
+        error: () => this.loadServicesFromStaticFile(),
+      });
     });
   }
 
