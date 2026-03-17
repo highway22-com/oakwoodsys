@@ -1,11 +1,11 @@
 {
     "page": "home",
-    "videoUrls": [
-        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Home-1.mp4",
-        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Home-2.mp4",
-        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Home-3.mp4",
-        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Home-4.mp4"
-    ],
+    "seo": {
+        "headTitle": "Microsoft Solutions Partner | Azure Consulting | St. Louis, MO",
+        "headDescription": "As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.",
+        "ogImage": "https://oakwoodsys.com/assets/og-image.png",
+        "keywords": "Microsoft Solutions Partner, Azure Consulting, Azure Cloud services, St. Louis, Kansas City, cloud migration, Data & AI, Microsoft 365, Power BI"
+    },
     "sections": [
         {
             "type": "hero",
@@ -91,7 +91,7 @@
                 {
                     "id": 5,
                     "title": "Modern Work",
-                    "description": "Boost productivity, protect data, and improve employee experience with Microsoft 365 and Copilot.",
+                    "description": "ssBoost productivity, protect data, and improve employee experience with Microsoft 365 and Copilot.",
                     "link": "/services/modern-work",
                     "linkText": "Explore",
                     "icon": "/assets/modern.svg"
@@ -409,11 +409,11 @@
                 "company": [
                     {
                         "text": "Who We Are",
-                        "routerLink": "/about-us"
+                        "routerLink": "/about"
                     },
                     {
                         "text": "Careers",
-                        "routerLink": "/about-us"
+                        "routerLink": "/careers"
                     },
                     {
                         "text": "Contact Us",

@@ -1,0 +1,37 @@
+# ============================================================
+# BLOQUE A AÑADIR en .htaccess de oakwoodsystemsgroup.com
+# ============================================================
+# Ubicación: AL INICIO del archivo .htaccess, ANTES del bloque
+# "Redirect oakwoodsystemsgroup.com → oakwoodsys.com"
+#
+# Si ya tienes el bloque de redirección, inserta este bloque
+# justo DESPUÉS de "<IfModule mod_rewrite.c>" y "RewriteEngine On"
+# y ANTES de las condiciones RewriteCond existentes.
+# ============================================================
+
+# Redirigir sitemaps de Yoast a oakwoodsys.com
+RewriteCond %{HTTP_HOST} ^(www\.)?oakwoodsystemsgroup\.com$ [NC]
+RewriteRule ^sitemap_index\.xml$ https://oakwoodsys.com/sitemap.xml [R=301,L]
+RewriteCond %{HTTP_HOST} ^(www\.)?oakwoodsystemsgroup\.com$ [NC]
+RewriteRule ^sitemap.*\.xml$ https://oakwoodsys.com/sitemap.xml [R=301,L]
+
+# ============================================================
+# Ejemplo de cómo quedaría el bloque completo al inicio:
+# ============================================================
+#
+# # BEGIN Redirect oakwoodsystemsgroup.com → oakwoodsys.com
+# <IfModule mod_rewrite.c>
+# 	RewriteEngine On
+#
+# 	# Redirigir sitemaps a oakwoodsys.com
+# 	RewriteCond %{HTTP_HOST} ^(www\.)?oakwoodsystemsgroup\.com$ [NC]
+# 	RewriteRule ^sitemap_index\.xml$ https://oakwoodsys.com/sitemap.xml [R=301,L]
+# 	RewriteCond %{HTTP_HOST} ^(www\.)?oakwoodsystemsgroup\.com$ [NC]
+# 	RewriteRule ^sitemap.*\.xml$ https://oakwoodsys.com/sitemap.xml [R=301,L]
+#
+# 	# No redirigir si ya es una redirección interna
+# 	RewriteCond %{ENV:REDIRECT_STATUS} ^$
+# 	RewriteCond %{REQUEST_URI} !^/wp-admin [NC]
+# 	... (resto de reglas)
+# </IfModule>
+# # END Redirect oakwoodsystemsgroup.com
