@@ -20,7 +20,17 @@ export const serverRoutes: ServerRoute[] = [
   },
   {
     path: 'services/:slug',
-    renderMode: RenderMode.Client,
+    renderMode: RenderMode.Prerender,
+    async getPrerenderParams() {
+      return [
+        { slug: 'data-ai-solutions' },
+        { slug: 'cloud-and-infrastructure' },
+        { slug: 'application-innovation' },
+        { slug: 'high-performance-computing-hpc' },
+        { slug: 'modern-work' },
+        { slug: 'managed-services' },
+      ];
+    },
   },
   {
     path: 'structured-engagement/:slug',

@@ -20,6 +20,15 @@ const BLOG_SLUGS_QUERY = `query GetSlugsForPrerender {
   }
 }`;
 
+const SERVICE_SLUGS = [
+  'data-ai-solutions',
+  'cloud-and-infrastructure',
+  'application-innovation',
+  'high-performance-computing-hpc',
+  'modern-work',
+  'managed-services',
+];
+
 const STRUCTURED_SLUGS = [
   'sql-server-migration-to-azure',
   'microsoft-fabric-poc',
@@ -83,9 +92,8 @@ async function main() {
   const industries = getSlugsFromJson('public/industries-content.json', 'industries');
   industries.forEach((s) => routes.push(`/industries/${s}`));
 
-  // services/:slug → RenderMode.Client (no prerender): contenido CMS se carga en el cliente
-  // const services = getSlugsFromJson('public/services-content.json', 'services');
-  // services.forEach((s) => routes.push(`/services/${s}`));
+  const services = getSlugsFromJson('public/services-content.json', 'services');
+  (services.length > 0 ? services : SERVICE_SLUGS).forEach((s) => routes.push(`/services/${s}`));
 
   STRUCTURED_SLUGS.forEach((s) => routes.push(`/structured-engagement/${s}`));
 
