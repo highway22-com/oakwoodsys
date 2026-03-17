@@ -289,7 +289,6 @@ export default class Services implements OnInit, OnDestroy {
     const title = s?.headTitle?.trim() || `${content.title} | Oakwood Systems`;
     const description = s?.headDescription?.trim() || content.mainDescription?.text || content.description;
     const image = s?.ogImage?.trim() || content.backgroundImage;
-    debugger
     this.seoMeta.updateMeta({
       title,
       description,
