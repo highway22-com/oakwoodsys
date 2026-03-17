@@ -298,7 +298,7 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
     return handleAuth(request);
   }
 
-  // API endpoint for CMS JSON files (home.json, services.json, service-*.json)
+  // API endpoint for CMS JSON files (home.json, service-*.json; services.json opcional)
   if (pathname.startsWith('/api/cms/')) {
     const filePath = pathname.replace(/^\/api\/cms\/?/, '') || 'index.json';
     const cmsUrl = `${CMS_BASE_URL}/wp-content/uploads/oakwood-cms/${filePath}`;
