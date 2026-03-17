@@ -1,4 +1,12 @@
 {
+  "/api/cms": {
+    "target": "https://oakwoodsystemsgroup.com/wp-content/uploads/oakwood-cms",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/cms": ""
+    }
+  },
   "/api/graphql": {
     "target": "https://oakwoodsystemsgroup.com",
     "secure": true,

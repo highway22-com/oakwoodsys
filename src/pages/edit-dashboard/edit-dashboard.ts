@@ -25,7 +25,7 @@ export default class EditDashboard implements OnInit {
 
   readonly editMode = signal(false);
   readonly editableItems: EditableItem[] = [
-    { label: 'Home', slug: 'home', editPath: '/' },
+    { label: 'Home', slug: 'home', editPath: '/edit/home' },
     { label: 'Footer', slug: 'footer', editPath: '/edit/footer' },
     { label: 'Menu', slug: 'menu', editPath: '/edit/menu' },
     { label: 'Industries', slug: 'industries', editPath: '/edit/industries' },

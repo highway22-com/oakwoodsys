@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  HostListener,
   inject,
   OnInit,
   PLATFORM_ID,
@@ -12,6 +13,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { combineLatest } from 'rxjs';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { HttpClient } from '@angular/common/http';
 import { Footer } from '../../layout/footer/footer';
@@ -23,16 +25,19 @@ import type { IndustriesContent } from '../industries/industries';
 import Services from '../services/services';
 import type { ServicesContent } from '../services/services';
 import { StructuredEngagementsSectionComponent } from '../../shared/sections/structured-engagements/structured-engagements';
+import Home from '../home/home';
+import type { CmsPageContent } from '../../app/api/graphql';
+import { EditorComponent } from 'ngx-monaco-editor-v2';
 
 @Component({
   selector: 'app-edit-page',
-  imports: [CommonModule, RouterLink, FormsModule, Footer, AppNavbar, Industries, Services, StructuredEngagementsSectionComponent],
+  imports: [CommonModule, RouterLink, FormsModule, Footer, AppNavbar, Industries, Services, StructuredEngagementsSectionComponent, Home, EditorComponent],
   templateUrl: './edit-page.html',
   styleUrl: './edit-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class EditPage implements OnInit {
-  private readonly router = inject(Router);
+  readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly graphql = inject(GraphQLContentService);
@@ -45,12 +50,71 @@ export default class EditPage implements OnInit {
   readonly editMode = signal(false);
   readonly jsonContentStr = signal('');
   readonly jsonError = signal<string | null>(null);
+
+  readonly monacoEditorOptions = {
+    theme: 'vs',
+    language: 'json',
+    automaticLayout: true,
+    minimap: { enabled: false },
+    scrollBeyondLastLine: false,
+    formatOnPaste: true,
+    formatOnType: true,
+  };
   readonly saving = signal(false);
   readonly saveSuccess = signal(false);
   readonly panelVisible = signal(false);
 
   togglePanel() {
     this.panelVisible.set(!this.panelVisible());
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'o') {
+      event.preventDefault();
+      this.togglePanel();
+    }
+  }
+
+  onServiceSelect(serviceSlug: string) {
+    this.selectedServiceSlug.set(serviceSlug);
+    this.router.navigate(['/edit', 'services'], {
+      queryParams: { edit: 'true', service: serviceSlug },
+    });
+    // Cargar el JSON del servicio seleccionado directamente para que el panel se actualice
+    this.loadServiceContent(serviceSlug);
+  }
+
+  /** Carga el contenido de un servicio: primero GraphQL (último del CMS), si falla usa el archivo estático */
+  private loadServiceContent(serviceSlug: string) {
+    this.loading.set(true);
+    this.jsonError.set(null);
+    this.graphql.getServicesContent().subscribe({
+      next: (data) => {
+        if (data?.services && serviceSlug in data.services) {
+          const singleService = { services: { [serviceSlug]: data.services[serviceSlug] } };
+          this.jsonContentStr.set(JSON.stringify(singleService, null, 2));
+        } else {
+          this.loadServiceFromStatic(serviceSlug);
+          return;
+        }
+        this.loading.set(false);
+      },
+      error: () => this.loadServiceFromStatic(serviceSlug),
+    });
+  }
+
+  private loadServiceFromStatic(serviceSlug: string) {
+    this.http.get<ServicesContent>(`/service-${serviceSlug}.json`).subscribe({
+      next: (content) => {
+        this.jsonContentStr.set(JSON.stringify(content, null, 2));
+        this.loading.set(false);
+      },
+      error: () => {
+        this.jsonError.set('No se pudo cargar el contenido del servicio');
+        this.loading.set(false);
+      },
+    });
   }
 
   readonly parsedFooterData = computed(() => {
@@ -105,10 +169,30 @@ export default class EditPage implements OnInit {
     return keys[0] ?? 'data-ai-solutions';
   });
 
+  /** Slug del servicio seleccionado para editar (desde query param o del contenido cargado) */
+  readonly selectedServiceSlug = signal<string>('data-ai-solutions');
+
+  /** Slug a usar en la vista previa de services (el seleccionado si existe en los datos) */
+  readonly servicesSlugForPreview = computed(() => {
+    const data = this.parsedServicesData();
+    const selected = this.selectedServiceSlug();
+    if (data?.services && selected in data.services) return selected;
+    return this.servicesPreviewSlug();
+  });
+
   readonly parsedStructuredEngagementsData = computed(() => {
     if (this.slug() !== 'structured-engagements') return null;
     try {
       return JSON.parse(this.jsonContentStr() || '{}');
+    } catch {
+      return null;
+    }
+  });
+
+  readonly parsedHomeData = computed(() => {
+    if (this.slug() !== 'home') return null;
+    try {
+      return JSON.parse(this.jsonContentStr() || '{}') as CmsPageContent;
     } catch {
       return null;
     }
@@ -137,6 +221,16 @@ export default class EditPage implements OnInit {
     about: 'About',
   };
 
+  /** Slugs de servicios para el selector en /edit/services */
+  readonly serviceSlugs = [
+    'data-ai-solutions',
+    'cloud-and-infrastructure',
+    'application-innovation',
+    'high-performance-computing-hpc',
+    'modern-work',
+    'managed-services',
+  ] as const;
+
   ngOnInit() {
     this.route.queryParams
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -149,17 +243,17 @@ export default class EditPage implements OnInit {
         }
       });
 
-    this.route.paramMap
+    combineLatest([this.route.paramMap, this.route.queryParams])
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((params) => {
+      .subscribe(([params, queryParams]) => {
         const s = params.get('slug') ?? '';
         this.slug.set(s);
         this.label.set(this.slugLabels[s] ?? s);
-        this.loadContent(s);
+        this.loadContent(s, queryParams);
       });
   }
 
-  private loadContent(slug: string) {
+  private loadContent(slug: string, queryParams: Record<string, string | string[] | undefined> = {}) {
     if (!slug) {
       this.loading.set(false);
       return;
@@ -167,6 +261,22 @@ export default class EditPage implements OnInit {
 
     this.loading.set(true);
     this.jsonError.set(null);
+
+    if (slug === 'home') {
+      this.graphql.getCmsPageBySlug('home').subscribe({
+        next: (data) => {
+          if (data) {
+            this.jsonContentStr.set(JSON.stringify(data, null, 2));
+          } else {
+            this.loadEditPageFromStatic(slug, '/home-content.json');
+            return;
+          }
+          this.loading.set(false);
+        },
+        error: () => this.loadEditPageFromStatic(slug, '/home-content.json'),
+      });
+      return;
+    }
 
     if (slug === 'industries') {
       this.graphql.getIndustriesContent().subscribe({
@@ -201,17 +311,23 @@ export default class EditPage implements OnInit {
     }
 
     if (slug === 'services') {
+      const serviceParam = queryParams['service'];
+      const serviceSlug = (typeof serviceParam === 'string' ? serviceParam : null) ?? 'data-ai-solutions';
+      this.selectedServiceSlug.set(serviceSlug);
       this.graphql.getServicesContent().subscribe({
         next: (data) => {
-          if (data) {
+          if (data?.services && serviceSlug in data.services) {
+            const singleService = { services: { [serviceSlug]: data.services[serviceSlug] } };
+            this.jsonContentStr.set(JSON.stringify(singleService, null, 2));
+          } else if (data) {
             this.jsonContentStr.set(JSON.stringify(data, null, 2));
           } else {
-            this.loadEditPageFromStatic(slug, '/services-content.json');
+            this.loadEditPageFromStatic(slug, `/service-${serviceSlug}.json`);
             return;
           }
           this.loading.set(false);
         },
-        error: () => this.loadEditPageFromStatic(slug, '/services-content.json'),
+        error: () => this.loadEditPageFromStatic(slug, `/service-${serviceSlug}.json`),
       });
       return;
     }
@@ -284,6 +400,10 @@ export default class EditPage implements OnInit {
 
   onJsonChange(value: string) {
     this.jsonContentStr.set(value);
+    this.validateJson(value);
+  }
+
+  private validateJson(value: string) {
     try {
       JSON.parse(value);
       this.jsonError.set(null);
