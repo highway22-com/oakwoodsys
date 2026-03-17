@@ -92,8 +92,8 @@ async function main() {
   const industries = getSlugsFromJson('public/industries-content.json', 'industries');
   industries.forEach((s) => routes.push(`/industries/${s}`));
 
-  const services = getSlugsFromJson('public/services-content.json', 'services');
-  (services.length > 0 ? services : SERVICE_SLUGS).forEach((s) => routes.push(`/services/${s}`));
+  // services/:slug → RenderMode.Client (no prerender). Cuando se rehabilite, usar SERVICE_SLUGS
+  // (public/services-content.json no existe; el CMS está en WordPress).
 
   STRUCTURED_SLUGS.forEach((s) => routes.push(`/structured-engagement/${s}`));
 
