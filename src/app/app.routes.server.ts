@@ -1,18 +1,35 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+function getPrerenderSlugs(): { blog: string[]; caseStudy: string[] } {
+  try {
+    const path = join(process.cwd(), 'prerender-slugs.json');
+    const raw = readFileSync(path, 'utf8');
+    const data = JSON.parse(raw);
+    return {
+      blog: Array.isArray(data?.blog) ? data.blog : [],
+      caseStudy: Array.isArray(data?.caseStudy) ? data.caseStudy : [],
+    };
+  } catch {
+    return { blog: [], caseStudy: [] };
+  }
+}
 
 /**
- * Rutas dinámicas (blog, case-studies, etc.) usan SSR para que los crawlers
- * reciban HTML con meta OG correctos. Netlify ejecuta el servidor Angular
- * para estas rutas (antes del redirect /* → index.html).
+ * Rutas dinámicas (blog, case-studies, etc.) prerenderizadas o SSR.
+ * Netlify ejecuta el servidor Angular para estas rutas.
  */
 export const serverRoutes: ServerRoute[] = [
   {
     path: 'blog/:slug',
-    renderMode: RenderMode.Server,
+    renderMode: RenderMode.Prerender,
+    getPrerenderParams: async () => getPrerenderSlugs().blog.map((slug) => ({ slug })),
   },
   {
     path: 'resources/case-studies/:slug',
-    renderMode: RenderMode.Server,
+    renderMode: RenderMode.Prerender,
+    getPrerenderParams: async () => getPrerenderSlugs().caseStudy.map((slug) => ({ slug })),
   },
   {
     path: 'industries/:slug',
@@ -20,7 +37,9 @@ export const serverRoutes: ServerRoute[] = [
   },
   {
     path: 'services/:slug',
-    renderMode: RenderMode.Server,
+    renderMode: RenderMode.Prerender,
+    getPrerenderParams: async () =>
+      ['data-ai-solutions', 'cloud-and-infrastructure', 'application-innovation', 'high-performance-computing-hpc', 'modern-work', 'managed-services'].map((slug) => ({ slug })),
   },
   {
     path: 'structured-engagement/:slug',

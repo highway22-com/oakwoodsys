@@ -28,6 +28,9 @@ yarn-error.log
 !.vscode/extensions.json
 .history/*
 
+# Generated at build (prerender-routes.mjs)
+prerender-slugs.json
+
 # Miscellaneous
 /.angular/cache
 .sass-cache/
