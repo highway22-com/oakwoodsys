@@ -28,7 +28,8 @@ function oakwood_get_allowed_origins() {
         'https://oakwoodsys.com',             // Producción (Angular en Netlify)
         'https://www.oakwoodsys.com',         // Producción con www
         'https://oakwoodsys.com',             // Propuesta C: mismo dominio
-        'https://oakwoodsys.netlify.app',     // Netlify
+        'https://oakwoodsys.netlify.app',     // Netlify producción
+        'https://staging-oakwoodsys.netlify.app',  // Netlify staging
     ]);
 }
 

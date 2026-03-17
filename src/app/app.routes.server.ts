@@ -20,10 +20,28 @@ export const serverRoutes: ServerRoute[] = [
   },
   {
     path: 'services/:slug',
-    renderMode: RenderMode.Server,
+    renderMode: RenderMode.Prerender,
+    async getPrerenderParams() {
+      return [
+        { slug: 'data-ai-solutions' },
+        { slug: 'cloud-and-infrastructure' },
+        { slug: 'application-innovation' },
+        { slug: 'high-performance-computing-hpc' },
+        { slug: 'modern-work' },
+        { slug: 'managed-services' },
+      ];
+    },
   },
   {
     path: 'structured-engagement/:slug',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'edit',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'edit/:slug',
     renderMode: RenderMode.Server,
   },
   {
@@ -31,3 +49,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
   },
 ];
+/**
+/services/data-ai-solutions
+/services/cloud-and-infrastructure
+/services/application-innovation
+/services/high-performance-computing-hpc
+/services/modern-work
+/services/managed-services
+ */

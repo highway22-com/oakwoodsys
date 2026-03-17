@@ -1,7 +1,8 @@
 import { inject, Injectable, makeStateKey, PLATFORM_ID, signal, TransferState } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, from } from 'rxjs';
 import { map, catchError, tap, filter, switchMap, take, shareReplay } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import {
@@ -32,7 +33,7 @@ import {
   type RelatedCaseStudyNode,
   type SearchResultItem,
 } from '../api/graphql';
-import { combineLatest } from 'rxjs';
+import { combineLatest, forkJoin } from 'rxjs';
 
 const CMS_PAGE_STATE_KEY = (slug: string) => makeStateKey<CmsPageContent | null>(`cms-page-${slug}`);
 
@@ -41,8 +42,19 @@ const CMS_PAGE_STATE_KEY = (slug: string) => makeStateKey<CmsPageContent | null>
 })
 export class GraphQLContentService {
   private readonly apollo = inject(Apollo);
+  private readonly http = inject(HttpClient);
   private readonly transferState = inject(TransferState);
   private readonly platformId = inject(PLATFORM_ID);
+
+  /** Slugs de servicios (mismo orden que en edit-page y navbar). */
+  private readonly serviceSlugs = [
+    'data-ai-solutions',
+    'cloud-and-infrastructure',
+    'application-innovation',
+    'high-performance-computing-hpc',
+    'modern-work',
+    'managed-services',
+  ] as const;
 
   readonly caseStudies = signal<CaseStudy[]>([]);
   readonly blogs = signal<GenContentListNode[]>([]);
@@ -67,6 +79,59 @@ export class GraphQLContentService {
       this.homePageContentSubject.next(data);
     }).catch(() => {
       this.homePageContentSubject.next(null);
+    });
+  }
+
+  /** Contenido CMS de services (cargado en APP_INITIALIZER). Observable para suscribirse. */
+  private readonly servicesContentSubject = new BehaviorSubject<{ services: Record<string, unknown> } | null>(null);
+  readonly servicesContent$: Observable<{ services: Record<string, unknown> } | null> = this.servicesContentSubject.asObservable();
+
+  /** Carga services en APP_INITIALIZER. Igual que home: fetch directo a service-*.json, luego GraphQL. */
+  loadServicesContent(): Promise<void> {
+    const ts = Date.now();
+    // 1) Intentar services.json (agregado en WordPress)
+    return firstValueFrom(
+      this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/services.json?t=${ts}`, { responseType: 'json' }).pipe(
+        map((data) => data?.services ? { services: data.services } : null),
+        catchError(() => of(null))
+      )
+    ).then((data) => {
+      if (data?.services && Object.keys(data.services).length > 0) {
+        this.servicesContentSubject.next(data);
+        return;
+      }
+      // 2) Si no existe services.json: cargar cada service-{slug}.json y fusionar (como home carga desde archivos)
+      return firstValueFrom(
+        forkJoin(
+          this.serviceSlugs.map((slug) =>
+            this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/service-${slug}.json?t=${ts}`, { responseType: 'json' }).pipe(
+              map((res) => res?.services ?? {}),
+              catchError(() => of({}))
+            )
+          )
+        ).pipe(
+          map((results) => {
+            const merged: Record<string, unknown> = {};
+            results.forEach((svc) => {
+              Object.assign(merged, svc);
+            });
+            return Object.keys(merged).length > 0 ? { services: merged } : null;
+          })
+        )
+      ).then((merged) => {
+        if (merged?.services) {
+          this.servicesContentSubject.next(merged);
+          return;
+        }
+        // 3) Fallback: GraphQL (WordPress agrega service-*.json cuando services.json no existe)
+        return firstValueFrom(this.getCmsPageBySlug('services', { fetchPolicy: 'network-only' }).pipe(
+          map((d) => d as { services: Record<string, unknown> } | null)
+        )).then((graphqlData) => {
+          this.servicesContentSubject.next(graphqlData?.services ? graphqlData : null);
+        });
+      });
+    }).catch(() => {
+      this.servicesContentSubject.next(null);
     });
   }
 
@@ -350,14 +415,20 @@ export class GraphQLContentService {
    * Contenido de una página CMS por slug (home, services, about-us, blog, industries).
    * En servidor (SSR): hace la petición GraphQL y guarda el resultado en TransferState.
    * En cliente (hidratación): reutiliza los datos del TransferState y no vuelve a llamar a GraphQL.
+   * @param slug - Slug de la página (home, services, industries, etc.)
+   * @param options.fetchPolicy - 'network-only' para siempre obtener datos frescos (services, industries agregados)
    */
-  getCmsPageBySlug(slug: string): Observable<CmsPageContent | null> {
+  getCmsPageBySlug(
+    slug: string,
+    options?: { fetchPolicy?: 'cache-and-network' | 'network-only' }
+  ): Observable<CmsPageContent | null> {
     const normalizedSlug = slug.trim();
     if (!normalizedSlug) return of(null);
 
     const stateKey = CMS_PAGE_STATE_KEY(normalizedSlug);
+    const fetchPolicy = options?.fetchPolicy ?? 'cache-and-network';
 
-    if (isPlatformBrowser(this.platformId)) {
+    if (isPlatformBrowser(this.platformId) && fetchPolicy === 'cache-and-network') {
       const cached = this.transferState.get(stateKey, null);
       if (cached !== null) {
         this.transferState.remove(stateKey);
@@ -372,7 +443,7 @@ export class GraphQLContentService {
       .watchQuery<CmsPageResponse>({
         query: GET_CMS_PAGE,
         variables: { slug: normalizedSlug },
-        fetchPolicy: 'cache-and-network',
+        fetchPolicy,
       })
       .valueChanges.pipe(
         filter((result) => !result.loading),
@@ -398,6 +469,88 @@ export class GraphQLContentService {
           return of(null);
         })
       );
+  }
+
+  /**
+   * Contenido de industries desde CMS (slug: industries). Misma estructura que industries-content.json.
+   */
+  getIndustriesContent(): Observable<{ industries: Record<string, unknown> } | null> {
+    return this.getCmsPageBySlug('industries').pipe(
+      map((data) => data as { industries: Record<string, unknown> } | null)
+    );
+  }
+
+  /**
+   * Contenido de services desde CMS (slug: services). Misma estructura que services-content.json.
+   * Usa query directo (no watchQuery) + no-cache para evitar cualquier caché.
+   */
+  getServicesContent(): Observable<{ services: Record<string, unknown> } | null> {
+    this.loading.set(true);
+    this.errors.set(null);
+    return from(
+      this.apollo.query<CmsPageResponse>({
+        query: GET_CMS_PAGE,
+        variables: { slug: 'services' },
+        fetchPolicy: 'no-cache',
+        context: {
+          fetchOptions: {
+            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' },
+          },
+        },
+      })
+    ).pipe(
+      map((result) => {
+        const raw = result.data?.cmsPage?.content ?? null;
+        this.loading.set(false);
+        if (raw == null) return null;
+        try {
+          return JSON.parse(raw) as { services: Record<string, unknown> };
+        } catch {
+          return null;
+        }
+      }),
+      catchError((error) => {
+        this.errors.set(error);
+        this.loading.set(false);
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Contenido del menú/navbar desde CMS (slug: menu). Misma estructura que navbar-content.json.
+   */
+  getMenuContent(): Observable<{ menu: unknown[]; content?: Record<string, unknown> } | null> {
+    return this.getCmsPageBySlug('menu').pipe(
+      map((data) => data as { menu: unknown[]; content?: Record<string, unknown> } | null)
+    );
+  }
+
+  /**
+   * Contenido de resources desde CMS (slug: resources). Misma estructura que resources-content.json.
+   */
+  getResourcesContent(): Observable<Record<string, unknown> | null> {
+    return this.getCmsPageBySlug('resources').pipe(
+      map((data) => data as Record<string, unknown> | null)
+    );
+  }
+
+  /**
+   * Contenido de structured-engagements desde CMS (slug: structured-engagements). Misma estructura que structured-engagement-section.json.
+   */
+  getStructuredEngagementsContent(): Observable<Record<string, unknown> | null> {
+    return this.getCmsPageBySlug('structured-engagements').pipe(
+      map((data) => data as Record<string, unknown> | null)
+    );
+  }
+
+  /**
+   * Contenido de about desde CMS (slug: about). Misma estructura que about-content.json.
+   */
+  getAboutContent(): Observable<Record<string, unknown> | null> {
+    return this.getCmsPageBySlug('about').pipe(
+      map((data) => data as Record<string, unknown> | null)
+    );
   }
 
   /**

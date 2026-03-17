@@ -12,6 +12,7 @@
   to = "https://oakwoodsystemsgroup.com/graphql"
   status = 200
   force = true
+  headers = {Cache-Control = "no-cache", Pragma = "no-cache"}
 
 [[redirects]]
   from = "/api/contact"
@@ -24,6 +25,14 @@
   to = "https://oakwoodsystemsgroup.com/wp-json/oakwood/v1/contact-fields"
   status = 200
   force = true
+
+# CMS JSON (home.json, services.json, service-*.json)
+[[redirects]]
+  from = "/api/cms/*"
+  to = "https://oakwoodsystemsgroup.com/wp-content/uploads/oakwood-cms/:splat"
+  status = 200
+  force = true
+  headers = {Cache-Control = "no-cache", Pragma = "no-cache"}
 
 # Redirección /home → / (canonical home)
 [[redirects]]

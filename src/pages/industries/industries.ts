@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, input, effect } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { Subscription } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
 import { VideoHero } from '../../shared/video-hero/video-hero';
@@ -68,7 +69,7 @@ interface IndustryContent {
   };
 }
 
-interface IndustriesContent {
+export interface IndustriesContent {
   industries: { [key: string]: IndustryContent };
 }
 
@@ -84,14 +85,36 @@ export default class Industries implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
+  private readonly graphql = inject(GraphQLContentService);
   private readonly seoMeta = inject(SeoMetaService);
   private routeSub?: Subscription;
+
+  /** Cuando se proporciona, se usa en lugar de cargar desde JSON (para preview en edit) */
+  readonly contentOverride = input<IndustriesContent | null>(null);
+  /** Slug del industry a mostrar en preview (ej: healthcare) */
+  readonly slugOverride = input<string | null>(null);
 
   readonly slug = signal<string | null>(null);
   readonly content = signal<IndustryContent | null>(null);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   readonly sanitizer = inject(DomSanitizer);
+
+  constructor() {
+    effect(() => {
+      const override = this.contentOverride();
+      const slugOverride = this.slugOverride();
+      if (override?.industries && slugOverride) {
+        const contentKey = Industries.SLUG_TO_KEY[slugOverride] ?? slugOverride;
+        const industry = override.industries[contentKey];
+        if (industry) {
+          this.content.set(industry);
+          this.slug.set(slugOverride);
+        }
+        this.loading.set(false);
+      }
+    });
+  }
 
   ngOnInit() {
     this.routeSub = this.route.paramMap.subscribe(params => {
@@ -138,32 +161,51 @@ export default class Industries implements OnInit, OnDestroy {
   };
 
   private loadContent() {
+    if (this.contentOverride()) {
+      this.loading.set(false);
+      return;
+    }
     this.loading.set(true);
     this.error.set(null);
-    this.http.get<IndustriesContent>('/industries-content.json').subscribe({
-      next: (data) => {
-        const slugValue = this.slug();
-        const contentKey = slugValue ? (Industries.SLUG_TO_KEY[slugValue] ?? slugValue) : null;
-        if (contentKey && data.industries[contentKey]) {
-          const industry = data.industries[contentKey];
-          this.content.set(industry);
-          this.seoMeta.updateMeta({
-            title: `${industry.title} | Oakwood Systems`,
-            description: industry.description,
-            canonicalPath: `/industries/${slugValue}`,
-            image: industry.backgroundImage,
-          });
+    this.graphql.getIndustriesContent().subscribe({
+      next: (data: { industries: Record<string, unknown> } | null) => {
+        if (data?.industries) {
+          this.applyIndustriesContent(data as IndustriesContent);
         } else {
-          this.error.set(slugValue ? `Industry "${slugValue}" not found` : null);
-          this.router.navigate(['/404']);
-          this.seoMeta.updateMeta({
-            title: 'Industries | Oakwood Systems',
-            description: 'Explore how Oakwood Systems helps healthcare, education, and other industries with Microsoft and Azure solutions.',
-            canonicalPath: '/industries',
-          });
+          this.loadFromStaticFile();
         }
-        this.loading.set(false);
       },
+      error: () => this.loadFromStaticFile(),
+    });
+  }
+
+  private applyIndustriesContent(data: IndustriesContent) {
+    const slugValue = this.slug();
+    const contentKey = slugValue ? (Industries.SLUG_TO_KEY[slugValue] ?? slugValue) : null;
+    if (contentKey && data.industries[contentKey]) {
+      const industry = data.industries[contentKey];
+      this.content.set(industry);
+      this.seoMeta.updateMeta({
+        title: `${industry.title} | Oakwood Systems`,
+        description: industry.description,
+        canonicalPath: `/industries/${slugValue}`,
+        image: industry.backgroundImage,
+      });
+    } else {
+      this.error.set(slugValue ? `Industry "${slugValue}" not found` : null);
+      this.router.navigate(['/404']);
+      this.seoMeta.updateMeta({
+        title: 'Industries | Oakwood Systems',
+        description: 'Explore how Oakwood Systems helps healthcare, education, and other industries with Microsoft and Azure solutions.',
+        canonicalPath: '/industries',
+      });
+    }
+    this.loading.set(false);
+  }
+
+  private loadFromStaticFile() {
+    this.http.get<IndustriesContent>('/industries-content.json').subscribe({
+      next: (data) => this.applyIndustriesContent(data),
       error: () => {
         this.error.set('Failed to load content');
         this.loading.set(false);

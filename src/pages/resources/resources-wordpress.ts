@@ -19,6 +19,7 @@ import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-s
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { SeoMetaService } from '../../app/services/seo-meta.service';
+import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { decodeHtmlEntities } from '../../app/utils/cast';
 
 /** Contenido de la página Resources (resources-content.json). */
@@ -123,6 +124,7 @@ export default class Resources implements OnInit {
   searchQuery = signal<string>('');
   private readonly apollo = inject(Apollo);
   private readonly http = inject(HttpClient);
+  private readonly graphql = inject(GraphQLContentService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly router = inject(Router);
   private readonly seoMeta = inject(SeoMetaService);
@@ -257,6 +259,20 @@ export default class Resources implements OnInit {
   }
 
   private loadPageContent() {
+    this.graphql.getResourcesContent().subscribe({
+      next: (data) => {
+        if (data) {
+          this.pageContent.set(data as ResourcesPageContent);
+          this.updateSeoMeta(data as ResourcesPageContent);
+        } else {
+          this.loadResourcesFromStaticFile();
+        }
+      },
+      error: () => this.loadResourcesFromStaticFile(),
+    });
+  }
+
+  private loadResourcesFromStaticFile() {
     this.http.get<ResourcesPageContent>('/resources-content.json').subscribe({
       next: (data) => {
         this.pageContent.set(data);
