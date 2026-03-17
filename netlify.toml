@@ -25,6 +25,13 @@
   status = 200
   force = true
 
+# CMS JSON (home.json, services.json, service-*.json)
+[[redirects]]
+  from = "/api/cms/*"
+  to = "https://oakwoodsystemsgroup.com/wp-content/uploads/oakwood-cms/:splat"
+  status = 200
+  force = true
+
 # Redirección /home → / (canonical home)
 [[redirects]]
   from = "/home"
