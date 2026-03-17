@@ -7,10 +7,11 @@ import { provideMonacoEditor } from 'ngx-monaco-editor-v2';
 import { routes } from './app.routes';
 import { CMS_BASE_URL } from './config/cms.config';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { HttpHeaders, provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { apiNoCacheInterceptor } from './interceptors/api-no-cache.interceptor';
 import { provideApollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
-import { InMemoryCache } from '@apollo/client';
+import { ApolloLink, InMemoryCache } from '@apollo/client';
 import { GraphQLContentService } from './services/graphql-content.service';
 
 /** En browser: ruta relativa (resuelve a localhost:4200/api/graphql en dev). En server: URL absoluta. */
@@ -40,14 +41,23 @@ export const appConfig: ApplicationConfig = {
       routes,
       withComponentInputBinding(),
       withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' })
-    ), provideClientHydration(withEventReplay()), provideHttpClient(withFetch()), provideApollo(() => {
+    ), provideClientHydration(withEventReplay()), provideHttpClient(withFetch(), withInterceptors([apiNoCacheInterceptor])), provideApollo(() => {
       const httpLink = inject(HttpLink);
       const platformId = inject(PLATFORM_ID);
       const isBrowser = isPlatformBrowser(platformId);
       const uri = isBrowser ? GRAPHQL_URI_BROWSER : GRAPHQL_URI_SERVER;
 
+      const noCacheLink = new ApolloLink((operation, forward) => {
+        const ctx = operation.getContext();
+        const existing = (ctx?.headers as HttpHeaders | undefined) ?? new HttpHeaders();
+        const headers = existing
+          .set('Cache-Control', 'no-cache')
+          .set('Pragma', 'no-cache');
+        operation.setContext({ headers });
+        return forward(operation);
+      });
       return {
-        link: httpLink.create({ uri }),
+        link: noCacheLink.concat(httpLink.create({ uri })),
         cache: new InMemoryCache(),
         ssrMode: !isBrowser,
       };

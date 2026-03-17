@@ -7,11 +7,13 @@
 
 # oakwoodsys.com → Angular. WordPress en oakwoodsystemsgroup.com.
 # Proxy solo para API (GraphQL, contact) — evita CORS
+# headers: evita caché en staging/CDN (funciona local, falla en staging)
 [[redirects]]
   from = "/api/graphql"
   to = "https://oakwoodsystemsgroup.com/graphql"
   status = 200
   force = true
+  headers = {Cache-Control = "no-cache", Pragma = "no-cache"}
 
 [[redirects]]
   from = "/api/contact"
@@ -31,6 +33,7 @@
   to = "https://oakwoodsystemsgroup.com/wp-content/uploads/oakwood-cms/:splat"
   status = 200
   force = true
+  headers = {Cache-Control = "no-cache", Pragma = "no-cache"}
 
 # Redirección /home → / (canonical home)
 [[redirects]]
