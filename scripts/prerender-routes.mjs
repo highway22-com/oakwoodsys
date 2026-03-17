@@ -82,10 +82,49 @@ function getSlugsFromJson(filePath, key, slugKey = 'slug') {
   }
 }
 
+const BLOG_SLUGS_FALLBACK = [
+  'oakwood-systems-group-achieves-microsoft-advanced-specialization-for-ai-applications-on-azure',
+  'oakwood-recognized-by-microsoft-for-excellence-in-support-services',
+  'azure-for-ai-ready-data',
+  'migrate-to-innovate',
+  'microsofts-new-commerce-experience-nce-updates-for-csp-april-2025',
+  'modernizing-applications-with-ai',
+  'ai-fatigue-is-real-thats-not-a-bad-thing',
+  'time-to-rethink-your-linux-footprint',
+  'azure-hpc-for-manufacturing',
+  'why-data-is-the-new-backbone-for-innovation',
+  'breaking-data-silos-to-build-better-customer-experiences',
+  'how-unified-platforms-and-ai-are-redefining-modern-banking',
+  'microsoft-licensing-is-changing',
+  'the-excitement-and-hesitation-around-ai-adoption',
+  'the-ai-revolution-has-an-expensive-entry-fee-unless-youre-ready',
+  'copilot-for-every-organization',
+  'microsoft-365-price-increases-coming-july-2026',
+  'unify-your-data-estate-for-ai',
+  'the-key-to-a-secure-cloud-migration',
+];
+
+const CASE_STUDY_SLUGS_FALLBACK = [
+  'sharepoint-online-intranet-modernization',
+  'power-bi-report-development',
+  'strategic-applications-architecture-roadmap',
+  'data-and-power-bi-enablement',
+  'sql-server-and-database-platform-modernization',
+  'ai-sales-agent-development',
+  'microsoft-intune-deployment',
+  'simplifying-complex-data-security-with-fabric',
+  'transforming-hpc-strategy-with-the-amd-hpc-innovation-lab',
+  'secure-azure-research-environment-architecture',
+  'enterprise-reporting-and-data-roadmap-development',
+];
+
 async function main() {
   const routes = ['/', '/blog', '/resources/case-studies'];
 
-  const { blog, caseStudy } = await fetchGraphQLSlugs();
+  let { blog, caseStudy } = await fetchGraphQLSlugs();
+  if (blog.length === 0) blog = BLOG_SLUGS_FALLBACK;
+  if (caseStudy.length === 0) caseStudy = CASE_STUDY_SLUGS_FALLBACK;
+
   blog.forEach((s) => routes.push(`/blog/${s}`));
   caseStudy.forEach((s) => routes.push(`/resources/case-studies/${s}`));
 
@@ -99,6 +138,11 @@ async function main() {
   const outPath = join(ROOT, 'prerender-routes.txt');
   writeFileSync(outPath, routes.join('\n') + '\n', 'utf8');
   console.log(`[prerender-routes] Wrote ${routes.length} routes to prerender-routes.txt`);
+
+  // JSON para getPrerenderParams (blog y case-studies)
+  const slugsPath = join(ROOT, 'prerender-slugs.json');
+  writeFileSync(slugsPath, JSON.stringify({ blog, caseStudy }, null, 2), 'utf8');
+  console.log(`[prerender-routes] Wrote prerender-slugs.json (blog: ${blog.length}, caseStudy: ${caseStudy.length})`);
 }
 
 main().catch((e) => {
