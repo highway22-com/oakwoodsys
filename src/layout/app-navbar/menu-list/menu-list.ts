@@ -27,7 +27,7 @@ export class MenuList {
   readonly featuredBlogs = input<FeaturedBlogItem[]>([]);
 
   get featuredCaseStudiesArticles(): ArticleCardArticle[] {
-    return this.caseStudies().map((c) => this.toArticleCard(c));
+    return this.caseStudies().slice(0, 1).map((c) => this.toArticleCard(c));
   }
 
   content = input<MenuItem[]>([]);
