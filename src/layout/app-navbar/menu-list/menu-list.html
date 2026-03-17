@@ -4,12 +4,12 @@
         <div class="flex-7/12 grid grid-cols-3 md:grid-cols-2 gap-0 p-5">
             @for (industry of content(); track industry.id) {
             <a [routerLink]="industry.link"
-                class="flex w-full group hover:bg-slate-50 transition-all duration-300 relative overflow-hidden  p-5 max-h-[150px] ">
+                class="flex w-full group hover:bg-slate-50 transition-all duration-300 relative overflow-hidden  p-3 max-h-[150px] ">
                 <div class="flex flex-row ">
                     <!-- Icon Container (Left) -->
                     <div class="pr-5 shrink-0">
-                        <div class="size-7 flex items-center justify-center">
-                            <img [src]="industry.icon" [alt]="industry.name" class="size-7 object-contain" />
+                        <div class="size-6 flex items-center justify-center">
+                            <img [src]="industry.icon" [alt]="industry.name" class="size-6 object-contain" />
                         </div>
                     </div>
                     <!-- Text Content (Right) -->
@@ -18,7 +18,7 @@
                         <div class="pr-10">
                             <div class="flex items-start justify-between gap-2">
                                 <h3
-                                    class="text-lg leading-6 text-s-600 group-hover:text-primary-blue pb-2 md:pb-3 flex-1">
+                                    class="text-base font-semibold leading-6 text-s-600 group-hover:text-primary-blue  flex-1">
                                     {{industry.name}}
                                 </h3>
                                 <!-- Arrow icon that appears on hover -->
@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div class="absolute top-[40%] right-6">
-                    <svg class="w-5 h-5 text-primary-blue opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 "
+                    <svg class="w-4 h-4 text-primary-blue opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 "
                         xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
                         <path
                             d="M16.1829 9.83507e-07C16.5784 1.01808e-06 16.886 0.307618 16.886 0.703126L16.886 11.9531C16.886 12.3486 16.5784 12.6563 16.1829 12.6563C15.7874 12.6563 15.4797 12.3486 15.4797 11.9531L15.4797 2.41699L1.19751 16.6553C0.933838 16.9189 0.494385 16.9189 0.230713 16.6553C-0.0769043 16.3916 -0.0769043 15.9521 0.230713 15.6885L14.469 1.40625L4.93286 1.40625C4.53735 1.40625 4.22974 1.09863 4.22974 0.703125C4.22974 0.307617 4.53735 -3.45764e-08 4.93286 0L16.1829 9.83507e-07Z"
@@ -62,9 +62,9 @@
                                     <img [src]="article.image?.url" [alt]="(article.image?.alt ?? article.title) ?? ''"
                                         class="w-full h-full object-cover" loading="lazy" />
                                 </div>
-                                <div class="flex flex-col  justify-between gap-8">
-                                    <h5
-                                        class="text-base text-s-900 group-hover:text-p-500 transition-colors duration-200 mt-2">
+                                <div class="flex flex-col   gap-6">
+                                    <h5 [title]="article.title"
+                                        class="text-base text-s-900 group-hover:text-p-500 transition-colors duration-200 mt-2 line-clamp-2">
                                         {{ article.title }}
                                     </h5>
                                     <div
@@ -94,9 +94,9 @@
                                     <img [src]="article.image" [alt]="( article.title) ?? ''"
                                         class="w-full h-full object-cover" loading="lazy" />
                                 </div>
-                                <div class="flex flex-col  justify-between gap-8">
-                                    <h5
-                                        class="text-base text-s-900 group-hover:text-p-500 transition-colors duration-200 mt-2">
+                                <div class="flex flex-col   gap-6">
+                                    <h5 [title]="article.title"
+                                        class="text-base text-s-900 group-hover:text-p-500 transition-colors duration-200 mt-2 line-clamp-2">
                                         {{ article.title }}
                                     </h5>
                                     <div
