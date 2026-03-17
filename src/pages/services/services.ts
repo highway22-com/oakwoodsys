@@ -244,7 +244,22 @@ export default class Services implements OnInit, OnDestroy {
         }
         this.structuredEngagementSection.set({ ...section });
       }
+      if (slugParam) {
+        this.updateMetadataFromSlug(slugParam);
+      }
       this.loadContent();
+    });
+  }
+
+  /** Meta desde slug (prerender/SSR cuando el contenido aún no carga). */
+  private updateMetadataFromSlug(slug: string) {
+    const fallback = this.SLUG_META[slug];
+    const title = fallback ? `${fallback.title} | Oakwood Systems` : `${slug} | Oakwood Systems`;
+    const description = fallback?.description ?? 'Microsoft Solutions Partner for Azure, Data & AI, and Modern Work.';
+    this.seoMeta.updateMeta({
+      title,
+      description,
+      canonicalPath: `/services/${slug}`,
     });
   }
 
@@ -282,9 +297,17 @@ export default class Services implements OnInit, OnDestroy {
     }
   }
 
-  private updateMetadata(content: ServiceContent) {
-    if (!isPlatformBrowser(this.platformId)) return;
+  /** Meta por defecto desde slug (prerender/SSR cuando el API no carga). */
+  private readonly SLUG_META: Record<string, { title: string; description: string }> = {
+    'data-ai-solutions': { title: 'Data & AI', description: 'Unify, govern, and activate your data estate to deliver real AI outcomes with Microsoft Fabric, Synapse, Power BI, and Azure AI.' },
+    'cloud-and-infrastructure': { title: 'Cloud & Infrastructure', description: 'Future-proof your business with scalable, secure, and optimized cloud solutions on Azure.' },
+    'application-innovation': { title: 'Application Innovation', description: 'Modernize existing applications and build new digital solutions using cloud and AI.' },
+    'high-performance-computing-hpc': { title: 'High Performance Computing (HPC)', description: 'Scale simulations, AI training, and PLM workloads with the power of Azure HPC.' },
+    'modern-work': { title: 'Modern Work', description: 'Boost productivity, protect data, and improve employee experience with Microsoft 365 and Copilot.' },
+    'managed-services': { title: 'Managed Services', description: 'Keep your Microsoft cloud running fast, secure, and cost effective with Oakwood.' },
+  };
 
+  private updateMetadata(content: ServiceContent) {
     const s = content.seo;
     const title = s?.headTitle?.trim() || `${content.title} | Oakwood Systems`;
     const description = s?.headDescription?.trim() || content.mainDescription?.text || content.description;

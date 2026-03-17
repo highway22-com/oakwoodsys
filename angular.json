@@ -31,7 +31,8 @@
             ],
             "server": "src/main.server.ts",
             "prerender": {
-              "discoverRoutes": true
+              "discoverRoutes": true,
+              "routesFile": "prerender-routes.txt"
             },
             "outputMode": "server",
             "ssr": {
