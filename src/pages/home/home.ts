@@ -9,11 +9,12 @@ import {
   PLATFORM_ID,
   signal,
   DOCUMENT,
+  input,
+  effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule, NgClass, isPlatformBrowser } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
 import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-study/featured-case-study-category';
@@ -60,7 +61,6 @@ export function splitTwoLinerTitle(title: string): [string, string] {
   imports: [
     CommonModule,
     NgClass,
-    FormsModule,
     RouterLink,
     VideoHero,
     ScrollAnimationComponent,
@@ -77,6 +77,9 @@ export function splitTwoLinerTitle(title: string): [string, string] {
 export default class Home implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+
+  /** Cuando se proporciona (ej: preview en edit-page), se usa en lugar de homePageContent$ */
+  readonly contentOverride = input<CmsPageContent | null>(null);
 
   goToContactUs() {
     this.router.navigate(['/contact-us']);
@@ -106,30 +109,30 @@ export default class Home implements OnInit {
   readonly posts = signal<any>(null);
   readonly error = signal<any>(null);
   readonly structuredData = signal<any>(null);
-  readonly editMode = signal(false);
-  readonly saving = signal(false);
-  readonly saveSuccess = signal(false);
-  readonly panelVisible = signal(false);
   scrollAnimationVisible = signal(false);
   scrollAnimationReverse = signal(false);
-  jsonContent: string = '';
-  readonly jsonError = signal<string | null>(null);
 
-  constructor() { }
+  constructor() {
+    effect(() => {
+      const override = this.contentOverride();
+      if (override) {
+        this.applyContent(override);
+      }
+    });
+  }
 
   ngOnInit() {
-    this.route.queryParams
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((params) => {
-        this.editMode.set(params['edit'] === 'true');
-      });
+    // Si hay contentOverride, el effect lo aplica; si no, cargar desde GraphQL
+    const override = this.contentOverride();
+    if (override) {
+      return;
+    }
 
     // Contenido desde servicio (precargado en APP_INITIALIZER vía homePageContent$)
     this.graphql.homePageContent$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
-          console.log(JSON.stringify(data, null, 2), 'data here');
           if (data) {
             this.applyContent(data);
           } else {
@@ -166,9 +169,6 @@ export default class Home implements OnInit {
       if (urls.length > 0) {
         this.videoUrls.set(urls);
       }
-    }
-    if (this.editMode()) {
-      this.jsonContent = JSON.stringify(data, null, 2);
     }
     this.updateMetadata(data);
     this.updateStructuredData(data);
@@ -299,12 +299,14 @@ export default class Home implements OnInit {
     };
   }
 
-  private updateMetadata(_content: CmsPageContent) {
-    // Home siempre usa los valores SEO de index.html para consistencia en Google
+  private updateMetadata(content: CmsPageContent) {
+    const s = content.seo;
     this.seoMeta.updateMeta({
-      title: DEFAULT_TITLE,
-      description: DEFAULT_DESCRIPTION,
+      title: s?.headTitle?.trim() || DEFAULT_TITLE,
+      description: s?.headDescription?.trim() || DEFAULT_DESCRIPTION,
       canonicalPath: '/',
+      image: s?.ogImage?.trim() || undefined,
+      keywords: s?.keywords?.trim() || undefined,
     });
   }
 
@@ -399,53 +401,6 @@ export default class Home implements OnInit {
     return data ? JSON.stringify(data) : '';
   }
 
-  togglePanel() {
-    this.panelVisible.set(!this.panelVisible());
-  }
-
-  onJsonChange(event: Event) {
-    const target = event.target as HTMLTextAreaElement;
-    this.jsonContent = target.value;
-
-    try {
-      const parsed = JSON.parse(this.jsonContent);
-      this.jsonError.set(null);
-
-      // Update content in real-time
-      this.content.set(parsed);
-
-      // Update video URLs: desde ctas o videoUrls
-      if (parsed.ctas && Array.isArray(parsed.ctas) && parsed.ctas.length > 0) {
-        const urls = parsed.ctas
-          .map((c: { videoUrl?: string }) => c.videoUrl)
-          .filter(
-            (url: unknown): url is string =>
-              typeof url === 'string' && url.trim().length > 0,
-          );
-        if (urls.length > 0) this.videoUrls.set(urls);
-      } else if (
-        parsed.videoUrls &&
-        Array.isArray(parsed.videoUrls) &&
-        parsed.videoUrls.length > 0
-      ) {
-        const links = parsed.videoUrls.filter(
-          (url: unknown): url is string =>
-            typeof url === 'string' && url.trim().length > 0,
-        );
-        this.videoUrls.set(links);
-      }
-
-      // Update metadata and structured data
-      this.updateMetadata(parsed);
-      this.updateStructuredData(parsed);
-    } catch (error) {
-      this.jsonError.set(
-        'JSON inválido: ' +
-        (error instanceof Error ? error.message : 'Error desconocido'),
-      );
-    }
-  }
-
   handleScrollAnimation() {
     const el = document.querySelector('.scroll-animation-section');
     if (!el) return;
@@ -457,33 +412,5 @@ export default class Home implements OnInit {
     this.scrollAnimationReverse.set(this.lastScrollVisible && !visible);
     this.scrollAnimationVisible.set(visible);
     this.lastScrollVisible = visible;
-  }
-
-  /** Copia el contenido JSON del editor al portapapeles. */
-  copyToClipboard() {
-    if (!this.content() || this.jsonError()) return;
-
-    this.saving.set(true);
-    this.saveSuccess.set(false);
-
-    if (!isPlatformBrowser(this.platformId)) {
-      this.saving.set(false);
-      return;
-    }
-
-    navigator.clipboard
-      .writeText(this.jsonContent)
-      .then(
-        () => {
-          this.saveSuccess.set(true);
-          setTimeout(() => this.saveSuccess.set(false), 3000);
-        },
-        () => {
-          alert('No se pudo copiar al portapapeles.');
-        },
-      )
-      .finally(() => {
-        this.saving.set(false);
-      });
   }
 }

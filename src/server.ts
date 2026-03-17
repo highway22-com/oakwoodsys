@@ -298,6 +298,31 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
     return handleAuth(request);
   }
 
+  // API endpoint for CMS JSON files (home.json, services.json, service-*.json)
+  if (pathname.startsWith('/api/cms/')) {
+    const filePath = pathname.replace(/^\/api\/cms\/?/, '') || 'index.json';
+    const cmsUrl = `${CMS_BASE_URL}/wp-content/uploads/oakwood-cms/${filePath}`;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      const response = await fetch(cmsUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!response.ok) {
+        return new Response(null, { status: response.status });
+      }
+      const data = await response.json().catch(() => null);
+      return Response.json(data, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+        },
+      });
+    } catch (err: any) {
+      if (err?.name === 'AbortError') return new Response(null, { status: 504 });
+      return new Response(null, { status: 502 });
+    }
+  }
+
   // API endpoint for GraphQL proxy (bypasses CORS)
   if (pathname === '/api/graphql') {
     const corsHeaders = {

@@ -46,7 +46,7 @@ export class MicrosoftServices {
       name: 'Modern Work',
       link: '/services/modern-work',
       desc: 'Boost productivity with Microsoft 365 and Copilot',
-      details: 'Boost productivity, protect data, and improve employee experience with Microsoft 365 and Copilot for modern collaboration.',
+      details: 'xxBoost productivity, protect data, and improve employee experience with Microsoft 365 and Copilot for modern collaboration.',
       icon: '/assets/modern-work.png'
     },
     {

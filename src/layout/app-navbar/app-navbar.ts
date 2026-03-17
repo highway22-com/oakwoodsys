@@ -149,7 +149,7 @@ export class AppNavbar implements OnInit, OnDestroy {
         const sorted = [..._list].sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.featuredCaseStudies.set(sorted.slice(0, 2));
+        this.featuredCaseStudies.set(sorted.slice(0, 1));
       });
       this.graphql.getBlogs().subscribe((list) => {
         const filtered = [...list].filter(n => n.genContentCategories?.nodes?.find(c => c.slug === 'featured-blog-menu'));
@@ -158,7 +158,7 @@ export class AppNavbar implements OnInit, OnDestroy {
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
         this.featuredBlogs.set(
-          sorted.slice(0, 2).map((n) => ({
+          sorted.slice(0, 1).map((n) => ({
             id: n.id,
             title: n.title,
             link: `/blog/${n.slug}`,

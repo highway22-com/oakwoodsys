@@ -6,6 +6,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { StructuredEngagementsSectionComponent } from '../../shared/sections/structured-engagements/structured-engagements';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
@@ -99,12 +100,21 @@ interface CTASection {
   };
 }
 
+interface ServiceSeo {
+  headTitle?: string;
+  headDescription?: string;
+  ogImage?: string;
+  keywords?: string;
+}
+
 interface ServiceContent {
   slug: string;
   title: string;
   description: string;
   backgroundImage?: string;
   videoUrls?: string[];
+  /** Optional. SEO meta (title, description, ogImage, keywords). */
+  seo?: ServiceSeo;
   mainDescription?: {
     text: string;
   };
@@ -170,7 +180,7 @@ export default class Services implements OnInit, OnDestroy {
   readonly structuredData = signal<any>(null);
   readonly structuredEngagementSection = signal<any>(null);
   readonly showStructuredEngagements = signal(true);
- 
+
   constructor() {
     effect(() => {
       const override = this.contentOverride();
@@ -198,11 +208,6 @@ export default class Services implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
-
-    // Set default meta description for services pages
-    this.setDefaultMetadata();
-
     // Load structured engagement section from CMS (GraphQL) or fallback to JSON
     this.graphql.getStructuredEngagementsContent().subscribe({
       next: (data) => {
@@ -250,16 +255,6 @@ export default class Services implements OnInit, OnDestroy {
     });
   }
 
-  private setDefaultMetadata() {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    this.seoMeta.updateMeta({
-      title: 'Services | Oakwood Systems',
-      description: 'Explore Oakwood Systems\' Microsoft services including Data & AI, Cloud Infrastructure, Application Innovation, High-Performance Computing, Modern Work, and Managed Services.',
-      canonicalPath: '/services',
-    });
-  }
-
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
       // Start auto-scrolling the logo carousel
@@ -290,12 +285,16 @@ export default class Services implements OnInit, OnDestroy {
   private updateMetadata(content: ServiceContent) {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    const description = content.mainDescription?.text || content.description;
+    const s = content.seo;
+    const title = s?.headTitle?.trim() || `${content.title} | Oakwood Systems`;
+    const description = s?.headDescription?.trim() || content.mainDescription?.text || content.description;
+    const image = s?.ogImage?.trim() || content.backgroundImage;
     this.seoMeta.updateMeta({
-      title: `${content.title} | Oakwood Systems`,
+      title,
       description,
       canonicalPath: `/services/${content.slug}`,
-      image: content.backgroundImage,
+      image,
+      keywords: s?.keywords?.trim() || undefined,
     });
   }
 
@@ -355,15 +354,46 @@ export default class Services implements OnInit, OnDestroy {
     this.loading.set(true);
     this.error.set(null);
 
-    this.graphql.getServicesContent().subscribe({
+    const slugValue = this.slug();
+    if (!slugValue) {
+      this.loading.set(false);
+      return;
+    }
+    // 1) Direct fetch (bypassa GraphQL y caché). /api/cms se proxea a WordPress en dev.
+    const cmsUrl = `/api/cms/service-${slugValue}.json?t=${Date.now()}`;
+    this.http.get<ServicesContent>(cmsUrl, { responseType: 'json' }).pipe(take(1)).subscribe({
       next: (data) => {
         if (data?.services) {
           this.applyServicesContent(data as ServicesContent);
         } else {
-          this.loadServicesFromStaticFile();
+          this.loadFromGraphQLOrStatic();
         }
       },
-      error: () => this.loadServicesFromStaticFile(),
+      error: () => this.loadFromGraphQLOrStatic(),
+    });
+  }
+
+  private loadFromGraphQLOrStatic() {
+    const slugValue = this.slug();
+    if (!slugValue) {
+      this.loading.set(false);
+      return;
+    }
+    this.graphql.servicesContent$.pipe(take(1)).subscribe((preloaded) => {
+      if (preloaded?.services && preloaded.services[slugValue]) {
+        this.applyServicesContent(preloaded as ServicesContent);
+        return;
+      }
+      this.graphql.getServicesContent().pipe(take(1)).subscribe({
+        next: (data) => {
+          if (data?.services) {
+            this.applyServicesContent(data as ServicesContent);
+          } else {
+            this.loadServicesFromStaticFile();
+          }
+        },
+        error: () => this.loadServicesFromStaticFile(),
+      });
     });
   }
 
@@ -391,7 +421,13 @@ export default class Services implements OnInit, OnDestroy {
   }
 
   private loadServicesFromStaticFile() {
-    this.http.get<ServicesContent>('/services-content.json').subscribe({
+    const slugValue = this.slug();
+    if (!slugValue) {
+      this.error.set('Service slug is required');
+      this.loading.set(false);
+      return;
+    }
+    this.http.get<ServicesContent>(`/service-${slugValue}.json`).subscribe({
       next: (data) => this.applyServicesContent(data),
       error: () => {
         this.error.set('Failed to load service content');

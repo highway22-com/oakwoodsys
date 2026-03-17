@@ -2,15 +2,15 @@
 /**
  * Plugin Name: Oakwood CMS
  * Plugin URI: https://oakwoodsys.com
- * Description: Sirve JSON de páginas desde archivos. Sin base de datos: pones home.json, services.json, etc. en wp-content/uploads/oakwood-cms/ y este plugin los expone por GraphQL (WPGraphQL).
- * Version: 1.0.3
+ * Description: Serves page JSON from files. No database: place home.json, services.json, etc. in wp-content/uploads/oakwood-cms/ and this plugin exposes them via GraphQL (WPGraphQL).
+ * Version: 1.0.5
  * Author: Aetro
  * Author URI: https://torre.ai/luisnoejasso?r=7zLtySsb
  * License: GPL v2 or later
  * Text Domain: oakwood-cms
  *
- * Requiere: WPGraphQL. Opcional: Advanced Custom Fields (ACF) para editar el JSON desde un grupo de campos.
- * Uso: archivos JSON en wp-content/uploads/oakwood-cms/. Query: cmsPage(slug: "home") { content }.
+ * Requires: WPGraphQL. Optional: Advanced Custom Fields (ACF) to edit JSON from a field group.
+ * Usage: JSON files in wp-content/uploads/oakwood-cms/. Query: cmsPage(slug: "home") { content }.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -67,7 +67,7 @@ function oakwood_cms_register_post_type() {
 add_action( 'init', 'oakwood_cms_register_post_type' );
 
 /**
- * Ruta base donde se leen los JSON (directorio dentro de uploads).
+ * Base path where JSON files are read (directory inside uploads).
  */
 function oakwood_cms_upload_dir() {
 	$upload = wp_upload_dir();
@@ -88,7 +88,40 @@ define( 'OAKWOOD_CMS_HISTORY_META_KEY', '_oakwood_page_content_history' );
 define( 'OAKWOOD_CMS_HISTORY_MAX', 20 );
 
 /**
- * Resolver GraphQL cmsPage: primero archivo, luego post meta (si editaron en WP).
+ * When slug is "services" and services.json does not exist, aggregate all service-*.json files.
+ */
+function oakwood_cms_aggregate_services_from_files() {
+	$base = oakwood_cms_upload_dir();
+	if ( ! is_dir( $base ) ) {
+		return null;
+	}
+	clearstatcache( true, $base );
+	$services = array();
+	$files   = glob( $base . '/service-*.json' );
+	foreach ( $files as $file ) {
+		$raw = is_readable( $file ) ? file_get_contents( $file ) : '';
+		if ( $raw === '' ) {
+			continue;
+		}
+		$decoded = json_decode( $raw, true );
+		if ( ! is_array( $decoded ) || empty( $decoded['services'] ) ) {
+			continue;
+		}
+		foreach ( $decoded['services'] as $service_slug => $service_data ) {
+			if ( is_array( $service_data ) ) {
+				$services[ $service_slug ] = $service_data;
+			}
+		}
+	}
+	if ( empty( $services ) ) {
+		return null;
+	}
+	return array( 'page' => 'services', 'services' => $services );
+}
+
+/**
+ * GraphQL cmsPage resolver: file first, then post meta (if edited in WP).
+ * For slug "services": if services.json missing, aggregates service-*.json files.
  */
 function oakwood_cms_graphql_resolve( $root, array $args ) {
 	$slug = isset( $args['slug'] ) ? $args['slug'] : '';
@@ -101,7 +134,14 @@ function oakwood_cms_graphql_resolve( $root, array $args ) {
 			return array( 'content' => wp_json_encode( $data ) );
 		}
 	}
-	// Fallback: post por slug (contenido guardado en meta)
+	// Special case: slug "services" - aggregate service-*.json when services.json missing
+	if ( $slug === 'services' ) {
+		$aggregated = oakwood_cms_aggregate_services_from_files();
+		if ( $aggregated !== null ) {
+			return array( 'content' => wp_json_encode( $aggregated ) );
+		}
+	}
+	// Fallback: post by slug (content saved in meta)
 	$posts = get_posts( array(
 		'post_type'      => 'oakwood_page',
 		'name'           => $slug,
@@ -127,31 +167,31 @@ function oakwood_cms_graphql_resolve( $root, array $args ) {
 }
 
 /**
- * Registrar tipo y campo en WPGraphQL.
+ * Register type and field in WPGraphQL.
  */
 function oakwood_cms_register_graphql() {
 	if ( ! function_exists( 'register_graphql_object_type' ) || ! function_exists( 'register_graphql_field' ) ) {
 		return;
 	}
-	// Tipo: contenido de una página CMS (nombre único para evitar DUPLICATE_TYPE con otros plugins).
+	// Type: CMS page content (unique name to avoid DUPLICATE_TYPE with other plugins).
 	register_graphql_object_type( 'OakwoodCmsPageContent', array(
-		'description' => __( 'Contenido de una página CMS (home, services, about-us, bloq, industries). El campo content es el JSON completo.', 'oakwood-cms' ),
+		'description' => __( 'Content of a CMS page (home, services, about-us, bloq, industries). The content field is the complete JSON.', 'oakwood-cms' ),
 		'fields'      => array(
 			'content' => array(
 				'type'        => 'String',
-				'description' => __( 'JSON completo de la página (page, videoUrls?, sections).', 'oakwood-cms' ),
+				'description' => __( 'Complete page JSON (page, videoUrls?, sections).', 'oakwood-cms' ),
 			),
 		),
 	) );
 
 	// RootQuery: cmsPage(slug: String): OakwoodCmsPageContent
 	register_graphql_field( 'RootQuery', 'cmsPage', array(
-		'description' => __( 'Contenido de una página CMS por slug (home, services, about-us, bloq, industries).', 'oakwood-cms' ),
+		'description' => __( 'CMS page content by slug (home, services, about-us, bloq, industries).', 'oakwood-cms' ),
 		'type'        => 'OakwoodCmsPageContent',
 		'args'        => array(
 			'slug' => array(
 				'type'        => array( 'non_null' => 'String' ),
-				'description' => __( 'Slug de la página.', 'oakwood-cms' ),
+				'description' => __( 'Page slug.', 'oakwood-cms' ),
 			),
 		),
 		'resolve'     => function ( $source, $args, $context, $info ) {
@@ -162,7 +202,7 @@ function oakwood_cms_register_graphql() {
 add_action( 'graphql_register_types', 'oakwood_cms_register_graphql' );
 
 /**
- * Meta box para editar el JSON (solo si ACF no está activo; si ACF está activo se usa el grupo "CMS Page Content").
+ * Meta box to edit JSON (only if ACF is not active; if ACF is active, the "CMS Page Content" field group is used).
  */
 function oakwood_cms_add_meta_box() {
 	if ( function_exists( 'acf_add_local_field_group' ) ) {
@@ -180,12 +220,12 @@ function oakwood_cms_add_meta_box() {
 add_action( 'add_meta_boxes', 'oakwood_cms_add_meta_box' );
 
 /**
- * Meta box: vista previa del JSON (formato legible, se actualiza al editar el textarea).
+ * Meta box: JSON preview (readable format, updates when editing the textarea).
  */
 function oakwood_cms_add_preview_meta_box() {
 	add_meta_box(
 		'oakwood_cms_preview',
-		__( 'Vista previa del JSON', 'oakwood-cms' ),
+		__( 'JSON Preview', 'oakwood-cms' ),
 		'oakwood_cms_preview_meta_box_callback',
 		'oakwood_page',
 		'normal',
@@ -195,12 +235,12 @@ function oakwood_cms_add_preview_meta_box() {
 add_action( 'add_meta_boxes', 'oakwood_cms_add_preview_meta_box' );
 
 /**
- * Meta box: historial de cambios del JSON (lista + Restaurar).
+ * Meta box: JSON change history (list + Restore).
  */
 function oakwood_cms_add_history_meta_box() {
 	add_meta_box(
 		'oakwood_cms_history',
-		__( 'Historial de cambios', 'oakwood-cms' ),
+		__( 'Change History', 'oakwood-cms' ),
 		'oakwood_cms_history_meta_box_callback',
 		'oakwood_page',
 		'side',
@@ -213,17 +253,17 @@ function oakwood_cms_meta_box_callback( \WP_Post $post ) {
 	$content = get_post_meta( $post->ID, OAKWOOD_CMS_META_KEY, true );
 	$slug    = $post->post_name;
 	wp_nonce_field( 'oakwood_cms_save', 'oakwood_cms_nonce' );
-	echo '<p><strong>' . esc_html__( 'Slug (ruta):', 'oakwood-cms' ) . '</strong> <code>' . esc_html( $slug ) . '</code>';
+	echo '<p><strong>' . esc_html__( 'Slug (path):', 'oakwood-cms' ) . '</strong> <code>' . esc_html( $slug ) . '</code>';
 	if ( ! in_array( $slug, array( 'home', 'services', 'about-us', 'bloq', 'industries' ), true ) ) {
-		echo '<br><em>' . esc_html__( 'Recomendado: home, services, about-us, bloq, industries (edita el slug del post).', 'oakwood-cms' ) . '</em>';
+		echo '<br><em>' . esc_html__( 'Recommended: home, services, about-us, bloq, industries (edit the post slug).', 'oakwood-cms' ) . '</em>';
 	}
 	echo '</p>';
-	echo '<p><label for="oakwood_cms_content">' . esc_html__( 'JSON (misma estructura que home-content.json):', 'oakwood-cms' ) . '</label><br>';
+	echo '<p><label for="oakwood_cms_content">' . esc_html__( 'JSON (same structure as home-content.json):', 'oakwood-cms' ) . '</label><br>';
 	echo '<textarea id="oakwood_cms_content" name="oakwood_cms_content" rows="20" class="large-text code oakwood-cms-json-source" style="width:100%; font-family: monospace;">' . esc_textarea( $content ) . '</textarea></p>';
 }
 
 function oakwood_cms_preview_meta_box_callback( \WP_Post $post ) {
-	echo '<p class="description">' . esc_html__( 'Vista en vivo del JSON mientras editas. Si el JSON no es válido se mostrará un aviso.', 'oakwood-cms' ) . '</p>';
+	echo '<p class="description">' . esc_html__( 'Live view of the JSON while editing. If the JSON is invalid, a notice will be shown.', 'oakwood-cms' ) . '</p>';
 	echo '<pre id="oakwood-cms-json-preview" class="oakwood-cms-preview" style="max-height:320px; overflow:auto; padding:12px; background:#f6f7f7; border:1px solid #c3c4c7; border-radius:4px; font-size:12px; white-space:pre-wrap; word-break:break-all;"></pre>';
 	oakwood_cms_preview_script();
 }
@@ -234,7 +274,7 @@ function oakwood_cms_history_meta_box_callback( \WP_Post $post ) {
 		$history = array();
 	}
 	if ( empty( $history ) ) {
-		echo '<p class="description">' . esc_html__( 'Aún no hay historial. Se guardará una entrada cada vez que guardes la página.', 'oakwood-cms' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'No history yet. An entry will be saved each time you save the page.', 'oakwood-cms' ) . '</p>';
 		return;
 	}
 	$history_for_js = array();
@@ -242,13 +282,13 @@ function oakwood_cms_history_meta_box_callback( \WP_Post $post ) {
 	foreach ( array_slice( $history, 0, OAKWOOD_CMS_HISTORY_MAX ) as $i => $entry ) {
 		$date = isset( $entry['date'] ) ? $entry['date'] : '';
 		$user = isset( $entry['user'] ) ? get_user_by( 'id', $entry['user'] ) : null;
-		$user_name = $user ? $user->display_name : __( 'Desconocido', 'oakwood-cms' );
+		$user_name = $user ? $user->display_name : __( 'Unknown', 'oakwood-cms' );
 		$content = isset( $entry['content'] ) ? $entry['content'] : '';
 		$history_for_js[] = array( 'content' => $content );
 		$date_formatted = $date ? wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $date ) ) : '';
 		echo '<li style="margin-bottom:8px;">';
 		echo '<span style="font-size:11px; color:#646970;">' . esc_html( $date_formatted ) . ' · ' . esc_html( $user_name ) . '</span><br>';
-		echo '<button type="button" class="button button-small oakwood-cms-restore" data-index="' . (int) $i . '" style="margin-top:4px;">' . esc_html__( 'Restaurar', 'oakwood-cms' ) . '</button>';
+		echo '<button type="button" class="button button-small oakwood-cms-restore" data-index="' . (int) $i . '" style="margin-top:4px;">' . esc_html__( 'Restore', 'oakwood-cms' ) . '</button>';
 		echo '</li>';
 	}
 	echo '</ul>';
@@ -278,7 +318,7 @@ function oakwood_cms_preview_script() {
 				pre.textContent = JSON.stringify(data, null, 2);
 				pre.style.color = '';
 			} catch (e) {
-				pre.textContent = 'JSON no válido: ' + e.message;
+				pre.textContent = 'Invalid JSON: ' + e.message;
 				pre.style.color = '#b32d2e';
 			}
 		}
@@ -349,7 +389,7 @@ function oakwood_cms_save_meta( $post_id ) {
 	$previous = get_post_meta( $post_id, OAKWOOD_CMS_META_KEY, true );
 	update_post_meta( $post_id, OAKWOOD_CMS_META_KEY, $raw );
 	oakwood_cms_push_history( $post_id, $raw, $previous );
-	// Escribir también al archivo para que GraphQL pueda leer desde archivo
+	// Also write to file so GraphQL can read from file
 	$post = get_post( $post_id );
 	if ( $post && $post->post_name ) {
 		$path = oakwood_cms_file_path( $post->post_name );
@@ -363,6 +403,8 @@ function oakwood_cms_save_meta( $post_id ) {
 				if ( is_array( $data ) ) {
 					$data['page'] = $post->post_name;
 					file_put_contents( $path, wp_json_encode( $data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT ) );
+					clearstatcache( true, $path );
+					do_action( 'oakwood_cms_content_saved', $post_id, $path );
 				}
 			}
 		}
@@ -371,20 +413,41 @@ function oakwood_cms_save_meta( $post_id ) {
 add_action( 'save_post_oakwood_page', 'oakwood_cms_save_meta' );
 
 /**
- * Cuando se guarda desde ACF, sincronizar el JSON al archivo para que GraphQL pueda leer desde archivo.
+ * When saving from ACF, sync JSON to file so GraphQL can read from file.
+ * Priority 5 = before ACF saves to DB; we read $_POST directly (exact user input, no cache).
  */
 function oakwood_cms_acf_save_post_sync_file( $post_id ) {
 	if ( get_post_type( $post_id ) !== 'oakwood_page' ) {
-		return;
-	}
-	if ( ! function_exists( 'get_field' ) ) {
 		return;
 	}
 	$post = get_post( $post_id );
 	if ( ! $post || ! $post->post_name || $post->post_name === 'auto-draft' ) {
 		return;
 	}
-	$raw = get_field( 'page_content', $post_id );
+	// Read from $_POST (exact user input). ACF uses field keys in $_POST['acf'].
+	$raw = '';
+	if ( ! empty( $_POST['acf'] ) && is_array( $_POST['acf'] ) ) {
+		$acf_field_key = 'field_oakwood_cms_page_content';
+		if ( isset( $_POST['acf'][ $acf_field_key ] ) ) {
+			$raw = wp_unslash( $_POST['acf'][ $acf_field_key ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		} else {
+			// Fallback: find field by name in field group (ACF may use different key if imported).
+			$field = function_exists( 'acf_get_field' ) ? acf_get_field( 'page_content' ) : null;
+			if ( $field && isset( $_POST['acf'][ $field['key'] ] ) ) {
+				$raw = wp_unslash( $_POST['acf'][ $field['key'] ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			} else {
+				foreach ( $_POST['acf'] as $key => $val ) {
+					if ( is_string( $val ) && ( strpos( $val, '"services"' ) !== false || strpos( $val, '"page"' ) !== false ) ) {
+						$raw = wp_unslash( $val ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+						break;
+					}
+				}
+			}
+		}
+	}
+	if ( $raw === '' && function_exists( 'get_field' ) ) {
+		$raw = get_field( 'page_content', $post_id );
+	}
 	if ( $raw === '' || $raw === false || $raw === null ) {
 		return;
 	}
@@ -400,14 +463,17 @@ function oakwood_cms_acf_save_post_sync_file( $post_id ) {
 	if ( is_array( $data ) ) {
 		$data['page'] = $post->post_name;
 		file_put_contents( $path, wp_json_encode( $data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT ) );
+		// Clear PHP stat cache so next read sees the new file.
+		clearstatcache( true, $path );
+		do_action( 'oakwood_cms_content_saved', $post_id, $path );
 	}
 	oakwood_cms_push_history( $post_id, $raw, null );
 }
-add_action( 'acf/save_post', 'oakwood_cms_acf_save_post_sync_file', 20 );
+add_action( 'acf/save_post', 'oakwood_cms_acf_save_post_sync_file', 5 );
 
 /**
- * Añade una entrada al historial (solo si el contenido cambió). Máximo OAKWOOD_CMS_HISTORY_MAX entradas.
- * Si $previous_content es null (p. ej. guardado desde ACF), se evita duplicado comparando con la última entrada del historial.
+ * Add an entry to history (only if content changed). Maximum OAKWOOD_CMS_HISTORY_MAX entries.
+ * If $previous_content is null (e.g. saved from ACF), avoid duplicate by comparing with the last history entry.
  */
 function oakwood_cms_push_history( $post_id, $new_content, $previous_content ) {
 	$history = get_post_meta( $post_id, OAKWOOD_CMS_HISTORY_META_KEY, true );
@@ -430,7 +496,7 @@ function oakwood_cms_push_history( $post_id, $new_content, $previous_content ) {
 }
 
 /**
- * Crea el directorio en uploads al activar el plugin.
+ * Create the directory in uploads when activating the plugin.
  */
 function oakwood_cms_activate() {
 	oakwood_cms_register_post_type();

@@ -139,6 +139,14 @@ export interface HeroCtaItem {
   btn: { text: string; link: string; backgroundColor?: string };
 }
 
+/** SEO fields for meta tags and Open Graph. */
+export interface CmsSeo {
+  headTitle?: string;
+  headDescription?: string;
+  ogImage?: string;
+  keywords?: string;
+}
+
 /** Contenido de una página CMS (Oakwood CMS, archivos JSON en WordPress). */
 export interface CmsPageContent {
   page: string;
@@ -146,6 +154,8 @@ export interface CmsPageContent {
   /** Hero con un item por video: title, videoUrl, description, btn. Sustituye hero section cuando existe. */
   ctas?: HeroCtaItem[];
   sections: CmsSection[];
+  /** Optional. SEO meta (title, description, ogImage, keywords). */
+  seo?: CmsSeo;
 }
 
 export interface CmsPageResponse {
