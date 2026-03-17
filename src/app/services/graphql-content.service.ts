@@ -88,38 +88,41 @@ export class GraphQLContentService {
 
   loadServicesContent(): Promise<void> {
     const ts = Date.now();
+    // 1) service-*.json (fuente principal; services.json eliminado)
     return firstValueFrom(
-      this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/services.json?t=${ts}`, { responseType: 'json' }).pipe(
-        map((data) => data?.services ? { services: data.services } : null),
-        catchError(() => of(null))
+      forkJoin(
+        this.serviceSlugs.map((slug) =>
+          this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/service-${slug}.json?t=${ts}`, { responseType: 'json' }).pipe(
+            map((res) => res?.services ?? {}),
+            catchError(() => of({}))
+          )
+        )
+      ).pipe(
+        map((results) => {
+          const merged: Record<string, unknown> = {};
+          results.forEach((svc) => {
+            Object.assign(merged, svc);
+          });
+          return Object.keys(merged).length > 0 ? { services: merged } : null;
+        })
       )
-    ).then((data) => {
-      if (data?.services && Object.keys(data.services).length > 0) {
-        this.servicesContentSubject.next(data);
+    ).then((merged) => {
+      if (merged?.services) {
+        this.servicesContentSubject.next(merged);
         return;
       }
+      // 2) services.json (fallback si existe)
       return firstValueFrom(
-        forkJoin(
-          this.serviceSlugs.map((slug) =>
-            this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/service-${slug}.json?t=${ts}`, { responseType: 'json' }).pipe(
-              map((res) => res?.services ?? {}),
-              catchError(() => of({}))
-            )
-          )
-        ).pipe(
-          map((results) => {
-            const merged: Record<string, unknown> = {};
-            results.forEach((svc) => {
-              Object.assign(merged, svc);
-            });
-            return Object.keys(merged).length > 0 ? { services: merged } : null;
-          })
+        this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/services.json?t=${ts}`, { responseType: 'json' }).pipe(
+          map((data) => data?.services ? { services: data.services } : null),
+          catchError(() => of(null))
         )
-      ).then((merged) => {
-        if (merged?.services) {
-          this.servicesContentSubject.next(merged);
+      ).then((data) => {
+        if (data?.services && Object.keys(data.services).length > 0) {
+          this.servicesContentSubject.next(data);
           return;
         }
+        // 3) GraphQL
         return firstValueFrom(this.getCmsPageBySlug('services', { fetchPolicy: 'network-only' }).pipe(
           map((d) => d as { services: Record<string, unknown> } | null)
         )).then((graphqlData) => {
