@@ -1,4 +1,5 @@
 import { inject, Injectable, makeStateKey, PLATFORM_ID, signal, TransferState } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { Apollo } from 'apollo-angular';
 import { BehaviorSubject, Observable, of, from } from 'rxjs';
@@ -32,7 +33,7 @@ import {
   type RelatedCaseStudyNode,
   type SearchResultItem,
 } from '../api/graphql';
-import { combineLatest } from 'rxjs';
+import { combineLatest, forkJoin } from 'rxjs';
 
 const CMS_PAGE_STATE_KEY = (slug: string) => makeStateKey<CmsPageContent | null>(`cms-page-${slug}`);
 
@@ -41,8 +42,19 @@ const CMS_PAGE_STATE_KEY = (slug: string) => makeStateKey<CmsPageContent | null>
 })
 export class GraphQLContentService {
   private readonly apollo = inject(Apollo);
+  private readonly http = inject(HttpClient);
   private readonly transferState = inject(TransferState);
   private readonly platformId = inject(PLATFORM_ID);
+
+  /** Slugs de servicios (mismo orden que en edit-page y navbar). */
+  private readonly serviceSlugs = [
+    'data-ai-solutions',
+    'cloud-and-infrastructure',
+    'application-innovation',
+    'high-performance-computing-hpc',
+    'modern-work',
+    'managed-services',
+  ] as const;
 
   readonly caseStudies = signal<CaseStudy[]>([]);
   readonly blogs = signal<GenContentListNode[]>([]);
@@ -74,12 +86,50 @@ export class GraphQLContentService {
   private readonly servicesContentSubject = new BehaviorSubject<{ services: Record<string, unknown> } | null>(null);
   readonly servicesContent$: Observable<{ services: Record<string, unknown> } | null> = this.servicesContentSubject.asObservable();
 
-  /** Carga services en APP_INITIALIZER. Usa network-only para datos frescos (agregación de archivos). */
+  /** Carga services en APP_INITIALIZER. Igual que home: fetch directo a service-*.json, luego GraphQL. */
   loadServicesContent(): Promise<void> {
-    return firstValueFrom(this.getCmsPageBySlug('services', { fetchPolicy: 'network-only' }).pipe(
-      map((data) => data as { services: Record<string, unknown> } | null)
-    )).then((data) => {
-      this.servicesContentSubject.next(data?.services ? data : null);
+    const ts = Date.now();
+    // 1) Intentar services.json (agregado en WordPress)
+    return firstValueFrom(
+      this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/services.json?t=${ts}`, { responseType: 'json' }).pipe(
+        map((data) => data?.services ? { services: data.services } : null),
+        catchError(() => of(null))
+      )
+    ).then((data) => {
+      if (data?.services && Object.keys(data.services).length > 0) {
+        this.servicesContentSubject.next(data);
+        return;
+      }
+      // 2) Si no existe services.json: cargar cada service-{slug}.json y fusionar (como home carga desde archivos)
+      return firstValueFrom(
+        forkJoin(
+          this.serviceSlugs.map((slug) =>
+            this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/service-${slug}.json?t=${ts}`, { responseType: 'json' }).pipe(
+              map((res) => res?.services ?? {}),
+              catchError(() => of({}))
+            )
+          )
+        ).pipe(
+          map((results) => {
+            const merged: Record<string, unknown> = {};
+            results.forEach((svc) => {
+              Object.assign(merged, svc);
+            });
+            return Object.keys(merged).length > 0 ? { services: merged } : null;
+          })
+        )
+      ).then((merged) => {
+        if (merged?.services) {
+          this.servicesContentSubject.next(merged);
+          return;
+        }
+        // 3) Fallback: GraphQL (WordPress agrega service-*.json cuando services.json no existe)
+        return firstValueFrom(this.getCmsPageBySlug('services', { fetchPolicy: 'network-only' }).pipe(
+          map((d) => d as { services: Record<string, unknown> } | null)
+        )).then((graphqlData) => {
+          this.servicesContentSubject.next(graphqlData?.services ? graphqlData : null);
+        });
+      });
     }).catch(() => {
       this.servicesContentSubject.next(null);
     });
