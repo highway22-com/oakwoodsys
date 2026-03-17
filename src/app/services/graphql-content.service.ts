@@ -86,10 +86,8 @@ export class GraphQLContentService {
   private readonly servicesContentSubject = new BehaviorSubject<{ services: Record<string, unknown> } | null>(null);
   readonly servicesContent$: Observable<{ services: Record<string, unknown> } | null> = this.servicesContentSubject.asObservable();
 
-  /** Carga services en APP_INITIALIZER. Igual que home: fetch directo a service-*.json, luego GraphQL. */
   loadServicesContent(): Promise<void> {
     const ts = Date.now();
-    // 1) Intentar services.json (agregado en WordPress)
     return firstValueFrom(
       this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/services.json?t=${ts}`, { responseType: 'json' }).pipe(
         map((data) => data?.services ? { services: data.services } : null),
@@ -100,7 +98,6 @@ export class GraphQLContentService {
         this.servicesContentSubject.next(data);
         return;
       }
-      // 2) Si no existe services.json: cargar cada service-{slug}.json y fusionar (como home carga desde archivos)
       return firstValueFrom(
         forkJoin(
           this.serviceSlugs.map((slug) =>
@@ -123,7 +120,6 @@ export class GraphQLContentService {
           this.servicesContentSubject.next(merged);
           return;
         }
-        // 3) Fallback: GraphQL (WordPress agrega service-*.json cuando services.json no existe)
         return firstValueFrom(this.getCmsPageBySlug('services', { fetchPolicy: 'network-only' }).pipe(
           map((d) => d as { services: Record<string, unknown> } | null)
         )).then((graphqlData) => {
@@ -135,7 +131,6 @@ export class GraphQLContentService {
     });
   }
 
-  /** Lista paginada por categoría (blog o case-study). Apollo cache-and-network. */
   getGenContentsPaginated(
     categoryId: 'blog' | 'case-study',
     first: number,

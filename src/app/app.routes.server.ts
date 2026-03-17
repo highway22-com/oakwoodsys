@@ -20,7 +20,7 @@ export const serverRoutes: ServerRoute[] = [
   },
   {
     path: 'services/:slug',
-    renderMode: RenderMode.Client,
+    renderMode: RenderMode.Server,
   },
   {
     path: 'structured-engagement/:slug',
