@@ -7,7 +7,6 @@
 
 # oakwoodsys.com → Angular. WordPress en oakwoodsystemsgroup.com.
 # Proxy solo para API (GraphQL, contact) — evita CORS
-# headers: evita caché en staging/CDN (funciona local, falla en staging)
 [[redirects]]
   from = "/api/graphql"
   to = "https://oakwoodsystemsgroup.com/graphql"
