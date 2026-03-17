@@ -31,7 +31,7 @@ export class CookieConsentBanner {
 
   accept(): void {
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem(STORAGE_KEY, 'true');
+      sessionStorage.setItem(STORAGE_KEY, 'true');
       this.visible.set(false);
     }
   }
