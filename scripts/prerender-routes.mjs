@@ -83,8 +83,9 @@ async function main() {
   const industries = getSlugsFromJson('public/industries-content.json', 'industries');
   industries.forEach((s) => routes.push(`/industries/${s}`));
 
-  const services = getSlugsFromJson('public/services-content.json', 'services');
-  services.forEach((s) => routes.push(`/services/${s}`));
+  // services/:slug → RenderMode.Client (no prerender): contenido CMS se carga en el cliente
+  // const services = getSlugsFromJson('public/services-content.json', 'services');
+  // services.forEach((s) => routes.push(`/services/${s}`));
 
   STRUCTURED_SLUGS.forEach((s) => routes.push(`/structured-engagement/${s}`));
 
