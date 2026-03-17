@@ -1,5 +1,5 @@
 import { RouterLink, Router, NavigationEnd } from '@angular/router';
-import { Component, OnInit, OnDestroy, HostListener, inject, PLATFORM_ID, signal, computed, viewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, inject, PLATFORM_ID, signal, computed, viewChild, ElementRef, input, effect } from '@angular/core';
 import { CommonModule, DOCUMENT, NgClass, NgIf, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MicrosoftServices } from "./microsoft-services/microsoft-services";
@@ -33,7 +33,7 @@ interface ContentMap {
   resources: Content[];
 }
 
-interface NavbarContent {
+export interface NavbarContent {
   menu: Menu[];
   content: ContentMap;
 }
@@ -69,6 +69,11 @@ export class AppNavbar implements OnInit, OnDestroy {
   isOnContactSuccess = signal(false);
   isOnStructuredEngagement = signal(false);
 
+  /** Cuando se proporciona, se usa en lugar de cargar desde JSON (para preview en edit) */
+  readonly contentOverride = input<NavbarContent | null>(null);
+  /** En preview (edit page), usa position relative en lugar de fixed */
+  readonly previewMode = input<boolean>(false);
+
   readonly menuItems = signal<Menu[]>([]);
   readonly content = signal<ContentMap | null>(null);
   readonly loading = signal(true);
@@ -93,6 +98,17 @@ export class AppNavbar implements OnInit, OnDestroy {
   readonly SEARCH_PAGE_SIZE = 15;
   readonly SEARCH_MAX_LENGTH = 100;
   searchInputRef = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+
+  constructor() {
+    effect(() => {
+      const override = this.contentOverride();
+      if (override) {
+        this.menuItems.set(override.menu ?? []);
+        this.content.set(override.content ?? null);
+        this.loading.set(false);
+      }
+    });
+  }
 
   /** Resultados filtrados por searchQuery (título o snippet). */
   readonly searchFilteredResults = computed(() => {
@@ -151,11 +167,31 @@ export class AppNavbar implements OnInit, OnDestroy {
         );
       });
     }
-    this.loadNavbarContent();
+    if (!this.contentOverride()) {
+      this.loadNavbarContent();
+    } else {
+      this.loading.set(false);
+    }
   }
 
   private loadNavbarContent() {
     this.loading.set(true);
+    this.graphql.getMenuContent().subscribe({
+      next: (data) => {
+        if (data?.menu) {
+          this.menuItems.set(data.menu as NavbarContent['menu']);
+          this.content.set((data.content ?? null) as unknown as NavbarContent['content']);
+        } else {
+          this.loadNavbarFromStaticFile();
+          return;
+        }
+        this.loading.set(false);
+      },
+      error: () => this.loadNavbarFromStaticFile(),
+    });
+  }
+
+  private loadNavbarFromStaticFile() {
     this.http.get<NavbarContent>('/navbar-content.json').subscribe({
       next: (data) => {
         this.menuItems.set(data.menu);
@@ -167,7 +203,7 @@ export class AppNavbar implements OnInit, OnDestroy {
         this.menuItems.set([]);
         this.content.set(null);
         this.loading.set(false);
-      }
+      },
     });
   }
 

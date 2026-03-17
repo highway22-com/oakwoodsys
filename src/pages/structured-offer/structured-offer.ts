@@ -1057,7 +1057,7 @@ export class StructuredOffer implements OnInit, OnDestroy {
   readonly isSubmitting = signal(false);
 
   readonly heroVideoUrls = [
-    'https://oakwoodsys.com/wp-content/uploads/2026/02/Services-Data-Ai.mp4'
+    'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Services-Data-Ai.mp4'
   ];
   readonly heroCtaPrimary = {
     text: 'Contact Oakwood',

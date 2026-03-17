@@ -4,6 +4,7 @@ import { VideoHero } from '../../shared/video-hero/video-hero';
 import { YoutubePlayerComponent } from '../../app/youtube-player/youtube-player.component';
 import { SafeUrlPipe } from '../../app/youtube-player/safe-url.pipe';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
+import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { LatestInsightsSectionComponent, type LatestInsightsSection } from '../../shared/sections/latest-insights/latest-insights';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { TrustedBySectionComponent } from '../../shared/sections/trusted-by/trusted-by';
@@ -123,26 +124,30 @@ export default class AboutUs implements OnInit {
     };
   });
 
+  private readonly graphql = inject(GraphQLContentService);
+
   ngOnInit() {
     this.seoMeta.updateMeta({
       title: 'About Us | Oakwood Systems',
       description: 'Learn about Oakwood Systems, a Microsoft Solutions Partner driving business innovation and modernization with Azure and cloud services.',
-      canonicalPath: '/about-us',
+      canonicalPath: '/about',
     });
-    this.http.get<AboutContent>('/about-content.json').subscribe({
+    this.graphql.getAboutContent().subscribe({
       next: (data) => {
-        this.content.set(data);
-        this.seoMeta.updateMeta({
-          title: `${data.heroTitle} | Oakwood Systems`,
-          description: data.heroDescription,
-          canonicalPath: '/about-us',
-        });
-        this.loading.set(false);
+        if (data) {
+          const about = data as unknown as AboutContent;
+          this.content.set(about);
+          this.seoMeta.updateMeta({
+            title: `${about.heroTitle} | Oakwood Systems`,
+            description: about.heroDescription,
+            canonicalPath: '/about',
+          });
+          this.loading.set(false);
+        } else {
+          this.loadAboutFromStaticFile();
+        }
       },
-      error: () => {
-        this.error.set('Failed to load about content');
-        this.loading.set(false);
-      },
+      error: () => this.loadAboutFromStaticFile(),
     });
 
     this.lastScrollVisible = false;
@@ -153,6 +158,24 @@ export default class AboutUs implements OnInit {
   }
 
   lastScrollVisible = false;
+
+  private loadAboutFromStaticFile() {
+    this.http.get<AboutContent>('/about-content.json').subscribe({
+      next: (data) => {
+        this.content.set(data);
+        this.seoMeta.updateMeta({
+          title: `${data.heroTitle} | Oakwood Systems`,
+          description: data.heroDescription,
+          canonicalPath: '/about',
+        });
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Failed to load about content');
+        this.loading.set(false);
+      },
+    });
+  }
 
   handleScrollAnimation() {
     const el = document.querySelector('.scroll-animation-section');

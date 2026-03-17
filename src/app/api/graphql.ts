@@ -1,7 +1,7 @@
 import { gql } from 'apollo-angular';
 
 /**
- * Modelos y queries GraphQL para oakwoodsys.com/graphql (WPGraphQL + ACF).
+ * Modelos y queries GraphQL para oakwoodsystemsgroup.com/graphql (WPGraphQL + ACF).
  * Bloqs y Case Studies (lista): misma lógica genContentCategory(id: $categoryId, idType: SLUG) — filtro "blog" o "case-study".
  * Case Studies (detalle): caseStudyBy(slug).
  * Oakwood CMS: cmsPage(slug) devuelve el JSON de la página (home, services, about-us, blog, industries).
@@ -139,6 +139,14 @@ export interface HeroCtaItem {
   btn: { text: string; link: string; backgroundColor?: string };
 }
 
+/** SEO fields for meta tags and Open Graph. */
+export interface CmsSeo {
+  headTitle?: string;
+  headDescription?: string;
+  ogImage?: string;
+  keywords?: string;
+}
+
 /** Contenido de una página CMS (Oakwood CMS, archivos JSON en WordPress). */
 export interface CmsPageContent {
   page: string;
@@ -146,6 +154,8 @@ export interface CmsPageContent {
   /** Hero con un item por video: title, videoUrl, description, btn. Sustituye hero section cuando existe. */
   ctas?: HeroCtaItem[];
   sections: CmsSection[];
+  /** Optional. SEO meta (title, description, ogImage, keywords). */
+  seo?: CmsSeo;
 }
 
 export interface CmsPageResponse {
@@ -298,6 +308,7 @@ const GEN_CONTENTS_FIELDS_SHORT = `
   id
   title
   excerpt
+  content
   slug
   date
   tags

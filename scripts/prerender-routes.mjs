@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
-const GRAPHQL_URL = 'https://oakwoodsys.com/graphql';
+const GRAPHQL_URL = 'https://oakwoodsystemsgroup.com/graphql';
 
 const BLOG_SLUGS_QUERY = `query GetSlugsForPrerender {
   blog: genContentCategory(id: "blog", idType: SLUG) {
@@ -19,6 +19,15 @@ const BLOG_SLUGS_QUERY = `query GetSlugsForPrerender {
     genContents(first: 500) { nodes { slug } }
   }
 }`;
+
+const SERVICE_SLUGS = [
+  'data-ai-solutions',
+  'cloud-and-infrastructure',
+  'application-innovation',
+  'high-performance-computing-hpc',
+  'modern-work',
+  'managed-services',
+];
 
 const STRUCTURED_SLUGS = [
   'sql-server-migration-to-azure',
@@ -84,7 +93,7 @@ async function main() {
   industries.forEach((s) => routes.push(`/industries/${s}`));
 
   const services = getSlugsFromJson('public/services-content.json', 'services');
-  services.forEach((s) => routes.push(`/services/${s}`));
+  (services.length > 0 ? services : SERVICE_SLUGS).forEach((s) => routes.push(`/services/${s}`));
 
   STRUCTURED_SLUGS.forEach((s) => routes.push(`/structured-engagement/${s}`));
 

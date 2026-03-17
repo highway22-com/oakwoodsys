@@ -1,4 +1,5 @@
-import { AngularAppEngine, createRequestHandler } from '@angular/ssr'
+import { AngularAppEngine, createRequestHandler } from '@angular/ssr';
+import { CMS_BASE_URL } from './app/config/cms.config';
 import { getContext } from '@netlify/angular-runtime/context.mjs'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
@@ -257,9 +258,69 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
   }
   const pathname = new URL(request.url).pathname;
 
+  // WordPress admin: redirigir a oakwoodsystemsgroup.com
+  if (pathname === '/wp-admin' || pathname === '/wp-admin/' || pathname.startsWith('/wp-admin/')) {
+    const targetPath = pathname === '/wp-admin' || pathname === '/wp-admin/' ? '' : pathname.slice(10);
+    const targetUrl = `https://oakwoodsystemsgroup.com/wp-admin${targetPath ? '/' + targetPath : '/'}`;
+    return Response.redirect(targetUrl, 301);
+  }
+
+  // Servir sitemap.xml y robots.txt 
+  if (pathname === '/sitemap.xml' || pathname === '/robots.txt') {
+    const fileName = pathname.slice(1);
+    const contentType = pathname === '/sitemap.xml' ? 'application/xml' : 'text/plain';
+    const searchPaths = [
+      join(process.cwd(), 'dist/oaw/browser', fileName),
+      join(process.cwd(), 'public', fileName),
+      join(process.cwd(), fileName),
+    ];
+    for (const filePath of searchPaths) {
+      if (existsSync(filePath)) {
+        try {
+          const content = readFileSync(filePath, 'utf8');
+          return new Response(content, {
+            status: 200,
+            headers: {
+              'Content-Type': contentType,
+              'Cache-Control': 'public, max-age=3600',
+            },
+          });
+        } catch (err) {
+          console.warn(`[${fileName}] Error reading file:`, err);
+        }
+        break;
+      }
+    }
+  }
+
   // API endpoint for authentication
   if (pathname === '/.netlify/functions/auth' || pathname === '/api/auth') {
     return handleAuth(request);
+  }
+
+  // API endpoint for CMS JSON files (home.json, services.json, service-*.json)
+  if (pathname.startsWith('/api/cms/')) {
+    const filePath = pathname.replace(/^\/api\/cms\/?/, '') || 'index.json';
+    const cmsUrl = `${CMS_BASE_URL}/wp-content/uploads/oakwood-cms/${filePath}`;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      const response = await fetch(cmsUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!response.ok) {
+        return new Response(null, { status: response.status });
+      }
+      const data = await response.json().catch(() => null);
+      return Response.json(data, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+        },
+      });
+    } catch (err: any) {
+      if (err?.name === 'AbortError') return new Response(null, { status: 504 });
+      return new Response(null, { status: 502 });
+    }
   }
 
   // API endpoint for GraphQL proxy (bypasses CORS)
@@ -283,7 +344,7 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
 
     try {
       const body = await request.json();
-      const graphqlUrl = 'https://oakwoodsys.com/graphql';
+      const graphqlUrl = `${CMS_BASE_URL}/graphql`;
 
       const timeoutController = new AbortController();
       const timeoutId = setTimeout(() => timeoutController.abort(), 30000); // 30 second timeout
@@ -330,6 +391,67 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
         error: 'GraphQL proxy error',
         message: error instanceof Error ? error.message : 'Unknown error'
       }, { status: 500, headers: corsHeaders });
+    }
+  }
+
+  // API endpoint for contact form (proxy to WordPress)
+  if (pathname === '/api/contact') {
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Content-Type': 'application/json'
+    };
+    if (request.method === 'OPTIONS') {
+      return new Response('', { status: 200, headers: corsHeaders });
+    }
+    if (request.method !== 'POST') {
+      return Response.json({ error: 'Method not allowed' }, { status: 405, headers: corsHeaders });
+    }
+    try {
+      const body = await request.text();
+      const contactUrl = `${CMS_BASE_URL}/wp-json/oakwood/v1/send-contact`;
+      const response = await fetch(contactUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        console.warn('[contact] WordPress returned', response.status, JSON.stringify(data));
+      }
+      return Response.json(data, {
+        status: response.status,
+        headers: corsHeaders
+      });
+    } catch (error: any) {
+      console.error('[contact] Proxy error:', error);
+      return Response.json(
+        { success: false, message: error?.message ?? 'Failed to send contact' },
+        { status: 500, headers: corsHeaders }
+      );
+    }
+  }
+
+  // API endpoint for contact fields config (proxy to WordPress)
+  if (pathname === '/api/contact-fields') {
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Content-Type': 'application/json'
+    };
+    if (request.method === 'OPTIONS') {
+      return new Response('', { status: 200, headers: corsHeaders });
+    }
+    try {
+      const fieldsUrl = `${CMS_BASE_URL}/wp-json/oakwood/v1/contact-fields`;
+      const response = await fetch(fieldsUrl);
+      const data = await response.json().catch(() => []);
+      return Response.json(data, { headers: corsHeaders });
+    } catch (error: any) {
+      console.error('[contact-fields] Proxy error:', error);
+      return Response.json([], { status: 200, headers: corsHeaders });
     }
   }
 
@@ -462,7 +584,7 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
     }
 
     // Fallback to external URL
-    const externalUrl = 'https://oakwoodsys.com/wp-content/uploads/2025/12/home-content.json';
+    const externalUrl = `${CMS_BASE_URL}/wp-content/uploads/2025/12/home-content.json`;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);

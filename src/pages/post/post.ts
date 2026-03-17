@@ -377,7 +377,7 @@ export default class Post implements OnInit, OnDestroy {
     const image = imgSrc?.startsWith('http')
       ? imgSrc
       : imgSrc
-        ? `https://oakwoodsys.com${imgSrc.startsWith('/') ? '' : '/'}${imgSrc}`
+        ? `https://oakwoodsystemsgroup.com${imgSrc.startsWith('/') ? '' : '/'}${imgSrc}`
         : undefined;
     const keywords = this.getSeoKeywords(post);
     this.seoMeta.updateMeta({

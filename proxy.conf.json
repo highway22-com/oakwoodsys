@@ -1,6 +1,14 @@
 {
+  "/api/cms": {
+    "target": "https://oakwoodsystemsgroup.com/wp-content/uploads/oakwood-cms",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/cms": ""
+    }
+  },
   "/api/graphql": {
-    "target": "https://oakwoodsys.com",
+    "target": "https://oakwoodsystemsgroup.com",
     "secure": true,
     "changeOrigin": true,
     "pathRewrite": {
@@ -8,7 +16,7 @@
     }
   },
   "/api/contact": {
-    "target": "https://oakwoodsys.com",
+    "target": "https://oakwoodsystemsgroup.com",
     "secure": true,
     "changeOrigin": true,
     "pathRewrite": {
@@ -16,7 +24,7 @@
     }
   },
   "/api/contact-fields": {
-    "target": "https://oakwoodsys.com",
+    "target": "https://oakwoodsystemsgroup.com",
     "secure": true,
     "changeOrigin": true,
     "pathRewrite": {

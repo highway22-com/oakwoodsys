@@ -9,8 +9,47 @@
 </div>
 <!-- Blog Posts Section -->
 <section class="w-full bg-white py-12 sm:py-16 md:py-20 lg:py-24">
-    <div class="px-4 sm:px-6 md:px-8 lg:px-36">
-        <!-- Loading State -->
+    <div class="px-4 sm:px-6 md:px-8 lg:px-20">
+        <!-- Loading State: skeleton -->
+        @if (loading()) {
+        <div class="flex flex-col lg:flex-row gap-8 lg:gap-12" aria-busy="true" aria-label="Loading posts">
+            <!-- Sidebar skeleton -->
+            @if (!isTabletOrMobile()) {
+            <aside class="flex-auto lg:w-74">
+                <div class="sticky top-24 pl-4">
+                    <div class="h-4 w-20 bg-gray-200 rounded animate-pulse mb-6"></div>
+                    <div class="flex flex-col gap-3.5 py-2">
+                        @for (i of [1,2,3,4,5,6]; track i) {
+                        <div class="h-9 w-28 bg-gray-100 rounded animate-pulse"></div>
+                        }
+                    </div>
+                </div>
+            </aside>
+            }
+            <!-- Cards skeleton -->
+            <div class="flex-8/12 flex-1 min-w-0">
+                @if (isTabletOrMobile()) {
+                <div class="h-12 w-full max-w-xs bg-gray-200 rounded animate-pulse mb-6"></div>
+                }
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                    @for (i of [1,2,3,4,5,6]; track i) {
+                    <div class="bg-[#FFFFFF]/80 overflow-hidden rounded flex flex-col">
+                        <div class="aspect-video w-full bg-gray-200 rounded animate-pulse"></div>
+                        <div class="p-5 sm:p-6 flex flex-col flex-grow">
+                            <div class="flex items-center gap-2 mb-4">
+                                <div class="h-6 w-20 bg-gray-200 rounded animate-pulse"></div>
+                                <div class="h-4 w-16 bg-gray-100 rounded animate-pulse"></div>
+                            </div>
+                            <div class="h-7 w-full max-w-[90%] bg-gray-200 rounded animate-pulse mb-3"></div>
+                            <div class="h-7 w-4/5 bg-gray-100 rounded animate-pulse mb-2"></div>
+                            <div class="h-4 w-24 bg-gray-100 rounded animate-pulse mt-auto pt-8"></div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
 
         <!-- Two Column Layout -->
         @if (!loading() && !error() && displayedNodes().length > 0) {
@@ -23,7 +62,7 @@
                         <h2 class="text-base font-semibold uppercase tracking-wider text-gray-700/60 mb-6">
                             Filter by
                         </h2>
-                        <div class="flex flex-col gap-3.5 py-2 max-h-[calc(100vh-10rem)] overflow-y-auto" aria-label="Service lines">
+                        <div class="flex flex-col gap-3.5 py-2 max-h-[calc(100vh-10rem)] overflow-y-auto custom-scrollbar" aria-label="Service lines">
                             @for (item of serviceLines(); track item.link) {
                             <button type="button" (click)="toggleTagFilter(item.slug)" class="filter-tag-btn">
                                 <span class="filter-tag" [class.filter-tag--selected]="isTagSelected(item.slug)">{{
@@ -102,7 +141,7 @@
                             [imageUrl]="post.featuredImage?.node?.sourceUrl ?? ''"
                             [imageAlt]="post.featuredImage?.node?.altText ?? post.title ?? 'Blog post'"
                             [tag]="post.primaryTag ?? (post.tags?.length ? post.tags[0] : null)"
-                            [readingTimeMinutes]="readingTimeMinutes(post.content)" [title]="post.title ?? ''"
+                            [readingTimeMinutes]="readingTimeMinutes(post.content || post.excerpt)" [title]="post.title ?? ''"
                             [excerptHtml]="post.sanitizedExcerpt ?? post.sanitizedContent ?? null"
                             [authorDisplayName]="(post.authorPerson || post.author?.node) ? authorDisplayName(post) : null"
                             [authorPicture]="post.authorPerson?.picture ?? null"

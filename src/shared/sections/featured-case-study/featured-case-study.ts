@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, Input, OnInit, OnChanges, SimpleChanges, AfterViewInit, OnDestroy, computed, inject, signal, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, HostListener, Input, OnInit, OnChanges, SimpleChanges, computed, inject, signal, PLATFORM_ID } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { RouterLink } from '@angular/router';
@@ -51,12 +51,13 @@ export interface FeaturedCaseStudyView {
     ]),
   ],
 })
-export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
   [x: string]: any;
   private readonly graphql = inject(GraphQLContentService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly el = inject(ElementRef);
   readonly titleText = 'Featured Case Study'
 
   readonly decodeHtmlEntities = decodeHtmlEntities;
@@ -84,18 +85,26 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges, Aft
     return list;
   });
 
-  /** Actualiza scrollProgress desde el evento (scroll) del contenedor. */
-  onScrollContainerScroll(event: Event): void {
-    const el = event.target as HTMLElement;
-    if (!el || el.nodeName !== 'DIV') return;
-    const { scrollTop, scrollHeight, clientHeight } = el;
-    const maxScroll = Math.max(1, scrollHeight - clientHeight);
-    const progress = Math.min(1, Math.max(0, scrollTop / maxScroll));
+  /** Window scroll drives the sticky desktop section transitions. */
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const host = this.el.nativeElement as HTMLElement;
+    const wrapper = host.querySelector('.fcs-desktop-scroll-wrapper') as HTMLElement;
+    if (!wrapper) return;
+    const wrapperTop = wrapper.getBoundingClientRect().top + window.scrollY;
+    const wrapperHeight = wrapper.offsetHeight;
+    const vp = window.innerHeight;
+    const scrollable = Math.max(1, wrapperHeight - vp);
+    const scrolled = Math.max(0, Math.min(scrollable, window.scrollY - wrapperTop));
+    const progress = scrolled / scrollable;
     this.scrollProgress.set(progress);
+    this.selectedIndex.set(progress >= 0.5 ? 1 : 0);
     this.cdr.markForCheck();
   }
 
-  private desktopScrollHandler: EventListener | null = null;
+  /** Fill block slides from top-half (landing) to bottom-half (end): top 0→50%, height fixed 50%. */
+  get scrollBarFillTop(): string { return `${this.scrollProgress() * 50}%`; }
 
   ngOnInit(): void {
     this.loadCaseStudies();
@@ -226,34 +235,4 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges, Aft
     };
   }
 
-  ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    // Only attach on desktop
-    if (window.innerWidth >= 640) {
-      const section = document.querySelector('.featured-case-study-scroll');
-      if (section) {
-        this.desktopScrollHandler = (e: Event) => {
-          const evt = e as WheelEvent;
-          if (this.caseStudiesData().length < 2) return;
-          const idx = this.selectedIndex();
-          if (evt.deltaY > 0 && idx === 0) {
-            // Scroll down: go to second card
-            evt.preventDefault();
-            this.selectCaseStudy(1);
-          } else if (evt.deltaY < 0 && idx === 1) {
-            // Scroll up: go to first card
-            evt.preventDefault();
-            this.selectCaseStudy(0);
-          }
-        };
-        section.addEventListener('wheel', this.desktopScrollHandler, { passive: false });
-      }
-    }
-  }
-
-  ngOnDestroy(): void {
-    if (!isPlatformBrowser(this.platformId) || !this.desktopScrollHandler) return;
-    const section = document.querySelector('.featured-case-study-scroll');
-    if (section) section.removeEventListener('wheel', this.desktopScrollHandler);
-  }
 }

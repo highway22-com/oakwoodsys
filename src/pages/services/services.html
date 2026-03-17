@@ -31,7 +31,7 @@
       [title]="content()!.title"
       [description]="content()!.description"
       [ctaPrimary]="content()!.cta.primary"
-      [ctaSecondary]="content()!.cta.secondary"
+      [ctaSecondary]="getCtaSecondary(content()!)"
     >
     </app-video-hero>
   } @else {
@@ -73,13 +73,16 @@
             >
               {{ content()!.cta.primary.text }}
             </a>
+            @if (getCtaSecondary(content()!); as ctaSec) {
             <a
-              [routerLink]="content()!.cta.secondary.link"
+              [routerLink]="ctaSec.link"
+              [queryParams]="ctaSec.queryParams ?? {}"
               class="inline-block text-center px-6 sm:px-8 py-3 sm:py-4 transition-all duration-200 hover:bg-white/10 hover:scale-105 text-white border-2"
-              [style.border-color]="content()!.cta.secondary.borderColor"
+              [style.border-color]="ctaSec.borderColor"
             >
-              {{ content()!.cta.secondary.text }}
+              {{ ctaSec.text }}
             </a>
+            }
           </div>
         </div>
       </div>

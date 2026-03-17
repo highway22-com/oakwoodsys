@@ -1,10 +1,10 @@
 <?php
 /**
- * Registra el grupo de campos ACF "CMS Page Content" para el post type oakwood_page.
- * Requiere que el plugin Advanced Custom Fields esté instalado y activo.
+ * Registers the ACF field group "CMS Page Content" for the oakwood_page post type.
+ * Requires the Advanced Custom Fields plugin to be installed and active.
  *
- * Estructura: un único campo "Page content (JSON)" para pegar/editar el JSON completo
- * de la página (page, videoUrls?, sections), igual que home-content.json.
+ * Structure: a single "Page content (JSON)" field to paste/edit the complete page JSON
+ * (page, videoUrls?, sections), same as home-content.json.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -25,10 +25,10 @@ function oakwood_cms_register_acf_field_group() {
 					'name'          => 'page_content',
 					'type'          => 'textarea',
 					'required'      => 0,
-					'instructions'  => __( 'JSON completo de la página (page, videoUrls?, sections). Misma estructura que home-content.json.', 'oakwood-cms' ),
+					'instructions'  => __( 'Complete page JSON (page, videoUrls?, sections). Optional: seo { headTitle, headDescription, ogImage, keywords }. Same structure as home-content.json.', 'oakwood-cms' ),
 					'rows'          => 20,
 					'new_lines'     => '',
-					'placeholder'   => '{"page":"home","videoUrls":[],"sections":[]}',
+					'placeholder'   => '{"page":"home","seo":{"headTitle":"","headDescription":"","ogImage":"","keywords":""},"sections":[]}',
 					'wrapper'       => array(
 						'class' => 'oakwood-cms-json-source',
 					),

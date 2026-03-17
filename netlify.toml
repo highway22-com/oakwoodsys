@@ -5,44 +5,72 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# Redirección de dominio: www y HTTP → HTTPS en dominio principal
-[[redirects]]
-  from = "https://www.oakwoodsystemsgroup.com/*"
-  to = "https://oakwoodsystemsgroup.com/:splat"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "http://oakwoodsystemsgroup.com/*"
-  to = "https://oakwoodsystemsgroup.com/:splat"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "http://www.oakwoodsystemsgroup.com/*"
-  to = "https://oakwoodsystemsgroup.com/:splat"
-  status = 301
-  force = true
-
-# Proxy GraphQL (CMS pages, case studies, etc.) – solo estático, sin servidor Node
+# oakwoodsys.com → Angular. WordPress en oakwoodsystemsgroup.com.
+# Proxy solo para API (GraphQL, contact) — evita CORS
 [[redirects]]
   from = "/api/graphql"
-  to = "https://oakwoodsys.com/graphql"
+  to = "https://oakwoodsystemsgroup.com/graphql"
   status = 200
   force = true
+  headers = {Cache-Control = "no-cache", Pragma = "no-cache"}
 
-# Proxy formulario de contacto → WordPress wp_mail
 [[redirects]]
   from = "/api/contact"
-  to = "https://oakwoodsys.com/wp-json/oakwood/v1/send-contact"
+  to = "https://oakwoodsystemsgroup.com/wp-json/oakwood/v1/send-contact"
   status = 200
   force = true
 
-# Configuración de campos del formulario (para formularios dinámicos)
 [[redirects]]
   from = "/api/contact-fields"
-  to = "https://oakwoodsys.com/wp-json/oakwood/v1/contact-fields"
+  to = "https://oakwoodsystemsgroup.com/wp-json/oakwood/v1/contact-fields"
   status = 200
+  force = true
+
+# CMS JSON (home.json, services.json, service-*.json)
+[[redirects]]
+  from = "/api/cms/*"
+  to = "https://oakwoodsystemsgroup.com/wp-content/uploads/oakwood-cms/:splat"
+  status = 200
+  force = true
+  headers = {Cache-Control = "no-cache", Pragma = "no-cache"}
+
+# Redirección /home → / (canonical home)
+[[redirects]]
+  from = "/home"
+  to = "/"
+  status = 301
+  force = true
+
+# WordPress admin: oakwoodsys.com/wp-admin → oakwoodsystemsgroup.com/wp-admin
+[[redirects]]
+  from = "/wp-admin"
+  to = "https://oakwoodsystemsgroup.com/wp-admin"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/wp-admin/*"
+  to = "https://oakwoodsystemsgroup.com/wp-admin/:splat"
+  status = 301
+  force = true
+
+# Redirección de dominio: www y HTTP → HTTPS en dominio principal
+[[redirects]]
+  from = "https://www.oakwoodsys.com/*"
+  to = "https://oakwoodsys.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://oakwoodsys.com/*"
+  to = "https://oakwoodsys.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.oakwoodsys.com/*"
+  to = "https://oakwoodsys.com/:splat"
+  status = 301
   force = true
 
 # Sitemap y robots: servir archivos estáticos (antes del catch-all SPA)

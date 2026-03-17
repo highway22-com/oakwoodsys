@@ -9,62 +9,8 @@
 <script type="application/ld+json" [innerHTML]="sanitizer.bypassSecurityTrustHtml(getStructuredDataJson())"></script>
 }
 
-<!-- Admin Editor Layout -->
-@if (isAdmin() === true) {
-<!-- Toggle Button -->
-<button (click)="togglePanel()"
-  class="fixed right-4 top-4 z-[60] bg-p-500 hover:bg-blue-700 text-white       px-4 py-[11.5px] mt-[11px]    shadow-lg transition-colors duration-200 flex items-center gap-2">
-  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-  </svg>
-  <span>{{ panelVisible() ? 'Hide' : '' }} </span>
-</button>
-}
-
-<!-- Right Sidebar: Textarea Editor -->
-@if (panelVisible()) {
-<div class="fixed right-0 top-0 h-full w-1/2 border-l border-gray-300 flex flex-col bg-white z-50 shadow-2xl">
-  <div class="bg-gray-100 border-b border-gray-300 px-4 py-3 flex items-center justify-between pt-20">
-    <h2 class="text-lg       text-gray-800">JSON Editor</h2>
-    <div class="flex items-center gap-3">
-      @if (saveSuccess()) {
-      <div class="bg-green-500 text-white px-3 py-1 rounded text-sm">
-        ✓ Copied!
-      </div>
-      }
-      <button (click)="copyToClipboard()" [disabled]="saving() || !!jsonError()"
-        class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white       px-4 py-2 rounded transition-colors duration-200 flex items-center gap-2">
-        @if (saving()) {
-        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-          </path>
-        </svg>
-        <span>Copying...</span>
-        } @else {
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-        </svg>
-        <span>Copy to clipboard</span>
-        }
-      </button>
-    </div>
-  </div>
-  @if (jsonError()) {
-  <div class="bg-red-50 border-b border-red-200 px-4 py-2">
-    <p class="text-red-600 text-sm       ">Error de JSON: {{ jsonError() }}</p>
-  </div>
-  }
-  <textarea [(ngModel)]="jsonContent" (input)="onJsonChange($event)"
-    class="flex-1 w-full p-4 font-mono text-sm border-0 resize-none focus:outline-none"
-    placeholder="Edita el contenido JSON aquí..."></textarea>
-</div>
-}
-
 <!-- Main content -->
-<main class="relative w-full" [ngClass]="{'pr-[50%]': isAdmin() && panelVisible()}" role="main">
+<main class="relative w-full" role="main">
 
   @for (section of content()!.sections; track section.type) {
   @switch (section.type) {
@@ -92,7 +38,8 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
         @for (service of section.services; track service.id) {
         <article
-          class="group  border border-gray-200/20 p-8 sm:p-8 lg:p-10  hover:border-gray-200/60 hover:bg-white transition-shadow duration-300 cursor-pointer">
+          class="group  border border-gray-200/20 p-8 sm:p-8 lg:p-10  hover:border-gray-200/60 hover:bg-white transition-shadow duration-300 cursor-pointer"
+          (click)="navigateTo(service.link)">
          <div class="pb-16 shrink-0">
             <div class="size-15 lg:size-22 flex items-center justify-center bg-p-30 rounded-lg">
               <img [src]="service.icon" [alt]="service.title" class="size-8 lg:size-10" />

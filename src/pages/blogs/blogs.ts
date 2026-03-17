@@ -162,12 +162,12 @@ export default class Blogs implements OnInit {
   } {
     return this.isBlogs
       ? {
-        videoUrls: ['https://oakwoodsys.com/wp-content/uploads/2026/02/Blogs.mp4'],
+        videoUrls: ['https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Blogs.mp4'],
         title: 'Technology Insights for Modern Enterprises',
         description: "Practical perspectives on cloud, data, AI, and modern infrastructure.",
       }
       : {
-        videoUrls: ['https://oakwoodsys.com/wp-content/uploads/2026/02/Blogs.mp4'],
+        videoUrls: ['https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Blogs.mp4'],
         title: 'Real-world success stories',
         description: 'See how Oakwood helps organizations modernize, innovate, and achieve meaningful results.',
       };

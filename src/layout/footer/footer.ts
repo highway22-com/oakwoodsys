@@ -1,6 +1,4 @@
-import { computed, effect, OnDestroy } from '@angular/core';
- 
-import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, signal, inject, input, effect } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule, NgClass } from '@angular/common';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
@@ -63,15 +61,25 @@ export interface FooterSection {
 export class Footer implements OnInit, OnDestroy {
   private readonly graphql = inject(GraphQLContentService);
 
+  /** Cuando se proporciona, se usa en lugar de cargar desde CMS (para preview en edit) */
+  readonly dataOverride = input<FooterSection | null>(null);
+
   readonly footerData = signal<FooterSection | null>(null);
   readonly loading = signal(true);
-   // Track which group is open (mobile only)
   readonly openGroupIdx = signal<number | null>(null);
-
-  // Detect if mobile (Tailwind: <1024px)
   readonly isMobile = signal(false);
 
   private resizeHandler: (() => void) | null = null;
+
+  constructor() {
+    effect(() => {
+      const override = this.dataOverride();
+      if (override) {
+        this.footerData.set(override);
+        this.loading.set(false);
+      }
+    });
+  }
 
   ngOnInit() {
     if (typeof window !== 'undefined') {
@@ -81,6 +89,12 @@ export class Footer implements OnInit, OnDestroy {
         if (!this.isMobile()) this.openGroupIdx.set(null);
       };
       window.addEventListener('resize', this.resizeHandler);
+    }
+    const override = this.dataOverride();
+    if (override) {
+      this.footerData.set(override);
+      this.loading.set(false);
+      return;
     }
     this.graphql.getCmsPageBySlug('footer').subscribe({
       next: (data) => {
@@ -131,7 +145,7 @@ export class Footer implements OnInit, OnDestroy {
     ];
   }
 
-  
+
 
   private loadFooterFromHome() {
     this.loading.set(false);
@@ -143,7 +157,7 @@ export class Footer implements OnInit, OnDestroy {
     if (!data) return null;
     // Si el contenido de la página es directamente la sección footer (type === 'footer')
     if ((data as { type?: string }).type === 'footer') {
-    
+
       return data as unknown as FooterSection;
     }
     // Si viene dentro de sections[] (p. ej. { page: 'footer', sections: [{ type: 'footer', ... }] })

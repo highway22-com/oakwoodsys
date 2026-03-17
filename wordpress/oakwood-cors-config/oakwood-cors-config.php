@@ -3,7 +3,8 @@
  * Plugin Name: Oakwood CORS Configuration
  * Plugin URI: https://oakwoodsys.com
  * Description: Configuración de CORS para GraphQL - Permite conexiones desde Angular y otros clientes externos
- * Version: 1.0.0
+ * Version: 1.0.1
+ * 
  * Author: Oakwood Systems
  * Author URI: https://oakwoodsys.com
  * License: GPL v2 or later
@@ -24,11 +25,11 @@ function oakwood_get_allowed_origins() {
     return apply_filters('oakwood_allowed_origins', [
         'http://localhost:4200',             // Desarrollo local Angular
         'http://localhost:3000',             // Desarrollo alternativo
-        'https://oakwoodsys.com',             // Producción
+        'https://oakwoodsys.com',             // Producción (Angular en Netlify)
         'https://www.oakwoodsys.com',         // Producción con www
-        'https://oakwoodsys.netlify.app',     // Netlify
-        'https://oakwoodsystemsgroup.com',   // Dominio principal
-        'https://www.oakwoodsystemsgroup.com',
+        'https://oakwoodsys.com',             // Propuesta C: mismo dominio
+        'https://oakwoodsys.netlify.app',     // Netlify producción
+        'https://staging-oakwoodsys.netlify.app',  // Netlify staging
     ]);
 }
 

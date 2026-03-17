@@ -1,6 +1,6 @@
 @if (link(); as href) {
 <div class="flex">
-  <a [routerLink]="href" [class]="triggerClasses()"
+  <a [routerLink]="href" [queryParams]="queryParams() ?? {}" [class]="triggerClasses()"
     [style.background-color]="effectiveBackgroundColor()">
     <span class="flex justify-center items-center py-4 px-8">
       <div class="flex items-center transition-all duration-200 group-hover:-translate-x-2 pl-5">{{ text() }}</div>

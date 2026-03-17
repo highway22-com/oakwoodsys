@@ -24,7 +24,7 @@
     {
       "slug": "about",
       "label": "About",
-      "routerLink": "/about-us",
+      "routerLink": "/about",
       "index": null,
       "hasDropdown": false
     }

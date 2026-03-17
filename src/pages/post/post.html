@@ -221,7 +221,7 @@
     <div class="px-1 sm:px-6 md:px-8 lg:px-1">
       <div class="px-1 sm:px-6 md:px-8 lg:px-28">
         <div class="flex flex-col lg:grid lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12">
-          <aside class="top-24   lg:col-span-3 pl-0 lg:pl-12 self-start  lg:sticky sm:hidden lg:block">
+          <aside class="top-32 lg:col-span-3 pl-0 lg:pl-12 self-start lg:sticky sm:hidden lg:block">
             <div class="">
               <h2 class="text-base md:text-lg font-semibold uppercase tracking-wider text-gray-700/60 mb-4">Table of
                 Contents</h2>
@@ -314,72 +314,72 @@
   <section
     class="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-r from-purple-50 via-blue-50 to-blue-100 overflow-x-hidden">
     <div class="container mx-auto px-1 sm:px-6 md:px-8 lg:px-12">
- 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          <!-- Left Column: Image -->
-          <div class="relative w-full h-full    overflow-hidden">
-            <img src="https://oakwoodsys.com/wp-content/uploads/2026/02/contactus.png" alt="Team collaboration"
-              class="w-full h-full object-cover" />
-          </div>
 
-
-          <!-- Right Column: Form -->
-          <div class="order-1 lg:order-2">
-            <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
-              Let's bring your Ideas to life
-            </h2>
-            <p class="text-base sm:text-lg text-gray-700 mb-8 sm:mb-10 leading-relaxed">
-              Get in touch with our team to discuss how we can help transform your business with innovative solutions.
-            </p>
-            <form (ngSubmit)="onSubmitContact()" class="post-contact-form space-y-6">
-              <div>
-                <label for="post-fullName" class="block text-sm text-gray-700 mb-2">Your full name</label>
-                <input type="text" id="post-fullName" name="fullName" [(ngModel)]="formModel.fullName"
-                  [class.post-contact-form__input--error]="submitted && validationErrors.fullName"
-                  placeholder="Your name" />
-                @if (submitted && validationErrors.fullName) {
-                <span class="post-contact-form__error-msg">Full name is required</span>
-                }
-              </div>
-              <div>
-                <label for="post-email" class="block text-sm text-gray-700 mb-2">Work email address</label>
-                <input type="email" id="post-email" name="email" [(ngModel)]="formModel.email"
-                  [class.post-contact-form__input--error]="submitted && validationErrors.email"
-                  placeholder="your.email@example.com" />
-                @if (submitted && validationErrors.email) {
-                <span class="post-contact-form__error-msg">Valid email is required</span>
-                }
-              </div>
-              <div>
-                <label for="post-company" class="block text-sm text-gray-700 mb-2">Company Name</label>
-                <input type="text" id="post-company" name="company" [(ngModel)]="formModel.company"
-                  [class.post-contact-form__input--error]="submitted && validationErrors.company"
-                  placeholder="Company Name" />
-              </div>
-              <div>
-                <label for="post-message" class="block text-sm text-gray-700 mb-2">Message</label>
-                <textarea id="post-message" name="message" rows="4" [(ngModel)]="formModel.message" class="resize-none"
-                  [class.post-contact-form__input--error]="submitted && validationErrors.message"
-                  placeholder="Describe what you need help with or what you're planning next"></textarea>
-                @if (submitted && validationErrors.message) {
-                <span class="post-contact-form__error-msg">Message is required</span>
-                }
-              </div>
-
-              @if (recaptchaEnabled) {
-              <div class="post-contact-form__recaptcha">
-                <div #recaptchaHost></div>
-                @if (submitted && validationErrors.recaptcha) {
-                <span class="post-contact-form__error-msg">Please verify that you are not a robot</span>
-                }
-              </div>
-              }
-              <app-button-primary [text]="isSubmitting ? 'Sending...' : 'Send Message'" [disabled]="isSubmitting"
-                [type]="'submit'" />
-            </form>
-          </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <!-- Left Column: Image -->
+        <div class="relative w-full h-full    overflow-hidden">
+          <img src="https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/contactus.png" alt="Team collaboration"
+            class="w-full h-full object-cover" />
         </div>
-   
+
+
+        <!-- Right Column: Form -->
+        <div class="order-1 lg:order-2">
+          <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
+            Let's bring your Ideas to life
+          </h2>
+          <p class="text-base sm:text-lg text-gray-700 mb-8 sm:mb-10 leading-relaxed">
+            Get in touch with our team to discuss how we can help transform your business with innovative solutions.
+          </p>
+          <form (ngSubmit)="onSubmitContact()" class="post-contact-form space-y-6">
+            <div>
+              <label for="post-fullName" class="block text-sm text-gray-700 mb-2">Your full name</label>
+              <input type="text" id="post-fullName" name="fullName" [(ngModel)]="formModel.fullName"
+                [class.post-contact-form__input--error]="submitted && validationErrors.fullName"
+                placeholder="Your name" />
+              @if (submitted && validationErrors.fullName) {
+              <span class="post-contact-form__error-msg">Full name is required</span>
+              }
+            </div>
+            <div>
+              <label for="post-email" class="block text-sm text-gray-700 mb-2">Work email address</label>
+              <input type="email" id="post-email" name="email" [(ngModel)]="formModel.email"
+                [class.post-contact-form__input--error]="submitted && validationErrors.email"
+                placeholder="your.email@example.com" />
+              @if (submitted && validationErrors.email) {
+              <span class="post-contact-form__error-msg">Valid email is required</span>
+              }
+            </div>
+            <div>
+              <label for="post-company" class="block text-sm text-gray-700 mb-2">Company Name</label>
+              <input type="text" id="post-company" name="company" [(ngModel)]="formModel.company"
+                [class.post-contact-form__input--error]="submitted && validationErrors.company"
+                placeholder="Company Name" />
+            </div>
+            <div>
+              <label for="post-message" class="block text-sm text-gray-700 mb-2">Message</label>
+              <textarea id="post-message" name="message" rows="4" [(ngModel)]="formModel.message" class="resize-none"
+                [class.post-contact-form__input--error]="submitted && validationErrors.message"
+                placeholder="Describe what you need help with or what you're planning next"></textarea>
+              @if (submitted && validationErrors.message) {
+              <span class="post-contact-form__error-msg">Message is required</span>
+              }
+            </div>
+
+            @if (recaptchaEnabled) {
+            <div class="post-contact-form__recaptcha">
+              <div #recaptchaHost></div>
+              @if (submitted && validationErrors.recaptcha) {
+              <span class="post-contact-form__error-msg">Please verify that you are not a robot</span>
+              }
+            </div>
+            }
+            <app-button-primary [text]="isSubmitting ? 'Sending...' : 'Send Message'" [disabled]="isSubmitting"
+              [type]="'submit'" />
+          </form>
+        </div>
+      </div>
+
     </div>
   </section>
   }

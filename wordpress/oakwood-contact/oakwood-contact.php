@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Oakwood Contact
- * Plugin URI: https://oakwoodsys.com
+ * Plugin URI: https://oakwoodsystemsgroup.com
  * Description: Endpoint REST para enviar formularios de contacto vía wp_mail. Usado por Angular (oakwoodsystemsgroup.com).
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Aetro
- * Author URI: https://oakwoodsys.com
+ * Author URI: https://oakwoodsystemsgroup.com
  * License: GPL v2 or later
  * Text Domain: oakwood-contact
  */
@@ -245,6 +245,21 @@ function oakwood_contact_rest_args() {
 }
 
 /**
+ * Escribe error de wp_mail en wp-content/oakwood-contact-errors.log
+ */
+function oakwood_contact_log_error($to, $subject) {
+    $log_dir = defined('WP_CONTENT_DIR') ? WP_CONTENT_DIR : (ABSPATH . 'wp-content');
+    $log_file = $log_dir . '/oakwood-contact-errors.log';
+    $entry = sprintf(
+        "[%s] wp_mail failed | To: %s | Subject: %s\n",
+        date('Y-m-d H:i:s'),
+        $to,
+        $subject
+    );
+    @file_put_contents($log_file, $entry, FILE_APPEND | LOCK_EX);
+}
+
+/**
  * Callback: enviar email con wp_mail
  */
 function oakwood_contact_send(\WP_REST_Request $request) {
@@ -279,8 +294,12 @@ function oakwood_contact_send(\WP_REST_Request $request) {
         return new \WP_REST_Response(['success' => true, 'message' => 'Email sent'], 200);
     }
 
+    // wp_mail failed - escribir en log propio para diagnóstico
+    oakwood_contact_log_error($to, $subject);
+    error_log('[oakwood-contact] wp_mail failed. To: ' . $to);
+
     return new \WP_REST_Response(
-        ['success' => false, 'message' => 'Failed to send email'],
+        ['success' => false, 'message' => 'Failed to send email. Check WordPress mail configuration (SMTP).'],
         500
     );
 }
