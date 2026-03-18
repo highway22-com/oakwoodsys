@@ -30,11 +30,10 @@ import { StructuredOffer, StructuredOfferPageConfig } from '../structured-offer/
 import Home from '../home/home';
 import type { CmsPageContent } from '../../app/api/graphql';
 import { EditorComponent } from 'ngx-monaco-editor-v2';
-import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
 
 @Component({
   selector: 'app-edit-page',
-  imports: [CommonModule, RouterLink, FormsModule, Footer, AppNavbar, Industries, Services, StructuredEngagementsSectionComponent, Structured, StructuredOffer, Home, EditorComponent, ButtonPrimaryComponent],
+  imports: [CommonModule, RouterLink, FormsModule, Footer, AppNavbar, Industries, Services, StructuredEngagementsSectionComponent, Structured, StructuredOffer, Home, EditorComponent],
   templateUrl: './edit-page.html',
   styleUrl: './edit-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
