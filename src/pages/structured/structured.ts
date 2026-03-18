@@ -146,11 +146,11 @@ export class Structured implements OnInit {
   }
 
   getCardIcon(card: StructuredPageCard): string {
-    return (card.iconSvg ?? card.icon ?? '').trim();
+    return this.normalizeIconValue(card.iconSvg ?? card.icon);
   }
 
   isIconAssetUrl(icon?: string): boolean {
-    const value = icon?.trim().toLowerCase();
+    const value = this.normalizeIconValue(icon).toLowerCase();
 
     if (!value) return false;
     if (value.startsWith('<svg')) return false;
@@ -165,7 +165,16 @@ export class Structured implements OnInit {
   }
 
   getIconAssetSrc(icon?: string): string {
-    return icon?.trim() ?? '';
+    return this.normalizeIconValue(icon);
+  }
+
+  private normalizeIconValue(icon?: string): string {
+    const value = icon?.trim() ?? '';
+    const lower = value.toLowerCase();
+    if (!value || lower === 'undefined' || lower === 'null') {
+      return '';
+    }
+    return value;
   }
 }
 
