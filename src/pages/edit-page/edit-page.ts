@@ -25,13 +25,16 @@ import type { IndustriesContent } from '../industries/industries';
 import Services from '../services/services';
 import type { ServicesContent } from '../services/services';
 import { StructuredEngagementsSectionComponent } from '../../shared/sections/structured-engagements/structured-engagements';
+import { Structured, StructuredPageContent } from '../structured/structured';
+import { StructuredOffer, StructuredOfferPageConfig } from '../structured-offer/structured-offer';
 import Home from '../home/home';
 import type { CmsPageContent } from '../../app/api/graphql';
 import { EditorComponent } from 'ngx-monaco-editor-v2';
+import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
 
 @Component({
   selector: 'app-edit-page',
-  imports: [CommonModule, RouterLink, FormsModule, Footer, AppNavbar, Industries, Services, StructuredEngagementsSectionComponent, Home, EditorComponent],
+  imports: [CommonModule, RouterLink, FormsModule, Footer, AppNavbar, Industries, Services, StructuredEngagementsSectionComponent, Structured, StructuredOffer, Home, EditorComponent, ButtonPrimaryComponent],
   templateUrl: './edit-page.html',
   styleUrl: './edit-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -63,9 +66,18 @@ export default class EditPage implements OnInit {
   readonly saving = signal(false);
   readonly saveSuccess = signal(false);
   readonly panelVisible = signal(false);
+  readonly panelWidthPercent = signal(50);
+  private isResizingPanel = false;
+
+  readonly panelWidthStyle = computed(() => `${this.panelWidthPercent()}vw`);
 
   togglePanel() {
     this.panelVisible.set(!this.panelVisible());
+  }
+
+  startPanelResize(event: MouseEvent) {
+    event.preventDefault();
+    this.isResizingPanel = true;
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -76,6 +88,20 @@ export default class EditPage implements OnInit {
     }
   }
 
+  @HostListener('document:mousemove', ['$event'])
+  onDocumentMouseMove(event: MouseEvent) {
+    if (!this.isResizingPanel || !isPlatformBrowser(this.platformId)) return;
+    const viewportWidth = window.innerWidth || 1;
+    const panelWidth = viewportWidth - event.clientX;
+    const percent = (panelWidth / viewportWidth) * 100;
+    this.panelWidthPercent.set(Math.max(25, Math.min(75, Math.round(percent))));
+  }
+
+  @HostListener('document:mouseup')
+  onDocumentMouseUp() {
+    this.isResizingPanel = false;
+  }
+
   onServiceSelect(serviceSlug: string) {
     this.selectedServiceSlug.set(serviceSlug);
     this.router.navigate(['/edit', 'services'], {
@@ -83,6 +109,20 @@ export default class EditPage implements OnInit {
     });
     // Cargar el JSON del servicio seleccionado directamente para que el panel se actualice
     this.loadServiceContent(serviceSlug);
+  }
+
+  onIndustrySelect(industrySlug: string) {
+    this.selectedIndustrySlug.set(industrySlug);
+    this.router.navigate(['/edit', 'industries'], {
+      queryParams: { edit: 'true', industry: industrySlug },
+    });
+  }
+
+  onStructuredOfferSelect(offerSlug: string) {
+    this.selectedStructuredOfferSlug.set(offerSlug);
+    this.router.navigate(['/edit', 'structured-engagement-offer-page'], {
+      queryParams: { edit: 'true', offer: offerSlug },
+    });
   }
 
   /** Carga el contenido de un servicio: primero GraphQL (último del CMS), si falla usa el archivo estático */
@@ -113,6 +153,49 @@ export default class EditPage implements OnInit {
       error: () => {
         this.jsonError.set('No se pudo cargar el contenido del servicio');
         this.loading.set(false);
+      },
+    });
+  }
+
+  /** Carga una industria específica: primero CMS por slug (industries-{slug}), fallback a contenido agregado. */
+  private loadIndustryContent(industrySlug: string) {
+    this.loading.set(true);
+    this.jsonError.set(null);
+
+    this.graphql.getIndustryByCMSSlug(industrySlug).subscribe({
+      next: (data) => {
+        if (data) {
+          this.jsonContentStr.set(JSON.stringify(data, null, 2));
+          this.loading.set(false);
+          return;
+        }
+
+        this.graphql.getIndustriesContent().subscribe({
+          next: (allData) => {
+            if (allData) {
+              this.jsonContentStr.set(JSON.stringify(allData, null, 2));
+            } else {
+              this.loadEditPageFromStatic('industries', '/industries-content.json');
+              return;
+            }
+            this.loading.set(false);
+          },
+          error: () => this.loadEditPageFromStatic('industries', '/industries-content.json'),
+        });
+      },
+      error: () => {
+        this.graphql.getIndustriesContent().subscribe({
+          next: (allData) => {
+            if (allData) {
+              this.jsonContentStr.set(JSON.stringify(allData, null, 2));
+            } else {
+              this.loadEditPageFromStatic('industries', '/industries-content.json');
+              return;
+            }
+            this.loading.set(false);
+          },
+          error: () => this.loadEditPageFromStatic('industries', '/industries-content.json'),
+        });
       },
     });
   }
@@ -171,6 +254,12 @@ export default class EditPage implements OnInit {
 
   /** Slug del servicio seleccionado para editar (desde query param o del contenido cargado) */
   readonly selectedServiceSlug = signal<string>('data-ai-solutions');
+  /** Slug de la industria seleccionada para editar (desde query param o menú). */
+  readonly selectedIndustrySlug = signal<string>('healthcare');
+  /** Slugs de industrias para el selector en /edit/industries (se obtienen desde menu). */
+  readonly industrySlugs = signal<string[]>(['healthcare']);
+  /** Offer slug selected for structured-offer preview. */
+  readonly selectedStructuredOfferSlug = signal<string>('sql-server-migration-to-azure');
 
   /** Slug a usar en la vista previa de services (el seleccionado si existe en los datos) */
   readonly servicesSlugForPreview = computed(() => {
@@ -178,6 +267,14 @@ export default class EditPage implements OnInit {
     const selected = this.selectedServiceSlug();
     if (data?.services && selected in data.services) return selected;
     return this.servicesPreviewSlug();
+  });
+
+  /** Slug a usar en la vista previa de industries (el seleccionado si existe en los datos). */
+  readonly industriesSlugForPreview = computed(() => {
+    const data = this.parsedIndustriesData();
+    const selected = this.selectedIndustrySlug();
+    if (data?.industries && selected in data.industries) return selected;
+    return this.industriesPreviewSlug();
   });
 
   readonly parsedStructuredEngagementsData = computed(() => {
@@ -196,6 +293,55 @@ export default class EditPage implements OnInit {
     } catch {
       return null;
     }
+  });
+
+  readonly parsedStructuredPageData = computed(() => {
+    if (this.slug() !== 'structured-engagement-page') return null;
+    try {
+      return JSON.parse(this.jsonContentStr() || '{}') as StructuredPageContent;
+    } catch {
+      return null;
+    }
+  });
+
+  readonly parsedStructuredOfferPageData = computed(() => {
+    if (this.slug() !== 'structured-engagement-offer-page') return null;
+    try {
+      const parsed = JSON.parse(this.jsonContentStr() || '{}') as Record<string, unknown>;
+      return this.asStructuredOfferPageConfig(parsed);
+    } catch {
+      return null;
+    }
+  });
+
+  readonly structuredOfferSlugs = computed(() => {
+    const cfg = this.parsedStructuredOfferPageData();
+    return Object.entries(cfg?.offers ?? {})
+      .filter(([, value]) => Boolean(value))
+      .map(([key]) => key);
+  });
+
+  readonly structuredOfferSlugForPreview = computed(() => {
+    const available = this.structuredOfferSlugs();
+    const selected = this.selectedStructuredOfferSlug();
+    if (available.includes(selected)) return selected;
+    return available[0] ?? 'sql-server-migration-to-azure';
+  });
+
+  readonly structuredOfferPageDataForPreview = computed(() => {
+    const cfg = this.parsedStructuredOfferPageData();
+    if (!cfg) return null;
+
+    const selectedSlug = this.structuredOfferSlugForPreview();
+    const selectedOffer = cfg.offers?.[selectedSlug];
+    if (!selectedOffer) return cfg;
+
+    return {
+      ...cfg,
+      offers: {
+        [selectedSlug]: selectedOffer,
+      },
+    } as StructuredOfferPageConfig;
   });
 
   private extractFooterSection(data: {
@@ -218,6 +364,8 @@ export default class EditPage implements OnInit {
     services: 'Services',
     resources: 'Resources',
     'structured-engagements': 'Structured Engagements',
+    'structured-engagement-page': 'Structured Page',
+    'structured-engagement-offer-page': 'Structured Offer Page',
     about: 'About',
   };
 
@@ -232,6 +380,8 @@ export default class EditPage implements OnInit {
   ] as const;
 
   ngOnInit() {
+    this.loadIndustrySlugsFromMenu();
+
     this.route.queryParams
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((params) => {
@@ -259,6 +409,17 @@ export default class EditPage implements OnInit {
       return;
     }
 
+    // All structured-offer offers come from a single API slug, so once the page
+    // config is in memory an offer switch only needs to update the signal.
+    // This must run BEFORE loading=true to avoid unmount/remount flicker.
+    if (slug === 'structured-engagement-offer-page' && this.parsedStructuredOfferPageData() !== null) {
+      const offerSlug = this.readOfferQueryParam(queryParams['offer']) ?? this.selectedStructuredOfferSlug();
+      const available = this.structuredOfferSlugs();
+      const resolved = available.includes(offerSlug) ? offerSlug : (available[0] ?? offerSlug);
+      this.selectedStructuredOfferSlug.set(resolved);
+      return;
+    }
+
     this.loading.set(true);
     this.jsonError.set(null);
 
@@ -279,18 +440,11 @@ export default class EditPage implements OnInit {
     }
 
     if (slug === 'industries') {
-      this.graphql.getIndustriesContent().subscribe({
-        next: (data) => {
-          if (data) {
-            this.jsonContentStr.set(JSON.stringify(data, null, 2));
-          } else {
-            this.loadEditPageFromStatic(slug, '/industries-content.json');
-            return;
-          }
-          this.loading.set(false);
-        },
-        error: () => this.loadEditPageFromStatic(slug, '/industries-content.json'),
-      });
+      const industryParam = queryParams['industry'];
+      const industrySlug = (typeof industryParam === 'string' ? industryParam : null) ?? this.selectedIndustrySlug();
+      this.selectedIndustrySlug.set(industrySlug);
+
+      this.loadIndustryContent(industrySlug);
       return;
     }
 
@@ -380,6 +534,47 @@ export default class EditPage implements OnInit {
       return;
     }
 
+    if (slug === 'structured-engagement-offer-page') {
+      const offerParam = this.readOfferQueryParam(queryParams['offer']);
+      const offerSlug = offerParam ?? this.selectedStructuredOfferSlug();
+      this.selectedStructuredOfferSlug.set(offerSlug);
+
+      this.graphql.getStructuredEngagementOfferPageContent().subscribe({
+        next: (data) => {
+          const parsed = this.asStructuredOfferPageConfig(data as Record<string, unknown> | null);
+          if (parsed) {
+            this.jsonContentStr.set(JSON.stringify(parsed, null, 2));
+            const keys = Object.entries(parsed.offers ?? {})
+              .filter(([, value]) => Boolean(value))
+              .map(([key]) => key);
+            if (keys.length > 0) {
+              // Re-read the param so we always honour the URL value, not a stale signal.
+              const currentOffer = this.selectedStructuredOfferSlug();
+              const resolved = keys.includes(currentOffer) ? currentOffer : keys[0];
+              this.selectedStructuredOfferSlug.set(resolved);
+              // Only navigate if this was an initial load with no offer in the URL.
+              if (!offerParam) {
+                this.router.navigate(['/edit', 'structured-engagement-offer-page'], {
+                  queryParams: { edit: 'true', offer: resolved },
+                  replaceUrl: true,
+                });
+              }
+            }
+          } else {
+            this.jsonError.set(`No se encontró contenido para ${slug}`);
+            this.jsonContentStr.set('{}');
+          }
+          this.loading.set(false);
+        },
+        error: () => {
+          this.jsonError.set(`No se pudo cargar el contenido de ${slug}`);
+          this.jsonContentStr.set('{}');
+          this.loading.set(false);
+        },
+      });
+      return;
+    }
+
     this.graphql.getCmsPageBySlug(slug).subscribe({
       next: (data) => {
         if (data) {
@@ -396,6 +591,87 @@ export default class EditPage implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  private readOfferQueryParam(value: string | string[] | undefined): string | null {
+    const raw = Array.isArray(value) ? value[0] : value;
+    if (typeof raw !== 'string') return null;
+
+    const decoded = decodeURIComponent(raw).trim();
+    if (!decoded) return null;
+
+    // Handle malformed values like "http://.../edit?...&offer=slug".
+    const marker = 'offer=';
+    const markerIndex = decoded.lastIndexOf(marker);
+    if (markerIndex >= 0) {
+      const extracted = decoded.slice(markerIndex + marker.length).split('&')[0].trim();
+      return extracted || null;
+    }
+
+    return decoded;
+  }
+
+  private loadIndustrySlugsFromMenu() {
+    this.graphql.getMenuContent().subscribe({
+      next: (data) => {
+        const slugs = this.extractIndustrySlugsFromMenu(data as { content?: { industries?: Array<{ link?: string }> } });
+        if (slugs.length > 0) {
+          this.industrySlugs.set(slugs);
+          if (!slugs.includes(this.selectedIndustrySlug())) {
+            this.selectedIndustrySlug.set(slugs[0]);
+          }
+          return;
+        }
+        this.loadIndustrySlugsFromStaticMenu();
+      },
+      error: () => this.loadIndustrySlugsFromStaticMenu(),
+    });
+  }
+
+  private loadIndustrySlugsFromStaticMenu() {
+    this.http.get<NavbarContent>('/navbar-content.json').subscribe({
+      next: (data) => {
+        const slugs = this.extractIndustrySlugsFromMenu(data as { content?: { industries?: Array<{ link?: string }> } });
+        if (slugs.length > 0) {
+          this.industrySlugs.set(slugs);
+          if (!slugs.includes(this.selectedIndustrySlug())) {
+            this.selectedIndustrySlug.set(slugs[0]);
+          }
+        }
+      },
+      error: () => {
+        // Keep default fallback slug when menu is unavailable.
+      },
+    });
+  }
+
+  private extractIndustrySlugsFromMenu(data: { content?: { industries?: Array<{ link?: string }> } } | null): string[] {
+    const links = data?.content?.industries ?? [];
+    const slugs = links
+      .map((item) => item.link ?? '')
+      .map((link) => {
+        const match = link.match(/\/industries\/([^/?#]+)/i);
+        return match?.[1] ?? '';
+      })
+      .filter((slug) => Boolean(slug));
+
+    return Array.from(new Set(slugs));
+  }
+
+  private asStructuredOfferPageConfig(data: Record<string, unknown> | null): StructuredOfferPageConfig | null {
+    if (!data || typeof data !== 'object') return null;
+
+    const candidate = data as Partial<StructuredOfferPageConfig>;
+    if (candidate.offers && typeof candidate.offers === 'object') {
+      return candidate as StructuredOfferPageConfig;
+    }
+
+    const wrapped = data as { content?: Partial<StructuredOfferPageConfig>; page?: string };
+    if (wrapped.content?.offers && typeof wrapped.content.offers === 'object') {
+      return wrapped.content as StructuredOfferPageConfig;
+    }
+
+    return null;
   }
 
   onJsonChange(value: string) {

@@ -360,10 +360,10 @@ export class StructuredEngagementsSectionComponent
   // Computed property to filter offers by active tab
   readonly filteredOffers = computed(() => {
     const active = this.displayedTab();
-    const allOffers = DEFAULT_STRUCTURED_ENGAGEMENTS_DATA.offers ?? [];
-
-    console.log('Active tab:', active);
-    console.log('All offers:', allOffers.length);
+    const fromInput = this.section().offers ?? [];
+    const allOffers = fromInput.length > 0
+      ? fromInput
+      : (DEFAULT_STRUCTURED_ENGAGEMENTS_DATA.offers ?? []);
 
     if (!active) {
       return allOffers.length > 0 ? allOffers : [];
@@ -373,13 +373,8 @@ export class StructuredEngagementsSectionComponent
     const filtered = allOffers.filter((offer) => {
       const match =
         offer.category?.trim().toLowerCase() === active.trim().toLowerCase();
-      if (match) {
-        console.log('Matched offer:', offer.title, 'category:', offer.category);
-      }
       return match;
     });
-
-    console.log('Filtered offers count:', filtered.length);
 
     // If no filtered results, show all offers as fallback
     return filtered.length > 0 ? filtered : allOffers;
@@ -394,8 +389,6 @@ export class StructuredEngagementsSectionComponent
       const incomingActive = this.section().activeTab ?? null;
       const tabs = this.section().tabs ?? [];
       const current = this.activeTab();
-
-      console.log(this.section(), "this.section()")
 
       // Only set from input if user hasn't manually selected a tab
       if (!this.userSelectedTab) {
@@ -417,7 +410,6 @@ export class StructuredEngagementsSectionComponent
 
   ngAfterViewInit() {
     this.viewReady = true;
-    console.log(this.section(), "section")
     if (isPlatformBrowser(this.platformId)) {
       this.updateUnderline();
       window.addEventListener('resize', this.updateUnderline, {
@@ -513,6 +505,30 @@ export class StructuredEngagementsSectionComponent
     return this.sanitizer.bypassSecurityTrustHtml(svg ?? '');
   }
 
+  isIconAssetUrl(icon?: string): boolean {
+    const value = icon?.trim().toLowerCase();
+
+    if (!value) {
+      return false;
+    }
+
+    if (value.startsWith('<svg')) {
+      return false;
+    }
+
+    return (
+      value.startsWith('http://') ||
+      value.startsWith('https://') ||
+      value.startsWith('/') ||
+      value.startsWith('./') ||
+      value.startsWith('../')
+    );
+  }
+
+  getIconAssetSrc(icon?: string): string {
+    return icon?.trim() ?? '';
+  }
+
   /** Solo la clase de fondo del contenedor del icono (para combinar con w-[50px]      , etc.). */
   getOfferIconBgClass(borderColor?: string): string {
     switch (this.normalizeBorderColor(borderColor)) {
@@ -570,6 +586,13 @@ export class StructuredEngagementsSectionComponent
     if (this.viewReady) {
       queueMicrotask(() => this.updateUnderline());
     }
+  }
+
+  onOfferClick(link?: string) {
+    if (!link || !isPlatformBrowser(this.platformId)) {
+      return;
+    }
+    window.location.assign(link);
   }
 
   /** Título para mostrar (string o line1 + line2). */
