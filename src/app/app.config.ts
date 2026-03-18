@@ -30,6 +30,7 @@ export const appConfig: ApplicationConfig = {
           graphql.loadGenContentTaxonomies(),
           graphql.loadHomePageContent(),
           graphql.loadServicesContent(),
+          graphql.loadIndustriesContent(),
         ]).then(() => undefined),
       deps: [GraphQLContentService],
       multi: true,

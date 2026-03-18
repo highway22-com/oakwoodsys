@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, input, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, input, effect, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
@@ -87,7 +88,8 @@ export default class Industries implements OnInit, OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly graphql = inject(GraphQLContentService);
   private readonly seoMeta = inject(SeoMetaService);
-  private routeSub?: Subscription;
+  private readonly platformId = inject(PLATFORM_ID);
+  private routeSubscription?: Subscription;
 
   /** Cuando se proporciona, se usa en lugar de cargar desde JSON (para preview en edit) */
   readonly contentOverride = input<IndustriesContent | null>(null);
@@ -117,7 +119,8 @@ export default class Industries implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.routeSub = this.route.paramMap.subscribe(params => {
+    // Subscribe to route params to handle navigation changes
+    this.routeSubscription = this.route.paramMap.subscribe(params => {
       const slugParam = params.get('slug');
       this.slug.set(slugParam);
       this.loadContent();
@@ -125,7 +128,9 @@ export default class Industries implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.routeSub?.unsubscribe();
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
   }
 
   /** Slugs para app-featured-case-study-cards (misma lógica que resources). */
@@ -155,6 +160,21 @@ export default class Industries implements OnInit, OnDestroy {
       return this.sanitizer.bypassSecurityTrustHtml(svg);
     }
 
+  isImageIcon(icon: string): boolean {
+    if (!icon) return false;
+    const trimmed = icon.trim();
+    if (!trimmed) return false;
+
+    return /^data:image\//i.test(trimmed)
+      || /^https?:\/\//i.test(trimmed)
+      || trimmed.startsWith('/')
+      || /\.(svg|png|jpe?g|webp|gif|avif)(\?.*)?$/i.test(trimmed);
+  }
+
+  getIconImageSrc(icon: string): string {
+    return icon?.trim() ?? '';
+  }
+
   /** Slug de URL → clave en industries-content.json (para URLs amigables del navbar). */
   private static readonly SLUG_TO_KEY: Record<string, string> = {
     'education-public-sector': 'education',
@@ -167,23 +187,65 @@ export default class Industries implements OnInit, OnDestroy {
     }
     this.loading.set(true);
     this.error.set(null);
-    this.graphql.getIndustriesContent().subscribe({
-      next: (data: { industries: Record<string, unknown> } | null) => {
+
+    const slugValue = this.slug();
+    if (!slugValue) {
+      this.loading.set(false);
+      return;
+    }
+
+    // 1) Fetch from WordPress CMS page via GraphQL
+    this.graphql.getIndustryByCMSSlug(slugValue).pipe(take(1)).subscribe({
+      next: (data) => {
+        console.log('Fetched industry content from CMS page:', slugValue, data);
         if (data?.industries) {
           this.applyIndustriesContent(data as IndustriesContent);
         } else {
-          this.loadFromStaticFile();
+          this.loadFromPreloadedOrGraphQL();
         }
       },
-      error: () => this.loadFromStaticFile(),
+      error: () => this.loadFromPreloadedOrGraphQL(),
+    });
+  }
+
+  private loadFromPreloadedOrGraphQL() {
+    const slugValue = this.slug();
+    if (!slugValue) {
+      this.loading.set(false);
+      return;
+    }
+    // 2) Check preloaded industries from APP_INITIALIZER
+    this.graphql.industriesContent$.pipe(take(1)).subscribe((preloaded) => {
+      if (preloaded?.industries && preloaded.industries[slugValue]) {
+        this.applyIndustriesContent(preloaded as IndustriesContent);
+        return;
+      }
+      // 3) Call GraphQL for the specific industry
+      this.graphql.getIndustriesContent().pipe(take(1)).subscribe({
+        next: (data: any) => {
+          if (data) {
+            const wrapped: IndustriesContent = data.industries ? data : { industries: data };
+            this.applyIndustriesContent(wrapped);
+          } else {
+            this.loadFromStaticFile();
+          }
+        },
+        error: () => this.loadFromStaticFile(),
+      });
     });
   }
 
   private applyIndustriesContent(data: IndustriesContent) {
     const slugValue = this.slug();
     const contentKey = slugValue ? (Industries.SLUG_TO_KEY[slugValue] ?? slugValue) : null;
-    if (contentKey && data.industries[contentKey]) {
-      const industry = data.industries[contentKey];
+    
+    // Support both direct keyed format and wrapped format
+    const directIndustry = contentKey ? (data as any)[contentKey] : undefined;
+    const industriesNode = (data as any)['industries'] as Record<string, IndustryContent> | undefined;
+    const wrappedIndustry = contentKey ? industriesNode?.[contentKey] : undefined;
+    const industry = directIndustry ?? wrappedIndustry;
+
+    if (industry) {
       this.content.set(industry);
       this.seoMeta.updateMeta({
         title: `${industry.title} | Oakwood Systems`,
@@ -204,10 +266,17 @@ export default class Industries implements OnInit, OnDestroy {
   }
 
   private loadFromStaticFile() {
+    const slugValue = this.slug();
+    if (!slugValue) {
+      this.error.set('Industry slug is required');
+      this.loading.set(false);
+      return;
+    }
+    // 4) Load from local static JSON as final fallback
     this.http.get<IndustriesContent>('/industries-content.json').subscribe({
       next: (data) => this.applyIndustriesContent(data),
       error: () => {
-        this.error.set('Failed to load content');
+        this.error.set('Failed to load industry content');
         this.loading.set(false);
       },
     });

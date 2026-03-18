@@ -1,3 +1,24 @@
 :host {
   display: block;
 }
+
+.edit-json-panel {
+  min-width: 320px;
+  max-width: 75vw;
+  transition: width 180ms ease;
+}
+
+.panel-resize-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 8px;
+  height: 100%;
+  cursor: col-resize;
+  background: transparent;
+  z-index: 60;
+}
+
+.panel-resize-handle:hover {
+  background: rgba(13, 83, 162, 0.2);
+}

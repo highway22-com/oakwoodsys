@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef } from '@angular/core';
+import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
 
 export interface EditableItem {
   label: string;
@@ -13,7 +14,7 @@ export interface EditableItem {
 
 @Component({
   selector: 'app-edit-dashboard',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ButtonPrimaryComponent],
   templateUrl: './edit-dashboard.html',
   styleUrl: './edit-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,7 +32,8 @@ export default class EditDashboard implements OnInit {
     { label: 'Industries', slug: 'industries', editPath: '/edit/industries' },
     { label: 'Services', slug: 'services', editPath: '/edit/services' },
     { label: 'Resources', slug: 'resources', editPath: '/edit/resources' },
-    { label: 'Structured Engagements', slug: 'structured-engagements', editPath: '/edit/structured-engagements' },
+    { label: 'Structured Page', slug: 'structured-engagement-page', editPath: '/edit/structured-engagement-page' },
+    { label: 'Structured Offer Page', slug: 'structured-engagement-offer-page', editPath: '/edit/structured-engagement-offer-page' },
     { label: 'About', slug: 'about', editPath: '/edit/about' },
   ];
 

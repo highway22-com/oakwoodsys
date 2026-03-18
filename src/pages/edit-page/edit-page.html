@@ -13,9 +13,11 @@
 
   <!-- Right Sidebar: JSON Editor (mostrar/ocultar como en home) -->
   @if (panelVisible()) {
-  <div class="fixed right-0 top-0 h-full w-2/4 border-l border-gray-300 flex flex-col bg-white z-50 shadow-2xl">
+  <div class="fixed right-0 top-0 h-full border-l border-gray-300 flex flex-col bg-white z-50 shadow-2xl edit-json-panel"
+    [style.width]="panelWidthStyle()">
+    <div class="panel-resize-handle" (mousedown)="startPanelResize($event)" title="Drag to resize"></div>
     <div class="bg-gray-100 border-b border-gray-300 px-4 py-3 flex items-center justify-between pt-20">
-      <h2 class="text-lg text-gray-800">JSON Editor </h2>
+      <h2 class="text-lg text-gray-800 whitespace-nowrap">JSON Editor</h2>
       <div class="flex items-center gap-3">
         @if (saveSuccess()) {
         <span class="bg-green-500 text-white px-3 py-1 rounded text-sm">✓ Copied to clipboard!</span>
@@ -57,8 +59,9 @@
   <main class="relative w-full transition-all duration-200" role="main">
     <div class="flex items-center justify-between mb-6">
       <div>
-        <a [routerLink]="['/edit']" [queryParams]="{ edit: 'true' }"
-          class="text-blue-600 hover:text-blue-700 text-sm mb-2 inline-block">← Back to list</a>
+        <div class="mb-2 inline-block">
+          <app-button-primary [text]="'Back to list'" [link]="'/edit'" [queryParams]="{ edit: 'true' }" />
+        </div>
         <h1 class="text-2xl font-bold text-gray-900">Edit: {{ label() }}</h1>
         <p class="text-sm text-gray-500">{{ slug() }}</p>
         @if (slug() === 'services') {
@@ -68,6 +71,28 @@
             class="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
             @for (s of serviceSlugs; track s) {
             <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </div>
+        }
+        @if (slug() === 'industries') {
+        <div class="mt-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+          <select [value]="selectedIndustrySlug()" (change)="onIndustrySelect($any($event.target).value)"
+            class="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+            @for (s of industrySlugs(); track s) {
+            <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </div>
+        }
+        @if (slug() === 'structured-engagement-offer-page') {
+        <div class="mt-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Offer</label>
+            <select (change)="onStructuredOfferSelect($any($event.target).value)"
+            class="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+            @for (s of structuredOfferSlugs(); track s) {
+              <option [value]="s" [selected]="s === structuredOfferSlugForPreview()">{{ s }}</option>
             }
           </select>
         </div>
@@ -89,16 +114,20 @@
         } @else if (slug() === 'menu' && parsedNavbarData(); as menuData) {
         <app-navbar [contentOverride]="menuData" [previewMode]="true" />
         } @else if (slug() === 'industries' && parsedIndustriesData(); as industriesData) {
-        <app-industries [contentOverride]="industriesData" [slugOverride]="industriesPreviewSlug()" />
+        <app-industries [contentOverride]="industriesData" [slugOverride]="industriesSlugForPreview()" />
         } @else if (slug() === 'services' && parsedServicesData(); as servicesData) {
         <app-services [contentOverride]="servicesData" [slugOverride]="servicesSlugForPreview()" />
         } @else if (slug() === 'structured-engagements' && parsedStructuredEngagementsData(); as seData) {
         <app-structured-engagements [section]="seData" />
+        } @else if (slug() === 'structured-engagement-page' && parsedStructuredPageData(); as structuredPageData) {
+        <app-structured [contentOverride]="structuredPageData" />
+        } @else if (slug() === 'structured-engagement-offer-page' && structuredOfferPageDataForPreview(); as structuredOfferPageData) {
+        <app-structured-offer [contentOverride]="structuredOfferPageData" [slugOverride]="structuredOfferSlugForPreview()" />
         } @else if (slug() === 'home' && parsedHomeData(); as homeData) {
         <app-home [contentOverride]="homeData" />
         } @else if (slug() === 'resources' || slug() === 'about') {
         <div class="p-4 text-gray-500 text-sm">Edit the JSON and copy to clipboard to update the CMS. Preview complete
-          on the pages /resources and /about.</div>
+          on the live pages for /resources, /about, /structured-engagement and /structured-engagement/:slug.</div>
         } @else {
         <div class="p-4 text-gray-500 text-sm">Edit the JSON to see the preview (footer, menu, industries, services or
           structured-engagements).</div>
