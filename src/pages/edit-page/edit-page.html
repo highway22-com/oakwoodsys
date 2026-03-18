@@ -59,16 +59,28 @@
   <main class="relative w-full transition-all duration-200" role="main">
     <div class="flex items-center justify-between mb-6">
       <div>
-        <div class="mb-2 inline-block">
-          <app-button-primary [text]="'Back to list'" [link]="'/edit'" [queryParams]="{ edit: 'true' }" />
+        <div class="mb-3 inline-flex items-center">
+          <a
+            [routerLink]="['/edit']"
+            [queryParams]="{ edit: 'true' }"
+            class="edit-back-button"
+            aria-label="Back to list"
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="edit-back-button__label">Back to list</span>
+          </a>
         </div>
         <h1 class="text-2xl font-bold text-gray-900">Edit: {{ label() }}</h1>
+        @if (slug() !== 'industries' && slug() !== 'services' && slug() !== 'structured-engagement-offer-page') {
         <p class="text-sm text-gray-500">{{ slug() }}</p>
+        }
         @if (slug() === 'services') {
         <div class="mt-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Service</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Please select service</label>
           <select [value]="selectedServiceSlug()" (change)="onServiceSelect($any($event.target).value)"
-            class="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+            class="edit-select block w-full max-w-xs sm:text-sm">
             @for (s of serviceSlugs; track s) {
             <option [value]="s">{{ s }}</option>
             }
@@ -77,9 +89,9 @@
         }
         @if (slug() === 'industries') {
         <div class="mt-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Please select industry</label>
           <select [value]="selectedIndustrySlug()" (change)="onIndustrySelect($any($event.target).value)"
-            class="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+            class="edit-select block w-full max-w-xs sm:text-sm">
             @for (s of industrySlugs(); track s) {
             <option [value]="s">{{ s }}</option>
             }
@@ -88,9 +100,9 @@
         }
         @if (slug() === 'structured-engagement-offer-page') {
         <div class="mt-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Offer</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Please select structured engagement offer</label>
             <select (change)="onStructuredOfferSelect($any($event.target).value)"
-            class="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+            class="edit-select block w-full max-w-xs sm:text-sm">
             @for (s of structuredOfferSlugs(); track s) {
               <option [value]="s" [selected]="s === structuredOfferSlugForPreview()">{{ s }}</option>
             }
@@ -125,9 +137,16 @@
         <app-structured-offer [contentOverride]="structuredOfferPageData" [slugOverride]="structuredOfferSlugForPreview()" />
         } @else if (slug() === 'home' && parsedHomeData(); as homeData) {
         <app-home [contentOverride]="homeData" />
-        } @else if (slug() === 'resources' || slug() === 'about') {
+        } @else if (slug() === 'about') {
+        <iframe
+          src="/about?edit=true"
+          title="About page preview"
+          class="w-full min-h-[70vh] border-0"
+          loading="lazy"
+        ></iframe>
+        } @else if (slug() === 'resources') {
         <div class="p-4 text-gray-500 text-sm">Edit the JSON and copy to clipboard to update the CMS. Preview complete
-          on the live pages for /resources, /about, /structured-engagement and /structured-engagement/:slug.</div>
+          on the live pages for /resources, /structured-engagement and /structured-engagement/:slug.</div>
         } @else {
         <div class="p-4 text-gray-500 text-sm">Edit the JSON to see the preview (footer, menu, industries, services or
           structured-engagements).</div>
