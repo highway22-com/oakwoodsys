@@ -56,6 +56,16 @@ export class GraphQLContentService {
     'managed-services',
   ] as const;
 
+  /** Slugs de industries (mismo orden que en navbar). */
+  private readonly industrySlugs = [
+    'healthcare',
+    'manufacturing',
+    'financial-services',
+    'retail',
+    'education-public-sector',
+    'electronic-design-automation-eda',
+  ] as const;
+
   readonly caseStudies = signal<CaseStudy[]>([]);
   readonly blogs = signal<GenContentListNode[]>([]);
   readonly loading = signal<boolean>(false);
@@ -128,6 +138,47 @@ export class GraphQLContentService {
       });
     }).catch(() => {
       this.servicesContentSubject.next(null);
+    });
+  }
+
+  /** Contenido CMS de industries (cargado en APP_INITIALIZER). Observable para suscribirse. */
+  private readonly industriesContentSubject = new BehaviorSubject<{ industries: Record<string, unknown> } | null>(null);
+  readonly industriesContent$: Observable<{ industries: Record<string, unknown> } | null> = this.industriesContentSubject.asObservable();
+
+  loadIndustriesContent(): Promise<void> {
+    return firstValueFrom(this.getIndustriesContent().pipe(
+      map((d) => d as { industries: Record<string, unknown> } | null),
+      catchError(() => of(null))
+    )).then((data) => {
+      if (data?.industries && Object.keys(data.industries).length > 0) {
+        this.industriesContentSubject.next(data);
+        return;
+      }
+
+      return firstValueFrom(
+        forkJoin(
+          this.industrySlugs.map((slug) =>
+            this.getIndustryByCMSSlug(slug).pipe(
+              map((res) => {
+                if (!res?.industries) return {};
+                const entry = Object.entries(res.industries)[0];
+                return entry ? { [slug]: entry[1] } : {};
+              }),
+              catchError(() => of({}))
+            )
+          )
+        ).pipe(
+          map((results) => {
+            const merged: Record<string, unknown> = {};
+            results.forEach((ind) => Object.assign(merged, ind));
+            return Object.keys(merged).length > 0 ? { industries: merged } : null;
+          })
+        )
+      ).then((merged) => {
+        this.industriesContentSubject.next(merged?.industries ? merged : null);
+      });
+    }).catch(() => {
+      this.industriesContentSubject.next(null);
     });
   }
 
@@ -472,6 +523,25 @@ export class GraphQLContentService {
   getIndustriesContent(): Observable<{ industries: Record<string, unknown> } | null> {
     return this.getCmsPageBySlug('industries').pipe(
       map((data) => data as { industries: Record<string, unknown> } | null)
+
+    );
+  }
+
+  /**
+   * Fetch individual industry content from CMS page by slug (e.g., 'industries-healthcare').
+   * Returns the industry data wrapped in { industries: { [key]: IndustryContent } } format.
+   */
+  getIndustryByCMSSlug(slug: string): Observable<{ industries: Record<string, unknown> } | null> {
+    const cmsSlug = `industries-${slug}`;
+    return this.getCmsPageBySlug(cmsSlug, { fetchPolicy: 'network-only' }).pipe(
+      map((data) => {
+        if (data && typeof data === 'object' && 'slug' in data) {
+          // If data is already the industry content, wrap it
+          return { industries: { [slug]: data } };
+        }
+        // If data already has 'industries' wrapper, return as-is
+        return data as { industries: Record<string, unknown> } | null;
+      })
     );
   }
 
@@ -535,6 +605,24 @@ export class GraphQLContentService {
    */
   getStructuredEngagementsContent(): Observable<Record<string, unknown> | null> {
     return this.getCmsPageBySlug('structured-engagements').pipe(
+      map((data) => data as Record<string, unknown> | null)
+    );
+  }
+
+  /**
+   * Contenido de la página Structured (slug: structured-engagement-page).
+   */
+  getStructuredEngagementPageContent(): Observable<Record<string, unknown> | null> {
+    return this.getCmsPageBySlug('structured-engagement-page', { fetchPolicy: 'network-only' }).pipe(
+      map((data) => data as Record<string, unknown> | null)
+    );
+  }
+
+  /**
+   * Contenido de la página Structured Offer (slug: structured-engagement-offer-page).
+   */
+  getStructuredEngagementOfferPageContent(): Observable<Record<string, unknown> | null> {
+    return this.getCmsPageBySlug('structured-engagement-offer-page', { fetchPolicy: 'network-only' }).pipe(
       map((data) => data as Record<string, unknown> | null)
     );
   }
