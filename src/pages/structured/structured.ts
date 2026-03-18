@@ -14,7 +14,8 @@ interface StructuredPageCard {
   description: string;
   slug: string;
   linkText: string;
-  iconSvg: string;
+  iconSvg?: string;
+  icon?: string;
 }
 
 interface StructuredPageSection {
@@ -142,6 +143,29 @@ export class Structured implements OnInit {
 
   getSafeSvg(svg: string): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(svg);
+  }
+
+  getCardIcon(card: StructuredPageCard): string {
+    return (card.iconSvg ?? card.icon ?? '').trim();
+  }
+
+  isIconAssetUrl(icon?: string): boolean {
+    const value = icon?.trim().toLowerCase();
+
+    if (!value) return false;
+    if (value.startsWith('<svg')) return false;
+
+    return (
+      value.startsWith('http://') ||
+      value.startsWith('https://') ||
+      value.startsWith('/') ||
+      value.startsWith('./') ||
+      value.startsWith('../')
+    );
+  }
+
+  getIconAssetSrc(icon?: string): string {
+    return icon?.trim() ?? '';
   }
 }
 

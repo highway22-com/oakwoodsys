@@ -52,7 +52,18 @@
           role="link"
           tabindex="0"
         >
-          <div class="structured-card__icon" [innerHTML]="getSafeSvg(card.iconSvg)"></div>
+          <div class="structured-card__icon">
+            @if (isIconAssetUrl(getCardIcon(card))) {
+              <img
+                class="structured-card__icon-image"
+                [src]="getIconAssetSrc(getCardIcon(card))"
+                [alt]="card.title + ' icon'"
+                loading="lazy"
+              />
+            } @else if (getCardIcon(card)) {
+              <div [innerHTML]="getSafeSvg(getCardIcon(card))"></div>
+            }
+          </div>
           <h3 class="structured-card__title">{{ card.title }}</h3>
           <p class="structured-card__description">
             {{ card.description }}
