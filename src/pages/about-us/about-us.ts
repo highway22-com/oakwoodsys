@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, input, effect } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { YoutubePlayerComponent } from '../../app/youtube-player/youtube-player.component';
@@ -93,11 +93,23 @@ export interface AboutContent {
 export default class AboutUs implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly seoMeta = inject(SeoMetaService);
+  /** For edit mode: override content if provided */
+  readonly contentOverride = input<AboutContent | null>(null);
 
   readonly content = signal<AboutContent | null>(null);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   selectedHowWeWorkItem: any = null;
+
+  constructor() {
+    effect(() => {
+      const override = this.contentOverride();
+      if (override) {
+        this.content.set(override);
+        this.loading.set(false);
+      }
+    });
+  }
 
   scrollAnimationVisible = signal(false);
   scrollAnimationReverse = signal(false);
@@ -139,26 +151,29 @@ export default class AboutUs implements OnInit {
       description: 'Learn about Oakwood Systems, a Microsoft Solutions Partner driving business innovation and modernization with Azure and cloud services.',
       canonicalPath: '/about',
     });
-    this.graphql.getAboutContent().pipe(
-      timeout({ first: 8000 }),
-      catchError(() => of(null))
-    ).subscribe({
-      next: (data) => {
-        if (this.isAboutContent(data)) {
-          const about = data as unknown as AboutContent;
-          this.content.set(about);
-          this.seoMeta.updateMeta({
-            title: `${about.heroTitle} | Oakwood Systems`,
-            description: about.heroDescription,
-            canonicalPath: '/about',
-          });
-          this.loading.set(false);
-        } else {
-          this.loadAboutFromStaticFile();
-        }
-      },
-      error: () => this.loadAboutFromStaticFile(),
-    });
+
+    if (!this.contentOverride()) {
+      this.graphql.getAboutContent().pipe(
+        timeout({ first: 8000 }),
+        catchError(() => of(null))
+      ).subscribe({
+        next: (data) => {
+          if (this.isAboutContent(data)) {
+            const about = data as unknown as AboutContent;
+            this.content.set(about);
+            this.seoMeta.updateMeta({
+              title: `${about.heroTitle} | Oakwood Systems`,
+              description: about.heroDescription,
+              canonicalPath: '/about',
+            });
+            this.loading.set(false);
+          } else {
+            this.loadAboutFromStaticFile();
+          }
+        },
+        error: () => this.loadAboutFromStaticFile(),
+      });
+    }
 
     this.lastScrollVisible = false;
     if (typeof window !== 'undefined') {

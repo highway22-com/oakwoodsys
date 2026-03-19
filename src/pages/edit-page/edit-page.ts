@@ -28,12 +28,14 @@ import { StructuredEngagementsSectionComponent } from '../../shared/sections/str
 import { Structured, StructuredPageContent } from '../structured/structured';
 import { StructuredOffer, StructuredOfferPageConfig } from '../structured-offer/structured-offer';
 import Home from '../home/home';
+import AboutUs, { type AboutContent } from '../about-us/about-us';
+import { ContactUs } from '../contact-us/contact-us';
 import type { CmsPageContent } from '../../app/api/graphql';
 import { EditorComponent } from 'ngx-monaco-editor-v2';
 
 @Component({
   selector: 'app-edit-page',
-  imports: [CommonModule, RouterLink, FormsModule, Footer, AppNavbar, Industries, Services, StructuredEngagementsSectionComponent, Structured, StructuredOffer, Home, EditorComponent],
+  imports: [CommonModule, RouterLink, FormsModule, Footer, AppNavbar, Industries, Services, StructuredEngagementsSectionComponent, Structured, StructuredOffer, Home, AboutUs, ContactUs, EditorComponent],
   templateUrl: './edit-page.html',
   styleUrl: './edit-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -313,6 +315,29 @@ export default class EditPage implements OnInit {
     }
   });
 
+  readonly parsedAboutData = computed(() => {
+    if (this.slug() !== 'about') return null;
+    try {
+      return JSON.parse(this.jsonContentStr() || '{}') as AboutContent;
+    } catch {
+      return null;
+    }
+  });
+
+  readonly parsedContactUsData = computed(() => {
+    if (this.slug() !== 'contact-us') return null;
+    try {
+      const parsed = JSON.parse(this.jsonContentStr() || '{}') as Record<string, unknown>;
+      const wrapped = parsed['content'];
+      if (wrapped && typeof wrapped === 'object') {
+        return wrapped;
+      }
+      return parsed;
+    } catch {
+      return null;
+    }
+  });
+
   readonly structuredOfferSlugs = computed(() => {
     const cfg = this.parsedStructuredOfferPageData();
     return Object.entries(cfg?.offers ?? {})
@@ -366,6 +391,7 @@ export default class EditPage implements OnInit {
     'structured-engagement-page': 'Structured Page',
     'structured-engagement-offer-page': 'Structured Offer Page',
     about: 'About',
+    'contact-us': 'Contact Us',
   };
 
   /** Slugs de servicios para el selector en /edit/services */
@@ -530,6 +556,11 @@ export default class EditPage implements OnInit {
         },
         error: () => this.loadEditPageFromStatic(slug, '/about-content.json'),
       });
+      return;
+    }
+
+    if (slug === 'contact-us') {
+      this.loadEditPageFromStatic(slug, '/contact-us-content.json');
       return;
     }
 

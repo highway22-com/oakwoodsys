@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, input, effect } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
@@ -78,6 +78,16 @@ export class Structured implements OnInit {
   /** When provided (edit preview), use this instead of remote loading. */
   readonly contentOverride = input<StructuredPageContent | null>(null);
   readonly pageContent = signal<StructuredPageContent>(DEFAULT_STRUCTURED_PAGE_CONTENT);
+
+  constructor() {
+    effect(() => {
+      const override = this.contentOverride();
+      if (override?.hero && Array.isArray(override.sections) && override.cta) {
+        this.pageContent.set(override);
+        this.updateSeo();
+      }
+    });
+  }
 
   ngOnInit() {
     const override = this.contentOverride();

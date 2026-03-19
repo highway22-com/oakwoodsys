@@ -130,20 +130,17 @@
         } @else if (slug() === 'services' && parsedServicesData(); as servicesData) {
         <app-services [contentOverride]="servicesData" [slugOverride]="servicesSlugForPreview()" />
         } @else if (slug() === 'structured-engagements' && parsedStructuredEngagementsData(); as seData) {
-        <app-structured-engagements [section]="seData" />
+        <app-structured-engagements [section]="seData" [contentOverride]="seData" />
         } @else if (slug() === 'structured-engagement-page' && parsedStructuredPageData(); as structuredPageData) {
         <app-structured [contentOverride]="structuredPageData" />
         } @else if (slug() === 'structured-engagement-offer-page' && structuredOfferPageDataForPreview(); as structuredOfferPageData) {
         <app-structured-offer [contentOverride]="structuredOfferPageData" [slugOverride]="structuredOfferSlugForPreview()" />
         } @else if (slug() === 'home' && parsedHomeData(); as homeData) {
         <app-home [contentOverride]="homeData" />
-        } @else if (slug() === 'about') {
-        <iframe
-          src="/about?edit=true"
-          title="About page preview"
-          class="w-full min-h-[70vh] border-0"
-          loading="lazy"
-        ></iframe>
+        } @else if (slug() === 'about' && parsedAboutData(); as aboutData) {
+        <app-about-us [contentOverride]="aboutData" />
+        } @else if (slug() === 'contact-us' && parsedContactUsData(); as contactUsData) {
+        <app-contact-us [contentOverride]="contactUsData" />
         } @else if (slug() === 'resources') {
         <div class="p-4 text-gray-500 text-sm">Edit the JSON and copy to clipboard to update the CMS. Preview complete
           on the live pages for /resources, /structured-engagement and /structured-engagement/:slug.</div>

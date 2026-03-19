@@ -23,6 +23,17 @@ interface StructuredOfferSection {
   };
 }
 
+interface SharedContactUsContent {
+  shared?: {
+    licensingCta?: {
+      title: string;
+      description: string;
+      primaryText: string;
+      primaryLink: string;
+    };
+  };
+}
+
 export interface StructuredOfferContent {
   title: string;
   summary: string;
@@ -165,6 +176,7 @@ export class StructuredOffer implements OnInit, OnDestroy {
   /** Offer slug to render when contentOverride is active. */
   readonly slugOverride = input<string | null>(null);
   readonly pageConfig = signal<StructuredOfferPageConfig | null>(null);
+  readonly sharedLicensingCta = signal<StructuredOfferPageConfig['ctaSection'] | null>(null);
   readonly pageConfigLoaded = signal(false);
   readonly pageConfigFailed = signal(false);
   readonly content = signal<StructuredOfferContent | null>(null);
@@ -190,7 +202,7 @@ export class StructuredOffer implements OnInit, OnDestroy {
   readonly heroCtaPrimary = computed(() => this.pageConfig()?.heroCtaPrimary ?? DEFAULT_HERO_CTA_PRIMARY);
   readonly heroCtaSecondary = computed(() => this.pageConfig()?.heroCtaSecondary ?? DEFAULT_HERO_CTA_SECONDARY);
   readonly contactSection = computed(() => this.pageConfig()?.contactSection ?? DEFAULT_CONTACT_SECTION);
-  readonly ctaSection = computed(() => this.pageConfig()?.ctaSection ?? DEFAULT_CTA_SECTION);
+  readonly ctaSection = computed(() => this.pageConfig()?.ctaSection ?? this.sharedLicensingCta() ?? DEFAULT_CTA_SECTION);
   readonly featuredCaseStudySlugs = computed(() => this.pageConfig()?.featuredCaseStudySlugs ?? DEFAULT_FEATURED_CASE_STUDY_SLUGS);
 
   readonly offerDetails = computed(() => {
@@ -226,6 +238,8 @@ export class StructuredOffer implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.loadSharedLicensingCta();
+
     if (this.contentOverride()) {
       return;
     }
@@ -245,6 +259,25 @@ export class StructuredOffer implements OnInit, OnDestroy {
       this.scrollListener = () => this.updateActiveSection();
       window.addEventListener('scroll', this.scrollListener, { passive: true });
     }
+  }
+
+  private loadSharedLicensingCta() {
+    this.http
+      .get<SharedContactUsContent>('/contact-us-content.json')
+      .pipe(
+        take(1),
+        catchError(() => of(null))
+      )
+      .subscribe((data) => {
+        const cta = data?.shared?.licensingCta;
+        if (!cta) return;
+        this.sharedLicensingCta.set({
+          title: cta.title,
+          description: cta.description,
+          primaryText: cta.primaryText,
+          primaryLink: cta.primaryLink,
+        });
+      });
   }
 
   ngOnDestroy() {
