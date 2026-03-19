@@ -35,6 +35,7 @@ export default class EditDashboard implements OnInit {
     { label: 'Structured Engagement Page', slug: 'structured-engagement-page', editPath: '/edit/structured-engagement-page' },
     { label: 'Structured Engagement Offer Page', slug: 'structured-engagement-offer-page', editPath: '/edit/structured-engagement-offer-page' },
     { label: 'About Us', slug: 'about', editPath: '/edit/about' },
+    { label: 'Contact Us', slug: 'contact-us', editPath: '/edit/contact-us' },
   ];
 
   ngOnInit() {

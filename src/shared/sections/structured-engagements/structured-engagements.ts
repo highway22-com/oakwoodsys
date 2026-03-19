@@ -337,6 +337,8 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
 export class StructuredEngagementsSectionComponent
   implements AfterViewInit, OnDestroy {
   readonly section = input.required<StructuredEngagementsSection>();
+  /** For edit mode: override section with contentOverride if provided */
+  readonly contentOverride = input<StructuredEngagementsSection | null>(null);
 
   @ViewChild('tabList', { static: false }) tabList?: ElementRef<HTMLDivElement>;
   @ViewChildren('tabButton') tabButtons?: QueryList<
@@ -357,10 +359,15 @@ export class StructuredEngagementsSectionComponent
   readonly cardsVisible = signal(true);
   readonly animationKey = signal(0);
 
+  /** Computed section that prefers contentOverride if provided, falls back to section input */
+  readonly computedSection = computed(() => {
+    return this.contentOverride() ?? this.section();
+  });
+
   // Computed property to filter offers by active tab
   readonly filteredOffers = computed(() => {
     const active = this.displayedTab();
-    const fromInput = this.section().offers ?? [];
+    const fromInput = this.computedSection().offers ?? [];
     const allOffers = fromInput.length > 0
       ? fromInput
       : (DEFAULT_STRUCTURED_ENGAGEMENTS_DATA.offers ?? []);
@@ -386,8 +393,8 @@ export class StructuredEngagementsSectionComponent
   constructor() {
     // Effect to handle initial tab setup and underline
     effect(() => {
-      const incomingActive = this.section().activeTab ?? null;
-      const tabs = this.section().tabs ?? [];
+      const incomingActive = this.computedSection().activeTab ?? null;
+      const tabs = this.computedSection().tabs ?? [];
       const current = this.activeTab();
 
       // Only set from input if user hasn't manually selected a tab
