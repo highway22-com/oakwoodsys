@@ -524,9 +524,8 @@ export class GraphQLContentService {
    * Contenido de industries desde CMS (slug: industries). Misma estructura que industries-content.json.
    */
   getIndustriesContent(): Observable<{ industries: Record<string, unknown> } | null> {
-    return this.getCmsPageBySlug('industries').pipe(
+    return this.getCmsPageBySlug('industries', { fetchPolicy: 'network-only' }).pipe(
       map((data) => data as { industries: Record<string, unknown> } | null)
-
     );
   }
 
@@ -589,7 +588,7 @@ export class GraphQLContentService {
    * Contenido del menú/navbar desde CMS (slug: menu). Misma estructura que navbar-content.json.
    */
   getMenuContent(): Observable<{ menu: unknown[]; content?: Record<string, unknown> } | null> {
-    return this.getCmsPageBySlug('menu').pipe(
+    return this.getCmsPageBySlug('menu', { fetchPolicy: 'network-only' }).pipe(
       map((data) => data as { menu: unknown[]; content?: Record<string, unknown> } | null)
     );
   }
@@ -598,7 +597,7 @@ export class GraphQLContentService {
    * Contenido de resources desde CMS (slug: resources). Misma estructura que resources-content.json.
    */
   getResourcesContent(): Observable<Record<string, unknown> | null> {
-    return this.getCmsPageBySlug('resources').pipe(
+    return this.getCmsPageBySlug('resources', { fetchPolicy: 'network-only' }).pipe(
       map((data) => data as Record<string, unknown> | null)
     );
   }
@@ -607,7 +606,7 @@ export class GraphQLContentService {
    * Contenido de structured-engagements desde CMS (slug: structured-engagements). Misma estructura que structured-engagement-section.json.
    */
   getStructuredEngagementsContent(): Observable<Record<string, unknown> | null> {
-    return this.getCmsPageBySlug('structured-engagements').pipe(
+    return this.getCmsPageBySlug('structured-engagements', { fetchPolicy: 'network-only' }).pipe(
       map((data) => data as Record<string, unknown> | null)
     );
   }

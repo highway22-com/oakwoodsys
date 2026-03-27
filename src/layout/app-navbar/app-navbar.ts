@@ -2,9 +2,6 @@ import { RouterLink, Router, NavigationEnd } from '@angular/router';
 import { Component, OnInit, OnDestroy, HostListener, inject, PLATFORM_ID, signal, computed, viewChild, ElementRef, input, effect } from '@angular/core';
 import { CommonModule, DOCUMENT, NgClass, NgIf, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { MicrosoftServices } from "./microsoft-services/microsoft-services";
-import { Industries } from "./industries/industries";
-import { Resources } from "./resources/resources";
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { filter } from 'rxjs';
 import type { CaseStudy, SearchResultItem } from '../../app/api/graphql';
@@ -48,7 +45,7 @@ export interface FeaturedBlogItem {
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, CommonModule, NgClass, MicrosoftServices, Industries, Resources, MenuList],
+  imports: [RouterLink, CommonModule, NgClass, MenuList],
   templateUrl: './app-navbar.html',
   styleUrl: './app-navbar.css',
 })
@@ -179,6 +176,7 @@ export class AppNavbar implements OnInit, OnDestroy {
     this.graphql.getMenuContent().subscribe({
       next: (data) => {
         if (data?.menu) {
+          console.log('Navbar content loaded from CMS:', data);
           this.menuItems.set(data.menu as NavbarContent['menu']);
           this.content.set((data.content ?? null) as unknown as NavbarContent['content']);
         } else {

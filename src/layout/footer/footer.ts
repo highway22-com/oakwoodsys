@@ -96,7 +96,7 @@ export class Footer implements OnInit, OnDestroy {
       this.loading.set(false);
       return;
     }
-    this.graphql.getCmsPageBySlug('footer').subscribe({
+    this.graphql.getCmsPageBySlug('footer', { fetchPolicy: 'network-only' }).subscribe({
       next: (data) => {
         const section = this.extractFooterSection(data);
         if (section) {
@@ -125,13 +125,7 @@ export class Footer implements OnInit, OnDestroy {
     this.openGroupIdx.set(this.openGroupIdx() === idx ? null : idx);
   }
 
-  /** Social media URLs mapped by icon name */
-  readonly socialUrls: Record<string, string> = {
-    linkedin: 'https://www.linkedin.com/company/oakwood-systems-group',
-    twitter: 'https://twitter.com/OakwoodInsights',
-    facebook: 'https://www.facebook.com/OakwoodSys/',
-    youtube: 'https://www.youtube.com/user/oakwoodinnovates'
-  };
+
 
   /** Grupos de enlaces para iterar en el template (Services, Industries, Resources, Company). */
   linkGroups(): { title: string; links: Array<{ text: string; routerLink: string }> }[] {
