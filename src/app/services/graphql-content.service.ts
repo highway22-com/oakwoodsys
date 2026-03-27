@@ -85,7 +85,7 @@ export class GraphQLContentService {
 
   /** Carga home en APP_INITIALIZER. Acceso vía homePageContent$ o homePageContentSubject.value. */
   loadHomePageContent(): Promise<void> {
-    return firstValueFrom(this.getCmsPageBySlug('home')).then((data) => {
+    return firstValueFrom(this.getCmsPageBySlug('home', { fetchPolicy: 'network-only' })).then((data) => {
       this.homePageContentSubject.next(data);
     }).catch(() => {
       this.homePageContentSubject.next(null);
@@ -634,7 +634,7 @@ export class GraphQLContentService {
    * Contenido de about desde CMS (slug: about). Misma estructura que about-content.json.
    */
   getAboutContent(): Observable<Record<string, unknown> | null> {
-    return this.getCmsPageBySlug('about').pipe(
+    return this.getCmsPageBySlug('about', { fetchPolicy: 'network-only' }).pipe(
       map((data) => data as Record<string, unknown> | null)
     );
   }

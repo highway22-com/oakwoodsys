@@ -382,41 +382,36 @@ export default class Services implements OnInit, OnDestroy {
       this.loading.set(false);
       return;
     }
-    // 1) Direct fetch (bypassa GraphQL y caché). /api/cms se proxea a WordPress en dev.
+    // 1) GraphQL (always fresh from WordPress — reads services.json on the server).
+    this.graphql.getServicesContent().pipe(take(1)).subscribe({
+      next: (data) => {
+        if (data?.services) {
+          this.applyServicesContent(data as ServicesContent);
+        } else {
+          this.loadFromCmsFileOrStatic();
+        }
+      },
+      error: () => this.loadFromCmsFileOrStatic(),
+    });
+  }
+
+  private loadFromCmsFileOrStatic() {
+    const slugValue = this.slug();
+    if (!slugValue) {
+      this.loading.set(false);
+      return;
+    }
+    // 2) Fallback: individual service JSON file from CMS uploads.
     const cmsUrl = `/api/cms/service-${slugValue}.json?t=${Date.now()}`;
     this.http.get<ServicesContent>(cmsUrl, { responseType: 'json' }).pipe(take(1)).subscribe({
       next: (data) => {
         if (data?.services) {
           this.applyServicesContent(data as ServicesContent);
         } else {
-          this.loadFromGraphQLOrStatic();
+          this.loadServicesFromStaticFile();
         }
       },
-      error: () => this.loadFromGraphQLOrStatic(),
-    });
-  }
-
-  private loadFromGraphQLOrStatic() {
-    const slugValue = this.slug();
-    if (!slugValue) {
-      this.loading.set(false);
-      return;
-    }
-    this.graphql.servicesContent$.pipe(take(1)).subscribe((preloaded) => {
-      if (preloaded?.services && preloaded.services[slugValue]) {
-        this.applyServicesContent(preloaded as ServicesContent);
-        return;
-      }
-      this.graphql.getServicesContent().pipe(take(1)).subscribe({
-        next: (data) => {
-          if (data?.services) {
-            this.applyServicesContent(data as ServicesContent);
-          } else {
-            this.loadServicesFromStaticFile();
-          }
-        },
-        error: () => this.loadServicesFromStaticFile(),
-      });
+      error: () => this.loadServicesFromStaticFile(),
     });
   }
 
