@@ -36,7 +36,7 @@
         @if (data.socialMedia && data.socialMedia.length) {
         <div class="flex items-center gap-2  lg:mt-12 lg:mt-0">
           @for (social of data.socialMedia; track social.name) {
-          <a target="_blank" [href]="socialUrls[social.icon]" [attr.aria-label]="social.name"
+          <a target="_blank" [href]="social.link" [attr.aria-label]="social.name"
             class="w-8 h-8 sm:w-10 sm:h-10  rounded flex items-center justify-center  transition-colors duration-200 ">
             @if (social.icon === 'linkedin') {
             <svg class="w-6 h-6 sm:w-5 sm:h-5 text-white" fill="#8FC2EA" viewBox="0 0 24 24">
@@ -133,6 +133,9 @@
     }
   </div>
   <!-- Simple Footer Component -->
-  <app-simple-footer />
+  <app-simple-footer
+    [copyright]="footerData()?.copyright ?? null"
+    [policies]="footerData()?.policies ?? null"
+  />
 </footer>
 
