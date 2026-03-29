@@ -175,20 +175,37 @@ export class AppNavbar implements OnInit, OnDestroy {
   private loadNavbarContent() {
     this.loading.set(true);
 
-    // Show local menu immediately while BE data is fetched with no-cache headers.
+    // 1) Show local static file immediately (no flash of empty menu)
     this.menuUpdatedFromBe = false;
     this.loadNavbarFromStaticFile(false);
 
+    // 2) Try CMS JSON file first (fast, no GraphQL overhead)
+    const ts = Date.now();
+    this.http.get<NavbarContent>(`/api/cms/menu.json?t=${ts}`).subscribe({
+      next: (data) => {
+        if (data?.menu?.length) {
+          this.menuUpdatedFromBe = true;
+          this.menuItems.set(data.menu as NavbarContent['menu']);
+          this.content.set((data.content ?? null) as unknown as NavbarContent['content']);
+          this.loading.set(false);
+          return;
+        }
+        // 3) GraphQL fallback if CMS file returned no menu
+        this.loadMenuFromGraphQL();
+      },
+      error: () => this.loadMenuFromGraphQL(),
+    });
+  }
+
+  private loadMenuFromGraphQL() {
     this.graphql.getMenuContent().subscribe({
       next: (data) => {
         if (data?.menu) {
           this.menuUpdatedFromBe = true;
           this.menuItems.set(data.menu as NavbarContent['menu']);
           this.content.set((data.content ?? null) as unknown as NavbarContent['content']);
-          this.loading.set(false);
-        } else {
-          this.loading.set(false);
         }
+        this.loading.set(false);
       },
       error: () => this.loading.set(false),
     });

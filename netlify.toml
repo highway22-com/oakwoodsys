@@ -12,7 +12,7 @@
   to = "https://oakwoodsystemsgroup.com/graphql"
   status = 200
   force = true
-  headers = {Cache-Control = "no-cache", Pragma = "no-cache"}
+  headers = {Cache-Control = "no-store, no-cache", Pragma = "no-cache"}
 
 [[redirects]]
   from = "/api/contact"
