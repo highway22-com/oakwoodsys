@@ -55,6 +55,7 @@ export class AppNavbar implements OnInit, OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly graphql = inject(GraphQLContentService);
   private readonly router = inject(Router);
+  private menuUpdatedFromBe = false;
 
   isMobileMenuOpen = false;
   mobileExpandedIndex: number | null = null;
@@ -173,34 +174,42 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   private loadNavbarContent() {
     this.loading.set(true);
+
+    // Show local menu immediately while BE data is fetched with no-cache headers.
+    this.menuUpdatedFromBe = false;
+    this.loadNavbarFromStaticFile(false);
+
     this.graphql.getMenuContent().subscribe({
       next: (data) => {
         if (data?.menu) {
-          console.log('Navbar content loaded from CMS:', data);
+          this.menuUpdatedFromBe = true;
           this.menuItems.set(data.menu as NavbarContent['menu']);
           this.content.set((data.content ?? null) as unknown as NavbarContent['content']);
+          this.loading.set(false);
         } else {
-          this.loadNavbarFromStaticFile();
-          return;
+          this.loading.set(false);
         }
-        this.loading.set(false);
       },
-      error: () => this.loadNavbarFromStaticFile(),
+      error: () => this.loading.set(false),
     });
   }
 
-  private loadNavbarFromStaticFile() {
+  private loadNavbarFromStaticFile(finishLoading = true) {
     this.http.get<NavbarContent>('/navbar-content.json').subscribe({
       next: (data) => {
+        if (this.menuUpdatedFromBe) {
+          if (finishLoading) this.loading.set(false);
+          return;
+        }
         this.menuItems.set(data.menu);
         this.content.set(data.content ?? null);
-        this.loading.set(false);
+        if (finishLoading) this.loading.set(false);
       },
       error: (error) => {
         console.error('Error loading navbar content:', error);
         this.menuItems.set([]);
         this.content.set(null);
-        this.loading.set(false);
+        if (finishLoading) this.loading.set(false);
       },
     });
   }
