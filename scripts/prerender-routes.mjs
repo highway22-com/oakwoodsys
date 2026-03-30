@@ -143,6 +143,30 @@ async function main() {
   const slugsPath = join(ROOT, 'prerender-slugs.json');
   writeFileSync(slugsPath, JSON.stringify({ blog, caseStudy }, null, 2), 'utf8');
   console.log(`[prerender-routes] Wrote prerender-slugs.json (blog: ${blog.length}, caseStudy: ${caseStudy.length})`);
+
+  // Sitemap.xml con todas las rutas (para SEO; robots.txt lo referencia)
+  const BASE = 'https://oakwoodsys.com';
+  const staticPages = ['/resources', '/careers', '/about', '/contact-us', '/industries', '/structured-engagement', '/privacy-policy'];
+  const allPaths = [...new Set([...routes, ...staticPages])];
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${allPaths
+  .map((path) => {
+    const loc = path.startsWith('http') ? path : `${BASE}${path.startsWith('/') ? '' : '/'}${path}`;
+    const priority = path === '/' ? '1.0' : path.includes('/blog/') || path.includes('/resources/case-studies/') ? '0.8' : '0.7';
+    const changefreq = path === '/' ? 'weekly' : path.includes('/blog/') || path.includes('/resources/case-studies/') ? 'weekly' : 'monthly';
+    return `  <url>
+    <loc>${loc}</loc>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>`;
+  })
+  .join('\n')}
+</urlset>
+`;
+  const sitemapPath = join(ROOT, 'public', 'sitemap.xml');
+  writeFileSync(sitemapPath, sitemap, 'utf8');
+  console.log(`[prerender-routes] Wrote sitemap.xml (${allPaths.length} URLs)`);
 }
 
 main().catch((e) => {
