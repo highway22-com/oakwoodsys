@@ -1,0 +1,64 @@
+<app-page-hero [breadcrumbs]="[
+    { label: 'Home', routerLink: '/' },
+    { label: 'Events' },
+  ]" [mainText]="'Events'" [subtitle]="heroSubtitle" />
+
+<section class="events-section" aria-labelledby="events-list-title">
+  <div class="events-container">
+    @if (loading()) {
+    <div class="events-loading" aria-busy="true" aria-label="Loading events">
+      <span class="events-spinner"></span>
+      <span>Loading events…</span>
+    </div>
+    }
+
+    @if (!loading() && error()) {
+    <p class="events-error" role="alert">{{ error() }}</p>
+    }
+
+    @if (!loading() && !error() && !orgConfigured()) {
+    <p class="events-config-hint" role="status">
+      Set <strong>Organization ID</strong> under WordPress <strong>Settings → Eventbrite</strong>, or optionally
+      <code>EVENTBRITE_ORGANIZATION_ID</code> in <code>src/app/config/cms.config.ts</code> as a fallback.
+    </p>
+    }
+
+    @if (!loading() && !error() && orgConfigured()) {
+    <h2 id="events-list-title" class="events-list-heading">Upcoming</h2>
+    @if (events().length === 0) {
+    <p class="events-empty">No live events listed right now. Check back soon.</p>
+    } @else {
+    <ul class="events-grid">
+      @for (ev of events(); track ev.id) {
+      <li class="events-card">
+        @if (ev.imageUrl) {
+        <div class="events-card-media">
+          <img [src]="ev.imageUrl" alt="" loading="lazy" width="640" height="360" />
+        </div>
+        }
+        <div class="events-card-body">
+          @if (ev.startLocal) {
+          <time class="events-card-date" [attr.datetime]="ev.startLocal">
+            {{ ev.startLocal | date : 'medium' }}
+            @if (ev.timezone) {
+            <span class="events-tz">({{ ev.timezone }})</span>
+            }
+          </time>
+          } @else {
+          <span class="events-card-date events-card-date--tbd">Date TBA</span>
+          }
+          <h3 class="events-card-title">{{ ev.title }}</h3>
+          @if (ev.summary) {
+          <p class="events-card-summary">{{ ev.summary }}</p>
+          }
+          <a class="events-card-cta" [href]="ev.url" target="_blank" rel="noopener noreferrer">
+            View on Eventbrite
+          </a>
+        </div>
+      </li>
+      }
+    </ul>
+    }
+    }
+  </div>
+</section>

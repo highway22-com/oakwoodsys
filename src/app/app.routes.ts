@@ -83,6 +83,10 @@ export const routes: Routes = [
                 component: StructuredOffer
             },
             {
+                path: 'events',
+                loadComponent: () => import('../pages/events/events')
+            },
+            {
                 path: 'about',
                 loadComponent: () => import('../pages/about-us/about-us')
             },
