@@ -18,6 +18,16 @@
   margin-bottom: 2.5rem;
 }
 
+.structured-card__icon :where(svg) {
+  display: block;
+}
+
+.structured-card__icon-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
 .structured-card__title {
   color: #242424;
   font-family: "Inter", sans-serif;

@@ -19,24 +19,24 @@
   "aboutDescription": "Founded in 1981, Oakwood provides expert counsel and comprehensive solutions in the areas of modern work, application innovation, data & AI, cloud, and managed services.",
   "aboutFeatures": [
     {
-      "icon": "people",
+      "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/users.png",
       "title": "Our People",
       "description": "Our team combines deep technical expertise with a collaborative culture focused on understanding your business and delivering outcomes that matter.",
-      "image": "/assets/a1.png",
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/a1.png",
       "imageAlt": "Our people at Oakwood"
     },
     {
-      "icon": "process",
+      "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/list-check.png",
       "title": "Our Process",
       "description": "We follow a proven methodology that balances agility with discipline, ensuring transparency, accountability, and continuous alignment with your goals.",
-      "image": "/assets/a2.png",
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/a2.png",
       "imageAlt": "Our process and methodology"
     },
     {
-      "icon": "technology",
+      "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/microchip.png",
       "title": "Our Technology",
       "description": "We leverage leading platforms and modern architectures to build solutions that scale, integrate, and evolve with your organization.",
-      "image": "/assets/a3.png",
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/a3.png",
       "imageAlt": "Our technology stack"
     }
   ],
@@ -45,37 +45,37 @@
     "partners": [
       {
         "name": "Microsoft",
-        "logo": "/assets/logos/microsoft.png",
+        "logo": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/microsoft.png",
         "alt": "Microsoft"
       },
       {
         "name": "ARCO",
-        "logo": "/assets/logos/arco.png",
+        "logo": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/arco.png",
         "alt": "ARCO Construction"
       },
       {
         "name": "Applied Materials",
-        "logo": "/assets/logos/applied-materials.png",
+        "logo": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/applied-materials.png",
         "alt": "Applied Materials"
       },
       {
         "name": "Clarios",
-        "logo": "/assets/logos/clarios.png",
+        "logo": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/clarios.png",
         "alt": "Clarios"
       },
       {
         "name": "onsemi",
-        "logo": "/assets/logos/onsemi.png",
+        "logo": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/onsemi.png",
         "alt": "onsemi"
       },
       {
         "name": "Duke University",
-        "logo": "/assets/logos/duke-university.png",
+        "logo": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/duke-university.png",
         "alt": "Duke University"
       },
       {
         "name": "BJC HealthCare",
-        "logo": "/assets/logos/bjc-healthcare.png",
+        "logo": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/bjc-healthcare.png",
         "alt": "BJC HealthCare"
       }
     ]
@@ -83,6 +83,7 @@
   "videoSectionTitle": "About Oakwood",
   "videoSectionDescription": "Learn about Oakwood, who we are, where we came from, and what drives us.",
   "videoSectionImage": "/assets/s-daa-h.jpg",
+  "leadershipVideoUrl": "https://www.youtube.com/embed/4UsqCp2pr3k?feature=oembed&enablejsapi=1&origin=https://oakwoodsys.com",
   "teamLabel": "OUR TEAM",
   "teamTitle": "Leadership that turns vision into action and strategy into results.",
   "teamDescription": "Oakwood's leadership team brings decades of experience, expertise, and a passion for technology to help our clients achieve their goals.",
@@ -90,37 +91,37 @@
     {
       "name": "Charles Windsor",
       "title": "CEO",
-      "image": "/assets/people/charles.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/charles.png"
     },
     {
       "name": "Jeff Reddin",
       "title": "VP, Sales",
-      "image": "/assets/people/jeff.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/jeff.png"
     },
     {
       "name": "Tonja Hilton",
       "title": "VP Finance, Administration ",
-      "image": "/assets/people/tonja.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/tonja.png"
     },
     {
       "name": "Michael Caylor",
       "title": "Sr. Director, Cloud & Managed Services",
-      "image": "/assets/people/michael.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/michael.png"
     },
     {
       "name": "Steve Goodman",
       "title": "Sr. Director, of Managed Services",
-      "image": "/assets/people/steve.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/steve.png"
     },
     {
       "name": "John Trease",
       "title": "Director of App Innovation & AI",
-      "image": "/assets/people/john.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/john.png"
     },
     {
       "name": "Tim Haaksma",
       "title": "Director of Marketing",
-      "image": "/assets/people/tim.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/tim.png"
     }
   ],
   "deliverBannerTitle": "Deliver technology solutions with integrity, collaboration, and a relentless focus on real business outcomes.",
@@ -132,27 +133,27 @@
     {
       "title": "Ownership and accountability",
       "description": "Oakwood teams are trusted to own outcomes, not just complete tasks. Responsibilities are clearly defined, and decisions are made close to the work. When challenges arise, they surface early and are addressed directly and transparently.",
-      "icon": "ownership"
+      "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/Label.png"
     },
     {
       "title": "Craftsmanship in delivery",
       "description": "Oakwood prioritizes thoughtful design, clean architecture, and disciplined execution. The team invests time upfront to understand environments, constraints, and long-term impact. This approach reduces rework and leads to more durable solutions.",
-      "icon": "craftsmanship"
+      "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/Label-4.png"
     },
     {
       "title": "Learning is part of the job",
       "description": "Technology evolves quickly, and Oakwood expects its teams to evolve with it. Continuous learning, certification, and hands-on experience are part of day-to-day work. Staying current is essential to maintaining client trust and delivering high-quality outcomes.",
-      "icon": "learning"
+      "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/Label-1.png"
     },
     {
       "title": "Flexibility supported by clear expectations",
       "description": "Oakwood operates with flexibility while maintaining clear expectations around communication, delivery, and accountability. Teams balance autonomy with responsibility, ensuring work is performed thoughtfully, on time, and with attention to detail.",
-      "icon": "flexibility"
+      "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/Label-2.png"
     },
     {
       "title": "Built for long-term partnerships",
       "description": "Oakwood is designed for repeat engagements and lasting relationships. Teams focus on building environments and solutions that can grow and adapt over time. Long-term success and client trust matter more than short-term wins.",
-      "icon": "partnerships"
+      "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/Label-3.png"
     }
   ],
   "insightsLabel": "FROM THE BLOG",
@@ -184,6 +185,10 @@
       "link": "/blog"
     }
   ],
+  "missionLabel": "OUR MISSION & VALUES",
+  "missionTitle": "Deliver technology solutions with integrity, collaboration, and a relentless focus on real business outcomes.",
+  "missionDescription": "Oakwood's mission is to help organizations realize what's possible with the Microsoft Cloud and turn vision into reality. We believe technology should simplify, not complicate, and that real progress comes from trusted, transparent partnerships. Guided by integrity, curiosity, and ownership, our team delivers thoughtful, well-crafted solutions with pride. Transformation is a shared journey and we remain accountable, committed, and focused on creating lasting impact.",
+  "missionBackgroundImage": "/assets/bg-our-mission-about-us.png",
   "ctaBannerTitle": "Let's move your vision forward",
   "ctaBannerDescription": "Contact us today to start a conversation with our team."
 }

@@ -11,6 +11,8 @@ import { TrustedBySectionComponent } from '../../shared/sections/trusted-by/trus
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
 import { ScrollAnimationComponent } from '../../shared/scroll-animation-component/scroll-animation.component';
 import { CommonModule } from '@angular/common';
+import { of, timeout } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 export interface AboutFeature {
   icon: string;
@@ -66,6 +68,11 @@ export interface AboutContent {
   approachTitle: string;
   approachDescription: string;
   howWeWorkItems: HowWeWorkItem[];
+  missionLabel: string;
+  missionTitle: string;
+  missionDescription: string;
+  missionBackgroundImage: string;
+  leadershipVideoUrl: string;
   insightsLabel: string;
   insightsTitle: string;
   insightsDescription: string;
@@ -132,9 +139,12 @@ export default class AboutUs implements OnInit {
       description: 'Learn about Oakwood Systems, a Microsoft Solutions Partner driving business innovation and modernization with Azure and cloud services.',
       canonicalPath: '/about',
     });
-    this.graphql.getAboutContent().subscribe({
+    this.graphql.getAboutContent().pipe(
+      timeout({ first: 8000 }),
+      catchError(() => of(null))
+    ).subscribe({
       next: (data) => {
-        if (data) {
+        if (this.isAboutContent(data)) {
           const about = data as unknown as AboutContent;
           this.content.set(about);
           this.seoMeta.updateMeta({
@@ -175,6 +185,19 @@ export default class AboutUs implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  private isAboutContent(data: unknown): data is AboutContent {
+    if (!data || typeof data !== 'object') return false;
+    const candidate = data as Partial<AboutContent>;
+    return (
+      typeof candidate.heroTitle === 'string' &&
+      typeof candidate.heroDescription === 'string' &&
+      Array.isArray(candidate.aboutFeatures) &&
+      Array.isArray(candidate.teamMembers) &&
+      Array.isArray(candidate.howWeWorkItems) &&
+      Array.isArray(candidate.insightCards)
+    );
   }
 
   handleScrollAnimation() {

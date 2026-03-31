@@ -1,54 +1,162 @@
-{
-    "type": "structuredEngagements",
-    "label": "How we get started",
-    "title": "Structured engagements",
-    "tabs": [
+ {
+      "type": "structuredEngagements",
+      "label": "HOW WE GET STARTED",
+      "title": "Structured engagements",
+      "tabs": [
         "Data and AI",
         "Cloud and Infrastructure",
         "Application Innovation",
         "High Performance Computing (HPC)"
-    ],
-    "activeTab": "Data and AI",
-    "offers": [
+      ],
+      "activeTab": "Data and AI",
+      "offers": [
         {
-            "id": 1,
-            "title": "Sql server migration to Azure",
-            "description": "Modernize SQL Server workloads with a structured move to Azure SQL services, improving scalability, reliability, and long term cost efficiency for your data estate",
-            "link": "#",
-            "linkText": "View offer",
-            "borderColor": "blue",
-            "icon": "server"
+          "title": "Sql server migration to Azure",
+          "description": "Modernize SQL Server workloads with a structured move to Azure SQL services, improving performance, scalability and long-term cost efficiency for your data estate.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/sql-server-migration-to-azure.png",
+          "borderColor": "blue",
+          "category": "Data and AI",
+          "link": "/structured-engagement/sql-server-migration-to-azure",
+          "linkText": "View offer"
         },
         {
-            "id": 2,
-            "title": "Unified data estate migration",
-            "description": "Consolidate siloed data into a connected cloud architecture using Azure Synapse or Fabric, creating a modern foundation for analytics, intelligence, and operational insight.",
-            "link": "#",
-            "linkText": "View offer",
-            "borderColor": "orange",
-            "icon": "database"
+          "title": "Unified data estate migration",
+          "description": "Consolidate cloud data into a connected cloud architecture using Azure Synapse or Fabric, creating a modern foundation for BI and advanced analytics.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/unified-data-estate-migration.png",
+          "borderColor": "orange",
+          "category": "Data and AI",
+          "link": "/structured-engagement/unified-data-estate-migration",
+          "linkText": "View offer"
         },
         {
-            "id": 3,
-            "title": "Microsoft Fabric POC",
-            "description": "Stand up a working Fabric environment that connects real data sources and allows your teams to explore unified analytics capabilities with hands on guidance.",
-            "link": "#",
-            "linkText": "View offer",
-            "borderColor": "green",
-            "icon": "diagram-project"
+          "title": "Microsoft Fabric PoC",
+          "description": "Stand up a working Fabric environment that connects your data sources and shows your team how to adopt OneLake, semantic models, and capabilities with hands-on guidance.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/microsoft-fabric-poc.png",
+          "borderColor": "green",
+          "category": "Data and AI",
+          "link": "/structured-engagement/microsoft-fabric-poc",
+          "linkText": "View offer"
         },
         {
-            "id": 4,
-            "title": "Data readiness assessment for AI",
-            "description": "Understand whether your data is clean, connected, and governed well enough for AI initiatives, with clear recommendations to improve quality, structure, and readiness.",
-            "link": "#",
-            "linkText": "View offer",
-            "borderColor": "purple",
-            "icon": "circle-nodes"
+          "title": "Data readiness assessment for AI",
+          "description": "Understand whether your data is clean, governed and governed well enough to power ML/AI effectively and get a roadmap to improve quality, structure, and readiness.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/data-readiness-assessment-for-ai.png",
+          "borderColor": "purple",
+          "category": "Data and AI",
+          "link": "/structured-engagement/data-readiness-assessment-for-ai",
+          "linkText": "View offer"
+        },
+        {
+          "title": "Application migration to Azure",
+          "description": "Move applications to Microsoft Azure with a guided approach that improves resilience, reduces risk, and builds a strong foundation for future modernization.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/application-migration-to-azure.png",
+          "borderColor": "blue",
+          "category": "Cloud and Infrastructure",
+          "link": "/structured-engagement/application-migration-to-azure",
+          "linkText": "View offer"
+        },
+        {
+          "title": "Vmware migrations",
+          "description": "Transition VMware workloads to Azure using a proven discovery, planning, and execution framework that simplifies complexity and delivers a stable cloud environment.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/vmware-migrations.png",
+          "borderColor": "orange",
+          "category": "Cloud and Infrastructure",
+          "link": "/structured-engagement/vmware-migrations",
+          "linkText": "View offer"
+        },
+        {
+          "title": "Microsoft sentinel security essentials PoC",
+          "description": "Evaluate Microsoft Sentinel in your environment with a structured PoC that tests log-based SIEM and SOAR can improve threat detection and operational response.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/semisol-security-essentials-poc.png",
+          "borderColor": "green",
+          "category": "Cloud and Infrastructure",
+          "link": "/structured-engagement/semisol-security-essentials-poc",
+          "linkText": "View offer"
+        },
+        {
+          "title": "Teams voice in a box",
+          "description": "Test Microsoft Teams as a complete telephony solution through a focused proof of concept that explores calling, configuration, user experience, and cost.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/teams-voice-in-a-box.png",
+          "borderColor": "purple",
+          "category": "Cloud and Infrastructure",
+          "link": "/structured-engagement/teams-voice-in-a-box",
+          "linkText": "View offer"
+        },
+        {
+          "title": "AI application modernization assessment",
+          "description": "Evaluate how AI and modern cloud services can enhance or modernize an existing application and get a prioritized, actionable roadmap for future development.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/ai-application-modernization-assessment.png",
+          "borderColor": "blue",
+          "category": "Application Innovation",
+          "link": "/structured-engagement/ai-application-modernization-assessment",
+          "linkText": "View offer"
+        },
+        {
+          "title": "Copilot extensibility workshop",
+          "description": "Learn how to extend Microsoft Copilot for M365 using Azure AI, Power Platform, and custom APIs, with practical guidance for connecting Copilot to your business data.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/copilot-extensibility-workshop.png",
+          "borderColor": "orange",
+          "category": "Application Innovation",
+          "link": "/structured-engagement/copilot-extensibility-workshop",
+          "linkText": "View offer"
+        },
+        {
+          "title": "Custom Copilot development",
+          "description": "Build tailored Copilot experiences that integrate business logic, domain knowledge, and data so tasks to create differentiated, context-specific AI experiences for your team.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/custom-copilot-development.png",
+          "borderColor": "green",
+          "category": "Application Innovation",
+          "link": "/structured-engagement/custom-copilot-development",
+          "linkText": "View offer"
+        },
+        {
+          "title": "AI agent in a day workshop",
+          "description": "Explore real-world use cases for AI agents and create an early prototype in a focused session that brings clarity to design, capability, and potential impact.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/ai-agent-in-a-day-workshop.png",
+          "borderColor": "purple",
+          "category": "Application Innovation",
+          "link": "/structured-engagement/ai-agent-in-a-day-workshop",
+          "linkText": "View offer"
+        },
+        {
+          "title": "Azure HPC core PoC",
+          "description": "A guided introduction to Azure HPC designed for lightweight workloads, helping teams experience cloud-based performance with validating early technical decisions.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/azure-hpc-core-poc.png",
+          "borderColor": "blue",
+          "category": "High Performance Computing (HPC)",
+          "link": "/structured-engagement/azure-hpc-core-poc",
+          "linkText": "View offer"
+        },
+        {
+          "title": "Copilot extensibility workshop",
+          "description": "A real-scale HPC proof of concept that introduces advanced scheduling, core configuration, and higher performance configurations for growing computational needs.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/azure-hpc-pro-poc.png",
+          "borderColor": "orange",
+          "category": "High Performance Computing (HPC)",
+          "link": "/structured-engagement/azure-hpc-pro-poc",
+          "linkText": "View offer"
+        },
+        {
+          "title": "Azure HPC max PoC",
+          "description": "A full scale Azure HPC proof of concept built for demanding workloads including virtualization, engineering, and AI to testing large-scale performance and efficiency.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/azure-hpc-max-poc.png",
+          "borderColor": "green",
+          "category": "High Performance Computing (HPC)",
+          "link": "/structured-engagement/azure-hpc-max-poc",
+          "linkText": "View offer"
+        },
+        {
+          "title": "Azure HPC migration assessment",
+          "description": "Evaluate your existing HPC environment and receive a tailored migration path that includes performance modeling, cost projections and a practical rollout timeline.",
+          "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/azure-hpc-migration-assessment.png",
+          "borderColor": "purple",
+          "category": "High Performance Computing (HPC)",
+          "link": "/structured-engagement/azure-hpc-migration-assessment",
+          "linkText": "View offer"
         }
-    ],
-    "cta": {
+      ],
+      "cta": {
         "text": "View all offers",
-        "backgroundColor": "#1A63C9"
+        "link": "/structured-engagement"
+      }
     }
-}

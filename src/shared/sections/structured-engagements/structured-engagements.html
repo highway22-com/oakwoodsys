@@ -61,22 +61,37 @@
     >
       @for (offer of filteredOffers(); track offer.id || $index) {
         <div
-          class="structured-engagements__card structured-engagements__card-border group cursor-pointer rounded-md min-w-[260px] sm:min-h-[20vh] md:min-w-0 md:min-h-0 md:min-h-[46vh] md:min-w-[unset]"
+          class="structured-engagements__card structured-engagements__card-border group  cursor-pointer rounded-md min-w-[260px] sm:min-h-[20vh] md:min-w-0 md:min-h-0 md:min-h-[46vh] md:min-w-[unset]"
           [attr.data-border]="normalizeBorderColor(offer.borderColor)"
           [ngClass]="getOfferCardClasses(offer.borderColor, $index)"
+          [class.cursor-pointer]="!!offer.link"
+          [attr.role]="offer.link ? 'link' : null"
+          [attr.tabindex]="offer.link ? 0 : null"
+          (click)="onOfferClick(offer.link)"
+          (keydown.enter)="onOfferClick(offer.link)"
+          (keydown.space)="$event.preventDefault(); onOfferClick(offer.link)"
         >
           <div
             class="relative h-full p-6 sm:p-8 flex flex-col structured-engagements__card-surface"
           >
             <div
-              class="flex w-[55px] h-[55px] text-3xl items-center justify-center structured-engagements__icon-container"
+              class="flex w-[58px] h-[58px] text-3xl items-center justify-center structured-engagements__icon-container"
               [ngClass]="getOfferIconBgClass(offer.borderColor)"
             >
               @if (offer.svgIcon) {
-                <div
-                  class="structured-engagements__svg-icon w-full h-full"
-                  [innerHTML]="getSafeSvgIcon(offer.svgIcon)"
-                ></div>
+                @if (isIconAssetUrl(offer.svgIcon)) {
+                  <img
+                    class="structured-engagements__svg-icon structured-engagements__icon-image w-auto h-7"
+                    [src]="getIconAssetSrc(offer.svgIcon)"
+                    [alt]="offer.title || 'Structured engagement icon'"
+                    loading="lazy"
+                  />
+                } @else {
+                  <div
+                    class="structured-engagements__svg-icon w-auto h-7"
+                    [innerHTML]="getSafeSvgIcon(offer.svgIcon)"
+                  ></div>
+                }
               } @else {
                 <i
                   [class]="
@@ -98,9 +113,8 @@
               {{ offer.description }}
             </p>
             @if (offer.link) {
-              <a
-                [href]="offer.link"
-                class="mt-auto self-start text-white font-['Inter'] text-[var(--Text-Sizes-Text-Regular,16px)] font-semibold leading-normal hover:text-white transition-colors duration-200 inline-flex items-center"
+              <div
+                class="mt-auto self-start text-white font-['Inter'] text-[var(--Text-Sizes-Text-Regular,16px)] font-semibold leading-normal inline-flex items-center"
               >
                 {{ offer.linkText ?? "Learn more" }}
                 <svg
@@ -116,7 +130,7 @@
                     fill="white"
                   />
                 </svg>
-              </a>
+              </div>
             }
           </div>
         </div>
