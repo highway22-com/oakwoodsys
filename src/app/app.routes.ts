@@ -84,7 +84,8 @@ export const routes: Routes = [
             },
             {
                 path: 'events',
-                loadComponent: () => import('../pages/events/events')
+                redirectTo: '/',
+                pathMatch: 'full',
             },
             {
                 path: 'about',

@@ -151,13 +151,6 @@
         "link": "/resources/structured-engagements",
         "desc": "Oakwood’s SQL Server Migration to Azure engagement and helps organizations.",
         "icon": "/assets/struct.svg"
-      },
-      {
-        "id": "03",
-        "name": "Events",
-        "link": "/events",
-        "desc": "Oakwood’s SQL Server Migration to Azure engagement and helps organizations.",
-        "icon": "/assets/struct.svg"
       }
     ]
   }
