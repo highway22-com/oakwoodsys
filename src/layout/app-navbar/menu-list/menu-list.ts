@@ -32,7 +32,7 @@ export class MenuList {
 
   content = input<MenuItem[]>([]);
 
-  featuredTitle = input<string>('FEATURED CASE STUDIES');
+  featuredTitle = input<string>('FEATURED CASE STUDY');
 
   private toArticleCard(c: CaseStudy): ArticleCardArticle {
     return {
