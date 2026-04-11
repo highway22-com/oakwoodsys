@@ -79,9 +79,9 @@
             <div *ngIf="openGroupIdx() === idx" id="footer-group-{{ idx }}" class=" pb-4">
               <ul class="space-y-4 pt-3">
                 @for (link of group.links; track link.text) {
-                  @if (link.text !== 'Whitepapers' && link.text !== 'Events' && link.text !== 'Webinars') {
+                  @if (link.text !== 'Whitepapers' && link.text !== 'Webinars') {
                   <li>
-                    <a [routerLink]="link.routerLink" class="font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-white/70  hover:text-blue-300 transition-colors duration-200">
+                    <a [routerLink]="resolveFooterRouterLink(link)" class="font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-white/70  hover:text-blue-300 transition-colors duration-200">
                       {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
                     </a>
                   </li>
@@ -96,9 +96,9 @@
               {{ group.title }}</h3>
             <ul class="space-y-4">
               @for (link of group.links; track link.text) {
-                @if (link.text !== 'Whitepapers' && link.text !== 'Events' && link.text !== 'Webinars') {
+                @if (link.text !== 'Whitepapers' && link.text !== 'Webinars') {
                 <li>
-                  <a [routerLink]="link.routerLink" class="text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200 whitespace-nowrap">
+                  <a [routerLink]="resolveFooterRouterLink(link)" class="text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200 whitespace-nowrap">
                     {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
                   </a>
                 </li>
