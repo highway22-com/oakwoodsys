@@ -1,0 +1,364 @@
+{
+  "hero": {
+    "eyebrow": "Events",
+    "title": "Check Out Our Upcoming Events and Activities",
+    "description": "Practical sessions to help you move forward with cloud, data, and AI.",
+    "heroVideoUrls": [
+      "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Events.mp4"
+    ]
+  },
+  "noEventsMessage": {
+    "title": "No Upcoming Events",
+    "description": "No upcoming events right now. We're actively planning new sessions. Check back soon!",
+    "ctaText": "Browse Past Events",
+    "ctaAnchor": "past-events"
+  },
+  "upcomingEventsSection": {
+    "eyebrow": "Upcoming Events",
+    "title": "Upcoming Events from Oakwood",
+    "description": "Practical sessions to help you move forward with cloud, data, and AI."
+  },
+  "pastEventsSection": {
+    "eyebrow": "Past Events",
+    "title": "A recap of events that brought ideas to life.",
+    "description": "Discover our past events from Oakwood."
+  },
+  "ctaSection": {
+    "title": "Interested in us hosting a customized session for your team?",
+    "description": "Looking for something specific? Oakwood can deliver tailored workshops, demos, or strategy sessions for your team.",
+    "primaryText": "Request a session",
+    "primaryLink": "/contact-us"
+  },
+  "events": {
+    "azure-hpc-education-webinar": {
+      "slug": "azure-hpc-education-webinar",
+      "status": "upcoming",
+      "statusLabel": "In Progress",
+      "type": "online",
+      "badgeMonth": "Mar",
+      "badgeDay": "15",
+      "tag": "Online",
+      "title": "Azure HPC for Education Webinar",
+      "summary": "How Microsoft tools and innovation are unlocking cloud-scale HPC to accelerate discovery.",
+      "imageUrl": "/assets/structured-data-ai.jpg",
+      "imageAlt": "Azure HPC for Education Webinar",
+      "location": "Online",
+      "eventDate": "Thursday, April 11, 2026",
+      "eventTime": "12:00 - 14:00 PM EST",
+      "registerLink": "/contact-us",
+      "heroVideoUrls": [
+        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Home-1.mp4"
+      ],
+      "heroImage": "/assets/structured-data-ai.jpg",
+      "subtitle": "How Microsoft tools and innovation are unlocking cloud-scale HPC to accelerate discovery.",
+      "overview": "Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.",
+      "learnings": [
+        "Build secure, scalable HPC environments in Azure.",
+        "Understand workload scheduling, storage, and networking options.",
+        "Apply cost optimization and operational best practices."
+      ],
+      "aboutSession": "This session is designed for technology leaders, architects, and researchers looking to modernize compute-intensive workloads.",
+      "speakers": [
+        {
+          "name": "Mark Chapman",
+          "role": "Director, Business Development",
+          "bio": "Exploring the future of virtual reality",
+          "imageUrl": "/assets/people/michael.png"
+        },
+        {
+          "name": "Tracy Williams",
+          "role": "Sr. Director, Technology",
+          "bio": "Innovation in sustainable architecture",
+          "imageUrl": "/assets/people/tonja.png"
+        },
+        {
+          "name": "Daniel Balzer",
+          "role": "Sr. Director, Manufacturing",
+          "bio": "The role of artificial intelligence in everyday life",
+          "imageUrl": "/assets/people/john.png"
+        },
+        {
+          "name": "William Jackson",
+          "role": "Sr. Director, Technology",
+          "bio": "How smart tech is changing our daily routines",
+          "imageUrl": "/assets/people/jeff.png"
+        }
+      ]
+    },
+       "azure-hpc-education-webinar-1": {
+      "slug": "azure-hpc-education-webinar",
+      "status": "upcoming",
+      "statusLabel": "In Progress",
+      "type": "online",
+      "badgeMonth": "Mar",
+      "badgeDay": "15",
+      "tag": "Online",
+      "title": "Azure HPC for Education Webinar",
+      "summary": "How Microsoft tools and innovation are unlocking cloud-scale HPC to accelerate discovery.",
+      "imageUrl": "/assets/structured-data-ai.jpg",
+      "imageAlt": "Azure HPC for Education Webinar",
+      "location": "Online",
+      "eventDate": "Thursday, April 1, 2026",
+      "eventTime": "12:00 - 14:00 PM EST",
+      "registerLink": "/contact-us",
+      "heroVideoUrls": [
+        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Home-1.mp4"
+      ],
+      "heroImage": "/assets/structured-data-ai.jpg",
+      "subtitle": "How Microsoft tools and innovation are unlocking cloud-scale HPC to accelerate discovery.",
+      "overview": "Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.",
+      "learnings": [
+        "Build secure, scalable HPC environments in Azure.",
+        "Understand workload scheduling, storage, and networking options.",
+        "Apply cost optimization and operational best practices."
+      ],
+      "aboutSession": "This session is designed for technology leaders, architects, and researchers looking to modernize compute-intensive workloads.",
+      "speakers": [
+        {
+          "name": "Mark Chapman",
+          "role": "Director, Business Development",
+          "bio": "Exploring the future of virtual reality",
+          "imageUrl": "/assets/people/michael.png"
+        },
+        {
+          "name": "Tracy Williams",
+          "role": "Sr. Director, Technology",
+          "bio": "Innovation in sustainable architecture",
+          "imageUrl": "/assets/people/tonja.png"
+        },
+        {
+          "name": "Daniel Balzer",
+          "role": "Sr. Director, Manufacturing",
+          "bio": "The role of artificial intelligence in everyday life",
+          "imageUrl": "/assets/people/john.png"
+        },
+        {
+          "name": "William Jackson",
+          "role": "Sr. Director, Technology",
+          "bio": "How smart tech is changing our daily routines",
+          "imageUrl": "/assets/people/jeff.png"
+        }
+      ]
+    },
+       "azure-hpc-education-webinar-3": {
+      "slug": "azure-hpc-education-webinar",
+      "status": "upcoming",
+      "statusLabel": "In Progress",
+      "type": "online",
+      "badgeMonth": "Mar",
+      "badgeDay": "15",
+      "tag": "Online",
+      "title": "Azure HPC for Education Webinar",
+      "summary": "How Microsoft tools and innovation are unlocking cloud-scale HPC to accelerate discovery.",
+      "imageUrl": "/assets/structured-data-ai.jpg",
+      "imageAlt": "Azure HPC for Education Webinar",
+      "location": "Online",
+      "eventDate": "Thursday, April 1, 2026",
+      "eventTime": "12:00 - 14:00 PM EST",
+      "registerLink": "/contact-us",
+      "heroVideoUrls": [
+        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Home-1.mp4"
+      ],
+      "heroImage": "/assets/structured-data-ai.jpg",
+      "subtitle": "How Microsoft tools and innovation are unlocking cloud-scale HPC to accelerate discovery.",
+      "overview": "Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.",
+      "learnings": [
+        "Build secure, scalable HPC environments in Azure.",
+        "Understand workload scheduling, storage, and networking options.",
+        "Apply cost optimization and operational best practices."
+      ],
+      "aboutSession": "This session is designed for technology leaders, architects, and researchers looking to modernize compute-intensive workloads.",
+      "speakers": [
+        {
+          "name": "Mark Chapman",
+          "role": "Director, Business Development",
+          "bio": "Exploring the future of virtual reality",
+          "imageUrl": "/assets/people/michael.png"
+        },
+        {
+          "name": "Tracy Williams",
+          "role": "Sr. Director, Technology",
+          "bio": "Innovation in sustainable architecture",
+          "imageUrl": "/assets/people/tonja.png"
+        },
+        {
+          "name": "Daniel Balzer",
+          "role": "Sr. Director, Manufacturing",
+          "bio": "The role of artificial intelligence in everyday life",
+          "imageUrl": "/assets/people/john.png"
+        },
+        {
+          "name": "William Jackson",
+          "role": "Sr. Director, Technology",
+          "bio": "How smart tech is changing our daily routines",
+          "imageUrl": "/assets/people/jeff.png"
+        }
+      ]
+    },
+       "azure-hpc-education-webinar-4": {
+      "slug": "azure-hpc-education-webinar",
+      "status": "upcoming",
+      "statusLabel": "In Progress",
+      "type": "online",
+      "badgeMonth": "Mar",
+      "badgeDay": "15",
+      "tag": "Online",
+      "title": "Azure HPC for Education Webinar",
+      "summary": "How Microsoft tools and innovation are unlocking cloud-scale HPC to accelerate discovery.",
+      "imageUrl": "/assets/structured-data-ai.jpg",
+      "imageAlt": "Azure HPC for Education Webinar",
+      "location": "Online",
+      "eventDate": "Thursday, April 1, 2026",
+      "eventTime": "12:00 - 14:00 PM EST",
+      "registerLink": "/contact-us",
+      "heroVideoUrls": [
+        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Home-1.mp4"
+      ],
+      "heroImage": "/assets/structured-data-ai.jpg",
+      "subtitle": "How Microsoft tools and innovation are unlocking cloud-scale HPC to accelerate discovery.",
+      "overview": "Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.",
+      "learnings": [
+        "Build secure, scalable HPC environments in Azure.",
+        "Understand workload scheduling, storage, and networking options.",
+        "Apply cost optimization and operational best practices."
+      ],
+      "aboutSession": "This session is designed for technology leaders, architects, and researchers looking to modernize compute-intensive workloads.",
+      "speakers": [
+        {
+          "name": "Mark Chapman",
+          "role": "Director, Business Development",
+          "bio": "Exploring the future of virtual reality",
+          "imageUrl": "/assets/people/michael.png"
+        },
+        {
+          "name": "Tracy Williams",
+          "role": "Sr. Director, Technology",
+          "bio": "Innovation in sustainable architecture",
+          "imageUrl": "/assets/people/tonja.png"
+        },
+        {
+          "name": "Daniel Balzer",
+          "role": "Sr. Director, Manufacturing",
+          "bio": "The role of artificial intelligence in everyday life",
+          "imageUrl": "/assets/people/john.png"
+        },
+        {
+          "name": "William Jackson",
+          "role": "Sr. Director, Technology",
+          "bio": "How smart tech is changing our daily routines",
+          "imageUrl": "/assets/people/jeff.png"
+        }
+      ]
+    },
+    "manufacturers-modernize-webinar": {
+      "slug": "manufacturers-modernize-webinar",
+      "status": "past",
+      "statusLabel": "Past Event",
+      "type": "in-person",
+      "badgeMonth": "Feb",
+      "badgeDay": "12",
+      "tag": "In person",
+      "title": "Manufacturers modernize Webinar",
+      "summary": "A practical roadmap to modern platforms, data, and AI for manufacturing teams.",
+      "imageUrl": "/assets/structured-application-innovation.png",
+      "imageAlt": "Manufacturers modernize Webinar",
+      "location": "1001 Craig Road, Suite 305, St. Louis, MO 63146",
+      "eventDate": "Thursday, April 1, 2026",
+      "eventTime": "12:00 - 14:00 PM EST",
+      "registerLink": "/contact-us",
+      "heroVideoUrls": [
+        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Home-2.mp4"
+      ],
+      "heroImage": "/assets/structured-application-innovation.png",
+      "subtitle": "A practical roadmap to modern platforms, data, and AI for manufacturing teams.",
+      "overview": "Learn how manufacturers are reducing downtime, improving quality, and increasing throughput using cloud-native operations.",
+      "learnings": [
+        "Prioritize modernization initiatives with clear ROI.",
+        "Connect production data for real-time visibility.",
+        "Enable predictive maintenance with AI and analytics."
+      ],
+      "aboutSession": "A focused session for operations leaders and IT teams navigating legacy constraints while scaling innovation.",
+      "speakers": [
+        {
+          "name": "Mark Chapman",
+          "role": "Director, Business Development",
+          "bio": "Exploring the future of virtual reality",
+          "imageUrl": "/assets/people/michael.png"
+        },
+        {
+          "name": "Tracy Williams",
+          "role": "Sr. Director, Technology",
+          "bio": "Innovation in sustainable architecture",
+          "imageUrl": "/assets/people/tonja.png"
+        },
+        {
+          "name": "Daniel Balzer",
+          "role": "Sr. Director, Manufacturing",
+          "bio": "The role of artificial intelligence in everyday life",
+          "imageUrl": "/assets/people/john.png"
+        },
+        {
+          "name": "William Jackson",
+          "role": "Sr. Director, Technology",
+          "bio": "How smart tech is changing our daily routines",
+          "imageUrl": "/assets/people/jeff.png"
+        }
+      ]
+    },
+    "high-performance-computing-webinar": {
+      "slug": "high-performance-computing-webinar",
+      "status": "past",
+      "statusLabel": "Past Event",
+      "type": "online",
+      "badgeMonth": "Feb",
+      "badgeDay": "20",
+      "tag": "Online",
+      "title": "High Performance Computing (HPC) Webinar",
+      "summary": "Best practices for secure, high-throughput HPC deployments in Azure.",
+      "imageUrl": "/assets/structured-high-performance.png",
+      "imageAlt": "High Performance Computing Webinar",
+      "location": "Online",
+      "eventDate": "Thursday, April 1, 2026",
+      "eventTime": "12:00 - 14:00 PM EST",
+      "registerLink": "/contact-us",
+      "heroVideoUrls": [
+        "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Home-3.mp4"
+      ],
+      "heroImage": "/assets/structured-high-performance.png",
+      "subtitle": "Best practices for secure, high-throughput HPC deployments in Azure.",
+      "overview": "Understand the architecture decisions required for modern HPC, from networking and storage to orchestration and governance.",
+      "learnings": [
+        "Select the right compute profiles for workload patterns.",
+        "Design for performance, resilience, and observability.",
+        "Accelerate adoption with a phased migration approach."
+      ],
+      "aboutSession": "Ideal for enterprise architects and platform teams building next-generation compute capabilities.",
+      "speakers": [
+        {
+          "name": "Mark Chapman",
+          "role": "Director, Business Development",
+          "bio": "Exploring the future of virtual reality",
+          "imageUrl": "/assets/people/michael.png"
+        },
+        {
+          "name": "Tracy Williams",
+          "role": "Sr. Director, Technology",
+          "bio": "Innovation in sustainable architecture",
+          "imageUrl": "/assets/people/tonja.png"
+        },
+        {
+          "name": "Daniel Balzer",
+          "role": "Sr. Director, Manufacturing",
+          "bio": "The role of artificial intelligence in everyday life",
+          "imageUrl": "/assets/people/john.png"
+        },
+        {
+          "name": "William Jackson",
+          "role": "Sr. Director, Technology",
+          "bio": "How smart tech is changing our daily routines",
+          "imageUrl": "/assets/people/jeff.png"
+        }
+      ]
+    }
+  }
+}

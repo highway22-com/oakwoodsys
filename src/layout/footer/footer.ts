@@ -125,6 +125,11 @@ export class Footer implements OnInit, OnDestroy {
     this.openGroupIdx.set(this.openGroupIdx() === idx ? null : idx);
   }
 
+  resolveFooterRouterLink(link: { text: string; routerLink: string }): string {
+    if (link.text?.trim().toLowerCase() === 'events') return '/resources/events';
+    return link.routerLink;
+  }
+
 
 
   /** Grupos de enlaces para iterar en el template (Services, Industries, Resources, Company). */
