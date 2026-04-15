@@ -30,5 +30,13 @@
     "pathRewrite": {
       "^/api/contact-fields": "/wp-json/oakwood/v1/contact-fields"
     }
+  },
+  "/api/eventbrite": {
+    "target": "https://oakwoodsystemsgroup.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/eventbrite": "/wp-json/oakwood/v1/eventbrite"
+    }
   }
 }

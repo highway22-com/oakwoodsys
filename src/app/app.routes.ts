@@ -91,6 +91,11 @@ export const routes: Routes = [
                 component: StructuredOffer
             },
             {
+                path: 'events',
+                redirectTo: '/',
+                pathMatch: 'full',
+            },
+            {
                 path: 'about',
                 loadComponent: () => import('../pages/about-us/about-us')
             },
