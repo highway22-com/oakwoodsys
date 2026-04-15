@@ -6,14 +6,14 @@
     [loading]="false"
     [hvh70]="true"
     [videoUrls]="c.hero.heroVideoUrls || []"
-    [overlayImageUrl]="upcomingEvents().length === 0 ? '/assets/events/bg-events.jpg' : null"
+    [overlayImageUrl]="hasUpcomingEvents() ? null : '/assets/events/bg-events.jpg'"
     [poster]="c.hero.heroImage || ''"
-    [title]="upcomingEvents().length === 0 ?c.noEventsMessage.title :  c.hero.title"
-    [description]="upcomingEvents().length === 0 ?c.noEventsMessage.description : c.hero.description"
-    [centerContent]="upcomingEvents().length === 0"
+    [title]="hasUpcomingEvents() ? c.hero.title : c.noEventsMessage.title"
+    [description]="hasUpcomingEvents() ? c.hero.description : c.noEventsMessage.description"
+    [centerContent]="!hasUpcomingEvents()"
     [showIndicators]="false"
   >
-      <div hero-share *ngIf="upcomingEvents().length > 0" class="flex items-center gap-3 pt-20">
+      <div hero-share *ngIf="hasUpcomingEvents()" class="flex items-center gap-3 pt-20">
         <label for="events-share" class="text-xs sm:text-sm text-white/80">Share</label>
         <a [href]="getFacebookShareUrl()" target="_blank" rel="noopener noreferrer"
           class="w-8 h-8 flex items-center justify-center text-white/80 hover:text-white transition-colors"
@@ -51,14 +51,14 @@
   </app-video-hero>
 
     <!-- Upcoming Events -->
-  <section class="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-[#F2F8FD]" *ngIf="upcomingEvents().length > 0;">
+  <section class="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-[#F2F8FD]" *ngIf="hasUpcomingEvents()">
     <div class="px-4 sm:px-6 md:px-8 lg:px-24">
       <div class="max-w-6xl mx-auto text-center mb-10 sm:mb-12">
         <p class="text-[18px] font-['Inter'] font-semibold leading-[150%] uppercase text-[#2A7EBF] text-center mb-3">{{ c.upcomingEventsSection.eyebrow }}</p>
         <h2 class="font-['Inter'] font-normal text-[#000000] text-[32px] leading-[110%] tracking-[-0.64px] text-center mb-3 sm:text-[40px] sm:leading-[120%] sm:tracking-[-0.5px] lg:text-[50px]">{{ c.upcomingEventsSection.title }}</h2>
         <p class="font-['Segoe_UI'] font-normal text-[18px] leading-[150%] text-[#454545] text-center max-w-5xl mx-auto">{{ c.upcomingEventsSection.description }}</p>
       </div>
-      <ng-container *ngIf="upcomingEvents().length > 0;">
+      <ng-container *ngIf="hasUpcomingEvents()">
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8">
           <app-event-card
             *ngFor="let event of upcomingEvents(); trackBy: trackBySlug"
@@ -82,7 +82,6 @@
 
     </div>
   </section>
- 
     <div class="px-4 sm:px-6 md:px-8 lg:px-10 bg-[#FFFFFF]">
       <app-cta-section
         [title]="c.ctaSection.title"
@@ -95,7 +94,7 @@
 
 
   <!-- Past Events -->
-  <section id="past-events" class="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-white" *ngIf="pastEvents().length > 0">
+  <section id="past-events" class="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-white" *ngIf="false">
     <div class="px-4 sm:px-6 md:px-8 lg:px-24">
       <div class="max-w-6xl mx-auto text-center mb-10 sm:mb-12">
         <p class="text-[18px] font-['Inter'] font-semibold leading-[150%] uppercase text-[#2A7EBF] text-center mb-3">{{ c.pastEventsSection.eyebrow }}</p>
