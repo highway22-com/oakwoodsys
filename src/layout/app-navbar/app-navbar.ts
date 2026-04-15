@@ -77,8 +77,8 @@ export class AppNavbar implements OnInit, OnDestroy {
   readonly loading = signal(true);
   /** Dos case studies más recientes para el dropdown Industries (se cargan al iniciar para que estén listos). */
   readonly featuredCaseStudies = signal<CaseStudy[]>([]);
-  /** Dos blogs más recientes para el dropdown Resources (genContent categoría blog). */
   readonly featuredBlogs = signal<FeaturedBlogItem[]>([]);
+  private featuredBlogsRequested = false;
 
   /** Título de la sección Featured por dropdown (Services, Industries). */
   readonly featuredTitleServices = signal('FEATURED BLOGS');
@@ -148,21 +148,6 @@ export class AppNavbar implements OnInit, OnDestroy {
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
         this.featuredCaseStudies.set(sorted.slice(0, 1));
-      });
-      this.graphql.getBlogs().subscribe((list) => {
-        const filtered = [...list].filter(n => n.genContentCategories?.nodes?.find(c => c.slug === 'featured-blog-menu'));
-        const _list = filtered.length > 0 ? filtered : list;
-        const sorted = [..._list].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        this.featuredBlogs.set(
-          sorted.slice(0, 1).map((n) => ({
-            id: n.id,
-            title: n.title,
-            link: `/blog/${n.slug}`,
-            image: n.featuredImage?.node?.sourceUrl ?? '',
-          }))
-        );
       });
     }
     if (!this.contentOverride()) {
@@ -319,7 +304,11 @@ export class AppNavbar implements OnInit, OnDestroy {
   }
 
   toggleMobileDropdown(index: number) {
-    this.mobileExpandedIndex = this.mobileExpandedIndex === index ? null : index;
+    const next = this.mobileExpandedIndex === index ? null : index;
+    this.mobileExpandedIndex = next;
+    if (next === 0) {
+      this.ensureFeaturedBlogsLoaded();
+    }
   }
 
   getMobileExpandedIndex(): number | null {
@@ -386,7 +375,35 @@ export class AppNavbar implements OnInit, OnDestroy {
   public handleMouseEnter(item: { index: number | null; hasDropdown: boolean }): void {
     if (item.hasDropdown && item.index !== null) {
       this.hoveredIndex.set(item.index);
+      if (item.index === 0) {
+        this.ensureFeaturedBlogsLoaded();
+      }
     }
+  }
+
+  /** Carga blogs para el mega menú de Services (GetGenContentsByCategory); solo bajo demanda. */
+  ensureFeaturedBlogsLoaded(): void {
+    if (!isPlatformBrowser(this.platformId) || this.featuredBlogsRequested) {
+      return;
+    }
+    this.featuredBlogsRequested = true;
+    this.graphql.getBlogs().subscribe((list) => {
+      const filtered = [...list].filter((n) =>
+        n.genContentCategories?.nodes?.find((c) => c.slug === 'featured-blog-menu'),
+      );
+      const _list = filtered.length > 0 ? filtered : list;
+      const sorted = [..._list].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      );
+      this.featuredBlogs.set(
+        sorted.slice(0, 1).map((n) => ({
+          id: n.id,
+          title: n.title,
+          link: `/blog/${n.slug}`,
+          image: n.featuredImage?.node?.sourceUrl ?? '',
+        })),
+      );
+    });
   }
 
   toggleSearchPanel(): void {
