@@ -1,6 +1,8 @@
 /
 /blog
 /resources/case-studies
+/blog/sql-server-on-azure-modernizing-the-data-layer-that-runs-your-business
+/blog/windows-server-on-azure-moving-beyond-migration-to-real-modernization
 /blog/oakwood-systems-group-achieves-microsoft-advanced-specialization-for-ai-applications-on-azure
 /blog/oakwood-recognized-by-microsoft-for-excellence-in-support-services
 /blog/azure-for-ai-ready-data
@@ -20,6 +22,7 @@
 /blog/microsoft-365-price-increases-coming-july-2026
 /blog/unify-your-data-estate-for-ai
 /blog/the-key-to-a-secure-cloud-migration
+/resources/case-studies/managed-services-for-manufacturing
 /resources/case-studies/sharepoint-online-intranet-modernization
 /resources/case-studies/power-bi-report-development
 /resources/case-studies/strategic-applications-architecture-roadmap

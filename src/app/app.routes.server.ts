@@ -32,6 +32,10 @@ export const serverRoutes: ServerRoute[] = [
     getPrerenderParams: async () => getPrerenderSlugs().caseStudy.map((slug) => ({ slug })),
   },
   {
+    path: 'resources/events/:slug',
+    renderMode: RenderMode.Server,
+  },
+  {
     path: 'industries/:slug',
     renderMode: RenderMode.Server,
   },
