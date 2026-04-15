@@ -165,24 +165,18 @@
         <!-- ── Left: images slide horizontally ── -->
         <div class="pl-20 pr-16 py-8">
           <div class="relative overflow-hidden w-full" style="min-height: 500px; height: 100%;">
-          @if (section[0]?.image?.url) {
-          <img
-            [src]="section[0].image?.url"
-            [alt]="section[0].image?.alt ?? (section[0].title + ' - Featured case study image')"
-            class="absolute inset-0 w-full h-full object-cover fcs-fade-panel"
-            [style.opacity]="selectedIndex() === 0 ? '1' : '0'"
-            loading="lazy"
-          />
-          }
-          @if (section[1]?.image?.url) {
-          <img
-            [src]="section[1].image?.url"
-            [alt]="section[1].image?.alt ?? (section[1].title + ' - Featured case study image')"
-            class="absolute inset-0 w-full h-full object-cover fcs-fade-panel"
-            [style.opacity]="selectedIndex() === 1 ? '1' : '0'"
-            loading="lazy"
-          />
-          }
+            @if (section[0]?.image?.url) {
+            <img [src]="section[0].image?.url"
+              [alt]="section[0].image?.alt ?? (section[0].title + ' - Featured case study image')"
+              class="absolute inset-0 w-full h-full object-cover fcs-fade-panel"
+              [style.opacity]="selectedIndex() === 0 ? '1' : '0'" loading="lazy" />
+            }
+            @if (section[1]?.image?.url) {
+            <img [src]="section[1].image?.url"
+              [alt]="section[1].image?.alt ?? (section[1].title + ' - Featured case study image')"
+              class="absolute inset-0 w-full h-full object-cover fcs-fade-panel"
+              [style.opacity]="selectedIndex() === 1 ? '1' : '0'" loading="lazy" />
+            }
           </div>
         </div>
 
@@ -191,11 +185,9 @@
           <!-- track -->
           <div class="relative w-[3px] h-full" style="background: var(--color-p-100, #dbeafe);">
             <!-- fill: 50% block slides from top to bottom as scroll progresses -->
-            <div
-              class="absolute left-0 w-full"
+            <div class="absolute left-0 w-full"
               style="background: var(--color-p-700, #1e4d8c); height: 50%; transition: top 0.08s linear;"
-              [style.top]="scrollBarFillTop"
-            ></div>
+              [style.top]="scrollBarFillTop"></div>
           </div>
         </div>
 
@@ -205,32 +197,40 @@
           <!-- Panel 0 -->
           <div
             [class]="selectedIndex() === 0 ? 'relative flex flex-col justify-center py-10 px-20 fcs-fade-panel' : 'absolute inset-0 flex flex-col justify-center py-10 px-20 pointer-events-none fcs-fade-panel'"
-            [style.opacity]="selectedIndex() === 0 ? '1' : '0'"
-          >
-            <p class="text-[#0D53A2] font-[Inter] text-[18px] font-semibold not-italic leading-[150%] pt-10 uppercase mb-30">
-              {{ section[0]?.label ?? 'Featured Case Study' }}
+            [style.opacity]="selectedIndex() === 0 ? '1' : '0'">
+            <p
+              class="text-[#0D53A2] font-[Inter] text-[18px] font-semibold not-italic leading-[150%] pt-10 uppercase mb-30">
+              {{ section[0]?.label ?? 'Featured Case Studies' }}
             </p>
-            <span class="text-[#1D69AC] font-[Segoe_UI] text-[14px] font-semibold not-italic leading-[150%] inline-block tag-badge w-fit mb-3">
+            <span
+              class="text-[#1D69AC] font-[Segoe_UI] text-[14px] font-semibold not-italic leading-[150%] inline-block tag-badge w-fit mb-3">
               {{ decodeHtmlEntities(section[0]?.primaryTag ?? section[0]?.tag ?? '') }}
             </span>
             <h2 id="featured-case-study-title"
               class="text-black font-[Inter] text-[50px] font-normal not-italic leading-[120%] tracking-[-0.5px] mb-4">
               {{ section[0]?.title }}
             </h2>
-          
-            <div class="text-[#454545] font-[Segoe_UI] text-[18px] font-normal not-italic leading-[150%] mb-16 prose prose-p:mb-2"
+
+            <div
+              class="text-[#454545] font-[Segoe_UI] text-[18px] font-normal not-italic leading-[150%] mb-16 prose prose-p:mb-2"
               [innerHTML]="section[0]?.description ?? ''"></div>
             <div class="flex flex-row gap-6 items-center">
-                @if (section[0]?.cta?.primary?.link) {
+              @if (section[0]?.cta?.primary?.link) {
               <a [routerLink]="section[0].cta!.primary!.link"
                 class="group inline-flex items-center justify-center text-center text-white font-normal transition-all duration-200 whitespace-nowrap bg-p-700">
                 <span class="grid grid-cols-[14px_auto_14px] items-center gap-1 py-4 px-6 leading-none">
                   <span aria-hidden="true" class="block h-[13px] w-[14px]"></span>
-                  <span class="leading-none transition-all duration-200 group-hover:-translate-x-2">{{ section[0].cta!.primary!.text ?? 'Read more' }}</span>
-                  <span class="inline-flex h-[13px] w-[14px] self-center justify-self-center items-center justify-center overflow-hidden">
-                    <svg class="block translate-y-px transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
-                      width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <path d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z" fill="currentColor" />
+                  <span class="leading-none transition-all duration-200 group-hover:-translate-x-2">{{
+                    section[0].cta!.primary!.text ?? 'Read more' }}</span>
+                  <span
+                    class="inline-flex h-[13px] w-[14px] self-center justify-self-center items-center justify-center overflow-hidden">
+                    <svg
+                      class="block translate-y-px transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+                      width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true">
+                      <path
+                        d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z"
+                        fill="currentColor" />
                     </svg>
                   </span>
                 </span>
@@ -250,31 +250,39 @@
           <!-- Panel 1 -->
           <div
             [class]="selectedIndex() === 1 ? 'relative flex flex-col justify-center py-10 px-20 fcs-fade-panel' : 'absolute inset-0 flex flex-col justify-center py-10 px-20 pointer-events-none fcs-fade-panel'"
-            [style.opacity]="selectedIndex() === 1 ? '1' : '0'"
-          >
-             <p class="text-[#0D53A2] font-[Inter] text-[18px] font-semibold not-italic leading-[150%] uppercase pt-10 mb-30">
-              {{ section[1]?.label ?? 'Featured Case Study' }}
+            [style.opacity]="selectedIndex() === 1 ? '1' : '0'">
+            <p
+              class="text-[#0D53A2] font-[Inter] text-[18px] font-semibold not-italic leading-[150%] uppercase pt-10 mb-30">
+              {{ section[1]?.label ?? 'Featured Case Studies' }}
             </p>
-             <span class="text-[#1D69AC] font-[Segoe_UI] text-[14px] font-semibold not-italic leading-[150%] inline-block tag-badge w-fit mb-3">
+            <span
+              class="text-[#1D69AC] font-[Segoe_UI] text-[14px] font-semibold not-italic leading-[150%] inline-block tag-badge w-fit mb-3">
               {{ decodeHtmlEntities(section[1]?.primaryTag ?? section[1]?.tag ?? '') }}
             </span>
             <h2 id="featured-case-study-title-2"
               class="text-black font-[Inter] text-[50px] font-normal not-italic leading-[120%] tracking-[-0.5px] mb-4">
               {{ section[1]?.title }}
             </h2>
-            <div class="text-[#454545] font-[Segoe_UI] text-[18px] font-normal not-italic leading-[150%] mb-16 prose prose-p:mb-2"
+            <div
+              class="text-[#454545] font-[Segoe_UI] text-[18px] font-normal not-italic leading-[150%] mb-16 prose prose-p:mb-2"
               [innerHTML]="section[1]?.description ?? ''"></div>
             <div class="flex flex-row gap-6 items-center">
-                 @if (section[1]?.cta?.primary?.link) {
+              @if (section[1]?.cta?.primary?.link) {
               <a [routerLink]="section[1].cta!.primary!.link"
                 class="group inline-flex items-center justify-center text-center text-white font-normal transition-all duration-200 whitespace-nowrap bg-p-700">
                 <span class="grid grid-cols-[14px_auto_14px] items-center gap-1 py-4 px-6 leading-none">
                   <span aria-hidden="true" class="block h-[13px] w-[14px]"></span>
-                  <span class="leading-none transition-all duration-200 group-hover:-translate-x-2">{{ section[1].cta!.primary!.text ?? 'Read more' }}</span>
-                  <span class="inline-flex h-[13px] w-[14px] self-center justify-self-center items-center justify-center overflow-hidden">
-                    <svg class="block translate-y-px transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
-                      width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <path d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z" fill="currentColor" />
+                  <span class="leading-none transition-all duration-200 group-hover:-translate-x-2">{{
+                    section[1].cta!.primary!.text ?? 'Read more' }}</span>
+                  <span
+                    class="inline-flex h-[13px] w-[14px] self-center justify-self-center items-center justify-center overflow-hidden">
+                    <svg
+                      class="block translate-y-px transition-all duration-200 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+                      width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true">
+                      <path
+                        d="M8.25 0.28125L13.75 5.53125C13.9062 5.6875 14 5.875 14 6.09375C14 6.28125 13.9062 6.46875 13.75 6.625L8.25 11.875C7.96875 12.1562 7.46875 12.1562 7.1875 11.8438C6.90625 11.5625 6.90625 11.0625 7.21875 10.7812L11.375 6.84375H0.75C0.3125 6.84375 0 6.5 0 6.09375C0 5.65625 0.3125 5.34375 0.75 5.34375H11.375L7.21875 1.375C6.90625 1.09375 6.90625 0.59375 7.1875 0.3125C7.46875 0 7.9375 0 8.25 0.28125Z"
+                        fill="currentColor" />
                     </svg>
                   </span>
                 </span>
