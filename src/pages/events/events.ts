@@ -52,6 +52,7 @@ export default class Events implements OnInit {
   private readonly seoMeta = inject(SeoMetaService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly mobileBreakpoint = 768;
+  private readonly pastDragStartThresholdPx = 6;
   private dragStartX: number | null = null;
   private activePointerId: number | null = null;
   private suppressPastClick = false;
@@ -68,6 +69,9 @@ export default class Events implements OnInit {
 
   readonly upcomingEvents = signal<EventItem[]>([]);
   readonly pastEvents = signal<EventItem[]>([]);
+  readonly hasUpcomingEvents = computed(() => this.upcomingEvents().length > 0);
+  readonly hasPastEvents = computed(() => this.pastEvents().length > 0);
+  readonly hasAnyEvents = computed(() => this.hasUpcomingEvents() || this.hasPastEvents());
 
   readonly pastEventsPage = signal(0);
   readonly pastEventsPageSize = computed(() => this.isMobileView() ? 1 : 3);
@@ -125,15 +129,14 @@ export default class Events implements OnInit {
     const viewport = this.pastCarouselViewport?.nativeElement;
     if (!viewport) return;
 
-    event.preventDefault();
+    this.suppressPastClick = false;
     this.activePointerId = event.pointerId;
     this.dragStartX = event.clientX;
-    this.isPastDragging.set(true);
+    this.isPastDragging.set(false);
     this.pastDragOffsetPx.set(0);
-
-    if (viewport.setPointerCapture) {
-      viewport.setPointerCapture(event.pointerId);
-    }
+    // Do NOT set pointer capture here — that would redirect the synthesized
+    // click event away from the <a routerLink> inside the card.
+    // Capture is set lazily in onPastPointerMove once the drag threshold is crossed.
   }
 
   onPastDragStart(event: DragEvent): void {
@@ -142,11 +145,19 @@ export default class Events implements OnInit {
 
   @HostListener('window:pointermove', ['$event'])
   onPastPointerMove(event: PointerEvent): void {
-    if (!this.isPastDragging() || this.dragStartX === null) return;
+    if (this.dragStartX === null || this.activePointerId === null) return;
     if (this.activePointerId !== null && event.pointerId !== this.activePointerId) return;
 
     const dragOffset = event.clientX - this.dragStartX;
-    if (Math.abs(dragOffset) > 6) {
+    if (!this.isPastDragging()) {
+      if (Math.abs(dragOffset) <= this.pastDragStartThresholdPx) return;
+      // Threshold crossed — this is a real drag. Now capture the pointer so
+      // fast moves outside the viewport are still tracked.
+      const viewport = this.pastCarouselViewport?.nativeElement;
+      if (viewport?.setPointerCapture) {
+        viewport.setPointerCapture(event.pointerId);
+      }
+      this.isPastDragging.set(true);
       this.suppressPastClick = true;
     }
 
@@ -165,24 +176,34 @@ export default class Events implements OnInit {
   @HostListener('window:pointerup', ['$event'])
   onPastPointerUp(event: PointerEvent): void {
     if (this.activePointerId !== null && event.pointerId !== this.activePointerId) return;
-    if (!this.isPastDragging()) return;
 
     const viewport = this.pastCarouselViewport?.nativeElement;
     if (viewport?.releasePointerCapture && this.activePointerId !== null) {
       viewport.releasePointerCapture(this.activePointerId);
     }
+
+    if (!this.isPastDragging()) {
+      this.resetPastPointerState();
+      return;
+    }
+
     this.finishPastDrag();
   }
 
   @HostListener('window:pointercancel', ['$event'])
   onPastPointerCancel(event: PointerEvent): void {
     if (this.activePointerId !== null && event.pointerId !== this.activePointerId) return;
-    if (!this.isPastDragging()) return;
 
     const viewport = this.pastCarouselViewport?.nativeElement;
     if (viewport?.releasePointerCapture && this.activePointerId !== null) {
       viewport.releasePointerCapture(this.activePointerId);
     }
+
+    if (!this.isPastDragging()) {
+      this.resetPastPointerState();
+      return;
+    }
+
     this.finishPastDrag();
   }
 
@@ -208,9 +229,14 @@ export default class Events implements OnInit {
       this.pastDragOffsetPx.set(0);
     }
 
+    this.resetPastPointerState();
+  }
+
+  private resetPastPointerState(): void {
     this.dragStartX = null;
     this.activePointerId = null;
     this.isPastDragging.set(false);
+    this.pastDragOffsetPx.set(0);
   }
 
   ngOnInit() {

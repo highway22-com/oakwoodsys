@@ -178,6 +178,7 @@
         </div>
       </div>
 
+      @if (!isPastEvent()) {
       <div class="mt-8 max-w-[420px] -ml-2 sm:-ml-1 lg:hidden">
         <div style="background: url('/assets/events/register-now-bg.jpg') lightgray 50% / cover no-repeat;" class="border border-[#D8E4EF] text-[#1A1A1A] shadow-lg px-5 py-5 sm:px-10 sm:py-10 rounded-sm">
           <div class="flex items-start justify-between gap-3 pb-4" style="border-bottom: 1px solid var(--Primary-300, #8FC2EA);">
@@ -209,8 +210,10 @@
           </a>
         </div>
       </div>
+      }
     </div>
 
+    @if (!isPastEvent()) {
     <div class="hidden lg:block absolute right-8 xl:right-12 bottom-10 z-20 w-full max-w-[420px] -translate-x-[105px]">
       <div style="background: url('/assets/events/register-now-bg.jpg') lightgray 50% / cover no-repeat;" class="border border-[#D8E4EF] text-[#1A1A1A] shadow-lg px-5 py-5 sm:px-10 sm:py-10 rounded-sm lg:min-h-[410px]">
         <div class="flex items-start justify-between gap-3 pb-4" style="border-bottom: 1px solid var(--Primary-300, #8FC2EA);">
@@ -242,6 +245,7 @@
         </a>
       </div>
     </div>
+    }
   </section>
 
   <div class="w-full mx-auto px-4 sm:px-6 lg:px-24 pt-10">
@@ -264,9 +268,7 @@
       </div>
 
       </div>
-
- 
-
+@if (e.speakers.length > 0) {
 <section class="mt-2 sm:mt-4 ">
   <h3 class="mb-5 px-6 lg:px-10" style="color: var(--Secondary-950, #242424); font-family: Inter; font-size: 32px; font-style: normal; font-weight: 600; line-height: 130%; letter-spacing: -0.32px;">Speakers</h3>
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 px-6 lg:px-10">
@@ -286,6 +288,7 @@
     }
   </div>
 </section>
+}
   </div>
  
 
