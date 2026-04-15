@@ -4,5 +4,4 @@
  */
 export const CMS_BASE_URL = 'https://oakwoodsystemsgroup.com';
 
-export const EVENTBRITE_ORGANIZATION_ID = '';
 

@@ -81,8 +81,8 @@ export class AppNavbar implements OnInit, OnDestroy {
   private featuredBlogsRequested = false;
 
   /** Título de la sección Featured por dropdown (Services, Industries). */
-  readonly featuredTitleServices = signal('FEATURED BLOG');
-  readonly featuredTitleIndustries = signal('FEATURED CASE STUDY');
+  readonly featuredTitleServices = signal('FEATURED BLOGS');
+  readonly featuredTitleIndustries = signal('FEATURED CASE STUDIES');
 
   /** Panel de búsqueda (click en ícono): abierto/cerrado. */
   readonly searchPanelOpen = signal(false);
