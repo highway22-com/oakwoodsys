@@ -1,3 +1,62 @@
 :host {
   display: block;
 }
+
+.edit-back-button {
+  position: relative;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1d4ed8;
+  color: #ffffff;
+  box-shadow: 0 8px 18px -10px rgba(29, 78, 216, 0.75);
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.edit-back-button:hover,
+.edit-back-button:focus-visible {
+  background: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -12px rgba(30, 64, 175, 0.8);
+}
+
+.edit-back-button:focus-visible {
+  outline: none;
+}
+
+.edit-back-button svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.edit-back-button__label {
+  position: absolute;
+  left: calc(100% + 0.6rem);
+  top: 50%;
+  transform: translateY(-50%) translateX(-6px);
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1;
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.55rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.edit-back-button:hover .edit-back-button__label,
+.edit-back-button:focus-visible .edit-back-button__label {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}

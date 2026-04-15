@@ -1,0 +1,58 @@
+<a
+    [routerLink]="[linkBase(), slug()]"
+    [attr.aria-label]="readMoreText() + ' - ' + title()"
+    class="event-card group min-w-0 whitespace-normal bg-[#FFFFFF]/80 overflow-hidden transition-shadow duration-300 flex-1 flex flex-col border border-[#D1D1D1] hover:outline-gray-300 hover:outline hover:bg-p-30 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#2A7EBF]">
+    <div class="relative w-full overflow-hidden bg-transparent group-hover:bg-p-30 transition-colors duration-300">
+        <div class="relative w-full aspect-video overflow-hidden">
+            <img [src]="effectiveImageUrl()" [alt]="imageAlt()"
+                class="w-full h-full object-cover object-top transition-transform duration-300 ease-out group-hover:scale-110" />
+            @if (badgeMonth() || badgeDay()) {
+            <div class="absolute top-3 right-3 flex flex-col items-center justify-center bg-[#0D53A2] shadow-md select-none" style="border-radius: 8px; padding: 10px 16px 8px 16px;">
+                <span style="color: var(--White, #FFF); text-align: center; font-family: Inter, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; line-height: normal;">{{ badgeMonth() }}</span>
+                <span style="color: var(--White, #FFF); text-align: center; font-family: Inter, sans-serif; font-size: 32px; font-style: normal; font-weight: 600; line-height: normal;">{{ badgeDay() }}</span>
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="event-card__content p-5 sm:p-6 flex flex-col flex-grow bg-[#FBFBFB]">
+        <div class="mb-4">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-[#E5E5E5] px-3 py-1 text-[#000000] font-['Inter'] text-[14px] font-medium leading-normal">
+                <img [src]="statusIconUrl()" [alt]="statusType()" class="w-3.5 h-3.5" />
+                {{ tag() ? decodeHtmlEntities(tag()!) : (statusType() === 'in-person' ? 'In person' : 'Online') }}
+            </span>
+        </div>
+
+        <h3 class="event-card__title min-w-0 text-[#242424] font-['Inter'] text-[28px] font-semibold leading-[130%] mb-3 sm:mb-4 pb-10">
+            {{ title() || 'Event title' }}
+        </h3>
+
+        <div class="event-card__meta flex flex-col gap-3 mb-10 text-[#1A1A1A]">
+    
+
+            @if (eventDate()) {
+            <div class="flex items-center gap-3 min-w-0">
+                <img src="/assets/events/calendar.png" alt="Date" class="w-5 h-5" />
+                <span class="event-card__meta-text text-[#000000] font-['Inter'] text-[18px] font-normal leading-[28px]">{{ eventDate() }}</span>
+            </div>
+            }
+
+            @if (eventTime()) {
+            <div class="flex items-center gap-3 min-w-0">
+                <img src="/assets/events/clock.png" alt="Time" class="w-5 h-5" />
+                <span class="event-card__meta-text text-[#000000] font-['Inter'] text-[18px] font-normal leading-[28px]">{{ eventTime() }}</span>
+            </div>
+            }
+        </div>
+
+        <div
+            class="font-['Inter'] font-semibold text-[16px] leading-normal text-[#454545] group-hover:text-[#2A7EBF] transition-colors duration-200 inline-flex items-center gap-3 mt-auto pb-2 w-fit">
+            <span class="align-middle">{{ readMoreText() }}</span>
+            <span class="align-middle flex items-center mt-[0.35px]">
+                <svg width="8" height="13" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.83594 5.60547C7.19141 5.93359 7.19141 6.50781 6.83594 6.83594L1.58594 12.0859C1.25781 12.4414 0.683594 12.4414 0.355469 12.0859C0 11.7578 0 11.1836 0.355469 10.8555L4.97656 6.20703L0.355469 1.58594C0 1.25781 0 0.683594 0.355469 0.355469C0.683594 0 1.25781 0 1.58594 0.355469L6.83594 5.60547Z" fill="currentColor"/>
+                </svg>
+            </span>
+        </div>
+    </div>
+</a>

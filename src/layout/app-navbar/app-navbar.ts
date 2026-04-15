@@ -2,9 +2,6 @@ import { RouterLink, Router, NavigationEnd } from '@angular/router';
 import { Component, OnInit, OnDestroy, HostListener, inject, PLATFORM_ID, signal, computed, viewChild, ElementRef, input, effect } from '@angular/core';
 import { CommonModule, DOCUMENT, NgClass, NgIf, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { MicrosoftServices } from "./microsoft-services/microsoft-services";
-import { Industries } from "./industries/industries";
-import { Resources } from "./resources/resources";
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { filter } from 'rxjs';
 import type { CaseStudy, SearchResultItem } from '../../app/api/graphql';
@@ -48,7 +45,7 @@ export interface FeaturedBlogItem {
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, CommonModule, NgClass, MicrosoftServices, Industries, Resources, MenuList],
+  imports: [RouterLink, CommonModule, NgClass, MenuList],
   templateUrl: './app-navbar.html',
   styleUrl: './app-navbar.css',
 })
@@ -58,6 +55,7 @@ export class AppNavbar implements OnInit, OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly graphql = inject(GraphQLContentService);
   private readonly router = inject(Router);
+  private menuUpdatedFromBe = false;
 
   isMobileMenuOpen = false;
   mobileExpandedIndex: number | null = null;
@@ -161,33 +159,56 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   private loadNavbarContent() {
     this.loading.set(true);
-    this.graphql.getMenuContent().subscribe({
+    this.menuUpdatedFromBe = false;
+
+    // 1) Show static file immediately (no flash)
+    this.loadNavbarFromStaticFile(false);
+
+    // 2) Try CMS JSON as interim update, then always fall through to GraphQL
+    const ts = Date.now();
+    this.http.get<NavbarContent>(`/api/cms/menu.json?t=${ts}`).subscribe({
       next: (data) => {
-        if (data?.menu) {
+        if (data?.menu?.length && !this.menuUpdatedFromBe) {
           this.menuItems.set(data.menu as NavbarContent['menu']);
           this.content.set((data.content ?? null) as unknown as NavbarContent['content']);
-        } else {
-          this.loadNavbarFromStaticFile();
-          return;
         }
-        this.loading.set(false);
+        // 3) Always fall through to GraphQL for freshest data
+        this.loadMenuFromGraphQL();
       },
-      error: () => this.loadNavbarFromStaticFile(),
+      error: () => this.loadMenuFromGraphQL(),
     });
   }
 
-  private loadNavbarFromStaticFile() {
+  private loadMenuFromGraphQL() {
+    this.graphql.getMenuContent().subscribe({
+      next: (data) => {
+        if (data?.menu) {
+          this.menuUpdatedFromBe = true;
+          this.menuItems.set(data.menu as NavbarContent['menu']);
+          this.content.set((data.content ?? null) as unknown as NavbarContent['content']);
+        }
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
+
+  private loadNavbarFromStaticFile(finishLoading = true) {
     this.http.get<NavbarContent>('/navbar-content.json').subscribe({
       next: (data) => {
+        if (this.menuUpdatedFromBe) {
+          if (finishLoading) this.loading.set(false);
+          return;
+        }
         this.menuItems.set(data.menu);
         this.content.set(data.content ?? null);
-        this.loading.set(false);
+        if (finishLoading) this.loading.set(false);
       },
       error: (error) => {
         console.error('Error loading navbar content:', error);
         this.menuItems.set([]);
         this.content.set(null);
-        this.loading.set(false);
+        if (finishLoading) this.loading.set(false);
       },
     });
   }

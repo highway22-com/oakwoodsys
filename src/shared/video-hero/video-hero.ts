@@ -23,6 +23,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
 
   @Input() loading = true;
   @Input() videoUrls: string[] = [];
+  @Input() overlayImageUrl: string | null = null;
   /** Imagen de portada mientras carga el primer video (ej. thumbnail desde WordPress). */
   @Input() poster: string | null = null;
   /** Título único o uno por video (cambia con el índice del video actual). */

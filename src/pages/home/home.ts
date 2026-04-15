@@ -128,8 +128,8 @@ export default class Home implements OnInit {
       return;
     }
 
-    // Contenido desde servicio (precargado en APP_INITIALIZER vía homePageContent$)
-    this.graphql.homePageContent$
+    // Siempre buscamos datos frescos desde GraphQL (network-only evita la caché de Apollo).
+    this.graphql.getCmsPageBySlug('home', { fetchPolicy: 'network-only' })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {

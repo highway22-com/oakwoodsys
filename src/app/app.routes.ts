@@ -62,6 +62,14 @@ export const routes: Routes = [
                 loadComponent: () => import('../pages/resources/resources-wordpress')
             },
             {
+                path: 'resources/events/:slug',
+                loadComponent: () => import('../pages/event-detail/event-detail')
+            },
+            {
+                path: 'resources/events',
+                loadComponent: () => import('../pages/events/events')
+            },
+            {
                 path: 'industries/:slug',
                 loadComponent: () => import('../pages/industries/industries')
             },

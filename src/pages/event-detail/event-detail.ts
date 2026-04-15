@@ -1,53 +1,23 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild, inject, signal, computed, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, inject, signal, computed, PLATFORM_ID } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { take } from 'rxjs/operators';
-import { EventCardComponent } from '../../shared/event-card/event-card.component';
+import { switchMap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
-import { VideoHero } from '../../shared/video-hero/video-hero';
+import { EventsContent, EventItem } from '../events/events';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
-
-export interface EventItem {
-  slug: string;
-  status: 'upcoming' | 'past';
-  statusLabel: string;
-  type: 'online' | 'in-person';
-  badgeMonth: string;
-  badgeDay: string;
-  tag: string;
-  title: string;
-  summary: string;
-  imageUrl: string;
-  imageAlt: string;
-  location: string;
-  eventDate: string;
-  eventTime: string;
-  registerLink: string;
-  heroVideoUrls: string[];
-  heroImage: string;
-  subtitle: string;
-  overview: string;
-  learnings: string[];
-  aboutSession: string;
-  speakers: { name: string; role: string; bio: string; imageUrl: string }[];
-}
-
-export interface EventsContent {
-  hero: { eyebrow: string; title: string; description: string; heroVideoUrls?: string[]; heroImage?: string };
-  noEventsMessage: { title: string; description: string; ctaText: string; ctaAnchor: string };
-  upcomingEventsSection: { eyebrow: string; title: string; description: string };
-  pastEventsSection: { eyebrow: string; title: string; description: string };
-  ctaSection: { title: string; description: string; primaryText: string; primaryLink: string };
-  events: Record<string, EventItem>;
-}
+import { EventCardComponent } from '../../shared/event-card/event-card.component';
 
 @Component({
-  selector: 'app-events',
+  selector: 'app-event-detail',
   standalone: true,
-  imports: [CommonModule, EventCardComponent, CtaSectionComponent, VideoHero],
-  templateUrl: './events.html',
+  imports: [CommonModule, RouterLink, CtaSectionComponent, EventCardComponent],
+  templateUrl: './event-detail.html',
+  styleUrl: './event-detail.css',
 })
-export default class Events implements OnInit {
+export default class EventDetail implements OnInit, OnDestroy {
+  private readonly route = inject(ActivatedRoute);
   private readonly http = inject(HttpClient);
   private readonly seoMeta = inject(SeoMetaService);
   private readonly platformId = inject(PLATFORM_ID);
@@ -57,23 +27,32 @@ export default class Events implements OnInit {
   private activePointerId: number | null = null;
   private suppressPastClick = false;
 
+  private routeSub?: Subscription;
+
   @ViewChild('pastCarouselViewport') pastCarouselViewport?: ElementRef<HTMLDivElement>;
 
-  readonly linkCopied = signal(false);
-
   readonly loading = signal(true);
-  readonly content = signal<EventsContent | null>(null);
+  readonly event = signal<EventItem | null>(null);
+  readonly ctaSection = signal<EventsContent['ctaSection'] | null>(null);
+  readonly pastEventsSection = signal<EventsContent['pastEventsSection'] | null>(null);
+  readonly linkCopied = signal(false);
   readonly isMobileView = signal(false);
   readonly isPastDragging = signal(false);
   readonly pastDragOffsetPx = signal(0);
-
-  readonly upcomingEvents = signal<EventItem[]>([]);
-  readonly pastEvents = signal<EventItem[]>([]);
-  readonly hasUpcomingEvents = computed(() => this.upcomingEvents().length > 0);
-  readonly hasPastEvents = computed(() => this.pastEvents().length > 0);
-  readonly hasAnyEvents = computed(() => this.hasUpcomingEvents() || this.hasPastEvents());
-
   readonly pastEventsPage = signal(0);
+  readonly pastEvents = signal<EventItem[]>([]);
+  readonly isPastEvent = computed(() => {
+    const currentEvent = this.event();
+    if (!currentEvent) return false;
+    if (currentEvent.status === 'past') return true;
+    const eventDate = new Date(currentEvent.eventDate);
+    if (isNaN(eventDate.getTime())) return false;
+    eventDate.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return eventDate < today;
+  });
+
   readonly pastEventsPageSize = computed(() => this.isMobileView() ? 1 : 3);
   readonly maxPastEvents = 12;
   readonly maxPastPages = 6;
@@ -93,17 +72,11 @@ export default class Events implements OnInit {
     const items = this.limitedPastEvents();
     const pageSize = this.pastEventsPageSize();
     const slides: (EventItem | null)[][] = [];
-
     for (let i = 0; i < items.length; i += pageSize) {
       const chunk: (EventItem | null)[] = items.slice(i, i + pageSize);
-
-      while (chunk.length < pageSize) {
-        chunk.push(null);
-      }
-
+      while (chunk.length < pageSize) chunk.push(null);
       slides.push(chunk);
     }
-
     return slides;
   });
 
@@ -116,8 +89,7 @@ export default class Events implements OnInit {
   );
 
   goToPastPage(page: number): void {
-    const maxIndex = Math.max(0, this.pastPageCount() - 1);
-    const safePage = Math.max(0, Math.min(page, maxIndex));
+    const safePage = Math.max(0, Math.min(page, Math.max(0, this.pastPageCount() - 1)));
     this.pastEventsPage.set(safePage);
     this.pastDragOffsetPx.set(0);
   }
@@ -125,18 +97,15 @@ export default class Events implements OnInit {
   onPastPointerDown(event: PointerEvent): void {
     if (!isPlatformBrowser(this.platformId)) return;
     if (event.pointerType === 'mouse' && event.button !== 0) return;
-
     const viewport = this.pastCarouselViewport?.nativeElement;
     if (!viewport) return;
-
     this.suppressPastClick = false;
     this.activePointerId = event.pointerId;
     this.dragStartX = event.clientX;
     this.isPastDragging.set(false);
     this.pastDragOffsetPx.set(0);
-    // Do NOT set pointer capture here — that would redirect the synthesized
-    // click event away from the <a routerLink> inside the card.
-    // Capture is set lazily in onPastPointerMove once the drag threshold is crossed.
+    // Pointer capture is set lazily in onPastPointerMove once the drag
+    // threshold is crossed, so simple taps/clicks are never redirected.
   }
 
   onPastDragStart(event: DragEvent): void {
@@ -147,64 +116,51 @@ export default class Events implements OnInit {
   onPastPointerMove(event: PointerEvent): void {
     if (this.dragStartX === null || this.activePointerId === null) return;
     if (this.activePointerId !== null && event.pointerId !== this.activePointerId) return;
-
     const dragOffset = event.clientX - this.dragStartX;
     if (!this.isPastDragging()) {
       if (Math.abs(dragOffset) <= this.pastDragStartThresholdPx) return;
-      // Threshold crossed — this is a real drag. Now capture the pointer so
-      // fast moves outside the viewport are still tracked.
+      // Threshold crossed — lock pointer capture now so fast out-of-bounds
+      // moves are still tracked, then mark as dragging.
       const viewport = this.pastCarouselViewport?.nativeElement;
-      if (viewport?.setPointerCapture) {
-        viewport.setPointerCapture(event.pointerId);
-      }
+      if (viewport?.setPointerCapture) viewport.setPointerCapture(event.pointerId);
       this.isPastDragging.set(true);
       this.suppressPastClick = true;
     }
-
     event.preventDefault();
     this.pastDragOffsetPx.set(dragOffset);
-  }
-
-  onPastViewportClick(event: MouseEvent): void {
-    if (!this.suppressPastClick) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-    this.suppressPastClick = false;
   }
 
   @HostListener('window:pointerup', ['$event'])
   onPastPointerUp(event: PointerEvent): void {
     if (this.activePointerId !== null && event.pointerId !== this.activePointerId) return;
-
     const viewport = this.pastCarouselViewport?.nativeElement;
-    if (viewport?.releasePointerCapture && this.activePointerId !== null) {
+    if (viewport?.releasePointerCapture && this.activePointerId !== null)
       viewport.releasePointerCapture(this.activePointerId);
-    }
-
     if (!this.isPastDragging()) {
       this.resetPastPointerState();
       return;
     }
-
     this.finishPastDrag();
   }
 
   @HostListener('window:pointercancel', ['$event'])
   onPastPointerCancel(event: PointerEvent): void {
     if (this.activePointerId !== null && event.pointerId !== this.activePointerId) return;
-
     const viewport = this.pastCarouselViewport?.nativeElement;
-    if (viewport?.releasePointerCapture && this.activePointerId !== null) {
+    if (viewport?.releasePointerCapture && this.activePointerId !== null)
       viewport.releasePointerCapture(this.activePointerId);
-    }
-
     if (!this.isPastDragging()) {
       this.resetPastPointerState();
       return;
     }
-
     this.finishPastDrag();
+  }
+
+  onPastViewportClick(event: MouseEvent): void {
+    if (!this.suppressPastClick) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.suppressPastClick = false;
   }
 
   @HostListener('window:resize')
@@ -218,17 +174,11 @@ export default class Events implements OnInit {
     const viewportWidth = this.pastCarouselViewport?.nativeElement?.clientWidth ?? 0;
     const threshold = Math.max(36, viewportWidth * 0.08);
     const dragOffset = this.pastDragOffsetPx();
-
     if (Math.abs(dragOffset) >= threshold) {
-      if (dragOffset < 0) {
-        this.goToPastPage(this.pastEventsPage() + 1);
-      } else {
-        this.goToPastPage(this.pastEventsPage() - 1);
-      }
+      this.goToPastPage(this.pastEventsPage() + (dragOffset < 0 ? 1 : -1));
     } else {
       this.pastDragOffsetPx.set(0);
     }
-
     this.resetPastPointerState();
   }
 
@@ -239,50 +189,57 @@ export default class Events implements OnInit {
     this.pastDragOffsetPx.set(0);
   }
 
-  ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.isMobileView.set(window.innerWidth < this.mobileBreakpoint);
-    }
-
-    this.http
-      .get<EventsContent>('/events-content.json')
-      .pipe(take(1))
-      .subscribe({
-        next: (data) => {
-          this.content.set(data);
-          const all = Object.values(data.events);
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          this.upcomingEvents.set(
-            all.filter((e) => {
-              const d = new Date(e.eventDate);
-              return !isNaN(d.getTime()) ? d >= today : e.status === 'upcoming';
-            })
-          );
-          this.pastEvents.set(
-            all.filter((e) => {
-              const d = new Date(e.eventDate);
-              return !isNaN(d.getTime()) ? d < today : e.status === 'past';
-            })
-          );
-          this.goToPastPage(0);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false),
-      });
-  }
-
-  trackBySlug(_: number, event: EventItem): string {
-    return event.slug;
-  }
-
+  trackBySlug(_: number, event: EventItem): string { return event.slug; }
   trackBySlideItem(index: number, event: EventItem | null): string {
     return event?.slug ?? `placeholder-${index}`;
   }
 
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isMobileView.set(window.innerWidth < this.mobileBreakpoint);
+    }
+    this.routeSub = this.route.paramMap
+      .pipe(
+        switchMap((params) => {
+          const slug = params.get('slug') ?? '';
+          this.loading.set(true);
+          this.event.set(null);
+          this.pastEvents.set([]);
+          this.goToPastPage(0);
+          return this.http.get<EventsContent>('/events-content.json').pipe(
+            switchMap((data) => {
+              this.event.set(data.events[slug] ?? null);
+              this.ctaSection.set(data.ctaSection);
+              this.pastEventsSection.set(data.pastEventsSection);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              this.pastEvents.set(
+                Object.entries(data.events)
+                  .filter(([key, e]) => {
+                    if (key === slug) return false;
+                    const d = new Date(e.eventDate);
+                    return !isNaN(d.getTime()) ? d < today : e.status === 'past';
+                  })
+                  .map(([, e]) => e)
+              );
+              this.goToPastPage(0);
+              this.loading.set(false);
+              return [];
+            })
+          );
+        })
+      )
+      .subscribe({ error: () => this.loading.set(false) });
+  }
+
+  ngOnDestroy() {
+    this.routeSub?.unsubscribe();
+  }
+
   private getShareUrl(): string {
+    const slug = this.event()?.slug;
     const base = this.seoMeta.baseUrl.replace(/\/$/, '');
-    return `${base}/events`;
+    return slug ? `${base}/events/${slug}` : `${base}/events`;
   }
 
   getFacebookShareUrl(): string {
@@ -290,12 +247,21 @@ export default class Events implements OnInit {
   }
 
   getTwitterShareUrl(): string {
-    const text = this.content()?.hero?.title ?? 'Events';
+    const text = this.event()?.title ?? 'Event';
     return `https://twitter.com/intent/tweet?url=${encodeURIComponent(this.getShareUrl())}&text=${encodeURIComponent(text)}`;
   }
 
   getLinkedInShareUrl(): string {
     return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(this.getShareUrl())}`;
+  }
+
+  getBreadcrumbs(): { label: string; link?: string }[] {
+    const title = this.event()?.title ?? 'Event Detail';
+    return [
+      { label: 'Home', link: '/' },
+      { label: 'Events', link: '/events' },
+      { label: title },
+    ];
   }
 
   copyLinkToClipboard(event: Event): void {
