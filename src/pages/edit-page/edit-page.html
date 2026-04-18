@@ -141,6 +141,8 @@
         <app-about-us [contentOverride]="aboutData" />
         } @else if (slug() === 'contact-us' && parsedContactUsData(); as contactUsData) {
         <app-contact-us [contentOverride]="contactUsData" />
+        } @else if (slug() === 'privacy-policy' && parsedPrivacyPolicyData(); as privacyData) {
+        <app-privacy-and-policy [contentOverride]="privacyData" />
         } @else if (slug() === 'resources') {
         <div class="p-4 text-gray-500 text-sm">Edit the JSON and copy to clipboard to update the CMS. Preview complete
           on the live pages for /resources, /structured-engagement and /structured-engagement/:slug.</div>
