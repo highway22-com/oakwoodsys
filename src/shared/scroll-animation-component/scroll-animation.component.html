@@ -1,50 +1,47 @@
-<section
-  class="w-full h-full scroll-animation-section bg-p-10 py-8 sm:py-14 md:py-16 lg:py-18"
-  aria-labelledby="microsoft-partner-title"
->
-  <div class="mx-auto w-full max-w-6xl px-3 sm:px-6 md:px-8 lg:px-10">
+<section class="100vh scroll-animation-section" aria-labelledby="partner-title">
+  <div class="inner">
     <div class="partner-layout">
-      <div
-        class="left-box partner-badge-wrap"
-        [class.animate]="isVisible"
-        [class.reverse-animate]="reverse"
-      >
-        <div class="partner-layer partner-layer-outer">
-          <div class="partner-layer partner-layer-middle">
-            <div class="">
-              <div class="partner-badge-top">
-                <img
-                  src="/assets/Microsoft%20Solutions%20Partner.png"
-                  alt="Microsoft Solutions Partner"
-                  class="partner-badge-image"
-                />
-                <ul class="partner-capability-list" aria-label="Microsoft capabilities">
-                  <li>Infrastructure</li>
-                  <li>Digital &amp; App Innovation</li>
-                  <li>Data &amp; AI</li>
-                  <li>Modern Work</li>
-                  <li>Security</li>
-                  <li>Support Services</li>
-                </ul>
-              </div>
-              <div class="partner-badge-bottom">
-                <p class="partner-specialist-label">Specialist</p>
-                <p class="partner-specialist-copy">AI Apps on Microsoft Azure</p>
-              </div>
-            </div>
+
+      <!-- LEFT: stacked ghost cards + front badge -->
+      <div class="left-box" id="leftBox" [class.animate]="isVisible">
+        <!-- Ghost depth layers -->
+        <div class="ghost ghost-3"></div>
+        <div class="ghost ghost-2"></div>
+        <div class="ghost ghost-1"></div>
+
+        <!-- Front card -->
+        <div class="partner-badge-card">
+          <div class="partner-badge-top">
+            <!--
+              Replace src with your actual asset:
+              src="/assets/Microsoft%20Solutions%20Partner.png"
+            -->
+            <img
+              src="/assets/Microsoft%20Solutions%20Partner.png"
+              alt="Microsoft Solutions Partner logo"
+            />
+            <ul class="partner-capability-list">
+              <li>Infrastructure</li>
+              <li>Digital &amp; App Innovation</li>
+              <li>Data &amp; AI</li>
+              <li>Modern Work</li>
+              <li>Security</li>
+              <li>Support Services</li>
+            </ul>
+          </div>
+          <div class="partner-badge-bottom">
+            <p class="partner-specialist-label">Specialist</p>
+            <p class="partner-specialist-copy">AI Apps on Microsoft Azure</p>
           </div>
         </div>
       </div>
 
-      <div
-        class="right-box partner-copy"
-        [class.animate]="isVisible"
-        [class.reverse-animate]="reverse"
-      >
-        <h2 id="microsoft-partner-title" class="partner-title">
-          Certified Microsoft<br />
-          Solutions Partner
-        </h2>
+      <!-- RIGHT: copy -->
+      <div class="right-box" id="rightBox" [class.animate]="isVisible">
+        <div class="partner-title-wrap">
+          <span class="partner-title">Certified Microsoft</span>
+          <span class="partner-title">Solutions Partner</span>
+        </div>
         <p class="partner-description">
           Oakwood's Microsoft Solutions Partner designations and Advanced
           Specialization in AI Apps on Microsoft Azure reflect more than
@@ -59,6 +56,10 @@
           and optimized over time.
         </p>
       </div>
+
     </div>
   </div>
 </section>
+
+
+

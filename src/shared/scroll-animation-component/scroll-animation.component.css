@@ -1,211 +1,254 @@
-/* Cleaned up: Only keep the necessary rules for scroll-animation-section and its children */
-.scroll-animation-section {
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #eaf1f8;
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  position: relative;
 }
 
-.partner-layout {
+/* ── Section wrapper ── */
+.scroll-animation-section {
   width: 100%;
+  padding: 60px 0;
+}
+
+.inner {
+  max-width:86rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 48px);
+}
+
+/* ── Two-column grid ──
+   FIX: left column is a fixed pixel width (card + ghost padding)
+   so it never grows/shrinks unpredictably.
+   Right column gets ALL remaining space via 1fr.           */
+.partner-layout {
   display: grid;
-  grid-template-columns: minmax(200px, 280px) minmax(0, 1fr);
-  gap: 28px;
+  grid-template-columns: 480px minmax(0, 1fr);
+  gap: 0;
   align-items: center;
 }
 
-.partner-badge-wrap {
-  justify-content: flex-start;
-}
-
-.partner-layer {
-  border: 1px solid #e1e7ee;
-  border-radius: 18px;
-}
-
-.partner-layer-outer {
+/* ══════════════════════════════════════════
+   LEFT — stacked ghost layers + front card
+   480px column = ~342px card + 60px padding each side
+   Ghost layers sit symmetrically inside.
+══════════════════════════════════════════ */
+.left-box {
   position: relative;
-  padding: 12px;
-  border-radius: 36px;
+  width: 480px;
+  padding: 60px;
+  overflow: visible;
+  flex-shrink: 0;
+  opacity: 1;
+  transform: none;
 }
 
-.partner-layer-outer::before {
-  content: '';
+.ghost {
   position: absolute;
-  inset: 0;
-  border-radius: 36px;
-  border: 1px solid var(--Secondary-200, #D1D1D1);
-  opacity: 0.3;
-  background: var(--White, #FFF);
+  border: 1px solid #d1d1d1;
+  background: #fff;
   pointer-events: none;
 }
 
-.partner-layer-outer > * {
-  position: relative;
-  z-index: 1;
+.ghost-1 {
+  inset: 40px;
+  opacity: 0.65;
+  border-radius: 28px;
 }
 
-.partner-layer-middle {
-  position: relative;
-  padding: 10px;
-  border-radius: 30px;
+.ghost-2 {
+  inset: 20px;
+  opacity: 0.4;
+  border-radius: 32px;
 }
 
-.partner-layer-middle::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 30px;
-  border: 1px solid var(--Secondary-200, #D1D1D1);
-  opacity: 0.5;
-  background: var(--White, #FFF);
-  pointer-events: none;
+.ghost-3 {
+  inset: 0px;
+  opacity: 0.2;
+  border-radius: 36px;
 }
 
-.partner-layer-middle > * {
-  position: relative;
-  z-index: 1;
-}
-
+/* Front card */
 .partner-badge-card {
+  position: relative;
+  z-index: 4;
   width: 100%;
-  max-width: 244px;
-  border-radius: 12px;
-  border: 1px solid #c6cbd2;
-  background: #ffffff;
-  overflow: hidden;
-  box-shadow: 0 3px 10px rgba(22, 42, 62, 0.08);
+  border-radius: 24px;
+  overflow: visible;
 }
 
+/* Top white section */
 .partner-badge-top {
+  position: relative;
+  z-index: 2;
+  background: #fff;
   border-radius: 24px 24px 0 24px;
-  border: 1px solid var(--Secondary-200, #D1D1D1);
-  background: var(--White, #FFF);
-  padding: 38px;
+  border: 1px solid #d1d1d1;
+  padding: clamp(24px, 3vw, 38px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.partner-badge-image {
-  width: 100%;
-  height: auto;
+.partner-badge-top img {
   display: block;
+  width: clamp(130px, 16vw, 204px);
+  height: auto;
 }
 
 .partner-capability-list {
   list-style: none;
-  margin: 12px 0 0;
-  background: var(--White, #FFF);
-  color: #2f2f2f;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 14px;
-  line-height: 1.68;
+  padding: 0;
+  margin: 0;
+  font-size: clamp(13px, 1.2vw, 15px);
+  font-weight: 600;
+  color: #4f4f4f;
+  line-height: 1.7;
 }
 
+/* Dark bottom strip */
 .partner-badge-bottom {
+  position: relative;
+  z-index: 1;
+  margin-top: -28px;
+  background: #4f4f4f;
   border-radius: 0 0 24px 24px;
-  background: var(--Secondary-700, #4F4F4F);
-  color: #ffffff;
-  padding: 56px 38px 38px 38px;
+  padding: clamp(44px, 5vw, 56px) clamp(24px, 3vw, 38px) clamp(24px, 3vw, 38px);
+  color: #fff;
 }
 
 .partner-specialist-label {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 1.1;
+  font-size: clamp(16px, 1.5vw, 20px);
+  font-weight: 600;
+  line-height: 1.5;
+  opacity: 0.9;
 }
 
 .partner-specialist-copy {
-  margin: 6px 0 0;
-  color: #f5f5f5;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 14px;
+  margin-top: 4px;
+  font-size: clamp(13px, 1.2vw, 19px);
   font-weight: 400;
-  line-height: 1.35;
+  line-height: 1.5;
+  opacity: 0.9;
+  color: #f5f5f5;
 }
 
-.partner-copy {
+/* ══════════════════════════════════════════
+   RIGHT — copy
+   Takes all space left after the 480px column
+══════════════════════════════════════════ */
+.right-box {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  gap: clamp(16px, 2.5vw, 32px);
+  opacity: 1;
+  transform: none;
   text-align: left;
+  align-items: flex-start;
+  width: 100%;
+  min-width: 0;
+  padding-left: clamp(24px, 3vw, 48px); /* breathing room from left column */
+}
+
+.partner-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .partner-title {
-  margin: 0;
-  color: #2a7ebf;
-  font-family: Inter, sans-serif;
-  font-size: clamp(2.1rem, 3.8vw, 3.45rem);
+  font-family: Inter, 'Segoe UI', sans-serif;
+  font-size: clamp(2rem, 3.8vw, 3.75rem);
   font-weight: 400;
-  line-height: 1.12;
-  letter-spacing: -0.01em;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  background: linear-gradient(90deg, #2483cc 0%, #3ca8c5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .partner-description {
-  margin: 18px 0 0;
-  max-width: 690px;
-  color: #3e4a56;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.58;
-}
-
-.scroll-animation-section .left-box,
-.scroll-animation-section .right-box {
+  font-size: clamp(14px, 1.3vw, 17px);
+  color: #3d3d3d;
+  line-height: 1.6;
   width: 100%;
-  transition: transform 0.8s ease, opacity 0.8s ease;
-  opacity: 0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-.scroll-animation-section .left-box {
-  transform: translateX(-150px);
-}
-.scroll-animation-section .right-box {
-  transform: translateX(150px);
-}
-.scroll-animation-section .animate.left-box {
-  transform: translateX(0);
-  opacity: 1;
-}
-.scroll-animation-section .animate.right-box {
-  transform: translateX(0);
-  opacity: 1;
-}
-.scroll-animation-section .reverse-animate.left-box {
-  transform: translateX(-150px);
-  opacity: 0;
-}
-.scroll-animation-section .reverse-animate.right-box {
-  transform: translateX(150px);
-  opacity: 0;
+  max-width: none;
+  text-align: left;
 }
 
-@media (max-width: 900px) {
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+
+/* Zoomed-in desktop / large tablet (125% zoom ≈ 1024px effective) */
+@media (max-width: 1100px) {
+  .partner-layout {
+    grid-template-columns: 380px minmax(0, 1fr);
+  }
+  .left-box {
+    width: 380px;
+    padding: 40px;
+  }
+  .ghost-1 { inset: 27px; }
+  .ghost-2 { inset: 14px; }
+  .ghost-3 { inset: 0px;  }
+  .partner-title {
+    white-space: normal;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+  }
+}
+
+/* Tablet */
+@media (max-width: 860px) {
+  .partner-layout {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+  .left-box {
+    width: 300px;
+    padding: 32px;
+  }
+  .ghost-1 { inset: 22px; }
+  .ghost-2 { inset: 11px; }
+  .ghost-3 { inset: 0px;  }
+  .partner-title {
+    white-space: normal;
+    font-size: clamp(1.6rem, 4vw, 2.5rem);
+  }
+}
+
+/* Mobile — stack vertically */
+@media (max-width: 640px) {
   .partner-layout {
     grid-template-columns: 1fr;
-    gap: 22px;
+    gap: 40px;
+    justify-items: center;
   }
-
-  .partner-badge-wrap,
-  .scroll-animation-section .left-box,
-  .scroll-animation-section .right-box {
+  .left-box {
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    display: flex;
     justify-content: center;
   }
-
-  .partner-copy {
-    text-align: center;
-  }
-
-  .partner-description {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .partner-badge-wrap {
+  .ghost-1 { inset: 27px; }
+  .ghost-2 { inset: 14px; }
+  .ghost-3 { inset: 0px;  }
+  .partner-badge-card {
     width: 100%;
+  }
+  .right-box {
+    padding-left: 0;
+    width: 100%;
+  }
+  .partner-title {
+    white-space: normal;
+    font-size: clamp(1.6rem, 6vw, 2.5rem);
   }
 }
