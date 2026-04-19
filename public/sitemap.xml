@@ -156,72 +156,12 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://oakwoodsys.com/resources/case-studies/revolutionizing-automotive-service-equipment-with-iot-integration</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/case-studies/tenant-to-tenant-azure-migration</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/case-studies/high-performance-computing-poc-in-azure</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/case-studies/secure-data-integration-with-microsoft-fabric</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/case-studies/microsoft-fabric-consulting</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/case-studies/azure-environment-restructure</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/case-studies/azure-infrastructure-migration</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/case-studies/application-modernization-for-wrap-up-insurance-solutions</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://oakwoodsys.com/resources/case-studies/secure-azure-research-environment-architecture</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://oakwoodsys.com/resources/case-studies/enterprise-reporting-and-data-roadmap-development</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/case-studies/azure-high-performance-computing-environment</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/case-studies/enhancing-rdms-system-with-azure-blob-storage</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/case-studies/building-a-high-availability-azure-environment-for-hpc-at-scale</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/case-studies/transforming-electronic-design-automation-in-manufacturing</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

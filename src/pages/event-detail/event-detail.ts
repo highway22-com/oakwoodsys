@@ -3,11 +3,27 @@ import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, inje
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { switchMap } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { Subscription, of } from 'rxjs';
+import { DomSanitizer, type SafeHtml, type SafeResourceUrl } from '@angular/platform-browser';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
-import { EventsContent, EventItem } from '../events/events';
+import { EventsContent, EventItem, eventRefEndMs, eventScheduleBucket } from '../events/events';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { EventCardComponent } from '../../shared/event-card/event-card.component';
+import { decodeHtmlEntities } from '../../app/utils/cast';
+
+type EventSpeaker = EventItem['speakers'][number];
+
+function extractYoutubeVideoId(url: string): string | null {
+  const trimmed = url.trim();
+  const re =
+    /(?:youtube\.com\/(?:.*[?&]v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})\b/;
+  const m = trimmed.match(re);
+  return m?.[1] ?? null;
+}
+
+function getEventEndTimeMsForHeroVideo(e: EventItem): number | null {
+  return eventRefEndMs(e);
+}
 
 @Component({
   selector: 'app-event-detail',
@@ -17,9 +33,13 @@ import { EventCardComponent } from '../../shared/event-card/event-card.component
   styleUrl: './event-detail.css',
 })
 export default class EventDetail implements OnInit, OnDestroy {
+  readonly speakerPlaceholderImage =
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&q=80';
+
   private readonly route = inject(ActivatedRoute);
   private readonly http = inject(HttpClient);
   private readonly seoMeta = inject(SeoMetaService);
+  private readonly sanitizer = inject(DomSanitizer);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly mobileBreakpoint = 768;
   private readonly pastDragStartThresholdPx = 6;
@@ -28,6 +48,8 @@ export default class EventDetail implements OnInit, OnDestroy {
   private suppressPastClick = false;
 
   private routeSub?: Subscription;
+  private readonly scheduleNowMs = signal(Date.now());
+  private scheduleClockTimerId: number | null = null;
 
   @ViewChild('pastCarouselViewport') pastCarouselViewport?: ElementRef<HTMLDivElement>;
 
@@ -42,15 +64,176 @@ export default class EventDetail implements OnInit, OnDestroy {
   readonly pastEventsPage = signal(0);
   readonly pastEvents = signal<EventItem[]>([]);
   readonly isPastEvent = computed(() => {
-    const currentEvent = this.event();
-    if (!currentEvent) return false;
-    if (currentEvent.status === 'past') return true;
-    const eventDate = new Date(currentEvent.eventDate);
-    if (isNaN(eventDate.getTime())) return false;
-    eventDate.setHours(0, 0, 0, 0);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return eventDate < today;
+    const now = this.scheduleNowMs();
+    const e = this.event();
+    if (!e) return false;
+    return eventScheduleBucket(e, now) === 'past';
+  });
+
+  private viewerTimeZoneId(): string | undefined {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch {
+      return undefined;
+    }
+  }
+
+  private dateFmtOpts(): Intl.DateTimeFormatOptions {
+    const tz = this.viewerTimeZoneId();
+    const base: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+    return tz ? { ...base, timeZone: tz } : base;
+  }
+
+  private timeFmtOpts(): Intl.DateTimeFormatOptions {
+    const tz = this.viewerTimeZoneId();
+    const base: Intl.DateTimeFormatOptions = {
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZoneName: 'shortGeneric',
+    };
+    return tz ? { ...base, timeZone: tz } : base;
+  }
+
+  private calendarDayKeyInViewerZone(d: Date): string {
+    const tz = this.viewerTimeZoneId();
+    if (!tz) {
+      return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    }
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: tz,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(d);
+  }
+
+  readonly timeZoneViewerHint = computed(() => {
+    const tz = this.viewerTimeZoneId();
+    if (!tz) return null;
+    return `Times shown in your time zone (${tz}).`;
+  });
+
+  readonly formattedTimeInSiteZone = computed(() => {
+    const e = this.event();
+    const siteTz = e?.eventTimeZone?.trim();
+    if (!siteTz || !e?.eventStartISO) return null;
+    const start = new Date(e.eventStartISO);
+    if (isNaN(start.getTime())) return null;
+
+    const opts: Intl.DateTimeFormatOptions = {
+      timeZone: siteTz,
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZoneName: 'shortGeneric',
+    };
+    const timeFmt = new Intl.DateTimeFormat(undefined, opts);
+
+    if (!e.eventEndISO) {
+      return timeFmt.format(start);
+    }
+    const end = new Date(e.eventEndISO);
+    if (isNaN(end.getTime())) {
+      return timeFmt.format(start);
+    }
+    return `${timeFmt.format(start)} – ${timeFmt.format(end)}`;
+  });
+
+  readonly overviewHtml = computed((): SafeHtml => {
+    const raw = this.event()?.overview ?? '';
+    const html = decodeHtmlEntities(raw);
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  });
+
+  readonly eventHeroVideoUrlsFiltered = computed((): string[] => {
+    const now = this.scheduleNowMs();
+    const ev = this.event();
+    const urls = ev?.heroVideoUrls;
+    if (!urls?.length) return [];
+
+    const endMs = ev ? getEventEndTimeMsForHeroVideo(ev) : null;
+    if (endMs == null || now <= endMs) return [];
+
+    return urls.filter((u): u is string => typeof u === 'string' && u.trim() !== '');
+  });
+
+  readonly showEventHeroVideoSection = computed(() => this.eventHeroVideoUrlsFiltered().length > 0);
+
+  readonly firstHeroVideoUrl = computed((): string => this.eventHeroVideoUrlsFiltered()[0] ?? '');
+
+  readonly eventHeroYoutubeEmbed = computed((): SafeResourceUrl | null => {
+    const url = this.firstHeroVideoUrl();
+    if (!url) return null;
+    const id = extractYoutubeVideoId(url);
+    if (!id) return null;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      `https://www.youtube.com/embed/${id}?rel=0`,
+    );
+  });
+
+  readonly formattedDate = computed(() => {
+    const e = this.event();
+    if (!e?.eventStartISO) return null;
+    const start = new Date(e.eventStartISO);
+    if (isNaN(start.getTime())) return null;
+
+    const dateFmt = new Intl.DateTimeFormat(undefined, this.dateFmtOpts());
+
+    const endIso = e.eventEndISO;
+    if (!endIso) {
+      return dateFmt.format(start);
+    }
+
+    const end = new Date(endIso);
+    if (isNaN(end.getTime())) {
+      return dateFmt.format(start);
+    }
+
+    const sameDay = this.calendarDayKeyInViewerZone(start) === this.calendarDayKeyInViewerZone(end);
+
+    if (sameDay) {
+      return dateFmt.format(start);
+    }
+
+    const startFmt = new Intl.DateTimeFormat(undefined, {
+      ...this.dateFmtOpts(),
+      month: 'short',
+      day: 'numeric',
+    }).format(start);
+    const endFmt = dateFmt.format(end);
+    return `${startFmt} – ${endFmt}`;
+  });
+
+  readonly formattedTime = computed(() => {
+    const e = this.event();
+    if (!e?.eventStartISO) return null;
+    const start = new Date(e.eventStartISO);
+    if (isNaN(start.getTime())) return null;
+
+    const timeFmt = new Intl.DateTimeFormat(undefined, this.timeFmtOpts());
+
+    if (!e.eventEndISO) {
+      return timeFmt.format(start);
+    }
+
+    const end = new Date(e.eventEndISO);
+    if (isNaN(end.getTime())) {
+      return timeFmt.format(start);
+    }
+
+    return `${timeFmt.format(start)} – ${timeFmt.format(end)}`;
+  });
+
+  readonly formattedDuration = computed(() => {
+    const minutes = this.event()?.durationMinutes;
+    if (minutes === undefined || minutes === null) return null;
+    if (!Number.isFinite(minutes) || minutes <= 0) return null;
+
+    const hrs = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+
+    if (hrs <= 0) return `${minutes} minutes`;
+    if (mins === 0) return `${hrs} hour${hrs === 1 ? '' : 's'}`;
+    return `${hrs} hour${hrs === 1 ? '' : 's'} ${mins} minute${mins === 1 ? '' : 's'}`;
   });
 
   readonly pastEventsPageSize = computed(() => this.isMobileView() ? 1 : 3);
@@ -197,6 +380,10 @@ export default class EventDetail implements OnInit, OnDestroy {
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.isMobileView.set(window.innerWidth < this.mobileBreakpoint);
+      this.scheduleNowMs.set(Date.now());
+      this.scheduleClockTimerId = window.setInterval(() => {
+        this.scheduleNowMs.set(Date.now());
+      }, 30_000) as number;
     }
     this.routeSub = this.route.paramMap
       .pipe(
@@ -206,23 +393,31 @@ export default class EventDetail implements OnInit, OnDestroy {
           this.event.set(null);
           this.pastEvents.set([]);
           this.goToPastPage(0);
-          return this.http.get<EventsContent>('/events-content.json').pipe(
+          return this.fetchEventsContentFromGraphql().pipe(
             switchMap((data) => {
-              this.event.set(data.events[slug] ?? null);
+              const current = data.events[slug] ?? null;
+              this.event.set(current);
+              this.scheduleNowMs.set(Date.now());
               this.ctaSection.set(data.ctaSection);
               this.pastEventsSection.set(data.pastEventsSection);
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
+
+              const nowMs = Date.now();
+
               this.pastEvents.set(
                 Object.entries(data.events)
                   .filter(([key, e]) => {
                     if (key === slug) return false;
-                    const d = new Date(e.eventDate);
-                    return !isNaN(d.getTime()) ? d < today : e.status === 'past';
+                    const iso = e.eventEndISO ?? e.eventStartISO;
+                    if (!iso) return false;
+                    const ms = new Date(iso).getTime();
+                    if (!Number.isFinite(ms)) return false;
+                    return ms < nowMs;
                   })
                   .map(([, e]) => e)
               );
+
               this.goToPastPage(0);
+              this.updateEventSeoMeta(current, slug);
               this.loading.set(false);
               return [];
             })
@@ -232,14 +427,65 @@ export default class EventDetail implements OnInit, OnDestroy {
       .subscribe({ error: () => this.loading.set(false) });
   }
 
+  private updateEventSeoMeta(e: EventItem | null, _slug: string): void {
+    if (!e) {
+      this.seoMeta.updateMeta({
+        title: 'Event Not Found | Oakwood Systems',
+        description:
+          'We could not find this event. Browse upcoming and past events from Oakwood Systems.',
+        canonicalPath: '/resources/events',
+        ogType: 'website',
+      });
+      return;
+    }
+
+    const title = `${e.title} | Oakwood Systems`;
+    const rawDesc = (e.summary ?? e.subtitle ?? '').trim();
+    const plain =
+      rawDesc.length > 0
+        ? decodeHtmlEntities(rawDesc).replace(/<[^>]*>/g, '').trim()
+        : '';
+    const description =
+      plain.length > 0 ? plain : this.seoMeta.defaultDescription;
+
+    const canonicalPath = `/resources/events/${e.slug}`;
+    const image = this.eventOgImageAbsoluteUrl(e);
+    const keywords = e.tag?.trim()
+      ? `${e.tag.trim()}, ${this.seoMeta.defaultKeywords}`
+      : this.seoMeta.defaultKeywords;
+
+    this.seoMeta.updateMeta({
+      title,
+      description,
+      keywords,
+      keyphrase: e.tag?.trim() || undefined,
+      canonicalPath,
+      image,
+      imageAlt: (e.imageAlt ?? '').trim() || e.title,
+      ogType: 'website',
+    });
+  }
+
+  private eventOgImageAbsoluteUrl(e: EventItem): string | undefined {
+    const raw = (e.heroImage || e.imageUrl || '').trim();
+    if (!raw) return undefined;
+    if (/^https?:\/\//i.test(raw)) return raw;
+    const base = this.seoMeta.baseUrl.replace(/\/$/, '');
+    return base + (raw.startsWith('/') ? raw : `/${raw}`);
+  }
+
   ngOnDestroy() {
     this.routeSub?.unsubscribe();
+    if (this.scheduleClockTimerId !== null) {
+      clearInterval(this.scheduleClockTimerId);
+      this.scheduleClockTimerId = null;
+    }
   }
 
   private getShareUrl(): string {
     const slug = this.event()?.slug;
     const base = this.seoMeta.baseUrl.replace(/\/$/, '');
-    return slug ? `${base}/events/${slug}` : `${base}/events`;
+    return slug ? `${base}/resources/events/${slug}` : `${base}/resources/events`;
   }
 
   getFacebookShareUrl(): string {
@@ -255,11 +501,28 @@ export default class EventDetail implements OnInit, OnDestroy {
     return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(this.getShareUrl())}`;
   }
 
+  speakerImageUrl(speaker: EventSpeaker): string {
+    const url = (speaker.imageUrl ?? '').trim();
+    return url !== '' ? url : this.speakerPlaceholderImage;
+  }
+
+  speakerDescription(speaker: EventSpeaker): string {
+    const fromDesc = (speaker.description ?? '').trim();
+    if (fromDesc !== '') return fromDesc;
+    return (speaker.bio ?? '').trim();
+  }
+
+  eventTypeBadgeText(e: EventItem): string {
+    const tag = e.tag?.trim();
+    if (tag) return decodeHtmlEntities(tag);
+    return e.type === 'in-person' ? 'In person' : 'Online';
+  }
+
   getBreadcrumbs(): { label: string; link?: string }[] {
     const title = this.event()?.title ?? 'Event Detail';
     return [
       { label: 'Home', link: '/' },
-      { label: 'Events', link: '/events' },
+      { label: 'Events', link: '/resources/events' },
       { label: title },
     ];
   }
@@ -273,4 +536,31 @@ export default class EventDetail implements OnInit, OnDestroy {
       setTimeout(() => this.linkCopied.set(false), 2000);
     }).catch(() => { });
   }
+
+  private fetchEventsContentFromGraphql() {
+    type GraphqlResponse = {
+      data?: { eventsContent?: { content?: string | null } | null } | null;
+      errors?: unknown;
+    };
+
+    const query = `
+      query EventsContent {
+        eventsContent {
+          content
+        }
+      }
+    `;
+
+    return this.http.post<GraphqlResponse>('/api/graphql', { query }).pipe(
+      switchMap((res) => {
+        const raw = res?.data?.eventsContent?.content;
+        if (!raw) {
+          throw new Error('Missing eventsContent.content');
+        }
+        const parsed = JSON.parse(raw) as EventsContent;
+        return of(parsed);
+      })
+    );
+  }
+
 }
