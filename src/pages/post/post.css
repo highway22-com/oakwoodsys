@@ -303,7 +303,8 @@
 
 .post-contact-form input::placeholder,
 .post-contact-form textarea::placeholder {
-  color: rgb(107 114 128); /* gray-500 */
+  color: rgb(107 114 128);
+  /* gray-500 */
 }
 
 .post-contact-form input::-webkit-input-placeholder,

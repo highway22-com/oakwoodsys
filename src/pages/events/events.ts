@@ -9,27 +9,31 @@ import { SeoMetaService } from '../../app/services/seo-meta.service';
 
 export interface EventItem {
   slug: string;
-  status: 'upcoming' | 'past';
-  statusLabel: string;
+  status?: string;
   type: 'online' | 'in-person';
-  badgeMonth: string;
-  badgeDay: string;
   tag: string;
   title: string;
   summary: string;
   imageUrl: string;
   imageAlt: string;
   location: string;
-  eventDate: string;
-  eventTime: string;
+  eventStartISO?: string;
+  eventEndISO?: string;
+  eventTimeZone?: string;
+  durationMinutes?: number;
   registerLink: string;
   heroVideoUrls: string[];
   heroImage: string;
   subtitle: string;
   overview: string;
-  learnings: string[];
-  aboutSession: string;
-  speakers: { name: string; role: string; bio: string; imageUrl: string }[];
+  speakers: {
+    name: string;
+    slug?: string;
+    role: string;
+    description?: string;
+    bio: string;
+    imageUrl: string;
+  }[];
 }
 
 export interface EventsContent {
@@ -39,6 +43,35 @@ export interface EventsContent {
   pastEventsSection: { eyebrow: string; title: string; description: string };
   ctaSection: { title: string; description: string; primaryText: string; primaryLink: string };
   events: Record<string, EventItem>;
+}
+
+/** Instantánea de fin del evento para upcoming vs past (compartido con event-detail). */
+export function eventRefEndMs(e: EventItem): number | null {
+  const endRaw = e.eventEndISO?.trim();
+  if (endRaw) {
+    const t = Date.parse(endRaw);
+    if (Number.isFinite(t)) return t;
+  }
+  const startRaw = e.eventStartISO?.trim();
+  if (!startRaw) return null;
+  const startMs = Date.parse(startRaw);
+  if (!Number.isFinite(startMs)) return null;
+  const d = e.durationMinutes;
+  if (typeof d === 'number' && d > 0) {
+    return startMs + d * 60_000;
+  }
+  return startMs;
+}
+
+export function eventScheduleBucket(e: EventItem, nowMs: number): 'past' | 'upcoming' | null {
+  const endMs = eventRefEndMs(e);
+  if (endMs !== null) {
+    return endMs < nowMs ? 'past' : 'upcoming';
+  }
+  const s = e.status?.trim().toLowerCase();
+  if (s === 'past') return 'past';
+  if (s === 'upcoming' || s === 'in progress' || s === 'in_progress') return 'upcoming';
+  return null;
 }
 
 @Component({
@@ -244,32 +277,69 @@ export default class Events implements OnInit {
       this.isMobileView.set(window.innerWidth < this.mobileBreakpoint);
     }
 
+    this.fetchEventsContentFromGraphql();
+  }
+
+  private fetchEventsContentFromGraphql(): void {
+    type GraphqlResponse = {
+      data?: { eventsContent?: { content?: string | null } | null } | null;
+      errors?: unknown;
+    };
+
+    const query = `
+      query EventsContent {
+        eventsContent {
+          content
+        }
+      }
+    `;
+
+    this.http
+      .post<GraphqlResponse>('/api/graphql', { query })
+      .pipe(take(1))
+      .subscribe({
+        next: (res) => {
+          const raw = res?.data?.eventsContent?.content;
+          if (raw) {
+            try {
+              const data = JSON.parse(raw) as EventsContent;
+              if (data?.events && typeof data.events === 'object') {
+                this.applyEventsPartition(data);
+                this.loading.set(false);
+                return;
+              }
+            } catch {
+            }
+          }
+          this.loadEventsContentFallback();
+        },
+        error: () => this.loadEventsContentFallback(),
+      });
+  }
+
+  private loadEventsContentFallback(): void {
     this.http
       .get<EventsContent>('/events-content.json')
       .pipe(take(1))
       .subscribe({
         next: (data) => {
-          this.content.set(data);
-          const all = Object.values(data.events);
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          this.upcomingEvents.set(
-            all.filter((e) => {
-              const d = new Date(e.eventDate);
-              return !isNaN(d.getTime()) ? d >= today : e.status === 'upcoming';
-            })
-          );
-          this.pastEvents.set(
-            all.filter((e) => {
-              const d = new Date(e.eventDate);
-              return !isNaN(d.getTime()) ? d < today : e.status === 'past';
-            })
-          );
-          this.goToPastPage(0);
+          if (data?.events && typeof data.events === 'object') {
+            this.applyEventsPartition(data);
+          }
           this.loading.set(false);
         },
         error: () => this.loading.set(false),
       });
+  }
+
+  private applyEventsPartition(data: EventsContent): void {
+    this.content.set(data);
+    const all = Object.values(data.events) as EventItem[];
+    const nowMs = Date.now();
+
+    this.upcomingEvents.set(all.filter((e) => eventScheduleBucket(e, nowMs) === 'upcoming'));
+    this.pastEvents.set(all.filter((e) => eventScheduleBucket(e, nowMs) === 'past'));
+    this.goToPastPage(0);
   }
 
   trackBySlug(_: number, event: EventItem): string {
@@ -282,7 +352,7 @@ export default class Events implements OnInit {
 
   private getShareUrl(): string {
     const base = this.seoMeta.baseUrl.replace(/\/$/, '');
-    return `${base}/events`;
+    return `${base}/resources/events`;
   }
 
   getFacebookShareUrl(): string {
