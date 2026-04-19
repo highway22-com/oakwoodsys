@@ -1,5 +1,36 @@
-<ng-container *ngIf="content() as c">
-  <section class="w-full bg-[#F7F9FC]">
+@if (loading()) {
+<section class="min-h-screen w-full bg-[#F7F9FC]" role="status" aria-live="polite">
+  <span class="sr-only">Loading events</span>
+  <div class="flex min-h-[50vh] w-full animate-pulse items-end bg-[#0D53A2]/30 px-4 pb-16 sm:px-8 md:px-12">
+    <div class="w-full max-w-3xl space-y-4">
+      <div class="h-4 w-32 rounded bg-white/40"></div>
+      <div class="h-10 w-full max-w-xl rounded bg-white/50 sm:h-12"></div>
+      <div class="h-4 max-w-lg rounded bg-white/35"></div>
+      <div class="h-4 max-w-md rounded bg-white/35"></div>
+    </div>
+  </div>
+  <div class="bg-[#F2F8FD] px-4 py-12 sm:px-6 sm:py-16 md:px-8 md:py-20 lg:px-24">
+    <div class="mx-auto mb-10 flex max-w-6xl flex-col items-center space-y-3 sm:mb-12">
+      <div class="h-5 w-40 animate-pulse rounded bg-gray-200"></div>
+      <div class="h-9 w-full max-w-md animate-pulse rounded bg-gray-200 sm:h-11"></div>
+      <div class="h-4 w-full max-w-2xl animate-pulse rounded bg-gray-200"></div>
+    </div>
+    <div class="mx-auto grid max-w-6xl grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 xl:grid-cols-3">
+      @for (sk of [1, 2, 3, 4, 5, 6]; track sk) {
+      <div class="animate-pulse overflow-hidden rounded border border-gray-200 bg-white">
+        <div class="aspect-video bg-gray-200"></div>
+        <div class="space-y-3 p-5">
+          <div class="h-7 w-28 rounded-full bg-gray-200"></div>
+          <div class="h-6 rounded bg-gray-200"></div>
+          <div class="h-4 w-full max-w-[90%] rounded bg-gray-200"></div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</section>
+} @else if (content(); as c) {
+<section class="w-full bg-[#F7F9FC]">
 
     <!-- Hero -->
     <app-video-hero [loading]="false" [hvh70]="true" [videoUrls]="c.hero.heroVideoUrls || []"
@@ -60,25 +91,24 @@
         <ng-container *ngIf="hasUpcomingEvents()">
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8">
             <app-event-card *ngFor="let event of upcomingEvents(); trackBy: trackBySlug" [slug]="event.slug"
-              [linkBase]="'/resources/events'" [imageUrl]="event.imageUrl" [imageAlt]="event.imageAlt"
-              [badgeMonth]="event.badgeMonth" [badgeDay]="event.badgeDay" [tag]="event.tag" [statusType]="event.type"
-              [location]="event.location" [eventDate]="event.eventDate" [eventTime]="event.eventTime"
+              [linkBase]="'/resources/events'" [imageUrl]="event.imageUrl" [imageAlt]="event.imageAlt" [tag]="event.tag"
+              [statusType]="event.type" [location]="event.location" [eventStartISO]="event.eventStartISO ?? null"
+              [eventEndISO]="event.eventEndISO ?? null" [durationMinutes]="event.durationMinutes ?? null"
               [title]="event.title" [readMoreText]="'View Event'"></app-event-card>
           </div>
         </ng-container>
 
-
       </div>
     </section>
+
     <div class="px-4 sm:px-6 md:px-8 lg:px-10 bg-[#FFFFFF]">
       <app-cta-section [title]="c.ctaSection.title" [description]="c.ctaSection.description"
         [primaryText]="c.ctaSection.primaryText" [primaryLink]="c.ctaSection.primaryLink"></app-cta-section>
     </div>
 
 
-
     <!-- Past Events -->
-    <section id="past-events" class="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-white" *ngIf="false">
+    <section id="past-events" class="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-white" *ngIf="hasPastEvents()">
       <div class="px-4 sm:px-6 md:px-8 lg:px-24">
         <div class="max-w-6xl mx-auto text-center mb-10 sm:mb-12">
           <p class="text-[18px] font-['Inter'] font-semibold leading-[150%] uppercase text-[#2A7EBF] text-center mb-3">
@@ -100,9 +130,10 @@
                 <ng-container *ngFor="let event of slide; trackBy: trackBySlideItem">
                   <app-event-card *ngIf="event; else emptyCardSlot" class="h-full" [slug]="event.slug"
                     [linkBase]="'/resources/events'" [imageUrl]="event.imageUrl" [imageAlt]="event.imageAlt"
-                    [badgeMonth]="event.badgeMonth" [badgeDay]="event.badgeDay" [tag]="event.tag"
-                    [statusType]="event.type" [location]="event.location" [eventDate]="event.eventDate"
-                    [eventTime]="event.eventTime" [title]="event.title" [readMoreText]="'View Event'"></app-event-card>
+                    [tag]="event.tag" [statusType]="event.type" [location]="event.location"
+                    [eventStartISO]="event.eventStartISO ?? null" [eventEndISO]="event.eventEndISO ?? null"
+                    [durationMinutes]="event.durationMinutes ?? null" [title]="event.title"
+                    [readMoreText]="'View Event'"></app-event-card>
                   <ng-template #emptyCardSlot>
                     <div class="hidden lg:block"></div>
                   </ng-template>
@@ -126,4 +157,4 @@
 
 
   </section>
-</ng-container>
+}

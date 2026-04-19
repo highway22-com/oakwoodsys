@@ -6,8 +6,8 @@
 .event-breadcrumbs a,
 .event-breadcrumbs li,
 .event-breadcrumbs span {
-  color: var(--White, #FFF);
-  text-align: center;
+  color: var(--color-s-600, #5d5d5d);
+  text-align: left;
   font-family: Inter, sans-serif;
   font-size: var(--Text-Sizes-Text-Small, 14px);
   font-style: normal;
@@ -17,4 +17,21 @@
 
 .event-breadcrumbs a {
   color: inherit;
+  text-decoration: none;
+}
+
+.event-breadcrumbs a:hover {
+  color: var(--color-p-500, #2a7ebf);
+}
+
+.event-breadcrumbs.event-breadcrumbs--inverse,
+.event-breadcrumbs.event-breadcrumbs--inverse a,
+.event-breadcrumbs.event-breadcrumbs--inverse li,
+.event-breadcrumbs.event-breadcrumbs--inverse span {
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+}
+
+.event-breadcrumbs.event-breadcrumbs--inverse a:hover {
+  color: #fff;
 }

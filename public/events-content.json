@@ -52,12 +52,6 @@
       "heroImage": "/assets/structured-data-ai.jpg",
       "subtitle": "How Microsoft tools and innovation are unlocking cloud-scale HPC to accelerate discovery.",
       "overview": "Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.",
-      "learnings": [
-        "Build secure, scalable HPC environments in Azure.",
-        "Understand workload scheduling, storage, and networking options.",
-        "Apply cost optimization and operational best practices."
-      ],
-      "aboutSession": "This session is designed for technology leaders, architects, and researchers looking to modernize compute-intensive workloads.",
       "speakers": [
         {
           "name": "Mark Chapman",
@@ -83,9 +77,12 @@
           "bio": "How smart tech is changing our daily routines",
           "imageUrl": "/assets/people/jeff.png"
         }
-      ]
+      ],
+      "eventTimeZone": "America/Chicago",
+      "eventStartISO": "2026-04-01T12:00:00-05:00",
+      "eventEndISO": "2026-04-01T14:00:00-05:00"
     },
-       "azure-hpc-education-webinar-1": {
+    "azure-hpc-education-webinar-1": {
       "slug": "azure-hpc-education-webinar",
       "status": "upcoming",
       "statusLabel": "In Progress",
@@ -107,12 +104,6 @@
       "heroImage": "/assets/structured-data-ai.jpg",
       "subtitle": "How Microsoft tools and innovation are unlocking cloud-scale HPC to accelerate discovery.",
       "overview": "Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.",
-      "learnings": [
-        "Build secure, scalable HPC environments in Azure.",
-        "Understand workload scheduling, storage, and networking options.",
-        "Apply cost optimization and operational best practices."
-      ],
-      "aboutSession": "This session is designed for technology leaders, architects, and researchers looking to modernize compute-intensive workloads.",
       "speakers": [
         {
           "name": "Mark Chapman",
@@ -138,9 +129,12 @@
           "bio": "How smart tech is changing our daily routines",
           "imageUrl": "/assets/people/jeff.png"
         }
-      ]
+      ],
+      "eventTimeZone": "America/Chicago",
+      "eventStartISO": "2026-04-01T12:00:00-05:00",
+      "eventEndISO": "2026-04-01T14:00:00-05:00"
     },
-       "azure-hpc-education-webinar-3": {
+    "azure-hpc-education-webinar-3": {
       "slug": "azure-hpc-education-webinar",
       "status": "upcoming",
       "statusLabel": "In Progress",
@@ -162,12 +156,6 @@
       "heroImage": "/assets/structured-data-ai.jpg",
       "subtitle": "How Microsoft tools and innovation are unlocking cloud-scale HPC to accelerate discovery.",
       "overview": "Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.",
-      "learnings": [
-        "Build secure, scalable HPC environments in Azure.",
-        "Understand workload scheduling, storage, and networking options.",
-        "Apply cost optimization and operational best practices."
-      ],
-      "aboutSession": "This session is designed for technology leaders, architects, and researchers looking to modernize compute-intensive workloads.",
       "speakers": [
         {
           "name": "Mark Chapman",
@@ -193,9 +181,12 @@
           "bio": "How smart tech is changing our daily routines",
           "imageUrl": "/assets/people/jeff.png"
         }
-      ]
+      ],
+      "eventTimeZone": "America/Chicago",
+      "eventStartISO": "2026-04-01T12:00:00-05:00",
+      "eventEndISO": "2026-04-01T14:00:00-05:00"
     },
-       "azure-hpc-education-webinar-4": {
+    "azure-hpc-education-webinar-4": {
       "slug": "azure-hpc-education-webinar",
       "status": "upcoming",
       "statusLabel": "In Progress",
@@ -217,12 +208,6 @@
       "heroImage": "/assets/structured-data-ai.jpg",
       "subtitle": "How Microsoft tools and innovation are unlocking cloud-scale HPC to accelerate discovery.",
       "overview": "Join Oakwood and Microsoft for a practical walkthrough of modern HPC patterns on Azure for research and education teams.",
-      "learnings": [
-        "Build secure, scalable HPC environments in Azure.",
-        "Understand workload scheduling, storage, and networking options.",
-        "Apply cost optimization and operational best practices."
-      ],
-      "aboutSession": "This session is designed for technology leaders, architects, and researchers looking to modernize compute-intensive workloads.",
       "speakers": [
         {
           "name": "Mark Chapman",
@@ -248,7 +233,10 @@
           "bio": "How smart tech is changing our daily routines",
           "imageUrl": "/assets/people/jeff.png"
         }
-      ]
+      ],
+      "eventTimeZone": "America/Chicago",
+      "eventStartISO": "2026-04-01T12:00:00-05:00",
+      "eventEndISO": "2026-04-01T14:00:00-05:00"
     },
     "manufacturers-modernize-webinar": {
       "slug": "manufacturers-modernize-webinar",
@@ -272,12 +260,6 @@
       "heroImage": "/assets/structured-application-innovation.png",
       "subtitle": "A practical roadmap to modern platforms, data, and AI for manufacturing teams.",
       "overview": "Learn how manufacturers are reducing downtime, improving quality, and increasing throughput using cloud-native operations.",
-      "learnings": [
-        "Prioritize modernization initiatives with clear ROI.",
-        "Connect production data for real-time visibility.",
-        "Enable predictive maintenance with AI and analytics."
-      ],
-      "aboutSession": "A focused session for operations leaders and IT teams navigating legacy constraints while scaling innovation.",
       "speakers": [
         {
           "name": "Mark Chapman",
@@ -303,7 +285,10 @@
           "bio": "How smart tech is changing our daily routines",
           "imageUrl": "/assets/people/jeff.png"
         }
-      ]
+      ],
+      "eventTimeZone": "America/Chicago",
+      "eventStartISO": "2026-04-01T12:00:00-05:00",
+      "eventEndISO": "2026-04-01T14:00:00-05:00"
     },
     "high-performance-computing-webinar": {
       "slug": "high-performance-computing-webinar",
@@ -327,12 +312,6 @@
       "heroImage": "/assets/structured-high-performance.png",
       "subtitle": "Best practices for secure, high-throughput HPC deployments in Azure.",
       "overview": "Understand the architecture decisions required for modern HPC, from networking and storage to orchestration and governance.",
-      "learnings": [
-        "Select the right compute profiles for workload patterns.",
-        "Design for performance, resilience, and observability.",
-        "Accelerate adoption with a phased migration approach."
-      ],
-      "aboutSession": "Ideal for enterprise architects and platform teams building next-generation compute capabilities.",
       "speakers": [
         {
           "name": "Mark Chapman",
@@ -358,7 +337,10 @@
           "bio": "How smart tech is changing our daily routines",
           "imageUrl": "/assets/people/jeff.png"
         }
-      ]
+      ],
+      "eventTimeZone": "America/Chicago",
+      "eventStartISO": "2026-04-01T12:00:00-05:00",
+      "eventEndISO": "2026-04-01T14:00:00-05:00"
     }
   }
 }

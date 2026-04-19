@@ -1,8 +1,6 @@
 /
 /blog
 /resources/case-studies
-/blog/sql-server-on-azure-modernizing-the-data-layer-that-runs-your-business
-/blog/windows-server-on-azure-moving-beyond-migration-to-real-modernization
 /blog/oakwood-systems-group-achieves-microsoft-advanced-specialization-for-ai-applications-on-azure
 /blog/oakwood-recognized-by-microsoft-for-excellence-in-support-services
 /blog/azure-for-ai-ready-data
@@ -22,7 +20,6 @@
 /blog/microsoft-365-price-increases-coming-july-2026
 /blog/unify-your-data-estate-for-ai
 /blog/the-key-to-a-secure-cloud-migration
-/resources/case-studies/managed-services-for-manufacturing
 /resources/case-studies/sharepoint-online-intranet-modernization
 /resources/case-studies/power-bi-report-development
 /resources/case-studies/strategic-applications-architecture-roadmap
@@ -32,20 +29,8 @@
 /resources/case-studies/microsoft-intune-deployment
 /resources/case-studies/simplifying-complex-data-security-with-fabric
 /resources/case-studies/transforming-hpc-strategy-with-the-amd-hpc-innovation-lab
-/resources/case-studies/revolutionizing-automotive-service-equipment-with-iot-integration
-/resources/case-studies/tenant-to-tenant-azure-migration
-/resources/case-studies/high-performance-computing-poc-in-azure
-/resources/case-studies/secure-data-integration-with-microsoft-fabric
-/resources/case-studies/microsoft-fabric-consulting
-/resources/case-studies/azure-environment-restructure
-/resources/case-studies/azure-infrastructure-migration
-/resources/case-studies/application-modernization-for-wrap-up-insurance-solutions
 /resources/case-studies/secure-azure-research-environment-architecture
 /resources/case-studies/enterprise-reporting-and-data-roadmap-development
-/resources/case-studies/azure-high-performance-computing-environment
-/resources/case-studies/enhancing-rdms-system-with-azure-blob-storage
-/resources/case-studies/building-a-high-availability-azure-environment-for-hpc-at-scale
-/resources/case-studies/transforming-electronic-design-automation-in-manufacturing
 /industries/healthcare
 /industries/manufacturing
 /industries/education
