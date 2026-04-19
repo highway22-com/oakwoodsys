@@ -30,12 +30,13 @@ import { StructuredOffer, StructuredOfferPageConfig } from '../structured-offer/
 import Home from '../home/home';
 import AboutUs, { type AboutContent } from '../about-us/about-us';
 import { ContactUs } from '../contact-us/contact-us';
+import PrivacyAndPolicy from '../privacyAndPolicy/privacyAndPolicy';
 import type { CmsPageContent } from '../../app/api/graphql';
 import { EditorComponent } from 'ngx-monaco-editor-v2';
 
 @Component({
   selector: 'app-edit-page',
-  imports: [CommonModule, RouterLink, FormsModule, Footer, AppNavbar, Industries, Services, StructuredEngagementsSectionComponent, Structured, StructuredOffer, Home, AboutUs, ContactUs, EditorComponent],
+  imports: [CommonModule, RouterLink, FormsModule, Footer, AppNavbar, Industries, Services, StructuredEngagementsSectionComponent, Structured, StructuredOffer, Home, AboutUs, ContactUs, PrivacyAndPolicy, EditorComponent],
   templateUrl: './edit-page.html',
   styleUrl: './edit-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -338,6 +339,15 @@ export default class EditPage implements OnInit {
     }
   });
 
+  readonly parsedPrivacyPolicyData = computed(() => {
+    if (this.slug() !== 'privacy-policy') return null;
+    try {
+      return JSON.parse(this.jsonContentStr() || '{}');
+    } catch {
+      return null;
+    }
+  });
+
   readonly structuredOfferSlugs = computed(() => {
     const cfg = this.parsedStructuredOfferPageData();
     return Object.entries(cfg?.offers ?? {})
@@ -392,6 +402,7 @@ export default class EditPage implements OnInit {
     'structured-engagement-offer-page': 'Structured Offer Page',
     about: 'About',
     'contact-us': 'Contact Us',
+    'privacy-policy': 'Privacy Policy',
   };
 
   /** Slugs de servicios para el selector en /edit/services */
@@ -485,6 +496,21 @@ export default class EditPage implements OnInit {
           this.loading.set(false);
         },
         error: () => this.loadEditPageFromStatic(slug, '/navbar-content.json'),
+      });
+      return;
+    }
+
+    if (slug === 'privacy-policy') {
+      this.graphql.getCmsPageBySlug('privacy-policy', { fetchPolicy: 'network-only' }).subscribe({
+        next: (data) => {
+          if (data) {
+            this.jsonContentStr.set(JSON.stringify(data, null, 2));
+            this.loading.set(false);
+            return;
+          }
+          this.loadEditPageFromStatic(slug, '/privacy-policy-content.json');
+        },
+        error: () => this.loadEditPageFromStatic(slug, '/privacy-policy-content.json'),
       });
       return;
     }
