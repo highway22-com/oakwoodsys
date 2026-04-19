@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
 
 @Component({
   selector: 'app-scroll-animation',
@@ -6,7 +6,12 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
   templateUrl: './scroll-animation.component.html',
   styleUrls: ['./scroll-animation.component.css']
 })
-export class ScrollAnimationComponent implements OnChanges {
+export class ScrollAnimationComponent implements OnChanges, AfterViewInit {
+    ngAfterViewInit() {
+      setTimeout(() => {
+        this.isVisible = true;
+      }, 200);
+    }
   @Input() isVisible = false;
   reverse = false;
 

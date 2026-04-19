@@ -19,13 +19,12 @@ export class EventCardComponent {
   readonly linkBase = input<string>('/resources/events');
   readonly imageUrl = input<string>('');
   readonly imageAlt = input<string>('Event card image');
-  readonly badgeMonth = input<string>('');
-  readonly badgeDay = input<string>('');
   readonly tag = input<string | null>(null);
   readonly statusType = input<'online' | 'in-person'>('online');
   readonly location = input<string>('');
-  readonly eventDate = input<string>('');
-  readonly eventTime = input<string>('');
+  readonly eventStartISO = input<string | null>(null);
+  readonly eventEndISO = input<string | null>(null);
+  readonly durationMinutes = input<number | null>(null);
   readonly title = input<string>('');
   readonly excerptHtml = input<SafeHtml | null>(null);
   readonly authorDisplayName = input<string | null>(null);
@@ -38,4 +37,103 @@ export class EventCardComponent {
   readonly effectiveImageUrl = () => this.imageUrl() || this.defaultImageUrl;
   readonly statusIconUrl = () =>
     this.statusType() === 'in-person' ? '/assets/events/in-person.png' : '/assets/events/online.png';
+
+  private parseIsoDate(iso: string | null | undefined): Date | null {
+    if (!iso) return null;
+    const d = new Date(iso);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  private viewerTimeZoneId(): string | undefined {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch {
+      return undefined;
+    }
+  }
+
+  private calendarDayKey(d: Date): string {
+    const tz = this.viewerTimeZoneId();
+    if (!tz) {
+      return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    }
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: tz,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(d);
+  }
+
+  private dateFmtOpts(): Intl.DateTimeFormatOptions {
+    const tz = this.viewerTimeZoneId();
+    const base: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+    return tz ? { ...base, timeZone: tz } : base;
+  }
+
+  private timeFmtOpts(): Intl.DateTimeFormatOptions {
+    const tz = this.viewerTimeZoneId();
+    const base: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: '2-digit', timeZoneName: 'shortGeneric' };
+    return tz ? { ...base, timeZone: tz } : base;
+  }
+
+  readonly formattedDate = () => {
+    const start = this.parseIsoDate(this.eventStartISO());
+    if (!start) return null;
+
+    const dateFmt = new Intl.DateTimeFormat(undefined, this.dateFmtOpts());
+
+    const endIso = this.eventEndISO();
+    const end = this.parseIsoDate(endIso);
+    if (!end || this.calendarDayKey(start) === this.calendarDayKey(end)) {
+      return dateFmt.format(start);
+    }
+
+    const startFmt = new Intl.DateTimeFormat(undefined, {
+      ...this.dateFmtOpts(),
+      month: 'short',
+      day: 'numeric',
+    }).format(start);
+    const endFmt = dateFmt.format(end);
+    return `${startFmt} – ${endFmt}`;
+  };
+
+  readonly formattedTime = () => {
+    const start = this.parseIsoDate(this.eventStartISO());
+    if (!start) return null;
+
+    const timeFmt = new Intl.DateTimeFormat(undefined, this.timeFmtOpts());
+
+    const end = this.parseIsoDate(this.eventEndISO());
+    if (!end) {
+      return timeFmt.format(start);
+    }
+
+    return `${timeFmt.format(start)} – ${timeFmt.format(end)}`;
+  };
+
+  readonly formattedDuration = () => {
+    const minutes = this.durationMinutes();
+    if (minutes === null || minutes === undefined) return null;
+    if (!Number.isFinite(minutes) || minutes <= 0) return null;
+
+    const hrs = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+
+    if (hrs <= 0) return `${minutes}m`;
+    if (mins === 0) return `${hrs}h`;
+    return `${hrs}h ${mins}m`;
+  };
+
+  /** Texto del badge (esquina imagen): mes largo y día del mes según `eventStartISO` y zona del visitante. */
+  readonly eventBadge = (): { month: string; day: string } | null => {
+    const start = this.parseIsoDate(this.eventStartISO());
+    if (!start) return null;
+    const tz = this.viewerTimeZoneId();
+    const tzOpts = tz ? ({ timeZone: tz } as const) : {};
+    const monthRaw = new Intl.DateTimeFormat('es', { month: 'long', ...tzOpts }).format(start);
+    const month = monthRaw.charAt(0).toUpperCase() + monthRaw.slice(1);
+    const day = new Intl.DateTimeFormat('es', { day: 'numeric', ...tzOpts }).format(start);
+    return { month, day };
+  };
 }
