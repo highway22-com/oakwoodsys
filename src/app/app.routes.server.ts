@@ -2,7 +2,7 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-function getPrerenderSlugs(): { blog: string[]; caseStudy: string[] } {
+function getPrerenderSlugs(): { blog: string[]; caseStudy: string[]; events: string[] } {
   try {
     const path = join(process.cwd(), 'prerender-slugs.json');
     const raw = readFileSync(path, 'utf8');
@@ -10,9 +10,10 @@ function getPrerenderSlugs(): { blog: string[]; caseStudy: string[] } {
     return {
       blog: Array.isArray(data?.blog) ? data.blog : [],
       caseStudy: Array.isArray(data?.caseStudy) ? data.caseStudy : [],
+      events: Array.isArray(data?.events) ? data.events : [],
     };
   } catch {
-    return { blog: [], caseStudy: [] };
+    return { blog: [], caseStudy: [], events: [] };
   }
 }
 
@@ -33,7 +34,8 @@ export const serverRoutes: ServerRoute[] = [
   },
   {
     path: 'resources/events/:slug',
-    renderMode: RenderMode.Server,
+    renderMode: RenderMode.Prerender,
+    getPrerenderParams: async () => getPrerenderSlugs().events.map((slug) => ({ slug })),
   },
   {
     path: 'industries/:slug',
@@ -62,11 +64,3 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
   },
 ];
-/**
-/services/data-ai-solutions
-/services/cloud-and-infrastructure
-/services/application-innovation
-/services/high-performance-computing-hpc
-/services/modern-work
-/services/managed-services
- */

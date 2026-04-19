@@ -2,8 +2,10 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, inject, signal, computed, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { switchMap } from 'rxjs/operators';
-import { Subscription, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
+import { Subscription, of, throwError } from 'rxjs';
+import { CMS_BASE_URL } from '../../app/config/cms.config';
+import { serverSitePublicUrl } from '../../app/config/site-public.config';
 import { DomSanitizer, type SafeHtml, type SafeResourceUrl } from '@angular/platform-browser';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { EventsContent, EventItem, eventRefEndMs, eventScheduleBucket } from '../events/events';
@@ -393,7 +395,7 @@ export default class EventDetail implements OnInit, OnDestroy {
           this.event.set(null);
           this.pastEvents.set([]);
           this.goToPastPage(0);
-          return this.fetchEventsContentFromGraphql().pipe(
+          return this.fetchEventsContent(slug).pipe(
             switchMap((data) => {
               const current = data.events[slug] ?? null;
               this.event.set(current);
@@ -419,12 +421,18 @@ export default class EventDetail implements OnInit, OnDestroy {
               this.goToPastPage(0);
               this.updateEventSeoMeta(current, slug);
               this.loading.set(false);
-              return [];
-            })
+              return of(null);
+            }),
+            catchError(() => {
+              this.event.set(null);
+              this.updateEventSeoMeta(null, slug);
+              this.loading.set(false);
+              return of(null);
+            }),
           );
         })
       )
-      .subscribe({ error: () => this.loading.set(false) });
+      .subscribe();
   }
 
   private updateEventSeoMeta(e: EventItem | null, _slug: string): void {
@@ -537,7 +545,23 @@ export default class EventDetail implements OnInit, OnDestroy {
     }).catch(() => { });
   }
 
-  private fetchEventsContentFromGraphql() {
+  private eventsContentJsonUrl(): string {
+    return isPlatformBrowser(this.platformId)
+      ? '/events-content.json'
+      : `${serverSitePublicUrl()}/events-content.json`;
+  }
+
+  private fetchEventsContent(slug: string) {
+    return this.postEventsGraphql().pipe(
+      switchMap((data) => {
+        if (data?.events?.[slug]) return of(data);
+        return throwError(() => new Error('Event slug not in GraphQL payload'));
+      }),
+      catchError(() => this.http.get<EventsContent>(this.eventsContentJsonUrl())),
+    );
+  }
+
+  private postEventsGraphql() {
     type GraphqlResponse = {
       data?: { eventsContent?: { content?: string | null } | null } | null;
       errors?: unknown;
@@ -551,15 +575,26 @@ export default class EventDetail implements OnInit, OnDestroy {
       }
     `;
 
-    return this.http.post<GraphqlResponse>('/api/graphql', { query }).pipe(
+    const url = isPlatformBrowser(this.platformId)
+      ? '/api/graphql'
+      : `${CMS_BASE_URL}/graphql`;
+
+    return this.http.post<GraphqlResponse>(url, { query }).pipe(
       switchMap((res) => {
         const raw = res?.data?.eventsContent?.content;
         if (!raw) {
-          throw new Error('Missing eventsContent.content');
+          return throwError(() => new Error('Missing eventsContent.content'));
         }
-        const parsed = JSON.parse(raw) as EventsContent;
-        return of(parsed);
-      })
+        try {
+          const parsed = JSON.parse(raw) as EventsContent;
+          if (parsed?.events && typeof parsed.events === 'object') {
+            return of(parsed);
+          }
+        } catch {
+          /* invalid JSON */
+        }
+        return throwError(() => new Error('Invalid events content'));
+      }),
     );
   }
 

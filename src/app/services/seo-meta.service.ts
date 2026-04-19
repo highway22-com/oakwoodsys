@@ -1,5 +1,8 @@
-import { inject, Injectable, DOCUMENT, isDevMode } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { inject, Injectable, DOCUMENT, isDevMode, PLATFORM_ID } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
+
+import { serverSitePublicUrl } from '../config/site-public.config';
 
 export interface SeoMetaConfig {
   /** Título de la página (para <title> y og:title) */
@@ -26,11 +29,9 @@ export interface SeoMetaConfig {
   keyphrase?: string;
 }
 
-const BASE_URL = 'https://oakwoodsys.com';
 const DEFAULT_TITLE = 'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
 const DEFAULT_DESCRIPTION = 'As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.';
 const DEFAULT_KEYWORDS = 'Microsoft Solutions Partner, Azure Consulting, Azure Cloud services, St. Louis, Kansas City, cloud migration, Data & AI, Microsoft 365, Power BI, Azure Synapse, digital transformation, managed IT services';
-const DEFAULT_OG_IMAGE = 'https://oakwoodsys.com/assets/og-image.png';
 
 /** Longitud recomendada para meta description (Google ~155 chars). */
 const META_DESCRIPTION_MAX_LENGTH = 155;
@@ -67,19 +68,37 @@ export class SeoMetaService {
   private readonly titleService = inject(Title);
   private readonly metaService = inject(Meta);
   private readonly document = inject(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
+
+  /** URL pública del sitio (og:url, canonical, compartir). Browser: `location.origin`. SSR: opcional `SITE_PUBLIC_URL` en Netlify. */
+  private resolvePublicBaseUrl(): string {
+    if (isPlatformBrowser(this.platformId)) {
+      const origin = this.document.defaultView?.location?.origin?.replace(/\/$/, '');
+      if (origin && /^https?:\/\//i.test(origin)) return origin;
+    }
+    return serverSitePublicUrl();
+  }
+
+  get baseUrl(): string {
+    return this.resolvePublicBaseUrl();
+  }
 
   /**
    * Actualiza título, meta tags, Open Graph y Twitter Cards.
    * Usar en ngOnInit o cuando cambie el contenido de la página.
    */
   updateMeta(config: SeoMetaConfig): void {
+    const publicBase = this.resolvePublicBaseUrl();
     const title = config.title || DEFAULT_TITLE;
     const rawDescription = config.description || DEFAULT_DESCRIPTION;
     const description = normalizeMetaDescription(rawDescription, config.keyphrase);
     const keywords = config.keywords ?? DEFAULT_KEYWORDS;
     const canonicalPath = config.canonicalPath ?? '/';
-    const canonicalUrl = canonicalPath.startsWith('http') ? canonicalPath : `${BASE_URL}${canonicalPath.startsWith('/') ? '' : '/'}${canonicalPath}`;
-    const image = config.image ?? DEFAULT_OG_IMAGE;
+    const canonicalUrl = canonicalPath.startsWith('http')
+      ? canonicalPath
+      : `${publicBase}${canonicalPath.startsWith('/') ? '' : '/'}${canonicalPath}`;
+    const defaultOgImage = `${publicBase}/assets/og-image.png`;
+    const image = config.image ?? defaultOgImage;
     const imageAlt = config.imageAlt;
     const imageWidth = config.imageWidth ?? 1200;
     const imageHeight = config.imageHeight ?? 675;
@@ -148,7 +167,6 @@ export class SeoMetaService {
   }
 
   /** Constantes para usar en otros componentes */
-  readonly baseUrl = BASE_URL;
   readonly defaultTitle = DEFAULT_TITLE;
   readonly defaultDescription = DEFAULT_DESCRIPTION;
   readonly defaultKeywords = DEFAULT_KEYWORDS;
