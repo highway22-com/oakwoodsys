@@ -406,7 +406,10 @@ readonly section = toSignal(
       this.scheduleClockTimerId = window.setInterval(() => {
         this.scheduleNowMs.set(Date.now());
       }, 30_000) as number;
+    } else {
+      return;
     }
+
     this.routeSub = this.route.paramMap
       .pipe(
         switchMap((params) => {
