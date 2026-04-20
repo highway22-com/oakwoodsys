@@ -3,6 +3,8 @@ import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, inje
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap } from 'rxjs/operators';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs/operators';
 import { Subscription, of, throwError } from 'rxjs';
 import { CMS_BASE_URL } from '../../app/config/cms.config';
 import { serverSitePublicUrl } from '../../app/config/site-public.config';
@@ -80,6 +82,11 @@ export default class EventDetail implements OnInit, OnDestroy {
     }
   }
 
+
+readonly section = toSignal(
+  this.route.queryParamMap.pipe(map(p => p.get('section')))
+);
+
   private dateFmtOpts(): Intl.DateTimeFormatOptions {
     const tz = this.viewerTimeZoneId();
     const base: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -142,7 +149,11 @@ export default class EventDetail implements OnInit, OnDestroy {
 
   readonly overviewHtml = computed((): SafeHtml => {
     const raw = this.event()?.overview ?? '';
-    const html = decodeHtmlEntities(raw);
+    let html = decodeHtmlEntities(raw);
+    // Remove class="wp-block-list" from all <ul> tags
+
+ 
+
     return this.sanitizer.bypassSecurityTrustHtml(html);
   });
 
@@ -178,31 +189,16 @@ export default class EventDetail implements OnInit, OnDestroy {
     const start = new Date(e.eventStartISO);
     if (isNaN(start.getTime())) return null;
 
-    const dateFmt = new Intl.DateTimeFormat(undefined, this.dateFmtOpts());
-
-    const endIso = e.eventEndISO;
-    if (!endIso) {
-      return dateFmt.format(start);
-    }
-
-    const end = new Date(endIso);
-    if (isNaN(end.getTime())) {
-      return dateFmt.format(start);
-    }
-
-    const sameDay = this.calendarDayKeyInViewerZone(start) === this.calendarDayKeyInViewerZone(end);
-
-    if (sameDay) {
-      return dateFmt.format(start);
-    }
-
-    const startFmt = new Intl.DateTimeFormat(undefined, {
-      ...this.dateFmtOpts(),
-      month: 'short',
+    const tz = this.viewerTimeZoneId();
+    const dateFmt = new Intl.DateTimeFormat('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
       day: 'numeric',
-    }).format(start);
-    const endFmt = dateFmt.format(end);
-    return `${startFmt} – ${endFmt}`;
+      ...(tz ? { timeZone: tz } : {}),
+    });
+
+    return dateFmt.format(start);
   });
 
   readonly formattedTime = computed(() => {
@@ -211,18 +207,42 @@ export default class EventDetail implements OnInit, OnDestroy {
     const start = new Date(e.eventStartISO);
     if (isNaN(start.getTime())) return null;
 
-    const timeFmt = new Intl.DateTimeFormat(undefined, this.timeFmtOpts());
+    const tz = this.viewerTimeZoneId();
+    const opts: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      timeZoneName: 'short',
+      ...(tz ? { timeZone: tz } : {}),
+    };
+    const timeFmt = new Intl.DateTimeFormat('en-US', opts);
 
     if (!e.eventEndISO) {
-      return timeFmt.format(start);
+      return timeFmt.format(start).replace(',', '');
     }
 
     const end = new Date(e.eventEndISO);
     if (isNaN(end.getTime())) {
-      return timeFmt.format(start);
+      return timeFmt.format(start).replace(',', '');
     }
 
-    return `${timeFmt.format(start)} – ${timeFmt.format(end)}`;
+    const startParts = timeFmt.formatToParts(start);
+    const endParts = timeFmt.formatToParts(end);
+    const startHour = startParts.find(p => p.type === 'hour')?.value?.padStart(2, '0') ?? '';
+    const startMinute = startParts.find(p => p.type === 'minute')?.value ?? '';
+    const startDayPeriod = startParts.find(p => p.type === 'dayPeriod')?.value ?? '';
+    const endHour = endParts.find(p => p.type === 'hour')?.value?.padStart(2, '0') ?? '';
+    const endMinute = endParts.find(p => p.type === 'minute')?.value ?? '';
+    const endDayPeriod = endParts.find(p => p.type === 'dayPeriod')?.value ?? '';
+    const tzName = startParts.find(p => p.type === 'timeZoneName')?.value ?? '';
+
+    let timeStr = '';
+    if (startDayPeriod === endDayPeriod) {
+      timeStr = `${startHour}:${startMinute} - ${endHour}:${endMinute} ${endDayPeriod} ${tzName}`;
+    } else {
+      timeStr = `${startHour}:${startMinute} ${startDayPeriod} - ${endHour}:${endMinute} ${endDayPeriod} ${tzName}`;
+    }
+    return timeStr.trim();
   });
 
   readonly formattedDuration = computed(() => {
@@ -585,12 +605,14 @@ export default class EventDetail implements OnInit, OnDestroy {
     return this.http.post<GraphqlResponse>(url, { query }).pipe(
       switchMap((res) => {
         const raw = res?.data?.eventsContent?.content;
+       
         if (!raw) {
           return throwError(() => new Error('Missing eventsContent.content'));
         }
         try {
           const parsed = JSON.parse(raw) as EventsContent;
           if (parsed?.events && typeof parsed.events === 'object') {
+             console.log(parsed?.events,"rawrawrawrawrawrawrawrawraw")
             return of(parsed);
           }
         } catch {
