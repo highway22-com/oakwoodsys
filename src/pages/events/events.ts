@@ -275,9 +275,9 @@ export default class Events implements OnInit {
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.isMobileView.set(window.innerWidth < this.mobileBreakpoint);
+      this.fetchEventsContentFromGraphql();
+      return;
     }
-
-    this.fetchEventsContentFromGraphql();
   }
 
   private fetchEventsContentFromGraphql(): void {
