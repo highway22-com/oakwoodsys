@@ -1,3 +1,5 @@
+
+ 
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -13,8 +15,24 @@ import { decodeHtmlEntities } from '../../app/utils/cast';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventCardComponent {
+      // Format duration as HH:mm:ss for past event badge
+      readonly formattedDurationHMS = () => {
+        const minutes = this.durationMinutes();
+        if (minutes === null || minutes === undefined || !Number.isFinite(minutes) || minutes <= 0) return null;
+        const totalSeconds = Math.round(minutes * 60);
+        const hrs = Math.floor(totalSeconds / 3600);
+        const mins = Math.floor((totalSeconds % 3600) / 60);
+        const secs = totalSeconds % 60;
+        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      };
+    // Returns true if the event is in the past
+    readonly isPastEvent = (): boolean => {
+      const end = this.parseIsoDate(this.eventEndISO());
+      if (!end) return false;
+      return end.getTime() < Date.now();
+    };
   readonly decodeHtmlEntities = decodeHtmlEntities;
-
+  readonly queryParams = input<Record<string, any> | undefined>(undefined);
   readonly slug = input.required<string>();
   readonly linkBase = input<string>('/resources/events');
   readonly imageUrl = input<string>('');
@@ -81,35 +99,58 @@ export class EventCardComponent {
     const start = this.parseIsoDate(this.eventStartISO());
     if (!start) return null;
 
-    const dateFmt = new Intl.DateTimeFormat(undefined, this.dateFmtOpts());
-
-    const endIso = this.eventEndISO();
-    const end = this.parseIsoDate(endIso);
-    if (!end || this.calendarDayKey(start) === this.calendarDayKey(end)) {
-      return dateFmt.format(start);
-    }
-
-    const startFmt = new Intl.DateTimeFormat(undefined, {
-      ...this.dateFmtOpts(),
-      month: 'short',
+    const tz = this.viewerTimeZoneId();
+    const dateFmt = new Intl.DateTimeFormat('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
       day: 'numeric',
-    }).format(start);
-    const endFmt = dateFmt.format(end);
-    return `${startFmt} – ${endFmt}`;
+      ...(tz ? { timeZone: tz } : {}),
+    });
+
+    return dateFmt.format(start);
   };
 
   readonly formattedTime = () => {
     const start = this.parseIsoDate(this.eventStartISO());
     if (!start) return null;
 
-    const timeFmt = new Intl.DateTimeFormat(undefined, this.timeFmtOpts());
+    const tz = this.viewerTimeZoneId();
+    const opts: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      timeZoneName: 'short',
+      ...(tz ? { timeZone: tz } : {}),
+    };
+    const timeFmt = new Intl.DateTimeFormat('en-US', opts);
 
     const end = this.parseIsoDate(this.eventEndISO());
     if (!end) {
-      return timeFmt.format(start);
+      // e.g. 12:00 PM EST
+      return timeFmt.format(start).replace(',', '');
     }
 
-    return `${timeFmt.format(start)} – ${timeFmt.format(end)}`;
+    // e.g. 12:00 - 14:00 PM EST
+    // We'll extract the time and timezone separately for formatting
+    const startParts = timeFmt.formatToParts(start);
+    const endParts = timeFmt.formatToParts(end);
+    const startHour = startParts.find(p => p.type === 'hour')?.value?.padStart(2, '0') ?? '';
+    const startMinute = startParts.find(p => p.type === 'minute')?.value ?? '';
+    const startDayPeriod = startParts.find(p => p.type === 'dayPeriod')?.value ?? '';
+    const endHour = endParts.find(p => p.type === 'hour')?.value?.padStart(2, '0') ?? '';
+    const endMinute = endParts.find(p => p.type === 'minute')?.value ?? '';
+    const endDayPeriod = endParts.find(p => p.type === 'dayPeriod')?.value ?? '';
+    const tzName = startParts.find(p => p.type === 'timeZoneName')?.value ?? '';
+
+    // If AM/PM is the same for both, only show once at the end
+    let timeStr = '';
+    if (startDayPeriod === endDayPeriod) {
+      timeStr = `${startHour}:${startMinute} - ${endHour}:${endMinute} ${endDayPeriod} ${tzName}`;
+    } else {
+      timeStr = `${startHour}:${startMinute} ${startDayPeriod} - ${endHour}:${endMinute} ${endDayPeriod} ${tzName}`;
+    }
+    return timeStr.trim();
   };
 
   readonly formattedDuration = () => {
@@ -125,15 +166,16 @@ export class EventCardComponent {
     return `${hrs}h ${mins}m`;
   };
 
-  /** Texto del badge (esquina imagen): mes largo y día del mes según `eventStartISO` y zona del visitante. */
+  /** Badge text (image corner): English full month and day of month from `eventStartISO` and viewer's timezone. */
   readonly eventBadge = (): { month: string; day: string } | null => {
     const start = this.parseIsoDate(this.eventStartISO());
     if (!start) return null;
     const tz = this.viewerTimeZoneId();
     const tzOpts = tz ? ({ timeZone: tz } as const) : {};
-    const monthRaw = new Intl.DateTimeFormat('es', { month: 'long', ...tzOpts }).format(start);
+    // Always use English full month name
+    const monthRaw = new Intl.DateTimeFormat('en', { month: 'long', ...tzOpts }).format(start);
     const month = monthRaw.charAt(0).toUpperCase() + monthRaw.slice(1);
-    const day = new Intl.DateTimeFormat('es', { day: 'numeric', ...tzOpts }).format(start);
+    const day = new Intl.DateTimeFormat('en', { day: 'numeric', ...tzOpts }).format(start);
     return { month, day };
   };
 }
