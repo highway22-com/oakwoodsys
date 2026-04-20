@@ -1,25 +1,36 @@
-<a [routerLink]="[linkBase(), slug()]" [attr.aria-label]="readMoreText() + ' - ' + title()"
+<a [routerLink]="[linkBase(), slug()]"
+
+ [queryParams]="queryParams()"
+[attr.aria-label]="readMoreText() + ' - ' + title()"
     class="event-card group min-w-0 whitespace-normal bg-[#FFFFFF]/80 overflow-hidden transition-shadow duration-300 flex-1 flex flex-col border border-[#D1D1D1] hover:outline-gray-300 hover:outline hover:bg-p-30 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#2A7EBF]">
     <div class="relative w-full overflow-hidden bg-transparent group-hover:bg-p-30 transition-colors duration-300">
         <div class="relative w-full aspect-video overflow-hidden">
             <img [src]="effectiveImageUrl()" [alt]="imageAlt()"
                 class="w-full h-full object-cover object-top transition-transform duration-300 ease-out group-hover:scale-110" />
-            <div class="absolute top-3 right-3 flex flex-col items-center justify-center bg-[#0D53A2] shadow-md select-none"
-                style="border-radius: 8px; padding: 10px 16px 8px 16px;">
-                @if (eventBadge(); as badge) {
-                <span
-                    style="color: var(--White, #FFF); text-align: center; font-family: Inter, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; line-height: normal;">{{
-                    badge.month }}</span>
-                <span
-                    style="color: var(--White, #FFF); text-align: center; font-family: Inter, sans-serif; font-size: 32px; font-style: normal; font-weight: 600; line-height: normal;">{{
-                    badge.day }}</span>
-                } @else {
-                <span
-                    style="color: var(--White, #FFF); text-align: center; font-family: Inter, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; line-height: normal;">—</span>
-                <span
-                    style="color: var(--White, #FFF); text-align: center; font-family: Inter, sans-serif; font-size: 32px; font-style: normal; font-weight: 600; line-height: normal;">—</span>
-                }
-            </div>
+            @if (!isPastEvent()) {
+                <div class="absolute top-3 right-3 flex flex-col items-center justify-center bg-[#0D53A2] shadow-md select-none"
+                    style="border-radius: 8px; padding: 10px 16px 8px 16px;">
+                    @if (eventBadge(); as badge) {
+                    <span
+                        style="color: var(--White, #FFF); text-align: center; font-family: Inter, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; line-height: normal;">{{
+                        badge.month }}</span>
+                    <span
+                        style="color: var(--White, #FFF); text-align: center; font-family: Inter, sans-serif; font-size: 32px; font-style: normal; font-weight: 600; line-height: normal;">{{
+                        badge.day }}</span>
+                    } @else {
+                    <span
+                        style="color: var(--White, #FFF); text-align: center; font-family: Inter, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; line-height: normal;">—</span>
+                    <span
+                        style="color: var(--White, #FFF); text-align: center; font-family: Inter, sans-serif; font-size: 32px; font-style: normal; font-weight: 600; line-height: normal;">—</span>
+                    }
+                </div>
+            }
+            @if (isPastEvent() && formattedDurationHMS()) {
+                <div class="absolute bottom-3 right-3 text-white text-xs font-semibold px-3 py-1 select-none shadow tracking-widest"
+                    style="border-radius: 12px; background: var(--Black, #000);">
+                    {{ formattedDurationHMS() }}
+                </div>
+            }
         </div>
     </div>
 
@@ -33,12 +44,18 @@
         </div>
 
         <h3
-            class="event-card__title min-w-0 text-[#242424] font-['Inter'] text-[28px] font-semibold leading-[130%] mb-3 sm:mb-4 pb-10">
+            class="event-card__title min-w-0 text-[#242424] font-['Inter'] text-[28px] font-semibold leading-[130%] mb-6 ">
             {{ title() || 'Event title' }}
         </h3>
 
         <div class="event-card__meta flex flex-col gap-3 mb-10 text-[#1A1A1A]">
 
+            @if (statusType() === 'in-person' && location()) {
+            <div class="flex items-center gap-3 min-w-0">
+                <img src="/assets/events/location_icon.png" alt="Location" class="w-5 h-5" />
+                <span class="event-card__meta-text text-[#000000] font-['Inter'] text-[18px] font-normal leading-[28px]">{{ location() }}</span>
+            </div>
+            }
 
             @if (formattedDate()) {
             <div class="flex items-center gap-3 min-w-0">
@@ -58,14 +75,7 @@
             </div>
             }
 
-            @if (formattedDuration()) {
-            <div class="flex items-center gap-3 min-w-0">
-                <img src="/assets/events/clock.png" alt="Duration" class="w-5 h-5" />
-                <span
-                    class="event-card__meta-text text-[#000000] font-['Inter'] text-[18px] font-normal leading-[28px]">{{
-                    formattedDuration() }}</span>
-            </div>
-            }
+         
         </div>
 
         <div

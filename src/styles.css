@@ -325,3 +325,30 @@ body.mobile-menu-open {
 .event-html {
     padding-left: 10px;
 }
+
+  .event-html ul {
+    list-style: disc !important;
+    padding-left: 1.5rem !important;
+  }
+  .event-html ol {
+    list-style: decimal !important;
+    padding-left: 1.5rem !important;
+  }
+  .event-html li {
+    display: list-item !important;
+  }
+
+/* In your global styles.css, AFTER the Tailwind imports */
+@layer base {
+  .event-html ul {
+    list-style: disc !important;
+    padding-left: 1.5rem !important;
+  }
+  .event-html ol {
+    list-style: decimal !important;
+    padding-left: 1.5rem !important;
+  }
+  .event-html li {
+    display: list-item !important;
+  }
+}

@@ -34,16 +34,16 @@
 </section>
 } @else if (event(); as e) {
 @if (showEventHeroVideoSection()) {
-<section class="w-full min-h-[80vh] bg-white flex items-center justify-center pt-4 xs:pt-4 md:pt-20"
+<section class="w-full bg-white flex items-center justify-center pt-6 sm:pt-24 px-4  pb-6 sm:pb-8 lg:pb-12"
   aria-label="Event video">
   @if (eventHeroYoutubeEmbed(); as heroEmbed) {
-  <div class="w-full max-w-[min(100vw,calc(80vh*16/9))] aspect-video max-h-[80vh] mx-auto px-2 sm:px-4">
-    <iframe [src]="heroEmbed" title="Event video" class="w-full h-full rounded-sm border-0"
+<div class="w-full max-w-7xl mx-auto aspect-[16/7] min-h-[420px]">
+    <iframe [src]="heroEmbed" title="Event video" class="w-full h-full min-h-[420px] rounded-sm border-0"
       allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen
       loading="lazy"></iframe>
   </div>
   } @else {
-  <video [src]="firstHeroVideoUrl()" controls playsinline class="w-full max-h-[80vh] object-contain"
+  <video controls playsinline [src]="firstHeroVideoUrl()" class="w-full max-w-7xl mx-auto aspect-[16/7] min-h-[420px] object-contain block"
     [attr.poster]="event()?.imageUrl || null"></video>
   }
 </section>
@@ -109,31 +109,14 @@
     }
 
     <div class="absolute inset-0 opacity-10"
-      style="background: url('/assets/events/Overlay.jpg') center / cover no-repeat;">
+      style="background: url('/assets/events/Overlay_event_detail.jpg') center / cover no-repeat;">
     </div>
 
-    <div class="relative z-10 w-full px-4 sm:px-6 md:px-8 lg:px-20 py-16 sm:py-20 self-end">
+    <div class="relative z-10 w-full px-4 sm:px-4 md:px-8 lg:px-20 py-16 sm:py-20 self-end">
       <div class="max-w-4xl w-full">
-        <nav class="mb-6 event-breadcrumbs event-breadcrumbs--inverse" aria-label="Breadcrumb">
-          <ol class="flex items-center space-x-2 text-sm text-white/80">
-            @for (crumb of getBreadcrumbs(); track crumb.label + (crumb.link ?? ''); let last = $last) {
-            @if (!last) {
-            <li class="font-segoe">
-              @if (crumb.link) {
-              <a [routerLink]="crumb.link" class="hover:text-white transition-colors">{{ crumb.label }}</a>
-              } @else {
-              <span>{{ crumb.label }}</span>
-              }
-            </li>
-            <li><span class="mx-2">/</span></li>
-            } @else {
-            <li class="text-white">{{ crumb.label }}</li>
-            }
-            }
-          </ol>
-        </nav>
+        <!-- Breadcrumb removed as per user request -->
 
-        <h1 class="text-2xl sm:text-4xl md:text-5xl lg:text-[4rem] text-white leading-tight mb-4">
+        <h1 class="text-2xl sm:text-4xl md:text-5xl lg:text-[4rem] text-white leading-tight mb-4 mt-16 sm:mt-0">
           {{ e.title }}
         </h1>
 
@@ -286,27 +269,10 @@
     </div>
   </section>
   } @else {
-  <section class="relative w-full pl-14 bg-white">
-    <div class="relative z-10 w-full px-4 py-10 sm:px-6 sm:py-14 md:px-8 lg:px-20 lg:py-16">
+<section class="relative w-full bg-white">
+    <div class="relative z-10 w-full px-4 pt-10 pb-4 sm:px-6 sm:py-14 md:px-8 lg:px-32 lg:pt-16">
       <div class="max-w-4xl w-full">
-        <nav class="mb-6 event-breadcrumbs" aria-label="Breadcrumb">
-          <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-s-600">
-            @for (crumb of getBreadcrumbs(); track crumb.label + (crumb.link ?? ''); let last = $last) {
-            @if (!last) {
-            <li class="font-segoe">
-              @if (crumb.link) {
-              <a [routerLink]="crumb.link" class="transition-colors hover:text-p-500">{{ crumb.label }}</a>
-              } @else {
-              <span>{{ crumb.label }}</span>
-              }
-            </li>
-            <li class="text-s-500" aria-hidden="true"><span class="mx-1">/</span></li>
-            } @else {
-            <li class="font-medium text-s-800">{{ crumb.label }}</li>
-            }
-            }
-          </ol>
-        </nav>
+        <!-- Breadcrumb removed as per user request -->
 
         <h1
           class="mb-4 text-2xl font-semibold leading-tight tracking-tight text-s-900 sm:text-4xl md:text-5xl lg:text-[4rem]">
@@ -468,11 +434,12 @@
   </section>
   }
 
-  <div class="w-full mx-auto px-4 sm:px-6 lg:px-24 pt-10">
+  <div class="w-full mx-auto px-4 sm:px-6 lg:px-24">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
       <div class="lg:col-span-12">
-        <div class="p-6 sm:p-8 lg:p-10">
-          <div class="event-html mb-10 max-w-none" [innerHTML]="overviewHtml()"></div>
+        <div class="p-6 ">
+    <!-- Already in your template, just ensure plugin is installed -->
+<div class="event-html prose max-w-none" [innerHTML]="overviewHtml()"></div>
         </div>
       </div>
 
@@ -486,15 +453,20 @@
         <article class="w-full bg-white flex flex-col ">
           <img [src]="speakerImageUrl(speaker)" [alt]="speaker.name"
             class="w-full aspect-square object-cover object-top" />
-          <div class="px-4 pb-4 flex-1">
-            <h4 class="event-speaker-name mt-8">{{ speaker.name }}</h4>
-            <p class=""
-              style="color: var(--Secondary-900, #3D3D3D); font-family: 'Segoe UI'; font-size: 20px; font-style: normal; font-weight: 400; line-height: 150%;">
-              {{ speaker.role }}</p>
+          <div class=" pb-4 flex-1">
+            <h4 class="event-speaker-name mt-8 text-[#2A7EBF] font-segoe font-semibold leading-[150%] text-[1.5rem] sm:text-[1.75rem] md:text-[1.75rem] lg:text-[28px]"
+                style="color: var(--Primary, #2A7EBF); font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.75rem; font-style: normal; font-weight: 600; line-height: 150%;">
+              {{ speaker.name }}
+            </h4>
+            <p class="font-segoe font-normal leading-[150%] text-[18px] sm:text-[20px] md:text-[20px] lg:text-[20px] text-[#3D3D3D]"
+               style="color: var(--Secondary-900, #3D3D3D); font-family: 'Segoe UI', Arial, sans-serif; font-size: 20px; font-style: normal; font-weight: 400; line-height: 150%;">
+              {{ speaker.role }}
+            </p>
             @if (speakerDesc) {
-            <p class="mt-8"
-              style="color: var(--Black, #000); font-family: 'Segoe UI'; font-size: 24px; font-style: normal; font-weight: 400; line-height: 150%;">
-              {{ speakerDesc }}</p>
+            <p class="mt-8 font-segoe font-normal leading-[150%] text-[20px] sm:text-[22px] md:text-[22px] lg:text-[24px] text-black"
+               style="color: var(--Black, #000); font-family: 'Segoe UI', Arial, sans-serif; font-size: 24px; font-style: normal; font-weight: 400; line-height: 150%;">
+              {{ speakerDesc }}
+            </p>
             }
           </div>
         </article>
@@ -507,7 +479,12 @@
 
   <div class="px-4 sm:px-6 md:px-8 lg:px-10 bg-[#FFFFFF] mt-10 sm:mt-12" *ngIf="ctaSection() as cta">
 
-    <!-- Past Events -->
+
+
+    <app-cta-section *ngIf="!isPastEvent()" [title]="cta.title" [description]="cta.description" [primaryText]="cta.primaryText"
+      [primaryLink]="cta.primaryLink"></app-cta-section>
+
+          <!-- Past Events -->
     <section id="past-events" class="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-white" *ngIf="pastEvents().length > 0">
       <div class="px-4 sm:px-6 md:px-8 lg:px-10">
         <div class="max-w-6xl mx-auto text-center mb-10 sm:mb-12" *ngIf="pastEventsSection() as ps">
@@ -531,6 +508,7 @@
                     [tag]="event.tag" [statusType]="event.type" [location]="event.location"
                     [eventStartISO]="event.eventStartISO ?? null" [eventEndISO]="event.eventEndISO ?? null"
                     [durationMinutes]="event.durationMinutes ?? null" [title]="event.title"
+                     [queryParams]="{ section: 'past_event' }"
                     [readMoreText]="'View Event'"></app-event-card>
                   <ng-template #emptyCardSlot>
                     <div class="hidden lg:block"></div>
@@ -551,9 +529,6 @@
         </div>
       </div>
     </section>
-
-    <app-cta-section [title]="cta.title" [description]="cta.description" [primaryText]="cta.primaryText"
-      [primaryLink]="cta.primaryLink"></app-cta-section>
   </div>
 </section>
 } @else {
