@@ -25,13 +25,18 @@ export const appConfig: ApplicationConfig = {
     provideMonacoEditor({ baseUrl: './assets/monaco/min/vs', defaultOptions: { scrollBeyondLastLine: false } }),
     {
       provide: APP_INITIALIZER,
-      useFactory: (graphql: GraphQLContentService) => () =>
-        Promise.all([
-          graphql.loadGenContentTaxonomies(),
-          graphql.loadHomePageContent(),
-          graphql.loadServicesContent(),
-          graphql.loadIndustriesContent(),
-        ]).then(() => undefined),
+      useFactory: (graphql: GraphQLContentService) => () => {
+        // Solo home bloquea el bootstrap. Taxonomías, industries y services (JSON puede incluir events)
+        // se cargan después para no competir con el primer pintado.
+        setTimeout(() => {
+          void Promise.all([
+            graphql.loadGenContentTaxonomies(),
+            graphql.loadIndustriesContent(),
+            graphql.loadServicesContent(),
+          ]).catch(() => undefined);
+        }, 0);
+        return graphql.loadHomePageContent().then(() => undefined);
+      },
       deps: [GraphQLContentService],
       multi: true,
     },

@@ -70,6 +70,56 @@ function oakwood_events_site_timezone_string() {
 }
 
 /**
+ * Default IANA timezone for Oakwood Events when the plugin option is missing or invalid.
+ */
+function oakwood_events_plugin_default_timezone_id() {
+	return 'America/Chicago';
+}
+
+/**
+ * Validates a string as an IANA timezone id; returns null if invalid or empty.
+ *
+ * @param string $tz_string Candidate timezone.
+ * @return string|null Normalized id or null.
+ */
+function oakwood_events_valid_iana_timezone_or_null( $tz_string ) {
+	$raw = is_string( $tz_string ) ? trim( $tz_string ) : '';
+	if ( $raw === '' ) {
+		return null;
+	}
+	try {
+		new \DateTimeZone( $raw );
+		return $raw;
+	} catch ( \Exception $e ) {
+		return null;
+	}
+}
+
+/**
+ * Single source of truth for event times: plugin option (Events → Settings).
+ */
+function oakwood_events_get_plugin_events_timezone() {
+	if ( ! defined( 'OAKWOOD_EVENTS_TIMEZONE_OPTION' ) ) {
+		return oakwood_events_plugin_default_timezone_id();
+	}
+	$stored = get_option( OAKWOOD_EVENTS_TIMEZONE_OPTION, '' );
+	$valid  = oakwood_events_valid_iana_timezone_or_null( is_string( $stored ) ? $stored : '' );
+	return $valid !== null ? $valid : oakwood_events_plugin_default_timezone_id();
+}
+
+/**
+ * Sanitize a timezone string for saving in plugin settings (POST).
+ *
+ * @param mixed $value Raw value.
+ * @return string Valid IANA id.
+ */
+function oakwood_events_sanitize_saved_timezone_setting( $value ) {
+	$raw = is_string( $value ) ? trim( wp_unslash( $value ) ) : '';
+	$valid = oakwood_events_valid_iana_timezone_or_null( sanitize_text_field( $raw ) );
+	return $valid !== null ? $valid : oakwood_events_plugin_default_timezone_id();
+}
+
+/**
  * Returns a valid timezone id; empty or invalid input falls back to the site timezone.
  */
 function oakwood_events_normalize_timezone_string( $tz_string ) {
@@ -86,7 +136,7 @@ function oakwood_events_normalize_timezone_string( $tz_string ) {
 }
 
 function oakwood_events_sanitize_timezone_meta( $value ) {
-	return oakwood_events_normalize_timezone_string( is_string( $value ) ? $value : '' );
+	return oakwood_events_get_plugin_events_timezone();
 }
 
 function oakwood_events_datetime_local_to_iso( $datetime_local, $tz_string = null ) {
@@ -210,11 +260,12 @@ function oakwood_events_get_meta_array( $post_id, $key ) {
 }
 
 /**
- * Timezone stored on the event post, normalized; defaults to site timezone when unset or invalid.
+ * Event timezone for API and editors: always the plugin setting (Events → Settings).
+ *
+ * @param int $post_id Post ID (unused; kept for callers).
  */
-function oakwood_events_get_resolved_event_timezone_for_post( $post_id ) {
-	$stored = oakwood_events_get_meta( $post_id, 'eventTimeZone', '' );
-	return oakwood_events_normalize_timezone_string( is_string( $stored ) ? $stored : '' );
+function oakwood_events_get_resolved_event_timezone_for_post( $post_id ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
+	return oakwood_events_get_plugin_events_timezone();
 }
 
 function oakwood_events_add_meta_boxes() {
@@ -271,21 +322,10 @@ function oakwood_events_details_meta_box( \WP_Post $post ) {
 	echo '</div>';
 
 	echo '<div class="oakwood-events-field">';
-	echo '<label for="oakwood_events_eventTimeZone">' . esc_html__( 'Event timezone', 'oakwood-events' ) . '</label>';
-	echo '<select id="oakwood_events_eventTimeZone" name="oakwood_events_eventTimeZone">';
-	echo wp_timezone_choice( $event_tz, get_user_locale() );
-	echo '</select>';
-	echo '<p class="description" style="margin:4px 0 0;">' . esc_html__(
-		'Start and end times use this timezone. If you change it, verify the start and end fields still match what you intend.',
-		'oakwood-events'
-	) . '</p>';
-	echo '</div>';
-
-	echo '<div class="oakwood-events-field">';
 	echo '<label for="oakwood_events_eventStartLocal">' . esc_html__( 'Event start', 'oakwood-events' ) . '</label>';
 	echo '<input type="datetime-local" id="oakwood_events_eventStartLocal" name="oakwood_events_eventStartLocal" value="' . esc_attr( oakwood_events_iso_to_datetime_local( $eventStartISO, $event_tz ) ) . '" />';
 	echo '<p class="description" style="margin:4px 0 0;">' . esc_html__(
-		'Wall clock in the timezone selected above (the datetime field has no offset).',
+		'Wall clock in the timezone set under Events → Settings (the datetime field has no offset).',
 		'oakwood-events'
 	) . '</p>';
 	echo '</div>';
@@ -293,6 +333,10 @@ function oakwood_events_details_meta_box( \WP_Post $post ) {
 	echo '<div class="oakwood-events-field">';
 	echo '<label for="oakwood_events_eventEndLocal">' . esc_html__( 'Event end', 'oakwood-events' ) . '</label>';
 	echo '<input type="datetime-local" id="oakwood_events_eventEndLocal" name="oakwood_events_eventEndLocal" value="' . esc_attr( oakwood_events_iso_to_datetime_local( $eventEndISO, $event_tz ) ) . '" />';
+	echo '<p class="description" style="margin:4px 0 0;">' . esc_html__(
+		'Same timezone as Event start (Events → Settings).',
+		'oakwood-events'
+	) . '</p>';
 	echo '</div>';
 
 	echo '<div class="oakwood-events-field">';
@@ -370,6 +414,17 @@ function oakwood_events_save_meta( $post_id ) {
 		return;
 	}
 
+	$videos = isset( $_POST['oakwood_events_heroVideoUrls'] ) ? (array) wp_unslash( $_POST['oakwood_events_heroVideoUrls'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$videos_clean = array();
+	foreach ( $videos as $url ) {
+		if ( is_string( $url ) ) {
+			$url = trim( $url );
+			if ( $url !== '' ) {
+				$videos_clean[] = esc_url_raw( $url );
+			}
+		}
+	}
+
 	$map = array(
 		'type'        => 'oakwood_events_type',
 		'location'    => 'oakwood_events_location',
@@ -397,9 +452,7 @@ function oakwood_events_save_meta( $post_id ) {
 		}
 	}
 
-	$tz_post = isset( $_POST['oakwood_events_eventTimeZone'] ) ? wp_unslash( $_POST['oakwood_events_eventTimeZone'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-	$tz_post = is_string( $tz_post ) ? trim( $tz_post ) : '';
-	$event_tz = oakwood_events_normalize_timezone_string( $tz_post );
+	$event_tz = oakwood_events_get_plugin_events_timezone();
 	update_post_meta( $post_id, '_oakwood_events_eventTimeZone', $event_tz );
 
 	$start_local = isset( $_POST['oakwood_events_eventStartLocal'] ) ? wp_unslash( $_POST['oakwood_events_eventStartLocal'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
@@ -412,6 +465,13 @@ function oakwood_events_save_meta( $post_id ) {
 	$duration_minutes = absint( $duration_raw );
 	if ( $duration_minutes < 1 ) {
 		$duration_minutes = 0;
+	}
+
+	if ( $duration_minutes < 1 && function_exists( 'oakwood_events_hero_duration_minutes_from_urls' ) ) {
+		$hero_minutes = oakwood_events_hero_duration_minutes_from_urls( $videos_clean );
+		if ( $hero_minutes > 0 ) {
+			$duration_minutes = $hero_minutes;
+		}
 	}
 
 	$start_iso = oakwood_events_datetime_local_to_iso( $start_local, $event_tz );
@@ -465,17 +525,11 @@ function oakwood_events_save_meta( $post_id ) {
 		);
 	}
 
-	$videos = isset( $_POST['oakwood_events_heroVideoUrls'] ) ? (array) wp_unslash( $_POST['oakwood_events_heroVideoUrls'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-	$videos_clean = array();
-	foreach ( $videos as $url ) {
-		if ( is_string( $url ) ) {
-			$url = trim( $url );
-			if ( $url !== '' ) {
-				$videos_clean[] = esc_url_raw( $url );
-			}
-		}
-	}
 	update_post_meta( $post_id, '_oakwood_events_heroVideoUrls', wp_json_encode( array_values( $videos_clean ) ) );
+
+	if ( function_exists( 'oakwood_events_sync_hero_thumbnail_after_save' ) ) {
+		oakwood_events_sync_hero_thumbnail_after_save( $post_id, $videos_clean );
+	}
 }
 add_action( 'save_post_' . OAKWOOD_EVENTS_POST_TYPE, 'oakwood_events_save_meta' );
 

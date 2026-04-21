@@ -2,7 +2,7 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-function getPrerenderSlugs(): { blog: string[]; caseStudy: string[]; events: string[] } {
+function getPrerenderSlugs(): { blog: string[]; caseStudy: string[] } {
   try {
     const path = join(process.cwd(), 'prerender-slugs.json');
     const raw = readFileSync(path, 'utf8');
@@ -10,10 +10,9 @@ function getPrerenderSlugs(): { blog: string[]; caseStudy: string[]; events: str
     return {
       blog: Array.isArray(data?.blog) ? data.blog : [],
       caseStudy: Array.isArray(data?.caseStudy) ? data.caseStudy : [],
-      events: Array.isArray(data?.events) ? data.events : [],
     };
   } catch {
-    return { blog: [], caseStudy: [], events: [] };
+    return { blog: [], caseStudy: [] };
   }
 }
 

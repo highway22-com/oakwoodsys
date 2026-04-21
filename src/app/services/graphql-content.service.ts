@@ -92,9 +92,19 @@ export class GraphQLContentService {
     });
   }
 
-  /** Contenido CMS de services (cargado en APP_INITIALIZER). Observable para suscribirse. */
+  /** Contenido CMS de services (carga diferida tras el bootstrap). Observable para suscribirse. */
   private readonly servicesContentSubject = new BehaviorSubject<{ services: Record<string, unknown> } | null>(null);
   readonly servicesContent$: Observable<{ services: Record<string, unknown> } | null> = this.servicesContentSubject.asObservable();
+
+  /** El CMS a veces incluye `events` dentro del JSON de services; no lo precargamos aquí. */
+  private servicesPayloadWithoutEvents(
+    services: Record<string, unknown> | null | undefined,
+  ): Record<string, unknown> | null {
+    if (!services || typeof services !== 'object') return null;
+    if (!('events' in services)) return { ...services };
+    const { events: _omit, ...rest } = services;
+    return rest;
+  }
 
   loadServicesContent(): Promise<void> {
     const ts = Date.now();
@@ -113,7 +123,8 @@ export class GraphQLContentService {
           results.forEach((svc) => {
             Object.assign(merged, svc);
           });
-          return Object.keys(merged).length > 0 ? { services: merged } : null;
+          const services = this.servicesPayloadWithoutEvents(merged);
+          return services && Object.keys(services).length > 0 ? { services } : null;
         })
       )
     ).then((merged) => {
@@ -124,19 +135,26 @@ export class GraphQLContentService {
       // 2) services.json (fallback si existe)
       return firstValueFrom(
         this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/services.json?t=${ts}`, { responseType: 'json' }).pipe(
-          map((data) => data?.services ? { services: data.services } : null),
+          map((data) => {
+            const s = data?.services ? this.servicesPayloadWithoutEvents(data.services) : null;
+            return s && Object.keys(s).length > 0 ? { services: s } : null;
+          }),
           catchError(() => of(null))
         )
       ).then((data) => {
-        if (data?.services && Object.keys(data.services).length > 0) {
+        if (data?.services) {
           this.servicesContentSubject.next(data);
           return;
         }
         // 3) GraphQL
         return firstValueFrom(this.getCmsPageBySlug('services', { fetchPolicy: 'network-only' }).pipe(
-          map((d) => d as { services: Record<string, unknown> } | null)
+          map((d) => {
+            const raw = d as { services?: Record<string, unknown> } | null;
+            const s = raw?.services ? this.servicesPayloadWithoutEvents(raw.services) : null;
+            return s && Object.keys(s).length > 0 ? { services: s } : null;
+          })
         )).then((graphqlData) => {
-          this.servicesContentSubject.next(graphqlData?.services ? graphqlData : null);
+          this.servicesContentSubject.next(graphqlData);
         });
       });
     }).catch(() => {
@@ -149,40 +167,62 @@ export class GraphQLContentService {
   readonly industriesContent$: Observable<{ industries: Record<string, unknown> } | null> = this.industriesContentSubject.asObservable();
 
   loadIndustriesContent(): Promise<void> {
-    return firstValueFrom(this.getIndustriesContent().pipe(
-      map((d) => d as { industries: Record<string, unknown> } | null),
-      catchError(() => of(null))
-    )).then((data) => {
-      if (data?.industries && Object.keys(data.industries).length > 0) {
-        this.industriesContentSubject.next(data);
-        return;
-      }
+    const ts = Date.now();
+    return firstValueFrom(
+      this.http
+        .get<{ industries?: Record<string, unknown> }>(`/api/cms/industries-content.json?t=${ts}`, { responseType: 'json' })
+        .pipe(
+          map((res) =>
+            res?.industries && Object.keys(res.industries).length > 0
+              ? { industries: res.industries }
+              : null,
+          ),
+          catchError(() => of(null)),
+        ),
+    )
+      .then((fromJson) => {
+        if (fromJson?.industries) {
+          this.industriesContentSubject.next(fromJson);
+          return;
+        }
+        return firstValueFrom(
+          this.getIndustriesContent().pipe(
+            map((d) => d as { industries: Record<string, unknown> } | null),
+            catchError(() => of(null)),
+          ),
+        ).then((data) => {
+          if (data?.industries && Object.keys(data.industries).length > 0) {
+            this.industriesContentSubject.next(data);
+            return;
+          }
 
-      return firstValueFrom(
-        forkJoin(
-          this.industrySlugs.map((slug) =>
-            this.getIndustryByCMSSlug(slug).pipe(
-              map((res) => {
-                if (!res?.industries) return {};
-                const entry = Object.entries(res.industries)[0];
-                return entry ? { [slug]: entry[1] } : {};
+          return firstValueFrom(
+            forkJoin(
+              this.industrySlugs.map((slug) =>
+                this.getIndustryByCMSSlug(slug).pipe(
+                  map((res) => {
+                    if (!res?.industries) return {};
+                    const entry = Object.entries(res.industries)[0];
+                    return entry ? { [slug]: entry[1] } : {};
+                  }),
+                  catchError(() => of({})),
+                ),
+              ),
+            ).pipe(
+              map((results) => {
+                const merged: Record<string, unknown> = {};
+                results.forEach((ind) => Object.assign(merged, ind));
+                return Object.keys(merged).length > 0 ? { industries: merged } : null;
               }),
-              catchError(() => of({}))
-            )
-          )
-        ).pipe(
-          map((results) => {
-            const merged: Record<string, unknown> = {};
-            results.forEach((ind) => Object.assign(merged, ind));
-            return Object.keys(merged).length > 0 ? { industries: merged } : null;
-          })
-        )
-      ).then((merged) => {
-        this.industriesContentSubject.next(merged?.industries ? merged : null);
+            ),
+          ).then((merged) => {
+            this.industriesContentSubject.next(merged?.industries ? merged : null);
+          });
+        });
+      })
+      .catch(() => {
+        this.industriesContentSubject.next(null);
       });
-    }).catch(() => {
-      this.industriesContentSubject.next(null);
-    });
   }
 
   getGenContentsPaginated(
@@ -588,8 +628,8 @@ export class GraphQLContentService {
    * Contenido del menú/navbar desde CMS (slug: menu). Misma estructura que navbar-content.json.
    */
   getMenuContent(): Observable<{ menu: unknown[]; content?: Record<string, unknown> } | null> {
-    return this.getCmsPageBySlug('menu', { fetchPolicy: 'network-only' }).pipe(
-      map((data) => data as { menu: unknown[]; content?: Record<string, unknown> } | null)
+    return this.getCmsPageBySlug('menu', { fetchPolicy: 'cache-and-network' }).pipe(
+      map((data) => data as { menu: unknown[]; content?: Record<string, unknown> } | null),
     );
   }
 
