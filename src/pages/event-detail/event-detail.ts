@@ -1,5 +1,16 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, inject, signal, computed, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  inject,
+  signal,
+  computed,
+  PLATFORM_ID,
+} from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap } from 'rxjs/operators';
@@ -8,9 +19,18 @@ import { map } from 'rxjs/operators';
 import { Subscription, of, throwError } from 'rxjs';
 import { CMS_BASE_URL } from '../../app/config/cms.config';
 import { serverSitePublicUrl } from '../../app/config/site-public.config';
-import { DomSanitizer, type SafeHtml, type SafeResourceUrl } from '@angular/platform-browser';
+import {
+  DomSanitizer,
+  type SafeHtml,
+  type SafeResourceUrl,
+} from '@angular/platform-browser';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
-import { EventsContent, EventItem, eventRefEndMs, eventScheduleBucket } from '../events/events';
+import {
+  EventsContent,
+  EventItem,
+  eventRefEndMs,
+  eventScheduleBucket,
+} from '../events/events';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { EventCardComponent } from '../../shared/event-card/event-card.component';
 import { decodeHtmlEntities } from '../../app/utils/cast';
@@ -55,12 +75,15 @@ export default class EventDetail implements OnInit, OnDestroy {
   private readonly scheduleNowMs = signal(Date.now());
   private scheduleClockTimerId: number | null = null;
 
-  @ViewChild('pastCarouselViewport') pastCarouselViewport?: ElementRef<HTMLDivElement>;
+  @ViewChild('pastCarouselViewport')
+  pastCarouselViewport?: ElementRef<HTMLDivElement>;
 
   readonly loading = signal(true);
   readonly event = signal<EventItem | null>(null);
   readonly ctaSection = signal<EventsContent['ctaSection'] | null>(null);
-  readonly pastEventsSection = signal<EventsContent['pastEventsSection'] | null>(null);
+  readonly pastEventsSection = signal<
+    EventsContent['pastEventsSection'] | null
+  >(null);
   readonly linkCopied = signal(false);
   readonly isMobileView = signal(false);
   readonly isPastDragging = signal(false);
@@ -82,14 +105,17 @@ export default class EventDetail implements OnInit, OnDestroy {
     }
   }
 
-
-readonly section = toSignal(
-  this.route.queryParamMap.pipe(map(p => p.get('section')))
-);
+  readonly section = toSignal(
+    this.route.queryParamMap.pipe(map((p) => p.get('section'))),
+  );
 
   private dateFmtOpts(): Intl.DateTimeFormatOptions {
     const tz = this.viewerTimeZoneId();
-    const base: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+    const base: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    };
     return tz ? { ...base, timeZone: tz } : base;
   }
 
@@ -152,8 +178,6 @@ readonly section = toSignal(
     let html = decodeHtmlEntities(raw);
     // Remove class="wp-block-list" from all <ul> tags
 
- 
-
     return this.sanitizer.bypassSecurityTrustHtml(html);
   });
 
@@ -166,12 +190,18 @@ readonly section = toSignal(
     const endMs = ev ? getEventEndTimeMsForHeroVideo(ev) : null;
     if (endMs == null || now <= endMs) return [];
 
-    return urls.filter((u): u is string => typeof u === 'string' && u.trim() !== '');
+    return urls.filter(
+      (u): u is string => typeof u === 'string' && u.trim() !== '',
+    );
   });
 
-  readonly showEventHeroVideoSection = computed(() => this.eventHeroVideoUrlsFiltered().length > 0);
+  readonly showEventHeroVideoSection = computed(
+    () => this.eventHeroVideoUrlsFiltered().length > 0,
+  );
 
-  readonly firstHeroVideoUrl = computed((): string => this.eventHeroVideoUrlsFiltered()[0] ?? '');
+  readonly firstHeroVideoUrl = computed(
+    (): string => this.eventHeroVideoUrlsFiltered()[0] ?? '',
+  );
 
   readonly eventHeroYoutubeEmbed = computed((): SafeResourceUrl | null => {
     const url = this.firstHeroVideoUrl();
@@ -207,13 +237,14 @@ readonly section = toSignal(
     const start = new Date(e.eventStartISO);
     if (isNaN(start.getTime())) return null;
 
-    const tz = this.viewerTimeZoneId();
+    // Use eventTimeZone from backend if provided, else fallback to UTC
+    const tz = e.eventTimeZone?.trim() || 'UTC';
     const opts: Intl.DateTimeFormatOptions = {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true,
       timeZoneName: 'short',
-      ...(tz ? { timeZone: tz } : {}),
+      timeZone: tz,
     };
     const timeFmt = new Intl.DateTimeFormat('en-US', opts);
 
@@ -228,13 +259,19 @@ readonly section = toSignal(
 
     const startParts = timeFmt.formatToParts(start);
     const endParts = timeFmt.formatToParts(end);
-    const startHour = startParts.find(p => p.type === 'hour')?.value?.padStart(2, '0') ?? '';
-    const startMinute = startParts.find(p => p.type === 'minute')?.value ?? '';
-    const startDayPeriod = startParts.find(p => p.type === 'dayPeriod')?.value ?? '';
-    const endHour = endParts.find(p => p.type === 'hour')?.value?.padStart(2, '0') ?? '';
-    const endMinute = endParts.find(p => p.type === 'minute')?.value ?? '';
-    const endDayPeriod = endParts.find(p => p.type === 'dayPeriod')?.value ?? '';
-    const tzName = startParts.find(p => p.type === 'timeZoneName')?.value ?? '';
+    const startHour =
+      startParts.find((p) => p.type === 'hour')?.value?.padStart(2, '0') ?? '';
+    const startMinute =
+      startParts.find((p) => p.type === 'minute')?.value ?? '';
+    const startDayPeriod =
+      startParts.find((p) => p.type === 'dayPeriod')?.value ?? '';
+    const endHour =
+      endParts.find((p) => p.type === 'hour')?.value?.padStart(2, '0') ?? '';
+    const endMinute = endParts.find((p) => p.type === 'minute')?.value ?? '';
+    const endDayPeriod =
+      endParts.find((p) => p.type === 'dayPeriod')?.value ?? '';
+    const tzName =
+      startParts.find((p) => p.type === 'timeZoneName')?.value ?? '';
 
     let timeStr = '';
     if (startDayPeriod === endDayPeriod) {
@@ -258,19 +295,19 @@ readonly section = toSignal(
     return `${hrs} hour${hrs === 1 ? '' : 's'} ${mins} minute${mins === 1 ? '' : 's'}`;
   });
 
-  readonly pastEventsPageSize = computed(() => this.isMobileView() ? 1 : 3);
+  readonly pastEventsPageSize = computed(() => (this.isMobileView() ? 1 : 3));
   readonly maxPastEvents = 12;
   readonly maxPastPages = 6;
 
   readonly limitedPastEvents = computed(() =>
-    this.pastEvents().slice(0, this.maxPastEvents)
+    this.pastEvents().slice(0, this.maxPastEvents),
   );
 
   readonly pastPageCount = computed(() =>
     Math.min(
       this.maxPastPages,
-      Math.ceil(this.limitedPastEvents().length / this.pastEventsPageSize())
-    )
+      Math.ceil(this.limitedPastEvents().length / this.pastEventsPageSize()),
+    ),
   );
 
   readonly pastSlides = computed<(EventItem | null)[][]>(() => {
@@ -286,15 +323,19 @@ readonly section = toSignal(
   });
 
   readonly pastPageArray = computed(() =>
-    Array.from({ length: this.pastPageCount() }, (_, i) => i)
+    Array.from({ length: this.pastPageCount() }, (_, i) => i),
   );
 
-  readonly pastTrackTransform = computed(() =>
-    `translateX(calc(-${this.pastEventsPage() * 100}% + ${this.pastDragOffsetPx()}px))`
+  readonly pastTrackTransform = computed(
+    () =>
+      `translateX(calc(-${this.pastEventsPage() * 100}% + ${this.pastDragOffsetPx()}px))`,
   );
 
   goToPastPage(page: number): void {
-    const safePage = Math.max(0, Math.min(page, Math.max(0, this.pastPageCount() - 1)));
+    const safePage = Math.max(
+      0,
+      Math.min(page, Math.max(0, this.pastPageCount() - 1)),
+    );
     this.pastEventsPage.set(safePage);
     this.pastDragOffsetPx.set(0);
   }
@@ -320,14 +361,19 @@ readonly section = toSignal(
   @HostListener('window:pointermove', ['$event'])
   onPastPointerMove(event: PointerEvent): void {
     if (this.dragStartX === null || this.activePointerId === null) return;
-    if (this.activePointerId !== null && event.pointerId !== this.activePointerId) return;
+    if (
+      this.activePointerId !== null &&
+      event.pointerId !== this.activePointerId
+    )
+      return;
     const dragOffset = event.clientX - this.dragStartX;
     if (!this.isPastDragging()) {
       if (Math.abs(dragOffset) <= this.pastDragStartThresholdPx) return;
       // Threshold crossed — lock pointer capture now so fast out-of-bounds
       // moves are still tracked, then mark as dragging.
       const viewport = this.pastCarouselViewport?.nativeElement;
-      if (viewport?.setPointerCapture) viewport.setPointerCapture(event.pointerId);
+      if (viewport?.setPointerCapture)
+        viewport.setPointerCapture(event.pointerId);
       this.isPastDragging.set(true);
       this.suppressPastClick = true;
     }
@@ -337,7 +383,11 @@ readonly section = toSignal(
 
   @HostListener('window:pointerup', ['$event'])
   onPastPointerUp(event: PointerEvent): void {
-    if (this.activePointerId !== null && event.pointerId !== this.activePointerId) return;
+    if (
+      this.activePointerId !== null &&
+      event.pointerId !== this.activePointerId
+    )
+      return;
     const viewport = this.pastCarouselViewport?.nativeElement;
     if (viewport?.releasePointerCapture && this.activePointerId !== null)
       viewport.releasePointerCapture(this.activePointerId);
@@ -350,7 +400,11 @@ readonly section = toSignal(
 
   @HostListener('window:pointercancel', ['$event'])
   onPastPointerCancel(event: PointerEvent): void {
-    if (this.activePointerId !== null && event.pointerId !== this.activePointerId) return;
+    if (
+      this.activePointerId !== null &&
+      event.pointerId !== this.activePointerId
+    )
+      return;
     const viewport = this.pastCarouselViewport?.nativeElement;
     if (viewport?.releasePointerCapture && this.activePointerId !== null)
       viewport.releasePointerCapture(this.activePointerId);
@@ -376,7 +430,8 @@ readonly section = toSignal(
   }
 
   private finishPastDrag(): void {
-    const viewportWidth = this.pastCarouselViewport?.nativeElement?.clientWidth ?? 0;
+    const viewportWidth =
+      this.pastCarouselViewport?.nativeElement?.clientWidth ?? 0;
     const threshold = Math.max(36, viewportWidth * 0.08);
     const dragOffset = this.pastDragOffsetPx();
     if (Math.abs(dragOffset) >= threshold) {
@@ -394,7 +449,9 @@ readonly section = toSignal(
     this.pastDragOffsetPx.set(0);
   }
 
-  trackBySlug(_: number, event: EventItem): string { return event.slug; }
+  trackBySlug(_: number, event: EventItem): string {
+    return event.slug;
+  }
   trackBySlideItem(index: number, event: EventItem | null): string {
     return event?.slug ?? `placeholder-${index}`;
   }
@@ -438,7 +495,7 @@ readonly section = toSignal(
                     if (!Number.isFinite(ms)) return false;
                     return ms < nowMs;
                   })
-                  .map(([, e]) => e)
+                  .map(([, e]) => e),
               );
 
               this.goToPastPage(0);
@@ -453,7 +510,7 @@ readonly section = toSignal(
               return of(null);
             }),
           );
-        })
+        }),
       )
       .subscribe();
   }
@@ -474,7 +531,9 @@ readonly section = toSignal(
     const rawDesc = (e.summary ?? e.subtitle ?? '').trim();
     const plain =
       rawDesc.length > 0
-        ? decodeHtmlEntities(rawDesc).replace(/<[^>]*>/g, '').trim()
+        ? decodeHtmlEntities(rawDesc)
+            .replace(/<[^>]*>/g, '')
+            .trim()
         : '';
     const description =
       plain.length > 0 ? plain : this.seoMeta.defaultDescription;
@@ -516,7 +575,9 @@ readonly section = toSignal(
   private getShareUrl(): string {
     const slug = this.event()?.slug;
     const base = this.seoMeta.baseUrl.replace(/\/$/, '');
-    return slug ? `${base}/resources/events/${slug}` : `${base}/resources/events`;
+    return slug
+      ? `${base}/resources/events/${slug}`
+      : `${base}/resources/events`;
   }
 
   getFacebookShareUrl(): string {
@@ -562,10 +623,13 @@ readonly section = toSignal(
     event.preventDefault();
     if (!isPlatformBrowser(this.platformId)) return;
     const url = this.getShareUrl();
-    navigator.clipboard?.writeText(url).then(() => {
-      this.linkCopied.set(true);
-      setTimeout(() => this.linkCopied.set(false), 2000);
-    }).catch(() => { });
+    navigator.clipboard
+      ?.writeText(url)
+      .then(() => {
+        this.linkCopied.set(true);
+        setTimeout(() => this.linkCopied.set(false), 2000);
+      })
+      .catch(() => {});
   }
 
   private eventsContentJsonUrl(): string {
@@ -580,7 +644,9 @@ readonly section = toSignal(
         if (data?.events?.[slug]) return of(data);
         return throwError(() => new Error('Event slug not in GraphQL payload'));
       }),
-      catchError(() => this.http.get<EventsContent>(this.eventsContentJsonUrl())),
+      catchError(() =>
+        this.http.get<EventsContent>(this.eventsContentJsonUrl()),
+      ),
     );
   }
 
@@ -605,14 +671,14 @@ readonly section = toSignal(
     return this.http.post<GraphqlResponse>(url, { query }).pipe(
       switchMap((res) => {
         const raw = res?.data?.eventsContent?.content;
-       
+
         if (!raw) {
           return throwError(() => new Error('Missing eventsContent.content'));
         }
         try {
           const parsed = JSON.parse(raw) as EventsContent;
           if (parsed?.events && typeof parsed.events === 'object') {
-             console.log(parsed?.events,"rawrawrawrawrawrawrawrawraw")
+            console.log(parsed?.events, 'rawrawrawrawrawrawrawrawraw');
             return of(parsed);
           }
         } catch {
@@ -622,5 +688,4 @@ readonly section = toSignal(
       }),
     );
   }
-
 }

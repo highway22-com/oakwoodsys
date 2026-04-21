@@ -204,10 +204,14 @@ export class AppNavbar implements OnInit, OnDestroy {
             (data.content ?? null) as unknown as NavbarContent['content'],
           );
         }
-        // 3) Always fall through to GraphQL for freshest data
+        // La barra ya es interactiva con JSON estático/CMS; GraphQL refresca en segundo plano.
+        this.loading.set(false);
         this.loadMenuFromGraphQL();
       },
-      error: () => this.loadMenuFromGraphQL(),
+      error: () => {
+        this.loading.set(false);
+        this.loadMenuFromGraphQL();
+      },
     });
   }
 
@@ -236,7 +240,7 @@ export class AppNavbar implements OnInit, OnDestroy {
         }
         this.menuItems.set(data.menu);
         this.content.set(data.content ?? null);
-        if (finishLoading) this.loading.set(false);
+        this.loading.set(false);
       },
       error: (error) => {
         console.error('Error loading navbar content:', error);
