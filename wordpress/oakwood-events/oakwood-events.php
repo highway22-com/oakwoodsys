@@ -3,7 +3,7 @@
  * Plugin Name: Oakwood Events
  * Plugin URI: https://oakwoodsys.com
  * Description: Custom Post Type "Events" with Speakers taxonomy. Provides REST and GraphQL endpoints to serve events JSON compatible with the frontend.
- * Version: 1.0.21
+ * Version: 1.0.23
  * Author: Oakwood Systems
  * License: GPL v2 or later
  * Text Domain: oakwood-events
@@ -15,10 +15,12 @@ define( 'OAKWOOD_EVENTS_POST_TYPE', 'oak_event' );
 define( 'OAKWOOD_EVENTS_SPEAKER_TAXONOMY', 'oak_speaker' );
 define( 'OAKWOOD_EVENTS_TAG_TAXONOMY', 'oak_event_tag' );
 define( 'OAKWOOD_EVENTS_GLOBAL_OPTION', 'oakwood_events_global_content' );
+define( 'OAKWOOD_EVENTS_TIMEZONE_OPTION', 'oakwood_events_timezone' );
 define( 'OAKWOOD_EVENTS_NONCE_ACTION', 'oakwood_events_save_meta' );
 define( 'OAKWOOD_EVENTS_NONCE_NAME', 'oakwood_events_nonce' );
 
 require_once __DIR__ . '/includes/meta.php';
+require_once __DIR__ . '/includes/hero-sync.php';
 require_once __DIR__ . '/includes/settings.php';
 require_once __DIR__ . '/includes/speakers.php';
 require_once __DIR__ . '/includes/event-tag.php';
@@ -116,6 +118,7 @@ add_action( 'init', 'oakwood_events_register_post_type_and_taxonomy' );
 
 function oakwood_events_activate() {
 	oakwood_events_register_post_type_and_taxonomy();
+	add_option( OAKWOOD_EVENTS_TIMEZONE_OPTION, 'America/Chicago', '', false );
 	flush_rewrite_rules();
 }
 register_activation_hook( __FILE__, 'oakwood_events_activate' );

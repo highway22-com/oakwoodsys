@@ -1,4 +1,14 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild, inject, signal, computed, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewChild,
+  inject,
+  signal,
+  computed,
+  PLATFORM_ID,
+} from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { take } from 'rxjs/operators';
@@ -37,40 +47,98 @@ export interface EventItem {
 }
 
 export interface EventsContent {
-  hero: { eyebrow: string; title: string; description: string; heroVideoUrls?: string[]; heroImage?: string };
-  noEventsMessage: { title: string; description: string; ctaText: string; ctaAnchor: string };
-  upcomingEventsSection: { eyebrow: string; title: string; description: string };
+  hero: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    heroVideoUrls?: string[];
+    heroImage?: string;
+  };
+  noEventsMessage: {
+    title: string;
+    description: string;
+    ctaText: string;
+    ctaAnchor: string;
+  };
+  upcomingEventsSection: {
+    eyebrow: string;
+    title: string;
+    description: string;
+  };
   pastEventsSection: { eyebrow: string; title: string; description: string };
-  ctaSection: { title: string; description: string; primaryText: string; primaryLink: string };
+  ctaSection: {
+    title: string;
+    description: string;
+    primaryText: string;
+    primaryLink: string;
+  };
   events: Record<string, EventItem>;
 }
 
-/** Instantánea de fin del evento para upcoming vs past (compartido con event-detail). */
+/**
+ * Returns the UTC millisecond timestamp that represents when an event ends
+ * (or starts, if no end/duration is available).
+ *
+ * ISO strings from the BE already carry a UTC offset (e.g. "2026-04-13T16:00:00-05:00"),
+ * so Date.parse() converts them to UTC correctly — no manual timezone math needed.
+ */
 export function eventRefEndMs(e: EventItem): number | null {
+  // Prefer explicit end time
   const endRaw = e.eventEndISO?.trim();
   if (endRaw) {
     const t = Date.parse(endRaw);
     if (Number.isFinite(t)) return t;
   }
+
+  // Fall back to start + duration
   const startRaw = e.eventStartISO?.trim();
   if (!startRaw) return null;
   const startMs = Date.parse(startRaw);
   if (!Number.isFinite(startMs)) return null;
+
   const d = e.durationMinutes;
   if (typeof d === 'number' && d > 0) {
     return startMs + d * 60_000;
   }
+
+  // Last resort: treat start time as the reference point
   return startMs;
 }
 
-export function eventScheduleBucket(e: EventItem, nowMs: number): 'past' | 'upcoming' | null {
+/**
+ * Returns the UTC millisecond timestamp for when an event starts.
+ * Used for sorting upcoming events (ascending) and past events (descending).
+ */
+export function eventStartMs(e: EventItem): number {
+  const raw = e.eventStartISO?.trim();
+  if (!raw) return 0;
+  const t = Date.parse(raw);
+  return Number.isFinite(t) ? t : 0;
+}
+
+/**
+ * Determines whether an event is 'past' or 'upcoming' relative to nowMs (UTC).
+ *
+ * Priority:
+ *  1. ISO-based comparison (most reliable — offset is embedded in the string)
+ *  2. Explicit status field as a fallback for events with no date data
+ */
+export function eventScheduleBucket(
+  e: EventItem,
+  nowMs: number,
+): 'past' | 'upcoming' | null {
   const endMs = eventRefEndMs(e);
   if (endMs !== null) {
+    // ISO strings include the offset, so this comparison is timezone-safe
     return endMs < nowMs ? 'past' : 'upcoming';
   }
+
+  // No parseable date — fall back to explicit status field
   const s = e.status?.trim().toLowerCase();
   if (s === 'past') return 'past';
-  if (s === 'upcoming' || s === 'in progress' || s === 'in_progress') return 'upcoming';
+  if (s === 'upcoming' || s === 'in progress' || s === 'in_progress')
+    return 'upcoming';
+
   return null;
 }
 
@@ -90,7 +158,8 @@ export default class Events implements OnInit {
   private activePointerId: number | null = null;
   private suppressPastClick = false;
 
-  @ViewChild('pastCarouselViewport') pastCarouselViewport?: ElementRef<HTMLDivElement>;
+  @ViewChild('pastCarouselViewport')
+  pastCarouselViewport?: ElementRef<HTMLDivElement>;
 
   readonly linkCopied = signal(false);
 
@@ -104,22 +173,24 @@ export default class Events implements OnInit {
   readonly pastEvents = signal<EventItem[]>([]);
   readonly hasUpcomingEvents = computed(() => this.upcomingEvents().length > 0);
   readonly hasPastEvents = computed(() => this.pastEvents().length > 0);
-  readonly hasAnyEvents = computed(() => this.hasUpcomingEvents() || this.hasPastEvents());
+  readonly hasAnyEvents = computed(
+    () => this.hasUpcomingEvents() || this.hasPastEvents(),
+  );
 
   readonly pastEventsPage = signal(0);
-  readonly pastEventsPageSize = computed(() => this.isMobileView() ? 1 : 3);
+  readonly pastEventsPageSize = computed(() => (this.isMobileView() ? 1 : 3));
   readonly maxPastEvents = 12;
   readonly maxPastPages = 6;
 
   readonly limitedPastEvents = computed(() =>
-    this.pastEvents().slice(0, this.maxPastEvents)
+    this.pastEvents().slice(0, this.maxPastEvents),
   );
 
   readonly pastPageCount = computed(() =>
     Math.min(
       this.maxPastPages,
-      Math.ceil(this.limitedPastEvents().length / this.pastEventsPageSize())
-    )
+      Math.ceil(this.limitedPastEvents().length / this.pastEventsPageSize()),
+    ),
   );
 
   readonly pastSlides = computed<(EventItem | null)[][]>(() => {
@@ -129,11 +200,9 @@ export default class Events implements OnInit {
 
     for (let i = 0; i < items.length; i += pageSize) {
       const chunk: (EventItem | null)[] = items.slice(i, i + pageSize);
-
       while (chunk.length < pageSize) {
         chunk.push(null);
       }
-
       slides.push(chunk);
     }
 
@@ -141,11 +210,12 @@ export default class Events implements OnInit {
   });
 
   readonly pastPageArray = computed(() =>
-    Array.from({ length: this.pastPageCount() }, (_, i) => i)
+    Array.from({ length: this.pastPageCount() }, (_, i) => i),
   );
 
-  readonly pastTrackTransform = computed(() =>
-    `translateX(calc(-${this.pastEventsPage() * 100}% + ${this.pastDragOffsetPx()}px))`
+  readonly pastTrackTransform = computed(
+    () =>
+      `translateX(calc(-${this.pastEventsPage() * 100}% + ${this.pastDragOffsetPx()}px))`,
   );
 
   goToPastPage(page: number): void {
@@ -167,9 +237,6 @@ export default class Events implements OnInit {
     this.dragStartX = event.clientX;
     this.isPastDragging.set(false);
     this.pastDragOffsetPx.set(0);
-    // Do NOT set pointer capture here — that would redirect the synthesized
-    // click event away from the <a routerLink> inside the card.
-    // Capture is set lazily in onPastPointerMove once the drag threshold is crossed.
   }
 
   onPastDragStart(event: DragEvent): void {
@@ -179,13 +246,15 @@ export default class Events implements OnInit {
   @HostListener('window:pointermove', ['$event'])
   onPastPointerMove(event: PointerEvent): void {
     if (this.dragStartX === null || this.activePointerId === null) return;
-    if (this.activePointerId !== null && event.pointerId !== this.activePointerId) return;
+    if (
+      this.activePointerId !== null &&
+      event.pointerId !== this.activePointerId
+    )
+      return;
 
     const dragOffset = event.clientX - this.dragStartX;
     if (!this.isPastDragging()) {
       if (Math.abs(dragOffset) <= this.pastDragStartThresholdPx) return;
-      // Threshold crossed — this is a real drag. Now capture the pointer so
-      // fast moves outside the viewport are still tracked.
       const viewport = this.pastCarouselViewport?.nativeElement;
       if (viewport?.setPointerCapture) {
         viewport.setPointerCapture(event.pointerId);
@@ -200,7 +269,6 @@ export default class Events implements OnInit {
 
   onPastViewportClick(event: MouseEvent): void {
     if (!this.suppressPastClick) return;
-
     event.preventDefault();
     event.stopPropagation();
     this.suppressPastClick = false;
@@ -208,7 +276,11 @@ export default class Events implements OnInit {
 
   @HostListener('window:pointerup', ['$event'])
   onPastPointerUp(event: PointerEvent): void {
-    if (this.activePointerId !== null && event.pointerId !== this.activePointerId) return;
+    if (
+      this.activePointerId !== null &&
+      event.pointerId !== this.activePointerId
+    )
+      return;
 
     const viewport = this.pastCarouselViewport?.nativeElement;
     if (viewport?.releasePointerCapture && this.activePointerId !== null) {
@@ -225,7 +297,11 @@ export default class Events implements OnInit {
 
   @HostListener('window:pointercancel', ['$event'])
   onPastPointerCancel(event: PointerEvent): void {
-    if (this.activePointerId !== null && event.pointerId !== this.activePointerId) return;
+    if (
+      this.activePointerId !== null &&
+      event.pointerId !== this.activePointerId
+    )
+      return;
 
     const viewport = this.pastCarouselViewport?.nativeElement;
     if (viewport?.releasePointerCapture && this.activePointerId !== null) {
@@ -248,7 +324,8 @@ export default class Events implements OnInit {
   }
 
   private finishPastDrag(): void {
-    const viewportWidth = this.pastCarouselViewport?.nativeElement?.clientWidth ?? 0;
+    const viewportWidth =
+      this.pastCarouselViewport?.nativeElement?.clientWidth ?? 0;
     const threshold = Math.max(36, viewportWidth * 0.08);
     const dragOffset = this.pastDragOffsetPx();
 
@@ -308,8 +385,7 @@ export default class Events implements OnInit {
                 this.loading.set(false);
                 return;
               }
-            } catch {
-            }
+            } catch {}
           }
           this.loadEventsContentFallback();
         },
@@ -337,8 +413,19 @@ export default class Events implements OnInit {
     const all = Object.values(data.events) as EventItem[];
     const nowMs = Date.now();
 
-    this.upcomingEvents.set(all.filter((e) => eventScheduleBucket(e, nowMs) === 'upcoming'));
-    this.pastEvents.set(all.filter((e) => eventScheduleBucket(e, nowMs) === 'past'));
+    const upcoming = all.filter(
+      (e) => eventScheduleBucket(e, nowMs) === 'upcoming',
+    );
+    const past = all.filter((e) => eventScheduleBucket(e, nowMs) === 'past');
+
+    // Upcoming: soonest first (ascending by start time)
+    upcoming.sort((a, b) => eventStartMs(a) - eventStartMs(b));
+
+    // Past: most recent first (descending by start time)
+    past.sort((a, b) => eventStartMs(b) - eventStartMs(a));
+
+    this.upcomingEvents.set(upcoming);
+    this.pastEvents.set(past);
     this.goToPastPage(0);
   }
 
@@ -372,9 +459,12 @@ export default class Events implements OnInit {
     event.preventDefault();
     if (!isPlatformBrowser(this.platformId)) return;
     const url = this.getShareUrl();
-    navigator.clipboard?.writeText(url).then(() => {
-      this.linkCopied.set(true);
-      setTimeout(() => this.linkCopied.set(false), 2000);
-    }).catch(() => { });
+    navigator.clipboard
+      ?.writeText(url)
+      .then(() => {
+        this.linkCopied.set(true);
+        setTimeout(() => this.linkCopied.set(false), 2000);
+      })
+      .catch(() => {});
   }
 }

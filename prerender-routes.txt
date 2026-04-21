@@ -75,9 +75,3 @@
 /structured-engagement/azure-hpc-migration-assessment
 /structured-engagement/azure-hpc-max-poc
 /structured-engagement/azure-hpc-pro-poc
-/resources/events/azure-hpc-education-webinar
-/resources/events/azure-hpc-education-webinar
-/resources/events/azure-hpc-education-webinar
-/resources/events/azure-hpc-education-webinar
-/resources/events/manufacturers-modernize-webinar
-/resources/events/high-performance-computing-webinar

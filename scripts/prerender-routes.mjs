@@ -133,21 +133,17 @@ async function main() {
   STRUCTURED_SLUGS.forEach((s) => routes.push(`/structured-engagement/${s}`));
 
   const eventSlugs = getSlugsFromJson('public/events-content.json', 'events', 'slug');
-  eventSlugs.forEach((s) => routes.push(`/resources/events/${s}`));
+  // Event detail URLs are SSR-only; do not add to prerender-routes.txt (see app.routes.server.ts).
 
   const outPath = join(ROOT, 'prerender-routes.txt');
   writeFileSync(outPath, routes.join('\n') + '\n', 'utf8');
   console.log(`[prerender-routes] Wrote ${routes.length} routes to prerender-routes.txt`);
 
-  // JSON para getPrerenderParams (blog, case-studies, events)
+  // JSON para getPrerenderParams (blog, case-studies)
   const slugsPath = join(ROOT, 'prerender-slugs.json');
-  writeFileSync(
-    slugsPath,
-    JSON.stringify({ blog, caseStudy, events: eventSlugs }, null, 2),
-    'utf8',
-  );
+  writeFileSync(slugsPath, JSON.stringify({ blog, caseStudy }, null, 2), 'utf8');
   console.log(
-    `[prerender-routes] Wrote prerender-slugs.json (blog: ${blog.length}, caseStudy: ${caseStudy.length}, events: ${eventSlugs.length})`,
+    `[prerender-routes] Wrote prerender-slugs.json (blog: ${blog.length}, caseStudy: ${caseStudy.length})`,
   );
 
   // Sitemap.xml con todas las rutas (para SEO; robots.txt lo referencia)
@@ -162,7 +158,8 @@ async function main() {
     '/structured-engagement',
     '/privacy-policy',
   ];
-  const allPaths = [...new Set([...routes, ...staticPages])];
+  const eventPaths = eventSlugs.map((s) => `/resources/events/${s}`);
+  const allPaths = [...new Set([...routes, ...staticPages, ...eventPaths])];
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${allPaths

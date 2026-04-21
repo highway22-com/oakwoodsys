@@ -386,21 +386,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://oakwoodsys.com/resources/events/azure-hpc-education-webinar</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/events/manufacturers-modernize-webinar</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/resources/events/high-performance-computing-webinar</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://oakwoodsys.com/resources</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -439,5 +424,20 @@
     <loc>https://oakwoodsys.com/privacy-policy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/resources/events/azure-hpc-education-webinar</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/resources/events/manufacturers-modernize-webinar</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/resources/events/high-performance-computing-webinar</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>
