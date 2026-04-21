@@ -67,22 +67,41 @@ function oakwood_events_settings_page() {
 	$notice = '';
 	if ( isset( $_POST['oakwood_events_settings_submit'] ) ) {
 		check_admin_referer( 'oakwood_events_settings_save', 'oakwood_events_settings_nonce' );
+
+		$tz_saved = false;
+		if ( isset( $_POST['oakwood_events_timezone'] ) ) {
+			$tz_raw = wp_unslash( $_POST['oakwood_events_timezone'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			update_option( OAKWOOD_EVENTS_TIMEZONE_OPTION, oakwood_events_sanitize_saved_timezone_setting( $tz_raw ) );
+			$tz_saved = true;
+		}
+
 		$raw = isset( $_POST['oakwood_events_global_json'] ) ? wp_unslash( $_POST['oakwood_events_global_json'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$raw = is_string( $raw ) ? trim( $raw ) : '';
+
+		$json_notice = '';
 		if ( $raw === '' ) {
 			update_option( OAKWOOD_EVENTS_GLOBAL_OPTION, '' );
-			$notice = __( 'Settings cleared. Defaults will be used.', 'oakwood-events' );
+			$json_notice = __( 'Global content cleared; defaults will be used for hero and sections.', 'oakwood-events' );
 		} else {
 			$decoded = json_decode( $raw, true );
 			if ( json_last_error() !== JSON_ERROR_NONE || ! is_array( $decoded ) ) {
-				$notice = __( 'Invalid JSON. Nothing saved.', 'oakwood-events' );
+				$json_notice = __( 'Invalid JSON — global content was not updated.', 'oakwood-events' );
 			} else {
 				update_option( OAKWOOD_EVENTS_GLOBAL_OPTION, wp_json_encode( $decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
-				$notice = __( 'Settings saved.', 'oakwood-events' );
+				$json_notice = __( 'Global content saved.', 'oakwood-events' );
 			}
 		}
+
+		$parts = array_filter(
+			array(
+				$tz_saved ? __( 'Events timezone saved.', 'oakwood-events' ) : '',
+				$json_notice,
+			)
+		);
+		$notice = implode( ' ', $parts );
 	}
 
+	$current_tz = oakwood_events_get_plugin_events_timezone();
 	$current = oakwood_events_get_global_content();
 	$current_raw = wp_json_encode( $current, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 
@@ -93,9 +112,16 @@ function oakwood_events_settings_page() {
 		echo '<div class="notice notice-info is-dismissible"><p>' . esc_html( $notice ) . '</p></div>';
 	}
 
-	echo '<p class="description">' . esc_html__( 'Edit the global sections for the events JSON (hero, sections, CTA). This is stored as a single JSON blob in wp_options.', 'oakwood-events' ) . '</p>';
 	echo '<form method="post">';
 	wp_nonce_field( 'oakwood_events_settings_save', 'oakwood_events_settings_nonce' );
+	echo '<p class="description">' . esc_html__( 'Events timezone applies to all events (start/end fields in the editor). Changing it changes how local times map to stored ISO timestamps when you save an event.', 'oakwood-events' ) . '</p>';
+	echo '<table class="form-table" role="presentation"><tbody><tr>';
+	echo '<th scope="row"><label for="oakwood_events_timezone">' . esc_html__( 'Events timezone', 'oakwood-events' ) . '</label></th>';
+	echo '<td><select name="oakwood_events_timezone" id="oakwood_events_timezone" class="regular-text">';
+	echo wp_timezone_choice( $current_tz, get_user_locale() );
+	echo '</select></td></tr></tbody></table>';
+
+	echo '<p class="description">' . esc_html__( 'Edit the global sections for the events JSON (hero, sections, CTA). This is stored as a single JSON blob in wp_options.', 'oakwood-events' ) . '</p>';
 	echo '<textarea name="oakwood_events_global_json" rows="24" class="large-text code" style="font-family:monospace;">' . esc_textarea( $current_raw ) . '</textarea>';
 	echo '<p><button type="submit" class="button button-primary" name="oakwood_events_settings_submit" value="1">' . esc_html__( 'Save settings', 'oakwood-events' ) . '</button></p>';
 	echo '</form>';
