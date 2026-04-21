@@ -1,50 +1,21 @@
 @if (loading()) {
-<section class="min-h-screen w-full bg-[#F7F9FC]" role="status" aria-live="polite">
-  <span class="sr-only">Loading event</span>
-  <div class="border-b border-gray-200 bg-white px-4 py-10 sm:px-6 sm:py-14 md:px-8 lg:px-20 lg:py-16">
-    <div class="max-w-4xl animate-pulse space-y-4">
-      <div class="flex gap-2">
-        <div class="h-4 w-14 rounded bg-gray-200"></div>
-        <div class="h-4 w-3 rounded bg-gray-200"></div>
-        <div class="h-4 w-20 rounded bg-gray-200"></div>
-      </div>
-      <div class="h-10 w-full max-w-2xl rounded bg-gray-200 sm:h-14 md:h-16"></div>
-      <div class="h-5 w-full max-w-xl rounded bg-gray-200"></div>
-      <div class="h-8 w-40 rounded-full bg-gray-200"></div>
-      <div class="flex items-center gap-3">
-        <div class="h-5 w-5 shrink-0 rounded bg-gray-200"></div>
-        <div class="h-5 w-64 rounded bg-gray-200"></div>
-      </div>
-      <div class="flex flex-wrap gap-3 pt-4">
-        <div class="h-4 w-12 rounded bg-gray-200"></div>
-        @for (ic of [1, 2, 3, 4]; track ic) {
-        <div class="h-8 w-8 rounded bg-gray-200"></div>
-        }
-      </div>
-    </div>
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="animate-spin h-12 w-12 border-b-2 border-blue-600"></div>
   </div>
-  <div class="mx-auto max-w-6xl px-4 pt-10 sm:px-6 lg:px-24">
-    <div class="animate-pulse space-y-4 p-6 sm:p-8 lg:p-10">
-      <div class="h-6 w-48 rounded bg-gray-200"></div>
-      <div class="h-4 w-full rounded bg-gray-200"></div>
-      <div class="h-4 w-full rounded bg-gray-200"></div>
-      <div class="h-4 max-w-[85%] rounded bg-gray-200"></div>
-    </div>
-  </div>
-</section>
-} @else if (event(); as e) {
+}@else if (event(); as e) {
 @if (showEventHeroVideoSection()) {
-<section class="w-full bg-white flex items-center justify-center pt-6 sm:pt-24 px-4  pb-6 sm:pb-8 lg:pb-12"
-  aria-label="Event video">
+<section class="w-full bg-white py-8 sm:py-12 flex justify-center px-4 sm:px-6 lg:px-30" aria-label="Event video">
   @if (eventHeroYoutubeEmbed(); as heroEmbed) {
-<div class="w-full max-w-7xl mx-auto aspect-[16/7] min-h-[420px]">
-    <iframe [src]="heroEmbed" title="Event video" class="w-full h-full min-h-[420px] rounded-sm border-0"
-      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen
-      loading="lazy"></iframe>
-  </div>
+    <div class="w-full shrink-0 relative video-hero-height" style="aspect-ratio: 16/7;">
+      <iframe [src]="heroEmbed" title="Event video" class="absolute inset-0 w-full h-full border-0"
+        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen
+        loading="lazy"></iframe>
+    </div>
   } @else {
-  <video controls playsinline [src]="firstHeroVideoUrl()" class="w-full max-w-7xl mx-auto aspect-[16/7] min-h-[420px] object-contain block"
-    [attr.poster]="event()?.imageUrl || null"></video>
+    <video controls playsinline [src]="firstHeroVideoUrl()"
+      class="w-full shrink-0 relative object-cover video-hero-height"
+      style="aspect-ratio: 16/7;"
+      [attr.poster]="event()?.imageUrl || null"></video>
   }
 </section>
 }
@@ -105,7 +76,8 @@
   @if (!isPastEvent()) {
   <section class="relative w-full min-h-[70vh] flex items-center">
     @if (e.heroImage) {
-    <img [src]="e.heroImage" [alt]="e.title" class="absolute inset-0 w-full h-full object-cover object-[50%_28%]" />
+    <img [src]="e.heroImage" [alt]="e.title" class="absolute inset-0 w-full h-full object-cover object-[50%_40%]" />
+    <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(234deg, rgba(0, 0, 0, 0.00) 2.32%, #000 94.42%);"></div>
     }
 
     <div class="absolute inset-0 opacity-10"
@@ -270,9 +242,9 @@
   </section>
   } @else {
 <section class="relative w-full bg-white">
-    <div class="relative z-10 w-full px-4 pt-10 pb-4 sm:px-6 sm:py-14 md:px-8 lg:px-32 lg:pt-16">
+    <div class="relative  w-full px-10 pt-10 pb-4 sm:px-6 sm:py-14 md:px-8 lg:px-32 lg:pt-16">
       <div class="max-w-4xl w-full">
-        <!-- Breadcrumb removed as per user request -->
+
 
         <h1
           class="mb-4 text-2xl font-semibold leading-tight tracking-tight text-s-900 sm:text-4xl md:text-5xl lg:text-[4rem]">
@@ -434,12 +406,11 @@
   </section>
   }
 
-  <div class="w-full mx-auto px-4 sm:px-6 lg:px-24">
+  <div class="w-full mx-auto px-1 lg:px-24">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
       <div class="lg:col-span-12">
         <div class="p-6 ">
-    <!-- Already in your template, just ensure plugin is installed -->
-<div class="event-html prose max-w-none" [innerHTML]="overviewHtml()"></div>
+        <div class="event-html prose max-w-none" [innerHTML]="overviewHtml()"></div>
         </div>
       </div>
 
@@ -507,7 +478,7 @@
                     [linkBase]="'/resources/events'" [imageUrl]="event.imageUrl" [imageAlt]="event.imageAlt"
                     [tag]="event.tag" [statusType]="event.type" [location]="event.location"
                     [eventStartISO]="event.eventStartISO ?? null" [eventEndISO]="event.eventEndISO ?? null"
-                    [durationMinutes]="event.durationMinutes ?? null" [title]="event.title"
+                    [durationMinutes]="event.durationMinutes ?? null" [title]="event.title" [eventTimeZone]="event.eventTimeZone ?? null"
                      [queryParams]="{ section: 'past_event' }"
                     [readMoreText]="'View Event'"></app-event-card>
                   <ng-template #emptyCardSlot>

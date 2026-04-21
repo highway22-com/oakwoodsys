@@ -80,12 +80,12 @@
 
 /* Links */
 .event-html a {
-  color: #0D53A2;
+  color: #0d53a2;
   text-decoration: underline;
 }
 
 .event-html a:hover {
-  color: #0A4484;
+  color: #0a4484;
 }
 
 /* Force prose to show bullets */
@@ -94,4 +94,14 @@
 }
 .prose li {
   display: list-item !important;
+}
+
+.video-hero-height {
+  height: 36vh;
+}
+
+@media (min-width: 640px) {
+  .video-hero-height {
+    height: 84vh;
+  }
 }
