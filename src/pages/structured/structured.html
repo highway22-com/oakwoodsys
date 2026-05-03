@@ -1,92 +1,119 @@
-<app-video-hero
-  [loading]="false"
-  [hvh70]="true"
-  [videoUrls]="pageContent().hero.videoUrls"
-  [title]="pageContent().hero.title"
-  [description]="pageContent().hero.description"
-  [showIndicators]="false"
->
-</app-video-hero>
-
-@for (section of pageContent().sections; track section.title) {
-<section
-  class="w-full py-12 sm:py-16 md:py-20 lg:py-24"
-  [ngClass]="section.background === 'gray' ? 'bg-gray-50' : 'bg-white'"
->
-  <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <div
-      class="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 min-h-[600px] lg:min-h-[720px]"
-    >
-      <div
-        class="relative min-h-[240px] sm:min-h-[320px] lg:h-[75vh] lg:sticky lg:top-32 order-1 lg:order-1 flex-1 overflow-hidden"
-      >
-        <img
-          [src]="section.image"
-          [alt]="section.imageAlt"
-          class="absolute inset-0 w-full h-full object-cover"
-        />
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
-        ></div>
-        <div class="relative z-10 h-full flex flex-col justify-end p-6 sm:p-8">
-          <h2
-            class="text-white font-['Inter'] text-[50px] font-normal leading-[110%] max-w-[350px] sm:max-w-[400px] md:max-w-[500px] mb-4 sm:mb-5"
-          >
-            {{ section.title }}
-          </h2>
-          <p
-            class="text-[#F6F6F6] font-['Segoe_UI'] text-[18px] font-normal leading-[150%] max-w-[450px] sm:max-w-[500px]"
-          >
-            {{ section.description }}
-          </p>
-        </div>
-      </div>
-
-      <div
-        class="flex flex-col gap-4 sm:gap-6 px-0 sm:px-4 md:px-8 lg:px-0 order-2 lg:order-2"
-      >
-        @for (card of section.cards; track card.slug) {
-        <div
-          class="structured-card structured-card--link"
-          [routerLink]="['/structured-engagement', card.slug]"
-          role="link"
-          tabindex="0"
-        >
-          <div class="structured-card__icon">
-            @if (isIconAssetUrl(getCardIcon(card))) {
-              <img
-                class="structured-card__icon-image"
-                [src]="getIconAssetSrc(getCardIcon(card))"
-                [alt]="card.title + ' icon'"
-                loading="lazy"
-              />
-            } @else if (getCardIcon(card)) {
-              <div [innerHTML]="getSafeSvg(getCardIcon(card))"></div>
-            }
-          </div>
-          <h3 class="structured-card__title">{{ card.title }}</h3>
-          <p class="structured-card__description">
-            {{ card.description }}
-          </p>
-          <a
-            [routerLink]="['/structured-engagement', card.slug]"
-            class="structured-card__link"
-          >
-            {{ card.linkText }} <span class="ml-1">></span>
-          </a>
-        </div>
-        }
-      </div>
-    </div>
+@if (loading()) {
+  <div class="min-h-[90vh] flex items-center justify-center">
+    <div class="animate-spin h-12 w-12 border-b-2 border-blue-600"></div>
   </div>
-</section>
-}
+} @else if (error()) {
+  <section class="w-full min-h-[60vh] flex items-center justify-center">
+    <div class="text-center">
+      <h1 class="text-2xl font-semibold text-gray-900 mb-2">
+        Something went wrong
+      </h1>
+      <p class="text-gray-600 mb-6">
+        We couldn't load this page. Please try again later.
+      </p>
+      <a routerLink="/" class="text-blue-600 hover:text-blue-700"
+        >Return home</a
+      >
+    </div>
+  </section>
+} @else {
+  <app-video-hero
+    [loading]="false"
+    [hvh70]="true"
+    [videoUrls]="pageContent().hero.videoUrls"
+    [title]="pageContent().hero.title"
+    [description]="pageContent().hero.description"
+    [showIndicators]="false"
+  >
+  </app-video-hero>
+  @if (pageContent().sections.length === 0) {
+    <div class="min-h-[40vh] flex items-center justify-center text-gray-400">
+      No engagements available at this time.
+    </div>
+  } @else {
+    @for (section of pageContent().sections; track section.title) {
+      <section
+        class="w-full py-12 sm:py-16 md:py-20 lg:py-24"
+        [ngClass]="section.background === 'gray' ? 'bg-gray-50' : 'bg-white'"
+      >
+        <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+          <div
+            class="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 min-h-[600px] lg:min-h-[720px]"
+          >
+            <div
+              class="relative min-h-[240px] sm:min-h-[320px] lg:h-[75vh] lg:sticky lg:top-32 order-1 lg:order-1 flex-1 overflow-hidden"
+            >
+              <img
+                [src]="section.image"
+                [alt]="section.imageAlt"
+                class="absolute inset-0 w-full h-full object-cover"
+              />
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
+              ></div>
+              <div
+                class="relative z-10 h-full flex flex-col justify-end p-6 sm:p-8"
+              >
+                <h2
+                  class="text-white font-['Inter'] text-[50px] font-normal leading-[110%] max-w-[350px] sm:max-w-[400px] md:max-w-[500px] mb-4 sm:mb-5"
+                >
+                  {{ section.title }}
+                </h2>
+                <p
+                  class="text-[#F6F6F6] font-['Segoe_UI'] text-[18px] font-normal leading-[150%] max-w-[450px] sm:max-w-[500px]"
+                >
+                  {{ section.description }}
+                </p>
+              </div>
+            </div>
 
-<app-cta-section
-  [title]="pageContent().cta.title"
-  [description]="pageContent().cta.description"
-  [primaryText]="pageContent().cta.primaryText"
-  [primaryLink]="pageContent().cta.primaryLink"
-  [secondaryText]="pageContent().cta.secondaryText"
-  [secondaryLink]="pageContent().cta.secondaryLink"
-/>
+            <div
+              class="flex flex-col gap-4 sm:gap-6 px-0 sm:px-4 md:px-8 lg:px-0 order-2 lg:order-2"
+            >
+              @for (card of section.cards; track card.slug) {
+                <div
+                  class="structured-card structured-card--link"
+                  [routerLink]="['/structured-engagement', card.slug]"
+                  role="link"
+                  tabindex="0"
+                >
+                  <div class="structured-card__icon">
+                    @if (isIconAssetUrl(getCardIcon(card))) {
+                      <img
+                        class="structured-card__icon-image"
+                        [src]="getIconAssetSrc(getCardIcon(card))"
+                        [alt]="card.title + ' icon'"
+                        loading="lazy"
+                      />
+                    } @else if (getCardIcon(card)) {
+                      <div [innerHTML]="getSafeSvg(getCardIcon(card))"></div>
+                    }
+                  </div>
+                  <h3 class="structured-card__title">{{ card.title }}</h3>
+                  <p class="structured-card__description">
+                    {{ card.description }}
+                  </p>
+                  <a
+                    [routerLink]="['/structured-engagement', card.slug]"
+                    class="structured-card__link"
+                  >
+                    {{ card.linkText }} <span class="ml-1">></span>
+                  </a>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+    }
+  }
+
+  <app-cta-section
+    [title]="pageContent().cta.title"
+    [description]="pageContent().cta.description"
+    [primaryText]="pageContent().cta.primaryText"
+    [primaryLink]="pageContent().cta.primaryLink"
+    [secondaryText]="pageContent().cta.secondaryText"
+    [secondaryLink]="pageContent().cta.secondaryLink"
+  />
+}

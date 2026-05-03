@@ -49,6 +49,11 @@
     "primaryText": "Speak to a licensing expert",
     "primaryLink": "/contact-us"
   },
+  "whatIsIncludedImage": {
+    "src": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Placeholder-Image.png",
+    "alt": "Structured engagement offer visual",
+    "caption": ""
+  },
   "offers": {
     "sql-server-migration-to-azure": {
       "title": "SQL Server Migration to Azure",
@@ -88,7 +93,9 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "4–6 Weeks"
+          "bullets": [
+            "4–6 Weeks"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -145,7 +152,12 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Week 1: Discovery & Design. Weeks 2–3: Build & Integration. Week 4: Testing & Roadmap. Overall: 4–6 Weeks."
+          "bullets": [
+            "Week 1: Discovery & Design",
+            "Weeks 2–3: Build & Integration",
+            "Week 4: Testing & Roadmap",
+            "Overall: 4–6 Weeks"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -203,7 +215,12 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Week 1: Discovery and stakeholder interviews. Weeks 2–3: Analysis and gap identification. Week 4: Recommendations and roadmap delivery. Overall Duration: 4 Weeks."
+          "bullets": [
+            "Week 1: Discovery and stakeholder interviews",
+            "Weeks 2–3: Analysis and gap identification",
+            "Week 4: Recommendations and roadmap delivery",
+            "Overall Duration: 4 Weeks"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -260,7 +277,12 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Phase 1 – Assessment & Planning: Review current environment, map data sources (up to 6), design target architecture, develop migration strategy. Phase 2 – Migration & Validation: Migrate and consolidate data, configure Microsoft Purview, validate performance, accessibility, and security. Phase 3 – Optimization & Enablement: Optimize for performance and cost, train teams, deliver roadmap for advanced analytics/AI. Overall Duration: 12–16 Weeks."
+          "bullets": [
+            "Phase 1 – Assessment & Planning: Review current environment, map data sources (up to 6), design target architecture, develop migration strategy",
+            "Phase 2 – Migration & Validation: Migrate and consolidate data, configure Microsoft Purview, validate performance, accessibility, and security",
+            "Phase 3 – Optimization & Enablement: Optimize for performance and cost, train teams, deliver roadmap for advanced analytics/AI",
+            "Overall Duration: 12–16 Weeks"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -317,7 +339,12 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Morning Session – Discovery & Ideation: Identify high-value scenarios, review data sources, integrations, and governance. Afternoon Session – Build & Deploy: Guided build of AI agent, connect to at least one enterprise dataset, demo and iterate. Wrap-Up & Roadmap: Showcase prototype, provide recommendations for scaling and governance. Overall Duration: 1 Day (Onsite or Virtual)."
+          "bullets": [
+            "Morning Session – Discovery & Ideation: Identify high-value scenarios, review data sources, integrations, and governance",
+            "Afternoon Session – Build & Deploy: Guided build of AI agent, connect to at least one enterprise dataset, demo and iterate",
+            "Wrap-Up & Roadmap: Showcase prototype, provide recommendations for scaling and governance",
+            "Overall Duration: 1 Day (Onsite or Virtual)"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -376,7 +403,12 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Weeks 1–2 – Discovery: Workshops and stakeholder interviews to understand current applications and business goals. Weeks 3–4 – Analysis: Application portfolio review and AI opportunity assessment. Weeks 5–6 – Recommendation: Roadmap creation and delivery of prioritized modernization recommendations. Overall Duration: 6 Weeks."
+          "bullets": [
+            "Weeks 1–2 – Discovery: Workshops and stakeholder interviews to understand current applications and business goals",
+            "Weeks 3–4 – Analysis: Application portfolio review and AI opportunity assessment",
+            "Weeks 5–6 – Recommendation: Roadmap creation and delivery of prioritized modernization recommendations",
+            "Overall Duration: 6 Weeks"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -434,7 +466,12 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Discovery & Context Setting: Review Copilot usage, adoption goals, priority processes, and integration needs. Extensibility Concepts & Demonstrations: Overview of plugins, connectors, APIs, Power Platform; real-world demos; governance and security discussion. Use Case Definition & Roadmap: Prioritize use cases, outline technical approaches, define next steps. Overall Duration: Typically 1–2 Days (depending on scope and number of use cases)."
+          "bullets": [
+            "Discovery & Context Setting: Review Copilot usage, adoption goals, priority processes, and integration needs",
+            "Extensibility Concepts & Demonstrations: Overview of plugins, connectors, APIs, Power Platform; real-world demos; governance and security discussion",
+            "Use Case Definition & Roadmap: Prioritize use cases, outline technical approaches, define next steps",
+            "Overall Duration: Typically 1–2 Days (depending on scope and number of use cases)"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -492,7 +529,12 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Weeks 1–2 – Ideation & Scoping: Stakeholder workshops, use case definition, data and integration assessment, success metric alignment. Weeks 3–6 – Build & Deploy PoC: Develop prototype, integrate enterprise data, configure prompts, workflows, and security controls. Weeks 7–8 – Testing & Roadmap: Pilot with selected business unit (e.g., Sales, HR, Legal), gather feedback, validate outcomes, deliver scaling roadmap. Overall Duration: 8 Weeks."
+          "bullets": [
+            "Weeks 1–2 – Ideation & Scoping: Stakeholder workshops, use case definition, data and integration assessment, success metric alignment",
+            "Weeks 3–6 – Build & Deploy PoC: Develop prototype, integrate enterprise data, configure prompts, workflows, and security controls",
+            "Weeks 7–8 – Testing & Roadmap: Pilot with selected business unit (e.g., Sales, HR, Legal), gather feedback, validate outcomes, deliver scaling roadmap",
+            "Overall Duration: 8 Weeks"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -551,7 +593,12 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Discovery & Planning: Assess applications, dependencies, infrastructure; define migration plan, timelines, and risk mitigation strategy. Migration Execution: Migrate workloads to Azure, validate integrations, security, and performance. Optimization & Handover: Tune workloads for cost efficiency and performance; deliver training and documentation. Overall Duration: 8–10 Weeks."
+          "bullets": [
+            "Discovery & Planning: Assess applications, dependencies, infrastructure; define migration plan, timelines, and risk mitigation strategy",
+            "Migration Execution: Migrate workloads to Azure, validate integrations, security, and performance",
+            "Optimization & Handover: Tune workloads for cost efficiency and performance; deliver training and documentation",
+            "Overall Duration: 8–10 Weeks"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -610,7 +657,12 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Week 1 – Discovery & Design: Review current security tooling and logging, define threat scenarios and compliance requirements, establish PoC scope and success criteria. Weeks 2–3 – Build & Integration: Deploy Sentinel workspace, connect priority data sources, configure analytics rules and automation. Week 4 – Validation & Roadmap: Validate detections and workflows, review dashboards and alerts, deliver scaling roadmap. Overall Duration: 4–6 Weeks."
+          "bullets": [
+            "Week 1 – Discovery & Design: Review current security tooling and logging, define threat scenarios and compliance requirements, establish PoC scope and success criteria",
+            "Weeks 2–3 – Build & Integration: Deploy Sentinel workspace, connect priority data sources, configure analytics rules and automation",
+            "Week 4 – Validation & Roadmap: Validate detections and workflows, review dashboards and alerts, deliver scaling roadmap",
+            "Overall Duration: 4–6 Weeks"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -670,7 +722,12 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Week 1 – Discovery & Design: Review current voice environment, confirm licensing and tenant readiness, define scope and migration plan. Weeks 2–3 – Build & Configuration: Configure Teams Phone, calling setup, auto attendants, call queues, emergency policies, and assign pilot users. Week 4 – Testing, Training & Go-Live: Validate call scenarios, test quality and failover, provide enablement guidance, support production cutover. Overall Duration: 4–6 Weeks."
+          "bullets": [
+            "Week 1 – Discovery & Design: Review current voice environment, confirm licensing and tenant readiness, define scope and migration plan",
+            "Weeks 2–3 – Build & Configuration: Configure Teams Phone, calling setup, auto attendants, call queues, emergency policies, and assign pilot users",
+            "Week 4 – Testing, Training & Go-Live: Validate call scenarios, test quality and failover, provide enablement guidance, support production cutover",
+            "Overall Duration: 4–6 Weeks"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -694,61 +751,69 @@
       ]
     },
     "vmware-migrations": {
-      "title": "VMware migrations",
-      "summary": "Transition from VMware to Azure with expert guidance and proven methodologies.",
-      "duration": "4–6 Weeks",
+      "title": "VMware Migration to Azure",
+      "summary": "Transition VMware workloads to Azure using a proven discovery, planning, and execution framework that simplifies complexity and delivers a stable cloud environment.",
+      "duration": "4 Weeks",
       "delivery": "Remote or Hybrid",
       "category": "Cloud & Infrastructure",
       "sections": [
         {
           "id": "overview",
           "title": "Overview",
-          "body": "This engagement implements a production-ready Microsoft Teams Voice foundation, configures core calling capabilities, and supports a low-risk rollout for pilot or initial users."
+          "body": "Oakwood’s VMware Migration offering helps organizations confidently migrate VMware-based workloads to Microsoft Azure. Built on decades of infrastructure and migration experience, this engagement provides a structured path to modernizing VMware environments while minimizing risk and disruption. The focus is on practical execution, proven patterns, and clear outcomes that demonstrate Oakwood’s experience migrating real-world environments to Azure.",
+          "bullets": [
+            "Delivery Approach:",
+            "1. Discovery & Assessment",
+            "- Review existing VMware environment, including workloads, dependencies, and resource utilization.",
+            "- Identify migration candidates and potential risks.",
+            "- Define migration approach and success criteria.",
+            "2. Migration Planning & Execution",
+            "- Design target Azure architecture using Azure VMware Solution or native Azure services.",
+            "- Migrate VMware workloads using proven tools and repeatable processes.",
+            "- Validate performance, security, and functionality post-migration.",
+            "3. Optimization & Knowledge Transfer",
+            "- Review migrated workloads for performance and cost optimization.",
+            "- Provide operational guidance and recommended next steps.",
+            "- Support handoff to internal IT teams or managed services."
+          ]
         },
         {
           "id": "what-you-will-gain",
           "title": "What You Will Gain",
           "bullets": [
-            "Modern Cloud-Based Voice Platform: Replace or modernize legacy PBX systems with Microsoft Teams Phone.",
-            "Unified Communications Experience: Native integration within Microsoft Teams for chat, meetings, and calling.",
-            "Reduced Infrastructure Dependency: Eliminate on-premises telephony hardware and maintenance overhead.",
-            "Scalable Foundation: Architecture designed to support future growth and advanced voice capabilities."
+            "Reduced risk through a structured, experience-driven migration approach.",
+            "Faster time to value using proven VMware-to-Azure migration patterns.",
+            "Clear visibility into post-migration optimization opportunities.",
+            "Foundation for broader cloud modernization initiatives."
           ]
         },
         {
           "id": "what-is-included",
           "title": "What Is Included",
-          "body": "Scope includes core Teams Phone setup, calling configuration, and enablement for pilot deployment and scale planning.",
+          "body": "Documented assessment findings and migration plan. Migrated VMware workloads validated in Azure. Post-migration optimization recommendations. Knowledge transfer and next-step roadmap.",
           "bullets": [
-            "Production-ready Microsoft Teams Voice configuration.",
-            "Setup of calling plans, Operator Connect, or Direct Routing (as applicable).",
-            "Configured auto attendants, call queues, and emergency calling policies.",
-            "Phone number assignment and voice policy configuration for pilot or initial users.",
-            "Knowledge transfer and recommended roadmap for scaling."
+            "Documented assessment findings and migration plan.",
+            "Migrated VMware workloads validated in Azure.",
+            "Post-migration optimization recommendations.",
+            "Knowledge transfer and next-step roadmap."
           ]
         },
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Week 1 – Discovery & Design: Review current voice environment, confirm licensing and tenant readiness, define scope and migration plan. Weeks 2–3 – Build & Configuration: Configure Teams Phone, calling setup, auto attendants, call queues, emergency policies, and assign pilot users. Week 4 – Testing, Training & Go-Live: Validate call scenarios, test quality and failover, provide enablement guidance, support production cutover. Overall Duration: 4–6 Weeks."
-        },
-        {
-          "id": "who-this-offer-is-for",
-          "title": "Who This Offer Is For",
           "bullets": [
-            "Organizations replacing legacy PBX or on-premises telephony systems.",
-            "Businesses seeking a unified communications solution within Microsoft 365.",
-            "IT teams looking for a structured, low-risk transition to cloud-based voice."
+            "Timeline will vary based on the number, size, and complexity of VMware workloads being migrated"
           ]
         },
         {
           "id": "prerequisites",
           "title": "Prerequisites",
           "bullets": [
-            "Existing Microsoft 365 tenant.",
-            "Microsoft Teams Phone and calling service licenses purchased separately.",
-            "Defined scope and user count for initial deployment.",
-            "Complex integrations or advanced Direct Routing scenarios scoped separately."
+            "Assumes customer has an existing Azure tenant.",
+            "VMware workloads are supported and suitable for migration.",
+            "Networking and identity prerequisites are addressed prior to migration.",
+            "Additional services may be required for complex dependencies or refactoring.",
+            "Time and scope of this engagement will depend on the number and complexity of VMware workloads."
           ]
         }
       ]
@@ -790,7 +855,14 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Discovery & Objectives: Stakeholder interviews, define success criteria, establish scope. Current State Analysis: Review HPC infrastructure, workloads, performance patterns, and operational costs. Azure Feasibility & Analysis: Assess compatibility, scalability, architectural considerations, and benchmark expectations. Security, Compliance & Cost Review: Evaluate Azure security posture, certifications, and pricing considerations. Overall Duration: Typically 3–5 Weeks. Timeline and scope may vary based on the size and complexity of the HPC environment."
+          "bullets": [
+            "Discovery & Objectives: Stakeholder interviews, define success criteria, establish scope",
+            "Current State Analysis: Review HPC infrastructure, workloads, performance patterns, and operational costs",
+            "Azure Feasibility & Analysis: Assess compatibility, scalability, architectural considerations, and benchmark expectations",
+            "Security, Compliance & Cost Review: Evaluate Azure security posture, certifications, and pricing considerations",
+            "Overall Duration: Typically 3–5 Weeks",
+            "Timeline and scope may vary based on the size and complexity of the HPC environment"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -840,7 +912,7 @@
           "title": "What Is Included",
           "body": "Scope includes technical and operational assessment, feasibility validation, and executive-ready recommendations for next steps.",
           "bullets": [
-            "Comprehensive review of HPC infrastructure: compute, storage, networking, and software.",
+            "Comprehensive review of HPC infrastructure covering compute, storage, networking, and software.",
             "Analysis of workloads, applications, job scheduling, and performance patterns.",
             "Feasibility assessment of application and data compatibility with Azure HPC.",
             "Security, compliance, and high-level cost analysis.",
@@ -851,7 +923,14 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Discovery & Objectives: Stakeholder interviews, define success criteria, establish scope. Current State Analysis: Review HPC infrastructure, workloads, performance patterns, and costs. Azure HPC Feasibility & Analysis: Evaluate application compatibility, architectural considerations, and performance potential. Security, Compliance & Cost Review: Assess Azure security, compliance, and pricing benefits. Overall Duration: Typically 3–5 Weeks. Timeline and scope may vary based on the size and complexity of the HPC environment."
+          "bullets": [
+            "Discovery & Objectives: Stakeholder interviews, define success criteria, establish scope",
+            "Current State Analysis: Review HPC infrastructure, workloads, performance patterns, and costs",
+            "Azure HPC Feasibility & Analysis: Evaluate application compatibility, architectural considerations, and performance potential",
+            "Security, Compliance & Cost Review: Assess Azure security, compliance, and pricing benefits",
+            "Overall Duration: Typically 3–5 Weeks",
+            "Timeline and scope may vary based on the size and complexity of the HPC environment"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -912,7 +991,14 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Assessment: Review HPC requirements and target performance. Design: Architect large-scale Azure HPC environment with specialized storage, compute, and networking. Deployment: Configure CycleCloud, Slurm, and integrate advanced networking and storage solutions. Testing: Conduct extensive performance validation of complex workloads. Review & Reporting: Deliver detailed performance, cost analysis, and recommendations. Overall Duration: 12 Weeks + 2 Weeks Optimization Support."
+          "bullets": [
+            "Assessment: Review HPC requirements and target performance",
+            "Design: Architect large-scale Azure HPC environment with specialized storage, compute, and networking",
+            "Deployment: Configure CycleCloud, Slurm, and integrate advanced networking and storage solutions",
+            "Testing: Conduct extensive performance validation of complex workloads",
+            "Review & Reporting: Deliver detailed performance, cost analysis, and recommendations",
+            "Overall Duration: 12 Weeks + 2 Weeks Optimization Support"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
@@ -973,7 +1059,14 @@
         {
           "id": "engagement-timeline",
           "title": "Engagement Timeline",
-          "body": "Assessment: Identify core performance requirements for moderate workloads. Design: Architect balanced HPC environment with compute, storage, and container support. Deployment: Configure CycleCloud, Slurm, AKS, and mid-tier storage. Testing: Execute moderate HPC workloads and analyze scalability. Review & Reporting: Deliver findings, recommendations, and next steps. Overall Duration: 8 Weeks + 2 Weeks Optimization Support."
+          "bullets": [
+            "Assessment: Identify core performance requirements for moderate workloads",
+            "Design: Architect balanced HPC environment with compute, storage, and container support",
+            "Deployment: Configure CycleCloud, Slurm, AKS, and mid-tier storage",
+            "Testing: Execute moderate HPC workloads and analyze scalability",
+            "Review & Reporting: Deliver findings, recommendations, and next steps",
+            "Overall Duration: 8 Weeks + 2 Weeks Optimization Support"
+          ]
         },
         {
           "id": "who-this-offer-is-for",
