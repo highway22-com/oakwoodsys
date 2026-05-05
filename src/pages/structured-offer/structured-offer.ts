@@ -10,6 +10,7 @@ import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-s
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
+import type { GenContentDetailNode } from '../../app/api/graphql';
 
 interface StructuredOfferSection {
   id: string;
@@ -40,6 +41,7 @@ export interface StructuredOfferContent {
   duration?: string;      // e.g., "4 Weeks"
   delivery?: string;      // e.g., "Remote or Hybrid"
   category?: string;      // e.g., "Data&AI"
+  pricing?: string;       // e.g., "Custom"
   sections: StructuredOfferSection[];
 }
 
@@ -211,7 +213,8 @@ export class StructuredOffer implements OnInit, OnDestroy {
     return [
       { offer: 'Duration', offervalue: data.duration ?? 'TBD', icon: 'duration' },
       { offer: 'Delivery', offervalue: data.delivery ?? 'TBD', icon: 'delivery' },
-      { offer: 'Category', offervalue: data.category ?? 'TBD', icon: 'category' }
+      { offer: 'Category', offervalue: data.category ?? 'TBD', icon: 'category' },
+      { offer: 'Pricing',  offervalue: data.pricing  ?? 'Custom', icon: 'pricing' }
     ];
   });
 
@@ -299,7 +302,7 @@ export class StructuredOffer implements OnInit, OnDestroy {
     let slugValue = this.slug();
     const offers = this.pageConfig()?.offers ?? STRUCTURED_OFFER_CONTENT;
 
-    if (!slugValue || !offers[slugValue]) {
+    if (!slugValue) {
       const fallbackSlug = Object.keys(offers).find((key) => Boolean(offers[key]));
       if (fallbackSlug) {
         this.slug.set(fallbackSlug);
@@ -307,18 +310,67 @@ export class StructuredOffer implements OnInit, OnDestroy {
       }
     }
 
-    if (slugValue && offers[slugValue]) {
-      const offer = offers[slugValue];
-      this.content.set(offer);
-      this.error.set(null);
-      this.seoMeta.updateMeta({
-        title: `${offer.title} | Oakwood Systems`,
-        description: offer.summary,
-        canonicalPath: `/structured-engagement/${slugValue}`,
-      });
+    if (!slugValue) {
+      this.handleOfferNotFound();
       return;
     }
 
+    // 1) En preview (contentOverride activo) usamos directamente el diccionario inyectado.
+    if (this.contentOverride()) {
+      this.applyOfferFromJson(slugValue, offers);
+      return;
+    }
+
+    // 2) Fuente principal: CMS GraphQL (Gen Content categoría structured-engagement).
+    const slugForQuery = slugValue;
+    this.graphql.getStructuredEngagementBySlug(slugForQuery)
+      .pipe(take(1), catchError(() => of(null)))
+      .subscribe((node) => {
+        // Si el slug cambió mientras la query estaba en vuelo, ignorar la respuesta.
+        if (this.slug() !== slugForQuery) {
+          return;
+        }
+
+        const fromCms = node ? this.genContentNodeToOfferContent(node) : null;
+        if (fromCms) {
+          this.content.set(fromCms);
+          this.error.set(null);
+          this.seoMeta.updateMeta({
+            title: node?.headTitle?.trim()
+              ? node.headTitle
+              : `${fromCms.title} | Oakwood Systems`,
+            description: node?.headDescription?.trim() || fromCms.summary,
+            canonicalPath: `/structured-engagement/${slugForQuery}`,
+          });
+          return;
+        }
+
+        // 3) Fallback: diccionario JSON (legacy) por compatibilidad mientras se migra el CMS.
+        if (offers[slugForQuery]) {
+          this.applyOfferFromJson(slugForQuery, offers);
+          return;
+        }
+
+        this.handleOfferNotFound();
+      });
+  }
+
+  private applyOfferFromJson(slugValue: string, offers: Record<string, StructuredOfferContent>): void {
+    const offer = offers[slugValue];
+    if (!offer) {
+      this.handleOfferNotFound();
+      return;
+    }
+    this.content.set(offer);
+    this.error.set(null);
+    this.seoMeta.updateMeta({
+      title: `${offer.title} | Oakwood Systems`,
+      description: offer.summary,
+      canonicalPath: `/structured-engagement/${slugValue}`,
+    });
+  }
+
+  private handleOfferNotFound(): void {
     this.content.set(null);
     this.error.set(this.pageConfigFailed() ? 'Unable to load offer content.' : 'Offer not found.');
     this.seoMeta.updateMeta({
@@ -326,6 +378,39 @@ export class StructuredOffer implements OnInit, OnDestroy {
       description: 'Drive efficiency and innovation with tailored, strategic engagements designed to align technology solutions with your unique business goals.',
       canonicalPath: '/structured-engagement',
     });
+  }
+
+  /**
+   * Mapea un GenContent (categoría structured-engagement) a StructuredOfferContent.
+   * - duration/delivery/pricing ← structuredEngagementDetails (ACF).
+   * - category ← primer tag (genContentTags) o primaryTagName.
+   * - sections: una sola sección "overview" con el HTML del post como body
+   *   (la plantilla por defecto del CPT ya estructura Overview/Business Challenge/Solution).
+   */
+  private genContentNodeToOfferContent(node: GenContentDetailNode): StructuredOfferContent | null {
+    if (!node?.title || !node?.slug) return null;
+
+    const details = node.structuredEngagementDetails ?? null;
+    const primaryTag = node.primaryTagName?.trim()
+      || node.genContentTags?.nodes?.[0]?.name?.trim()
+      || undefined;
+
+    const summary = (node.excerpt ?? '').replace(/<[^>]+>/g, '').trim();
+    const body = (node.content ?? '').trim();
+
+    const sections: StructuredOfferSection[] = body
+      ? [{ id: 'overview', title: 'Overview', body }]
+      : [];
+
+    return {
+      title: node.title,
+      summary,
+      duration: details?.duration ?? undefined,
+      delivery: details?.delivery ?? undefined,
+      pricing: details?.pricing ?? undefined,
+      category: primaryTag,
+      sections,
+    };
   }
 
   private loadPageConfig() {

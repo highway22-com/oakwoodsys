@@ -7,7 +7,8 @@ import { VideoHero } from '../../shared/video-hero/video-hero';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { catchError, of, take } from 'rxjs';
+import { catchError, forkJoin, of, take } from 'rxjs';
+import type { GenContentListNode } from '../../app/api/graphql';
 
 interface StructuredPageCard {
   title: string;
@@ -97,33 +98,114 @@ export class Structured implements OnInit {
       return;
     }
 
-    this.graphql.getStructuredEngagementPageContent()
-      .pipe(
+    // Cargar shell (hero/sections/cta) y los items del CMS en paralelo. La shell viene de:
+    //   1) CMS page (slug: structured-engagement-page)
+    //   2) JSON estático /structured-page-content.json (fallback)
+    // Las cards de cada section se reemplazan por items del CMS agrupados por primary tag.
+    forkJoin({
+      cms: this.graphql.getStructuredEngagementPageContent().pipe(
         take(1),
         catchError(() => of(null))
-      )
-      .subscribe((cmsData) => {
-        const parsed = this.asStructuredPageContent(cmsData);
-        if (parsed) {
-          this.pageContent.set(parsed);
-          this.updateSeo();
-          return;
-        }
+      ),
+      offers: this.graphql.getStructuredEngagements().pipe(
+        take(1),
+        catchError(() => of([] as GenContentListNode[]))
+      ),
+    }).subscribe(({ cms, offers }) => {
+      const cmsShell = this.asStructuredPageContent(cms);
+      if (cmsShell) {
+        this.pageContent.set(this.applyCmsOffersToShell(cmsShell, offers));
+        this.updateSeo();
+        return;
+      }
 
-        this.http.get<StructuredPageContent>('/structured-page-content.json')
-          .pipe(
-            take(1),
-            catchError(() => of(null))
-          )
-          .subscribe((jsonData) => {
-            if (jsonData?.hero && Array.isArray(jsonData.sections) && jsonData.cta) {
-              this.pageContent.set(jsonData);
-            }
-            this.updateSeo();
-          });
-      });
+      this.http.get<StructuredPageContent>('/structured-page-content.json')
+        .pipe(
+          take(1),
+          catchError(() => of(null))
+        )
+        .subscribe((jsonData) => {
+          if (jsonData?.hero && Array.isArray(jsonData.sections) && jsonData.cta) {
+            this.pageContent.set(this.applyCmsOffersToShell(jsonData, offers));
+          }
+          this.updateSeo();
+        });
+    });
 
     this.updateSeo();
+  }
+
+  /**
+   * Reemplaza las cards de cada section por los items CMS cuyo primary tag
+   * matchea el título de la sección. Si no hay items CMS para esa sección,
+   * conserva las cards estáticas existentes.
+   */
+  private applyCmsOffersToShell(
+    shell: StructuredPageContent,
+    offers: GenContentListNode[],
+  ): StructuredPageContent {
+    if (!offers || offers.length === 0) {
+      return shell;
+    }
+
+    const sections = shell.sections.map((section) => {
+      const matched = offers.filter((node) =>
+        this.sectionMatchesGenContent(section.title, node)
+      );
+      if (matched.length === 0) {
+        return section;
+      }
+      const cards: StructuredPageCard[] = matched.map((node) => this.genContentToCard(node));
+      return { ...section, cards };
+    });
+
+    return { ...shell, sections };
+  }
+
+  /**
+   * Heurística: matchea el título de una section (ej. "Data & AI") con el
+   * primary tag slug/name de un GenContent. Tolerante a variaciones de naming.
+   */
+  private sectionMatchesGenContent(sectionTitle: string, node: GenContentListNode): boolean {
+    const title = (sectionTitle ?? '').toLowerCase();
+    const tagSlugs = (node.genContentTags?.nodes ?? []).map((t) => (t.slug ?? '').toLowerCase());
+    const tagNames = (node.genContentTags?.nodes ?? []).map((t) => (t.name ?? '').toLowerCase());
+    const primary = (node.primaryTagName ?? '').toLowerCase();
+
+    const haystack = [primary, ...tagSlugs, ...tagNames].filter(Boolean);
+    if (haystack.length === 0) return false;
+
+    if (title.includes('data') && title.includes('ai')) {
+      return haystack.some((h) => h.includes('data') && h.includes('ai'));
+    }
+    if (title.includes('cloud')) {
+      return haystack.some((h) => h.includes('cloud'));
+    }
+    if (title.includes('application')) {
+      return haystack.some((h) => h.includes('application'));
+    }
+    if (title.includes('hpc') || title.includes('high performance') || title.includes('high-performance')) {
+      return haystack.some((h) => h.includes('hpc') || h.includes('high-performance') || h.includes('high performance'));
+    }
+    if (title.includes('modern')) {
+      return haystack.some((h) => h.includes('modern'));
+    }
+    if (title.includes('managed')) {
+      return haystack.some((h) => h.includes('managed'));
+    }
+    return false;
+  }
+
+  private genContentToCard(node: GenContentListNode): StructuredPageCard {
+    const description = (node.excerpt ?? '').replace(/<[^>]+>/g, '').trim();
+    const icon = node.featuredImage?.node?.sourceUrl ?? undefined;
+    return {
+      title: node.title,
+      description,
+      slug: node.slug,
+      linkText: 'View offer',
+      icon,
+    };
   }
 
   private asStructuredPageContent(data: Record<string, unknown> | null): StructuredPageContent | null {

@@ -15,6 +15,9 @@ const BLOG_SLUGS_QUERY = `query GetSlugsForPrerender {
   caseStudy: genContentCategory(id: "case-study", idType: SLUG) {
     genContents(first: 500) { nodes { slug } }
   }
+  structuredEngagement: genContentCategory(id: "structured-engagement", idType: SLUG) {
+    genContents(first: 500) { nodes { slug } }
+  }
 }`;
 
 const SERVICE_SLUGS = [
@@ -26,7 +29,8 @@ const SERVICE_SLUGS = [
   'managed-services',
 ];
 
-const STRUCTURED_SLUGS = [
+/** Fallback usado solo si la query GraphQL no devuelve structured engagements (ej. CMS aún sin migrar). */
+const STRUCTURED_SLUGS_FALLBACK = [
   'sql-server-migration-to-azure',
   'microsoft-fabric-poc',
   'data-readiness-assessment-for-ai',
@@ -55,13 +59,15 @@ async function fetchGraphQLSlugs() {
     const json = await res.json();
     const blog = json?.data?.blog?.genContents?.nodes ?? [];
     const caseStudy = json?.data?.caseStudy?.genContents?.nodes ?? [];
+    const structuredEngagement = json?.data?.structuredEngagement?.genContents?.nodes ?? [];
     return {
       blog: blog.map((n) => n?.slug).filter(Boolean),
       caseStudy: caseStudy.map((n) => n?.slug).filter(Boolean),
+      structuredEngagement: structuredEngagement.map((n) => n?.slug).filter(Boolean),
     };
   } catch (e) {
     console.warn('[prerender-routes] GraphQL fetch failed:', e.message);
-    return { blog: [], caseStudy: [] };
+    return { blog: [], caseStudy: [], structuredEngagement: [] };
   }
 }
 
@@ -118,9 +124,10 @@ const CASE_STUDY_SLUGS_FALLBACK = [
 async function main() {
   const routes = ['/', '/blog', '/resources/case-studies'];
 
-  let { blog, caseStudy } = await fetchGraphQLSlugs();
+  let { blog, caseStudy, structuredEngagement } = await fetchGraphQLSlugs();
   if (blog.length === 0) blog = BLOG_SLUGS_FALLBACK;
   if (caseStudy.length === 0) caseStudy = CASE_STUDY_SLUGS_FALLBACK;
+  if (structuredEngagement.length === 0) structuredEngagement = STRUCTURED_SLUGS_FALLBACK;
 
   blog.forEach((s) => routes.push(`/blog/${s}`));
   caseStudy.forEach((s) => routes.push(`/resources/case-studies/${s}`));
@@ -130,7 +137,7 @@ async function main() {
 
   SERVICE_SLUGS.forEach((s) => routes.push(`/services/${s}`));
 
-  STRUCTURED_SLUGS.forEach((s) => routes.push(`/structured-engagement/${s}`));
+  structuredEngagement.forEach((s) => routes.push(`/structured-engagement/${s}`));
 
   const eventSlugs = getSlugsFromJson('public/events-content.json', 'events', 'slug');
   // Event detail URLs are SSR-only; do not add to prerender-routes.txt (see app.routes.server.ts).

@@ -7,7 +7,14 @@ import { gql } from 'apollo-angular';
  * Oakwood CMS: cmsPage(slug) devuelve el JSON de la página (home, services, about-us, blog, industries).
  */
 
-/** Nodo Gen Content en lista por categoría (blog o case-study). Incluye SEO/GEO para Headless. */
+/** ACF Structured Engagement details (categoría structured-engagement). */
+export interface StructuredEngagementDetails {
+  duration?: string | null;
+  delivery?: string | null;
+  pricing?: string | null;
+}
+
+/** Nodo Gen Content en lista por categoría (blog, case-study o structured-engagement). Incluye SEO/GEO para Headless. */
 export interface GenContentListNode {
   id: string;
   title: string;
@@ -38,6 +45,8 @@ export interface GenContentListNode {
   genContentTags?: {
     nodes: Array<{ name: string; slug: string }>;
   };
+  /** ACF Structured Engagement (solo para categoría structured-engagement; null en otras). */
+  structuredEngagementDetails?: StructuredEngagementDetails | null;
   /** Head (Gen Content ACF oakwood_* — no chocar con otros plugins SEO). */
   headTitle?: string | null;
   headDescription?: string | null;
@@ -350,6 +359,11 @@ const GEN_CONTENTS_FIELDS_SHORT = `
       slug
     }
   }
+  structuredEngagementDetails {
+    duration
+    delivery
+    pricing
+  }
   headTitle
   headDescription
   headCanonicalUrl
@@ -404,6 +418,11 @@ const GEN_CONTENTS_FIELDS = `
       slug
     }
   }
+  structuredEngagementDetails {
+    duration
+    delivery
+    pricing
+  }
   headTitle
   headDescription
   headCanonicalUrl
@@ -413,7 +432,7 @@ const GEN_CONTENTS_FIELDS = `
   headJsonLdData
 `;
 
-/** Lista por categoría Gen Content: blog (categoryId: "blog") o case study (categoryId: "case-study"). */
+/** Lista por categoría Gen Content: blog (categoryId: "blog"), case study ("case-study") o structured engagement ("structured-engagement"). */
 export const GET_GEN_CONTENTS_BY_CATEGORY = gql`
   query GetGenContentsByCategory($categoryId: ID!) {
     genContentCategory(id: $categoryId, idType: SLUG) {
@@ -721,6 +740,107 @@ export const GET_CASE_STUDY_DETAIL = gql`
 export interface CaseStudyDetailResponse {
   genContent?: GenContentDetailNode | null;
   caseStudyBy?: CaseStudyBy | null;
+}
+
+/** Lista de Structured Engagements (Gen Content categoría structured-engagement). Reusa GET_GEN_CONTENTS_BY_CATEGORY con categoryId fijo. */
+export const GET_STRUCTURED_ENGAGEMENTS = gql`
+  query GetStructuredEngagements {
+    genContentCategory(id: "structured-engagement", idType: SLUG) {
+      genContents(first: 500) {
+        nodes {
+          id
+          title
+          slug
+          excerpt
+          date
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+          genContentCategories {
+            nodes {
+              name
+              slug
+            }
+          }
+          genContentTags {
+            nodes {
+              name
+              slug
+            }
+          }
+          primaryTagName
+          structuredEngagementDetails {
+            duration
+            delivery
+            pricing
+          }
+          headTitle
+          headDescription
+          headCanonicalUrl
+        }
+      }
+    }
+  }
+`;
+
+export interface StructuredEngagementsResponse {
+  genContentCategory?: {
+    genContents?: { nodes: GenContentListNode[] };
+  } | null;
+}
+
+/** Detalle de un Structured Engagement por slug (incluye content + ACF details). */
+export const GET_STRUCTURED_ENGAGEMENT_BY_SLUG = gql`
+  query GetStructuredEngagementBySlug($id: ID!) {
+    genContent(id: $id, idType: SLUG) {
+      id
+      title
+      slug
+      date
+      content
+      excerpt
+      tags
+      primaryTagName
+      showContactSection
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      genContentCategories {
+        nodes {
+          name
+          slug
+        }
+      }
+      genContentTags {
+        nodes {
+          name
+          slug
+        }
+      }
+      structuredEngagementDetails {
+        duration
+        delivery
+        pricing
+      }
+      headTitle
+      headDescription
+      headCanonicalUrl
+      headGeoRegion
+      headGeoPlacename
+      headGeoPosition
+      headJsonLdData
+    }
+  }
+`;
+
+export interface StructuredEngagementBySlugResponse {
+  genContent?: GenContentDetailNode | null;
 }
 
 /** Gen Content con relatedCaseStudies (para detalle por slug). */

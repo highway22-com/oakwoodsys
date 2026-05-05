@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Oakwood Blog
  * Plugin URI: https://oakwoodsys.com
- * Description: Registra el CPT "Gen Content" (gen_content) + taxonomía, agrega campos ACF (show_contact_section, related_bloqs) y los expone en WPGraphQL.
- * Version: 7.0.15
+ * Description: Registra el CPT "Gen Content" (gen_content) + taxonomía, agrega campos ACF (show_contact_section, related_bloqs, structured_engagement_details) y los expone en WPGraphQL.
+ * Version: 7.1.0
  * Author: Aetro
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -16,6 +16,9 @@ defined( 'ABSPATH' ) || exit;
 
 // Definición del grupo ACF (Related Bloqs).
 require_once __DIR__ . '/acf-related-bloqs.php';
+
+// Definición del grupo ACF + GraphQL para Structured Engagements (duration, delivery, pricing).
+require_once __DIR__ . '/acf-structured-engagement.php';
 
 // GraphQL: root queries para categorías y tags (genContentCategories, genContentTags).
 require_once __DIR__ . '/graphql-taxonomies.php';
@@ -239,6 +242,7 @@ function oakwood_bloq_get_default_category_terms() {
 	return array(
 		array( 'name' => 'Blog', 'slug' => 'blog' ),
 		array( 'name' => 'Case Study', 'slug' => 'case-study' ),
+		array( 'name' => 'Structured Engagement', 'slug' => 'structured-engagement' ),
 	);
 }
 

@@ -15,6 +15,8 @@ import {
   GET_CASE_STUDY_DETAIL,
   GET_CMS_PAGE,
   GET_GEN_CONTENT_TAXONOMIES,
+  GET_STRUCTURED_ENGAGEMENTS,
+  GET_STRUCTURED_ENGAGEMENT_BY_SLUG,
   type CaseStudy,
   type CaseStudyBy,
   type GenContentDetailNode,
@@ -32,6 +34,8 @@ import {
   type GenContentTaxonomyTerm,
   type RelatedCaseStudyNode,
   type SearchResultItem,
+  type StructuredEngagementsResponse,
+  type StructuredEngagementBySlugResponse,
 } from '../api/graphql';
 import { combineLatest, forkJoin } from 'rxjs';
 
@@ -68,12 +72,14 @@ export class GraphQLContentService {
 
   readonly caseStudies = signal<CaseStudy[]>([]);
   readonly blogs = signal<GenContentListNode[]>([]);
+  readonly structuredEngagements = signal<GenContentListNode[]>([]);
   readonly loading = signal<boolean>(false);
   readonly errors = signal<Error | null>(null);
 
   /** Observables cacheados: primera suscripción dispara la carga, las siguientes reutilizan el resultado. */
   private blogs$ = this.createBlogsStream();
   private caseStudies$ = this.createCaseStudiesStream();
+  private structuredEngagements$ = this.createStructuredEngagementsStream();
 
   /** Categorías y tags de Gen Content (cargados al inicio). Acceso global. */
   readonly genContentCategories = signal<GenContentTaxonomyTerm[]>([]);
@@ -383,6 +389,66 @@ export class GraphQLContentService {
     this.loading.set(true);
     this.errors.set(null);
     return this.caseStudies$;
+  }
+
+  /** Stream de structured engagements (cache compartido). Primera suscripción carga; siguientes reutilizan. */
+  private createStructuredEngagementsStream(): Observable<GenContentListNode[]> {
+    return this.apollo
+      .watchQuery<StructuredEngagementsResponse>({
+        query: GET_STRUCTURED_ENGAGEMENTS,
+        fetchPolicy: 'cache-and-network',
+      })
+      .valueChanges.pipe(
+        filter((result) => !result.loading),
+        map((result) => {
+          const data = result.data as StructuredEngagementsResponse | undefined;
+          const nodes: GenContentListNode[] =
+            data?.genContentCategory?.genContents?.nodes ?? [];
+          this.structuredEngagements.set(nodes);
+          this.loading.set(false);
+          return nodes;
+        }),
+        catchError((error) => {
+          this.errors.set(error);
+          this.loading.set(false);
+          return of([]);
+        }),
+        shareReplay(1)
+      );
+  }
+
+  /** Lista de Structured Engagements (Gen Content categoría structured-engagement). Cache compartido. */
+  getStructuredEngagements(): Observable<GenContentListNode[]> {
+    this.loading.set(true);
+    this.errors.set(null);
+    return this.structuredEngagements$;
+  }
+
+  /** Detalle de un Structured Engagement por slug. Devuelve el GenContent completo (con structuredEngagementDetails). */
+  getStructuredEngagementBySlug(slug: string): Observable<GenContentDetailNode | null> {
+    const normalizedSlug = slug.trim();
+    if (!normalizedSlug) return of(null);
+
+    this.loading.set(true);
+    this.errors.set(null);
+
+    return this.apollo
+      .query<StructuredEngagementBySlugResponse>({
+        query: GET_STRUCTURED_ENGAGEMENT_BY_SLUG,
+        variables: { id: normalizedSlug },
+        fetchPolicy: 'cache-first',
+      })
+      .pipe(
+        map((result) => {
+          this.loading.set(false);
+          return result.data?.genContent ?? null;
+        }),
+        catchError((error) => {
+          this.errors.set(error);
+          this.loading.set(false);
+          return of(null);
+        })
+      );
   }
 
   private genContentNodeToCaseStudy(n: GenContentListNode): CaseStudy {
