@@ -16,6 +16,16 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://oakwoodsys.com/blog/azure-arc-modernizing-your-environment-before-you-migrate-it</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/blog/linux-on-azure-modernizing-open-source-workloads-without-compromise</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://oakwoodsys.com/blog/power-bi-premium-is-retiring-what-microsoft-fabric-means-for-your-data-platform</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
