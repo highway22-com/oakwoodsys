@@ -1,175 +1,365 @@
-@if (error()) {
-<section class="w-full min-h-[60vh] flex items-center justify-center">
-  <div class="text-center">
-    <h1 class="text-2xl font-semibold text-gray-900 mb-2">Offer not found</h1>
-    <p class="text-gray-600 mb-6">We could not find the offer you requested.</p>
-    <!-- <a routerLink="/structured-engagement" class="text-blue-600 hover:text-blue-700">Back to Structured Engagements</a> -->
+overall
+@if (loading()) {
+  <div class="min-h-[90vh] flex items-center justify-center">
+    <div class="animate-spin h-12 w-12 border-b-2 border-blue-600"></div>
   </div>
-</section>
+}
+@if (!loading() && error()) {
+  <section class="w-full min-h-[60vh] flex items-center justify-center">
+    <div class="text-center">
+      <h1 class="text-2xl font-semibold text-gray-900 mb-2">Offer not found</h1>
+      <p class="text-gray-600 mb-6">
+        We could not find the offer you requested.
+      </p>
+    </div>
+  </section>
 }
 
-@if (!error() && content()) {
-<app-video-hero
-  [loading]="false"
-  [hvh70]="true"
-  [videoUrls]="heroVideoUrls()"
-  [title]="content()?.title || ''"
-  [description]=" ''"
-  [ctaPrimary]="heroCtaPrimary()"
-  [offerdetails]="offerDetails()"
-  [showIndicators]="false">
-</app-video-hero>
-<section class="w-full bg-white">
-  <div class="container mx-auto px-4 py-8 sm:py-10 md:py-12 lg:py-16">
-    <div class="flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-8 lg:gap-18">
-      <aside class="hidden sm:block lg:sticky lg:top-24 h-max mb-8 lg:mb-0">
-        <p class="font-['Inter'] font-semibold text-[16px] leading-[150%] tracking-[0.05em] uppercase text-[#888888] mb-4">Table of contents</p>
-        <nav class="space-y-2">
-          <a href="#overview"
-            (click)="$event.preventDefault(); scrollToSection('overview')"
-            [class.focus-active]="activeSection() === 'overview'"
-            [class.text-gray-700]="activeSection() !== 'overview'"
-            class="p-3 block w-full font-['Inter'] font-medium text-[16px] leading-[150%] tracking-[0em] text-[#3D3D3D] text-left text-xl hover:text-p-500 transition-colors cursor-pointer">
-            Overview
-          </a>
-          @for (section of content()!.sections; track section.id) {
-          @if (section.id !== 'overview') {
-
-              <a [href]="'#' + section.id"
+@if (!loading() && !error() && content()) {
+  <app-video-hero
+    [loading]="false"
+    [hvh70]="true"
+    [videoUrls]="heroVideoUrls()"
+    [title]="content()?.title || ''"
+    [description]="content()?.summary || ''"
+    [ctaPrimary]="heroCtaPrimary()"
+    [offerdetails]="offerDetails()"
+    [showIndicators]="false"
+  >
+  </app-video-hero>
+  <section class="w-full bg-white">
+    <div class="content-container mx-auto px-4 py-8 sm:py-10 md:py-12 lg:py-16">
+      <div
+        class="flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-8 lg:gap-18"
+      >
+        <aside class="hidden sm:block lg:sticky lg:top-24 h-max mb-8 lg:mb-0">
+          <p
+            class="font-['Inter'] font-semibold text-[16px] leading-[150%] tracking-[0.05em] uppercase text-[#888888] mb-4"
+          >
+            Table of contents
+          </p>
+          <nav class="space-y-2">
+            <a
+              href="#overview"
+              (click)="$event.preventDefault(); scrollToSection('overview')"
+              [class.focus-active]="activeSection() === 'overview'"
+              [class.text-gray-700]="activeSection() !== 'overview'"
+              class="p-3 block w-full font-['Inter'] font-medium text-[16px] leading-[150%] tracking-[0em] text-[#3D3D3D] text-left text-xl hover:text-p-500 transition-colors cursor-pointer"
+            >
+              Overview
+            </a>
+            @for (section of content()!.sections; track section.id) {
+              @if (section.id !== "overview") {
+                <a
+                  [href]="'#' + section.id"
                   (click)="$event.preventDefault(); scrollToSection(section.id)"
-                  [class.focus-active]="activeSection() === section.id" [class.text-gray-700]="activeSection() !== section.id"
-                  class="p-3 block w-full text-left font-['Inter'] font-medium text-[16px] leading-[150%] tracking-[0em] text-[#3D3D3D] hover:text-p-500 transition-colors cursor-pointer">
+                  [class.focus-active]="activeSection() === section.id"
+                  [class.text-gray-700]="activeSection() !== section.id"
+                  class="p-3 block w-full text-left font-['Inter'] font-medium text-[16px] leading-[150%] tracking-[0em] text-[#3D3D3D] hover:text-p-500 transition-colors cursor-pointer"
+                >
                   {{ section.title }}
                 </a>
-            
-      
-          }
-          }
-        </nav>
-      </aside>
-
-      <article class="max-w-3xl w-full">
-        <section id="overview" class="mb-8">
-          <p class="font-['Inter'] font-semibold text-xl sm:text-2xl md:text-3xl leading-[130%] tracking-[-0.01em] text-[#242424] mb-4">Overview</p>
-          <p class="font-['Inter'] font-normal text-sm sm:text-base md:text-lg leading-[150%] tracking-[0em] text-[#242424]">{{ content()!.summary }}</p>
-        </section>
-
-        @for (section of content()!.sections; track section.id) {
-        @if (section.id !== 'overview') {
-        <section class="mb-8">
-          <h2 [id]="section.id" class="font-['Inter'] font-semibold text-xl sm:text-2xl md:text-3xl leading-[130%] tracking-[-0.01em] text-[#242424] mb-4">{{ section.title }}</h2>
-          @if (section.body) {
-          <p class="font-['Inter'] font-normal text-sm sm:text-base md:text-lg leading-[150%] tracking-[0em] text-[#242424] mb-4">{{ section.body }}</p>
-          }
-          @if (section.bullets?.length) {
-          <ul class="list-disc pl-5 font-['Inter'] font-normal text-sm sm:text-base md:text-lg leading-[150%] tracking-[0em] text-[#242424] space-y-2 mb-4">
-            @for (item of section.bullets; track item) {
-            <li>{{ item }}</li>
+              }
             }
-          </ul>
+          </nav>
+        </aside>
+
+        <article class="w-full min-w-0">
+          <!-- Overview -->
+          <section id="overview" class="mb-8">
+            <p
+              class="font-['Inter'] font-semibold text-[28px] leading-[130%] tracking-[-0.28px] text-[#242424] mb-4"
+            >
+              Overview
+            </p>
+            @if (overviewSection()?.body) {
+              <p class="overview-copy mb-4">{{ overviewSection()?.body }}</p>
+            }
+            @if (parsedOverviewDelivery().title) {
+              <p class="overview-delivery-title">
+                {{ parsedOverviewDelivery().title }}
+              </p>
+            }
+            @for (
+              group of parsedOverviewDelivery().groups;
+              track group.heading + $index
+            ) {
+              <div class="overview-delivery-group">
+                @if (group.heading) {
+                  <p class="overview-delivery-heading">{{ group.heading }}</p>
+                }
+                @if (group.items.length) {
+                  <ul class="overview-delivery-list">
+                    @for (item of group.items; track item + $index) {
+                      <li [innerHTML]="getBulletHtml(item)"></li>
+                    }
+                  </ul>
+                }
+              </div>
+            }
+          </section>
+
+          <!-- All other sections -->
+          @for (section of content()!.sections; track section.id) {
+            @if (section.id !== "overview") {
+              <section class="mb-8">
+                <h2
+                  [id]="section.id"
+                  class="font-['Inter'] font-semibold text-[28px] leading-[130%] tracking-[-0.28px] text-[#242424] mb-4"
+                >
+                  {{ section.title }}
+                </h2>
+
+                @if (section.body) {
+                  <p
+                    class="font-['Inter'] font-normal text-[16px] leading-[150%] text-[#242424] mb-4"
+                  >
+                    {{ section.body }}
+                  </p>
+                }
+
+                @if (section.bullets?.length) {
+                  <ul
+                    class="list-disc pl-5 font-['Inter'] font-normal text-[16px] leading-[150%] text-[#242424] space-y-2 mb-4"
+                  >
+                    @for (item of section.bullets; track item) {
+                      <li [innerHTML]="getBulletHtml(item)"></li>
+                    }
+                  </ul>
+                }
+
+                @if (
+                  section.image ||
+                  (section.id === "what-is-included" && whatIsIncludedImage())
+                ) {
+                  <figure class="section-image-figure">
+                    <img
+                      [src]="
+                        section.image
+                          ? section.image.src
+                          : section.id === 'what-is-included'
+                            ? whatIsIncludedImage().src
+                            : ''
+                      "
+                      [alt]="
+                        section.image
+                          ? section.image.alt
+                          : section.id === 'what-is-included'
+                            ? whatIsIncludedImage().alt
+                            : ''
+                      "
+                      class="section-image"
+                    />
+                    @if (
+                      (section.image ? section.image.caption : "") ||
+                      (section.id === "what-is-included" &&
+                        whatIsIncludedImage().caption)
+                    ) {
+                      <figcaption
+                        class="text-xs text-[#2A7EBF] px-4 py-2 border-l-2 ml-4 mb-3"
+                      >
+                        {{
+                          section.image
+                            ? section.image.caption
+                            : section.id === "what-is-included"
+                              ? whatIsIncludedImage().caption
+                              : ""
+                        }}
+                      </figcaption>
+                    }
+                  </figure>
+                }
+              </section>
+            }
           }
-          @if (section.image) {
-          <figure class="rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
-            <img [src]="section.image.src" [alt]="section.image.alt" class="w-full h-auto object-cover max-h-60 sm:max-h-96" />
-            <!-- @if (section.image.caption) {
-            <figcaption class="text-xs text-gray-500 px-4 py-2">{{ section.image.caption }}</figcaption>
-            } -->
-          </figure>
-          }
-        </section>
-        }
-        }
-      </article>
-    </div>
-  </div>
-</section>
-}
-
-<section class="contact-section-form relative py-8 sm:py-12 md:py-16 lg:py-20" id="form" aria-labelledby="form-title">
-  <!-- Background image with opacity -->
-  <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-24"
-    [style.background-image]="'url(' + contactSection().backgroundImage + ')'">
-  </div>
-
-
-
-  <!-- Content -->
-  <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-    <div class="flex flex-col lg:grid lg:grid-cols-[550px_1fr] gap-8 lg:gap-16 items-stretch">
-      <!-- Columna izquierda: imagen con estad�sticas superpuestas -->
-      <div #contactImageContainer [class]="'relative mb-8 lg:mb-0 overflow-hidden h-[320px] sm:h-[420px] lg:h-full min-h-[320px]'">
-        <img [src]="contactSection().sideImage.src" [alt]="contactSection().sideImage.alt" class="w-full h-full object-cover" />
-        <div class="absolute inset-0" style="background: linear-gradient(177.91deg, rgba(0, 0, 0, 0) 57.37%, rgba(0, 0, 0, 0.8) 101.86%);"></div>
-        <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white z-10">
-          <h3 class="font-inter font-normal text-2xl sm:text-3xl md:text-4xl leading-[120%] tracking-[-0.42px] mb-2">{{ contactSection().sideTitle }}</h3>
-          <p class="font-segoe text-sm sm:text-base md:text-lg font-normal leading-[150%] opacity-90 max-w-[420px]">
-            {{ contactSection().sideDescription }}
-          </p>
-        </div>
+        </article>
       </div>
-      <!-- Columna derecha: formulario -->
-      <div class="p-4 sm:p-6 md:p-8 overflow-y-auto">
-        <h2 id="form-title" class="font-inter text-black text-2xl sm:text-3xl md:text-4xl font-normal leading-[130%] tracking-[-1.28px] mb-3">
-         {{ contactSection().title }}
-        </h2>
-        <p class="font-segoe text-[#3D3D3D] text-sm sm:text-base md:text-lg font-normal leading-[150%] mb-8">
-        {{ contactSection().description }}
-        </p>
-        <form #contactForm (ngSubmit)="onSubmit()" class="flex flex-col gap-4 sm:gap-6">
-          <label [class]="'flex flex-col gap-2' + (showFormAnimation() ? ' animate-fade-up' : '')">
-            <span class="text-black text-sm sm:text-base font-normal leading-[24px]">{{ contactSection().fields.fullNameLabel }}</span>
-            <input type="text" [(ngModel)]="formModel().fullName" name="fullName"
-              [class]="'border px-4 py-2 rounded text-sm text-gray-700 placeholder-gray-400 bg-white transition-all duration-200 outline-none ' + (submitted() && validationErrors()['fullName'] ? 'border-red-500 hover:border-red-600 focus:border-red-600' : 'border-gray-100 hover:border-gray-200 focus:border-gray-200')"
-              [placeholder]="contactSection().fields.fullNamePlaceholder" />
-            @if (submitted() && validationErrors()['fullName']) {
-            <span class="text-xs text-red-500">{{ contactSection().errors.fullNameRequired }}</span>
-            }
-          </label>
+    </div>
+  </section>
+
+  <section
+    class="contact-section-form relative py-8 sm:py-12 md:py-16 lg:py-20"
+    id="form"
+    aria-labelledby="form-title"
+  >
+    <div
+      class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-24"
+      [style.background-image]="'url(' + contactSection().backgroundImage + ')'"
+    ></div>
+
+    <div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+      <div
+        class="flex flex-col lg:grid lg:grid-cols-[550px_1fr] gap-8 lg:gap-16 items-stretch"
+      >
+        <div
+          #contactImageContainer
+          [class]="
+            'relative mb-8 lg:mb-0 overflow-hidden h-[320px] sm:h-[420px] lg:h-full min-h-[320px]'
+          "
+        >
+          <img
+            [src]="contactSection().sideImage.src"
+            [alt]="contactSection().sideImage.alt"
+            class="w-full h-full object-cover"
+          />
           <div
-            [class]="'flex flex-col sm:grid sm:grid-cols-2 gap-4' + (showFormAnimation() ? ' animate-fade-up [animation-delay:80ms]' : '')">
-            <label class="flex flex-col gap-2">
-              <span class="text-black text-sm sm:text-base font-normal leading-[24px]">{{ contactSection().fields.emailLabel }}</span>
-              <input type="email" [(ngModel)]="formModel().email" name="email"
-                [class]="'border px-4 py-2 rounded text-sm text-gray-700 placeholder-gray-400 bg-white transition-all duration-200 outline-none ' + (submitted() && validationErrors()['email'] ? 'border-red-500 hover:border-red-600 focus:border-red-600' : 'border-gray-100 hover:border-gray-200 focus:border-gray-200')"
-                [placeholder]="contactSection().fields.emailPlaceholder" />
-              @if (submitted() && validationErrors()['email']) {
-              <span class="text-xs text-red-500">{{ contactSection().errors.emailRequired }}</span>
+            class="absolute inset-0"
+            style="
+              background: linear-gradient(
+                177.91deg,
+                rgba(0, 0, 0, 0) 57.37%,
+                rgba(0, 0, 0, 0.8) 101.86%
+              );
+            "
+          ></div>
+          <div
+            class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white z-10"
+          >
+            <h3
+              class="font-inter font-normal text-2xl sm:text-3xl md:text-4xl leading-[120%] tracking-[-0.42px] mb-2"
+            >
+              {{ contactSection().sideTitle }}
+            </h3>
+            <p
+              class="font-segoe text-sm sm:text-base md:text-lg font-normal leading-[150%] opacity-90 max-w-[420px]"
+            >
+              {{ contactSection().sideDescription }}
+            </p>
+          </div>
+        </div>
+        <div class="p-4 sm:p-6 md:p-8 overflow-y-auto">
+          <h2
+            id="form-title"
+            class="font-inter text-black text-2xl sm:text-3xl md:text-4xl font-normal leading-[130%] tracking-[-1.28px] mb-3"
+          >
+            {{ contactSection().title }}
+          </h2>
+          <p
+            class="font-segoe text-[#3D3D3D] text-sm sm:text-base md:text-lg font-normal leading-[150%] mb-8"
+          >
+            {{ contactSection().description }}
+          </p>
+          <form
+            #contactForm
+            (ngSubmit)="onSubmit()"
+            class="flex flex-col gap-4 sm:gap-6"
+          >
+            <label
+              [class]="
+                'flex flex-col gap-2' +
+                (showFormAnimation() ? ' animate-fade-up' : '')
+              "
+            >
+              <span
+                class="text-black text-sm sm:text-base font-normal leading-[24px]"
+                >{{ contactSection().fields.fullNameLabel }}</span
+              >
+              <input
+                type="text"
+                [(ngModel)]="formModel().fullName"
+                name="fullName"
+                [class]="
+                  'border px-4 py-2 rounded text-sm text-gray-700 placeholder-gray-400 bg-white transition-all duration-200 outline-none ' +
+                  (submitted() && validationErrors()['fullName']
+                    ? 'border-red-500 hover:border-red-600 focus:border-red-600'
+                    : 'border-gray-100 hover:border-gray-200 focus:border-gray-200')
+                "
+                [placeholder]="contactSection().fields.fullNamePlaceholder"
+              />
+              @if (submitted() && validationErrors()["fullName"]) {
+                <span class="text-xs text-red-500">{{
+                  contactSection().errors.fullNameRequired
+                }}</span>
               }
             </label>
-          </div>
-          <label
-            [class]="'flex flex-col gap-2' + (showFormAnimation() ? ' animate-fade-up [animation-delay:160ms]' : '')">
-            <span class="text-black text-sm sm:text-base font-normal leading-[24px]">{{ contactSection().fields.messageLabel }}</span>
-            <textarea [(ngModel)]="formModel().message" name="message" rows="4"
-              [class]="'border px-4 py-2 rounded text-sm text-gray-700 placeholder-gray-400 bg-white transition-all duration-200 outline-none resize-none ' + (submitted() && validationErrors()['message'] ? 'border-red-500 hover:border-red-600 focus:border-red-600' : 'border-gray-100 hover:border-gray-200 focus:border-gray-200')"
-              [placeholder]="contactSection().fields.messagePlaceholder"></textarea>
-            @if (submitted() && validationErrors()['message']) {
-            <span class="text-xs text-red-500">{{ contactSection().errors.messageRequired }}</span>
-            }
-          </label>
-          <!-- <div class="recaptcha-container"> -->
-          <!-- Replace with your Site Key from https://www.google.com/recaptcha/admin -->
-          <!-- <div class="g-recaptcha" data-sitekey="6LeNtGQsAAAAAAhMRd3_mtjfoNCKgOUr4bWi8Dmt" data-callback="onRecaptchaSuccess"></div>
-          </div> -->
-          <button type="submit" [disabled]="isSubmitting()"
-            [class]="'w-full mt-4 sm:mt-6 px-6 py-3 text-white text-sm font-semibold bg-[#0D53A2] rounded hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'">
-            {{ isSubmitting() ? contactSection().submitButton.loading : contactSection().submitButton.idle }}
-          </button>
-        </form>
+            <div
+              [class]="
+                'flex flex-col sm:grid sm:grid-cols-2 gap-4' +
+                (showFormAnimation()
+                  ? ' animate-fade-up [animation-delay:80ms]'
+                  : '')
+              "
+            >
+              <label class="flex flex-col gap-2">
+                <span
+                  class="text-black text-sm sm:text-base font-normal leading-[24px]"
+                  >{{ contactSection().fields.emailLabel }}</span
+                >
+                <input
+                  type="email"
+                  [(ngModel)]="formModel().email"
+                  name="email"
+                  [class]="
+                    'border px-4 py-2 rounded text-sm text-gray-700 placeholder-gray-400 bg-white transition-all duration-200 outline-none ' +
+                    (submitted() && validationErrors()['email']
+                      ? 'border-red-500 hover:border-red-600 focus:border-red-600'
+                      : 'border-gray-100 hover:border-gray-200 focus:border-gray-200')
+                  "
+                  [placeholder]="contactSection().fields.emailPlaceholder"
+                />
+                @if (submitted() && validationErrors()["email"]) {
+                  <span class="text-xs text-red-500">{{
+                    contactSection().errors.emailRequired
+                  }}</span>
+                }
+              </label>
+            </div>
+            <label
+              [class]="
+                'flex flex-col gap-2' +
+                (showFormAnimation()
+                  ? ' animate-fade-up [animation-delay:160ms]'
+                  : '')
+              "
+            >
+              <span
+                class="text-black text-sm sm:text-base font-normal leading-[24px]"
+                >{{ contactSection().fields.messageLabel }}</span
+              >
+              <textarea
+                [(ngModel)]="formModel().message"
+                name="message"
+                rows="4"
+                [class]="
+                  'border px-4 py-2 rounded text-sm text-gray-700 placeholder-gray-400 bg-white transition-all duration-200 outline-none resize-none ' +
+                  (submitted() && validationErrors()['message']
+                    ? 'border-red-500 hover:border-red-600 focus:border-red-600'
+                    : 'border-gray-100 hover:border-gray-200 focus:border-gray-200')
+                "
+                [placeholder]="contactSection().fields.messagePlaceholder"
+              ></textarea>
+              @if (submitted() && validationErrors()["message"]) {
+                <span class="text-xs text-red-500">{{
+                  contactSection().errors.messageRequired
+                }}</span>
+              }
+            </label>
+            <button
+              type="submit"
+              [disabled]="isSubmitting()"
+              [class]="
+                'w-full mt-4 sm:mt-6 px-6 py-3 text-white text-sm font-semibold bg-[#0D53A2] rounded hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+              "
+            >
+              {{
+                isSubmitting()
+                  ? contactSection().submitButton.loading
+                  : contactSection().submitButton.idle
+              }}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-</section>
-
-<!-- Featured Case Study Section -->
-@if (getSlugsForFeaturedSection().length) {
-<app-featured-case-study [featuredCategory]="FeaturedCaseStudyCategory.CaseStudyServices" [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()" />
+  @if (getSlugsForFeaturedSection().length) {
+    <app-featured-case-study
+      [featuredCategory]="FeaturedCaseStudyCategory.CaseStudyServices"
+      [slugsFeaturedCaseStudies]="getSlugsForFeaturedSection()"
+    />
+  }
 }
-
-
-
-<!-- CTA section -->
 
 <app-cta-section
   [title]="ctaSection().title"

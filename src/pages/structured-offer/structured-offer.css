@@ -3,6 +3,10 @@
   width: 100%;
 }
 
+.content-container {
+  width: 100%;
+  max-width: 90vw;
+}
 .focus-active {
   background-color: #F2F8FD;
   color: #2A7EBF;
@@ -12,5 +16,199 @@
   nav a:focus-visible {
     outline: 2px solid #2563eb;
     outline-offset: 2px;
+  }
+}
+
+.overview-copy {
+  color: #242424;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 150%;
+}
+
+.overview-delivery-title {
+  font-family: Inter, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #242424;
+  margin: 0 0 12px;
+}
+
+.overview-delivery-group {
+  margin-bottom: 12px;
+}
+
+.overview-delivery-heading {
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #242424;
+  margin: 0 0 4px;
+}
+
+.overview-delivery-list {
+  margin: 0;
+  padding-left: 16px;
+  list-style-type: disc;
+}
+
+.overview-delivery-list li {
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: #242424;
+  margin-bottom: 2px;
+}
+
+/* ─── Engagement Timeline ─────────────────────────────────────────────────── */
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-left: 0;
+  margin-bottom: 1rem;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.timeline-item:not(:last-of-type)::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 16px;
+  bottom: 0;
+  width: 2px;
+  background-color: #D1E6F5;
+}
+
+.timeline-marker {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #2A7EBF;
+  border: 3px solid #D1E6F5;
+  margin-top: 3px;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.timeline-heading {
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #242424;
+  margin: 0 0 4px;
+}
+
+.timeline-body {
+  font-family: Inter, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: #555;
+  margin: 0;
+}
+
+/* "Overall Duration" summary row */
+.timeline-overall {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 10px 14px;
+  background: #F2F8FD;
+  border-left: 3px solid #2A7EBF;
+  border-radius: 0 6px 6px 0;
+  font-family: Inter, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.timeline-overall-label {
+  font-weight: 600;
+  color: #242424;
+  white-space: nowrap;
+}
+
+.timeline-overall-value {
+  font-weight: 400;
+  color: #3D3D3D;
+}
+
+.section-image-figure {
+  margin: 0 0 1rem;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+
+@media (max-width: 767px) {
+  .content-container {
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .overview-copy,
+  .overview-delivery-heading,
+  .overview-delivery-list li {
+    font-size: 14px;
+  }
+
+  .overview-delivery-title {
+    font-size: 18px;
+  }
+
+  .section-image {
+    max-height: none;
+  }
+
+  .timeline-heading {
+    font-size: 15px;
+  }
+
+  .timeline-body {
+    font-size: 14px;
+  }
+
+  .timeline-overall {
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-image {
+    max-height: 65vh;
+    object-fit: cover;
   }
 }

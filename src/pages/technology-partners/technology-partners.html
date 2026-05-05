@@ -1,0 +1,152 @@
+@if (loading()) {
+  <section
+    class="min-h-screen w-full bg-[#F7F9FC]"
+    role="status"
+    aria-live="polite"
+  >
+    <span class="sr-only">Loading technology partners</span>
+    <div
+      class="flex min-h-[50vh] w-full animate-pulse items-end bg-[#0D53A2]/30 px-4 pb-16 sm:px-8 md:px-12"
+    >
+      <div class="w-full max-w-3xl space-y-4">
+        <div class="h-4 w-32 rounded bg-white/40"></div>
+        <div class="h-10 w-full max-w-xl rounded bg-white/50 sm:h-12"></div>
+        <div class="h-4 max-w-lg rounded bg-white/35"></div>
+      </div>
+    </div>
+    <div class="bg-white px-4 py-12 sm:px-6 sm:py-16 md:px-8 md:py-20 lg:px-24">
+      <div class="mx-auto max-w-6xl">
+        <div
+          class="h-5 w-full max-w-3xl animate-pulse rounded bg-gray-200 mb-12 mx-auto"
+        ></div>
+        <div class="partners-grid">
+          @for (sk of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track sk) {
+            <div class="animate-pulse partner-cell">
+              <div class="partner-logo-box bg-gray-100">
+                <div class="h-10 w-36 rounded bg-gray-200"></div>
+              </div>
+              <div class="partner-text-block">
+                <div class="h-6 w-28 rounded bg-gray-200 mx-auto"></div>
+                <div class="h-3 w-full rounded bg-gray-200"></div>
+                <div class="h-3 w-4/5 rounded bg-gray-200 mx-auto"></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+}
+
+@if (!loading() && content(); as c) {
+  <section class="w-full">
+    <!-- Hero -->
+    <app-video-hero
+      [loading]="false"
+      [hvh70]="true"
+      [videoUrls]="c.hero.heroVideoUrls"
+      [poster]="c.hero.heroImage || ''"
+      [title]="c.hero.title"
+      [description]="c.hero.description"
+      [showIndicators]="false"
+    />
+
+    <!-- Intro text -->
+    <div class="bg-white">
+      <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 md:px-8">
+        <p
+          style="
+            color: var(--Secondary-950, #242424);
+            text-align: center;
+            font-family: Inter, sans-serif;
+            font-size: 40px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 150%;
+          "
+        >
+          {{ c.intro }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Partners grid -->
+    <div class="partners-section bg-white pb-16 sm:pb-20">
+      <div class="partners-grid-wrapper">
+        @for (row of getPartnerRows(c.partners); track $index) {
+          <div class="partners-row">
+            @for (partner of row; track partner.name) {
+              <div class="partner-cell">
+                <div class="partner-logo-box">
+                  @if (partner.logoUrl) {
+                    <img
+                      [src]="partner.logoUrl"
+                      [alt]="partner.name + ' logo'"
+                      class="partner-logo-img"
+                      loading="lazy"
+                    />
+                  } @else {
+                    <span class="partner-logo-text">{{ partner.name }}</span>
+                  }
+                </div>
+                <div class="partner-text-block">
+                  <p
+                    class="partner-heading"
+                    style="
+                      color: var(--Black, #000);
+                      text-align: center;
+                      font-family: Inter, sans-serif;
+                      font-size: 28px;
+                      font-style: normal;
+                      font-weight: 600;
+                      line-height: 130%;
+                      letter-spacing: -0.28px;
+                    "
+                  >
+                    {{ partner.name }}
+                  </p>
+                  <div class="partner-desc-swap">
+                    <p
+                      class="partner-desc"
+                      style="
+                        color: var(--Secondary-600, #5d5d5d);
+                        text-align: center;
+                        font-family: Inter, sans-serif;
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 400;
+                        line-height: 150%;
+                      "
+                    >
+                      {{ partner.description }}
+                    </p>
+
+                    @if (partner.website) {
+                      <div
+                        class="px-0"
+                        [attr.aria-label]="'Visit ' + partner.name + ' site'"
+                        rel="noopener noreferrer"
+                        class="partner-visit-btn"
+                      >
+                        <app-button-primary
+                          [attr.aria-label]="'Visit ' + partner.name + ' site'"
+                          rel="noopener noreferrer"
+                          class="partner-visit-btn"
+                          [text]="'Visit site'"
+                          [link]="partner.website"
+                          [isTransparent]="true"
+                          [borderColor]="'black'"
+                          class="block w-full sm:w-auto"
+                        />
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+}
