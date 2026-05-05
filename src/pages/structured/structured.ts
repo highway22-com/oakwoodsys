@@ -78,7 +78,8 @@ export class Structured implements OnInit {
   /** When provided (edit preview), use this instead of remote loading. */
   readonly contentOverride = input<StructuredPageContent | null>(null);
   readonly pageContent = signal<StructuredPageContent>(DEFAULT_STRUCTURED_PAGE_CONTENT);
-
+  readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
   constructor() {
     effect(() => {
       const override = this.contentOverride();
@@ -94,6 +95,7 @@ export class Structured implements OnInit {
     if (override?.hero && Array.isArray(override.sections) && override.cta) {
       this.pageContent.set(override);
       this.updateSeo();
+      this.loading.set(false);
       return;
     }
 
@@ -107,6 +109,7 @@ export class Structured implements OnInit {
         if (parsed) {
           this.pageContent.set(parsed);
           this.updateSeo();
+          this.loading.set(false);
           return;
         }
 
@@ -118,6 +121,10 @@ export class Structured implements OnInit {
           .subscribe((jsonData) => {
             if (jsonData?.hero && Array.isArray(jsonData.sections) && jsonData.cta) {
               this.pageContent.set(jsonData);
+              this.loading.set(false);
+            } else {
+              this.error.set('Error has occurred');
+              this.loading.set(false);
             }
             this.updateSeo();
           });
