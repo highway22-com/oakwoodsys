@@ -120,6 +120,10 @@ export const routes: Routes = [
                 loadComponent: () => import('../pages/privacyAndPolicy/privacyAndPolicy')
             },
             {
+                path: 'technology-partners',
+                loadComponent: () => import('../pages/technology-partners/technology-partners')
+            },
+            {
                 path: '404',
                 loadComponent: () => import('../pages/page404/page404')
             },
