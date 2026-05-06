@@ -36,6 +36,10 @@ export class ButtonPrimaryComponent {
     return this.backgroundColor() ?? 'var(--color-p-700)';
   });
 
+  isExternal(url: string | null | undefined): boolean {
+    return !!url && (url.startsWith('http://') || url.startsWith('https://'));
+  }
+  
   /** Clases del trigger (un solo binding en el template). */
   readonly triggerClasses = computed(() => {
     const base = 'group font-normal transition-all duration-200 whitespace-nowrap shadow-none button-primary__trigger';
