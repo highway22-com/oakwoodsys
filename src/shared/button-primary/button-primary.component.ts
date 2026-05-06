@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, EventEmitter, input, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  EventEmitter,
+  input,
+  Output,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -35,15 +42,20 @@ export class ButtonPrimaryComponent {
     if (this.isBgDefault()) return 'var(--color-p-700)';
     return this.backgroundColor() ?? 'var(--color-p-700)';
   });
-
+  isExternal(url: string | null | undefined): boolean {
+    return !!url && (url.startsWith('http://') || url.startsWith('https://'));
+  }
   /** Clases del trigger (un solo binding en el template). */
   readonly triggerClasses = computed(() => {
-    const base = 'group font-normal transition-all duration-200 whitespace-nowrap shadow-none button-primary__trigger';
+    const base =
+      'group font-normal transition-all duration-200 whitespace-nowrap shadow-none button-primary__trigger';
     const border = this.borderColor();
     const mods: string[] = [];
     if (this.isTransparent()) mods.push('');
-    if (border === 'white') mods.push('border-white text-white borer-solid border-1');
-    else if (border === 'black') mods.push(' border-black text-black borer-solid border-1');
+    if (border === 'white')
+      mods.push('border-white text-white borer-solid border-1');
+    else if (border === 'black')
+      mods.push(' border-black text-black borer-solid border-1');
     else mods.push('text-white');
     return [base, ...mods].join(' ');
   });
