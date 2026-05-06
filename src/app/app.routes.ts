@@ -58,16 +58,16 @@ export const routes: Routes = [
                 title: 'Case Studies'
             },
             {
-                path: 'resources',
-                loadComponent: () => import('../pages/resources/resources-wordpress')
-            },
-            {
                 path: 'resources/events/:slug',
                 loadComponent: () => import('../pages/event-detail/event-detail')
             },
             {
                 path: 'resources/events',
                 loadComponent: () => import('../pages/events/events')
+            },
+            {
+                path: 'resources',
+                loadComponent: () => import('../pages/resources/resources-wordpress')
             },
             {
                 path: 'industries/:slug',
@@ -89,6 +89,11 @@ export const routes: Routes = [
             {
                 path: 'structured-engagement/:slug',
                 component: StructuredOffer
+            },
+            {
+                path: 'events',
+                redirectTo: '/',
+                pathMatch: 'full',
             },
             {
                 path: 'about',
@@ -113,6 +118,10 @@ export const routes: Routes = [
             {
                 path: 'privacy-policy',
                 loadComponent: () => import('../pages/privacyAndPolicy/privacyAndPolicy')
+            },
+            {
+                path: 'technology-partners',
+                loadComponent: () => import('../pages/technology-partners/technology-partners')
             },
             {
                 path: '404',

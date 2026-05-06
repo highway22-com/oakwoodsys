@@ -1,7 +1,29 @@
 import { RouterLink, Router, NavigationEnd } from '@angular/router';
-import { Component, OnInit, OnDestroy, HostListener, inject, PLATFORM_ID, signal, computed, viewChild, ElementRef, input, effect } from '@angular/core';
-import { CommonModule, DOCUMENT, NgClass, NgIf, isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  HostListener,
+  inject,
+  PLATFORM_ID,
+  signal,
+  computed,
+  viewChild,
+  ElementRef,
+  input,
+  effect,
+} from '@angular/core';
+import {
+  CommonModule,
+  DOCUMENT,
+  NgClass,
+  NgIf,
+  isPlatformBrowser,
+} from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
+import { map } from 'rxjs/operators';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { filter } from 'rxjs';
 import type { CaseStudy, SearchResultItem } from '../../app/api/graphql';
@@ -77,8 +99,8 @@ export class AppNavbar implements OnInit, OnDestroy {
   readonly loading = signal(true);
   /** Dos case studies más recientes para el dropdown Industries (se cargan al iniciar para que estén listos). */
   readonly featuredCaseStudies = signal<CaseStudy[]>([]);
-  /** Dos blogs más recientes para el dropdown Resources (genContent categoría blog). */
   readonly featuredBlogs = signal<FeaturedBlogItem[]>([]);
+  private featuredBlogsRequested = false;
 
   /** Título de la sección Featured por dropdown (Services, Industries). */
   readonly featuredTitleServices = signal('FEATURED BLOGS');
@@ -97,6 +119,12 @@ export class AppNavbar implements OnInit, OnDestroy {
   readonly SEARCH_MAX_LENGTH = 100;
   searchInputRef = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
+  private route = inject(ActivatedRoute);
+
+  readonly section = toSignal(
+    this.route.queryParamMap.pipe(map((p) => p.get('section'))),
+    { initialValue: null },
+  );
   constructor() {
     effect(() => {
       const override = this.contentOverride();
@@ -116,17 +144,17 @@ export class AppNavbar implements OnInit, OnDestroy {
     return all.filter(
       (item) =>
         item.title.toLowerCase().includes(q) ||
-        item.snippet.toLowerCase().includes(q)
+        item.snippet.toLowerCase().includes(q),
     );
   });
 
   /** Resultados que se muestran en la lista (lazy: solo los primeros searchVisibleCount). */
   readonly searchResultsToShow = computed(() =>
-    this.searchFilteredResults().slice(0, this.searchVisibleCount())
+    this.searchFilteredResults().slice(0, this.searchVisibleCount()),
   );
 
   readonly searchHasMore = computed(
-    () => this.searchFilteredResults().length > this.searchVisibleCount()
+    () => this.searchFilteredResults().length > this.searchVisibleCount(),
   );
 
   ngOnInit() {
@@ -135,34 +163,21 @@ export class AppNavbar implements OnInit, OnDestroy {
       // Check current route
       this.updateContactSuccessStatus();
       // Listen to route changes
-      this.router.events.pipe(
-        filter(event => event instanceof NavigationEnd)
-      ).subscribe(() => this.updateContactSuccessStatus());
+      this.router.events
+        .pipe(filter((event) => event instanceof NavigationEnd))
+        .subscribe(() => this.updateContactSuccessStatus());
       // Cargar case studies y blogs solo en el cliente (GraphQL puede no estar disponible en SSR)
       this.graphql.getCaseStudies().subscribe((list) => {
-        const filtered = [...list].filter(n =>
-          n.caseStudyCategories?.nodes?.find(c => c.slug === 'featured-case-study-menu')
+        const filtered = [...list].filter((n) =>
+          n.caseStudyCategories?.nodes?.find(
+            (c) => c.slug === 'featured-case-study-menu',
+          ),
         );
         const _list = filtered.length > 0 ? filtered : list;
         const sorted = [..._list].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
         );
         this.featuredCaseStudies.set(sorted.slice(0, 1));
-      });
-      this.graphql.getBlogs().subscribe((list) => {
-        const filtered = [...list].filter(n => n.genContentCategories?.nodes?.find(c => c.slug === 'featured-blog-menu'));
-        const _list = filtered.length > 0 ? filtered : list;
-        const sorted = [..._list].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        this.featuredBlogs.set(
-          sorted.slice(0, 1).map((n) => ({
-            id: n.id,
-            title: n.title,
-            link: `/blog/${n.slug}`,
-            image: n.featuredImage?.node?.sourceUrl ?? '',
-          }))
-        );
       });
     }
     if (!this.contentOverride()) {
@@ -185,12 +200,18 @@ export class AppNavbar implements OnInit, OnDestroy {
       next: (data) => {
         if (data?.menu?.length && !this.menuUpdatedFromBe) {
           this.menuItems.set(data.menu as NavbarContent['menu']);
-          this.content.set((data.content ?? null) as unknown as NavbarContent['content']);
+          this.content.set(
+            (data.content ?? null) as unknown as NavbarContent['content'],
+          );
         }
-        // 3) Always fall through to GraphQL for freshest data
+        // La barra ya es interactiva con JSON estático/CMS; GraphQL refresca en segundo plano.
+        this.loading.set(false);
         this.loadMenuFromGraphQL();
       },
-      error: () => this.loadMenuFromGraphQL(),
+      error: () => {
+        this.loading.set(false);
+        this.loadMenuFromGraphQL();
+      },
     });
   }
 
@@ -200,7 +221,9 @@ export class AppNavbar implements OnInit, OnDestroy {
         if (data?.menu) {
           this.menuUpdatedFromBe = true;
           this.menuItems.set(data.menu as NavbarContent['menu']);
-          this.content.set((data.content ?? null) as unknown as NavbarContent['content']);
+          this.content.set(
+            (data.content ?? null) as unknown as NavbarContent['content'],
+          );
         }
         this.loading.set(false);
       },
@@ -217,7 +240,7 @@ export class AppNavbar implements OnInit, OnDestroy {
         }
         this.menuItems.set(data.menu);
         this.content.set(data.content ?? null);
-        if (finishLoading) this.loading.set(false);
+        this.loading.set(false);
       },
       error: (error) => {
         console.error('Error loading navbar content:', error);
@@ -256,7 +279,6 @@ export class AppNavbar implements OnInit, OnDestroy {
     this.searchPanelOpen.set(false);
   }
 
-
   private checkScrollPosition() {
     if (!isPlatformBrowser(this.platformId)) {
       return;
@@ -285,26 +307,35 @@ export class AppNavbar implements OnInit, OnDestroy {
     this.isOnStructuredEngagement.set(inViewAtNavbar);
   }
   private updateContactSuccessStatus(): void {
-    this.isOnContactSuccess.set(this.router.url === '/contact-success' || this.router.url === '/contact-us');
+    this.isOnContactSuccess.set(
+      this.router.url === '/contact-success' ||
+        this.router.url === '/contact-us',
+    );
   }
-  /** true cuando la barra debe usar estilo "oscuro" (logo oscuro, texto oscuro): scroll o hover en un dropdown (índice !== 0) o en contact-success. */
+
   get isNavbarDark(): boolean {
-    if (this.isOnStructuredEngagement()) {
-      return false;
-    }
+    if (this.isOnStructuredEngagement()) return false;
     const hover = this.hoveredIndex();
-    return this.isScrolled || (hover !== null) || this.searchPanelOpen() || this.isOnContactSuccess();
+    return (
+      this.isScrolled ||
+      hover !== null ||
+      this.searchPanelOpen() ||
+      this.isOnContactSuccess() ||
+      this.section() === 'past_event'
+    ); // 👈 add this
   }
 
-  /** true cuando la barra debe mostrar fondo (blanco) o texto de enlaces oscuro: scroll o cualquier hover en menú o en contact-success. */
   get hasNavbarBackground(): boolean {
-    if (this.isOnStructuredEngagement()) {
-      return false;
-    }
-    return this.isScrolled || this.hoveredIndex() !== null || this.searchPanelOpen() || this.isOnContactSuccess();
+    if (this.isOnStructuredEngagement()) return false;
+
+    if (this.section() === 'past_event') return true; // 👈 add this
+    return (
+      this.isScrolled ||
+      this.hoveredIndex() !== null ||
+      this.searchPanelOpen() ||
+      this.isOnContactSuccess()
+    );
   }
-
-
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
@@ -319,7 +350,11 @@ export class AppNavbar implements OnInit, OnDestroy {
   }
 
   toggleMobileDropdown(index: number) {
-    this.mobileExpandedIndex = this.mobileExpandedIndex === index ? null : index;
+    const next = this.mobileExpandedIndex === index ? null : index;
+    this.mobileExpandedIndex = next;
+    if (next === 0) {
+      this.ensureFeaturedBlogsLoaded();
+    }
   }
 
   getMobileExpandedIndex(): number | null {
@@ -333,7 +368,10 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   private updateBodyScrollLock() {
     if (isPlatformBrowser(this.platformId)) {
-      this.document.body.classList.toggle('mobile-menu-open', this.isMobileMenuOpen);
+      this.document.body.classList.toggle(
+        'mobile-menu-open',
+        this.isMobileMenuOpen,
+      );
     }
   }
 
@@ -383,10 +421,43 @@ export class AppNavbar implements OnInit, OnDestroy {
     // console.log('onNavMouseLeave', this.hoveredIndex());
   }
 
-  public handleMouseEnter(item: { index: number | null; hasDropdown: boolean }): void {
+  public handleMouseEnter(item: {
+    index: number | null;
+    hasDropdown: boolean;
+  }): void {
     if (item.hasDropdown && item.index !== null) {
       this.hoveredIndex.set(item.index);
+      if (item.index === 0) {
+        this.ensureFeaturedBlogsLoaded();
+      }
     }
+  }
+
+  /** Carga blogs para el mega menú de Services (GetGenContentsByCategory); solo bajo demanda. */
+  ensureFeaturedBlogsLoaded(): void {
+    if (!isPlatformBrowser(this.platformId) || this.featuredBlogsRequested) {
+      return;
+    }
+    this.featuredBlogsRequested = true;
+    this.graphql.getBlogs().subscribe((list) => {
+      const filtered = [...list].filter((n) =>
+        n.genContentCategories?.nodes?.find(
+          (c) => c.slug === 'featured-blog-menu',
+        ),
+      );
+      const _list = filtered.length > 0 ? filtered : list;
+      const sorted = [..._list].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      );
+      this.featuredBlogs.set(
+        sorted.slice(0, 1).map((n) => ({
+          id: n.id,
+          title: n.title,
+          link: `/blog/${n.slug}`,
+          image: n.featuredImage?.node?.sourceUrl ?? '',
+        })),
+      );
+    });
   }
 
   toggleSearchPanel(): void {
@@ -427,7 +498,10 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   onSearchScroll(event: Event): void {
     const el = event.target as HTMLElement;
-    if (el.scrollHeight - el.scrollTop <= el.clientHeight + 80 && this.searchHasMore()) {
+    if (
+      el.scrollHeight - el.scrollTop <= el.clientHeight + 80 &&
+      this.searchHasMore()
+    ) {
       this.searchVisibleCount.update((n) => n + this.SEARCH_PAGE_SIZE);
     }
   }

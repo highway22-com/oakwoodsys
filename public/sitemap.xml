@@ -16,6 +16,31 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://oakwoodsys.com/blog/azure-arc-modernizing-your-environment-before-you-migrate-it</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/blog/linux-on-azure-modernizing-open-source-workloads-without-compromise</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/blog/power-bi-premium-is-retiring-what-microsoft-fabric-means-for-your-data-platform</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/blog/sql-server-on-azure-modernizing-the-data-layer-that-runs-your-business</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/blog/windows-server-on-azure-moving-beyond-migration-to-real-modernization</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://oakwoodsys.com/blog/oakwood-systems-group-achieves-microsoft-advanced-specialization-for-ai-applications-on-azure</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -107,6 +132,11 @@
   </url>
   <url>
     <loc>https://oakwoodsys.com/blog/the-key-to-a-secure-cloud-migration</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/resources/case-studies/managed-services-for-manufacturing</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -371,6 +401,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://oakwoodsys.com/resources/events</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://oakwoodsys.com/careers</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -399,5 +434,20 @@
     <loc>https://oakwoodsys.com/privacy-policy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/resources/events/azure-hpc-education-webinar</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/resources/events/manufacturers-modernize-webinar</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/resources/events/high-performance-computing-webinar</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

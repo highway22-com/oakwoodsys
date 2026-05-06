@@ -51,7 +51,7 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
-  readonly titleText = 'Featured Case Study'
+  readonly titleText = 'Featured Case Studies'
   readonly decodeHtmlEntities = decodeHtmlEntities;
 
   /** true = blog, false = case studies/resources. */
@@ -281,7 +281,7 @@ export class FeaturedCaseStudyCardsSectionComponent implements OnInit, OnChanges
     const secondaryLink = primaryTagSlug ? `${basePath}?primaryTag=${primaryTagSlug}` : basePath;
 
     return {
-      label: 'Featured Case Study',
+      label: 'Featured Case Studies',
       tag,
       title: cs.title ?? '',
       description,

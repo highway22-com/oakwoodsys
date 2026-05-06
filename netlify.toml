@@ -26,6 +26,12 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/api/eventbrite/*"
+  to = "https://oakwoodsystemsgroup.com/wp-json/oakwood/v1/eventbrite/:splat"
+  status = 200
+  force = true
+
 # CMS JSON (home.json, services.json, service-*.json)
 [[redirects]]
   from = "/api/cms/*"

@@ -1,0 +1,118 @@
+{
+  "hero": {
+    "title": "Technology Partners",
+    "description": "We deliver exceptional results with the backing of industry-leading partners based on decades of trust.",
+    "heroVideoUrls": [
+      "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Technology_Partners.mp4"
+    ],
+    "heroImage": ""
+  },
+  "intro": "At Oakwood, our team leverages our industry knowledge and leadership in technology, solution development and integration to align our partners’ innovations with your specific business needs.",
+  "partners": [
+    {
+      "name": "Microsoft",
+      "logoUrl": "/assets/logos/microsoft.png",
+      "description": "Acting as the energy force behind technology strategy of countless organizations, Microsoft’s stack of technologies and frameworks continues to help businesses write their story of success and growth.",
+      "website": "https://microsoft.com",
+      "category": "Cloud & Productivity"
+    },
+    {
+      "name": "Ansys",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/ansys-logo-web-1.png",
+      "description": "Ansys, Inc. is a leading global provider of engineering simulation software and services, which are used to predict how product designs will behave in real-world environments.",
+      "website": "https://ansys.com",
+      "category": "Engineering & Simulation"
+    },
+    {
+      "name": "AMD",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/amd-logo-web-1.png",
+      "description": "Advanced Micro Devices (AMD) is a prominent multinational semiconductor company that develops computer processors and related technologies for business and consumer markets.",
+      "website": "https://amd.com",
+      "category": "Hardware"
+    },
+    {
+      "name": "Databricks",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/databricks-logo-web.png",
+      "description": "Databricks, Inc. is a prominent data and AI company known for its unified analytics platform, which is designed to accelerate innovation by unifying data engineering, data science, and business analytics.",
+      "website": "https://databricks.com",
+      "category": "Data & AI"
+    },
+    {
+      "name": "Barracuda",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Logos.png",
+      "description": "More than 200,000 global customers trust Barracuda to safeguard their employees, data, and applications from a wide range of threats by providing easy, comprehensive and affordable solutions.",
+      "website": "https://barracuda.com",
+      "category": "Security"
+    },
+    {
+      "name": "Quest",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Logos-1.png",
+      "description": "Quest Software provides enterprise software solutions deliver true IT resilience with software that empowers identities, users and data, streamlines IT operations and hardens cybersecurity from the inside out.",
+      "website": "https://quest.com",
+      "category": "IT Management"
+    },
+    {
+      "name": "RapidFire Tools",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Logos-2.png",
+      "description": "Network Detective goes way beyond just network discovery and documentation. Data collectors compare multiple data points to uncover hard to detect issues, measure risk, provide recommended fixes, and track remediation progress.",
+      "website": "https://rapidfiretools.com",
+      "category": "Network Management"
+    },
+    {
+      "name": "VMware",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/vmware_logo.png",
+      "description": "Implement Zero Trust with fewer tools and silos, better context, and security that’s built-in and distributed with your control points of users, devices, workloads and networks. Achieve simpler, faster, and smarter security with VMware.",
+      "website": "https://vmware.com",
+      "category": "Cloud & Virtualization"
+    },
+    {
+      "name": "Veeam",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Veeam_logo.png",
+      "description": "With more than a decade of delivering innovation and best-in-class support, Veeam continues to distinguish itself as the industry leader for backup and data protection leading to over 400K happy customers.",
+      "website": "https://veeam.com",
+      "category": "Data Protection"
+    },
+    {
+      "name": "RocketCyber",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/rocketcyber_300100.png",
+      "description": "RocketCyber software-as-a-service provides a cloud-to-endpoint solution, allowing you to avoid the cost and complexities that come with managing multiple endpoint security vendors.",
+      "website": "https://rocketcyber.com",
+      "category": "Cybersecurity"
+    },
+    {
+      "name": "Spanning",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/spanning_300100.png",
+      "description": "Spanning is a cloud-to-cloud backup and recovery solution for G Suite, Office 365, and Salesforce. The platform is designed to help businesses protect their data within the cloud in the event of user errors, malicious activity, security breaches, and other disasters.",
+      "website": "https://spanning.com",
+      "category": "Data Protection"
+    },
+    {
+      "name": "Adobe",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Logos-3.png",
+      "description": "This famed multinational software company might be best known for its flagship product, Photoshop, but its portfolio includes dozens of different products spread across its Creative, Document, and Marketing Cloud platforms.",
+      "website": "https://adobe.com",
+      "category": "Creative & Marketing"
+    },
+    {
+      "name": "BitTitan",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Logos-4.png",
+      "description": "BitTitan’s fully automated, industry-leading SaaS solution enables organizations to quickly migrate email, files, and other workloads from a wide range of Source and Destination endpoints.",
+      "website": "https://bittitan.com",
+      "category": "Migration"
+    },
+    {
+      "name": "Duo",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/cisco_duo_300100-1.png",
+      "description": "The Cisco Secure Access by Duo is a cloud-based security platform that protects access to all. applications, for any user and device, from anywhere.",
+      "website": "https://duo.com",
+      "category": "Cybersecurity"
+    },
+    {
+      "name": "CyberArk",
+      "logoUrl": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/cyberark_300100.png",
+      "description": "CyberArk provides information security used to secure privileged accounts with password management thus reducing security risk(s).",
+      "website": "https://cyberark.com",
+      "category": "Cybersecurity"
+    }
+  ]
+}

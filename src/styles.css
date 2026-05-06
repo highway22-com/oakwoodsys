@@ -208,28 +208,32 @@ body.mobile-menu-open {
 
 /* Custom blue scrollbar for filter sidebar */
 .custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #2a7ebf #e0f0ff; /* thumb, track */
+    scrollbar-width: thin;
+    scrollbar-color: #2a7ebf #e0f0ff;
+    /* thumb, track */
 }
+
 .custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  background: #e0f0ff;
+    width: 8px;
+    background: #e0f0ff;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #2a7ebf;
-  border-radius: 8px;
+    background: #2a7ebf;
+    border-radius: 8px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-button {
-  display: none;
-  height: 0;
-  width: 0;
+    display: none;
+    height: 0;
+    width: 0;
 }
 
 /* Hide arrow buttons on featured case study scrollbar */
 .featured-case-study-scroll::-webkit-scrollbar-button {
-  display: none;
-  height: 0;
-  width: 0;
+    display: none;
+    height: 0;
+    width: 0;
 }
 
 
@@ -249,6 +253,7 @@ body.mobile-menu-open {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -259,6 +264,7 @@ body.mobile-menu-open {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -279,6 +285,7 @@ body.mobile-menu-open {
     from {
         clip-path: inset(0 100% 0 0);
     }
+
     to {
         clip-path: inset(0 0 0 0);
     }
@@ -286,4 +293,62 @@ body.mobile-menu-open {
 
 .animate-wipe-in {
     animation: wipe-in 0.8s ease-out forwards;
+}
+
+.event-html h1,
+.event-html h2,
+.event-html h3,
+.event-html h4,
+.event-html h5,
+.event-html h6,
+.event-editorial-heading-h3 {
+    color: #242424 !important;
+    font-size: 32px !important;
+    font-style: normal !important;
+    font-weight: 600 !important;
+    line-height: 130% !important;
+    letter-spacing: -0.32px !important;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+}
+
+.event-html p {
+    color: #242424;
+    font-family: Inter;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    padding-bottom: 1rem;
+}
+
+.event-html {
+    padding-left: 10px;
+}
+
+  .event-html ul {
+    list-style: disc !important;
+    padding-left: 1.5rem !important;
+  }
+  .event-html ol {
+    list-style: decimal !important;
+    padding-left: 1.5rem !important;
+  }
+  .event-html li {
+    display: list-item !important;
+  }
+
+/* In your global styles.css, AFTER the Tailwind imports */
+@layer base {
+  .event-html ul {
+    list-style: disc !important;
+    padding-left: 1.5rem !important;
+  }
+  .event-html ol {
+    list-style: decimal !important;
+    padding-left: 1.5rem !important;
+  }
+  .event-html li {
+    display: list-item !important;
+  }
 }

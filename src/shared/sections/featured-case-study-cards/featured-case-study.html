@@ -8,7 +8,7 @@
         <div class="flex flex-row items-center justify-between w-full gap-2 sm:gap-4 pt-6 mb-4">
           <p
             class="font-inter font-semibold text-[14px] leading-[150%] tracking-normal uppercase text-[#2A7EBF] whitespace-nowrap ">
-            {{ isBlogs ? 'Featured Blog' : 'Featured Case Study' }}
+            {{ isBlogs ? 'Featured Blog' : 'Featured Case Studies' }}
           </p>
           <div class="flex items-center gap-3">
             <span class="text-sm text-gray-500">
@@ -38,7 +38,9 @@
       </div>
 
       <!-- Left: image -->
-      <div class="featured-case-study__text-fade relative w-full min-h-[50vh] lg:min-h-[60vh] overflow-hidden bg-slate-100 order-2 lg:order-1" [style.opacity]="textFadeOpacity()">
+      <div
+        class="featured-case-study__text-fade relative w-full min-h-[50vh] lg:min-h-[60vh] overflow-hidden bg-slate-100 order-2 lg:order-1"
+        [style.opacity]="textFadeOpacity()">
         <img [src]="item.image?.url ?? ''" [alt]="item.image?.alt ?? (item.title + ' - Featured case study image')"
           class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
       </div>
@@ -46,9 +48,11 @@
       <!-- Right: content -->
       <div class="flex flex-col px-2 sm:px-2 md:px-10 lg:px-14 xl:px-20 py-6 lg:py-16 order-3 lg:order-2">
         <!-- Header row: label + pagination (desktop only) -->
-        <div class="featured-case-study__text-fade hidden lg:flex flex-row items-center justify-between w-full gap-2 sm:gap-4 mb-6" [style.opacity]="textFadeOpacity()">
+        <div
+          class="featured-case-study__text-fade hidden lg:flex flex-row items-center justify-between w-full gap-2 sm:gap-4 mb-6"
+          [style.opacity]="textFadeOpacity()">
           <p class="text-lg font-semibold uppercase text-p-700 whitespace-nowrap">
-            {{ isBlogs ? 'Featured Blog' : 'Featured Case Study' }}
+            {{ isBlogs ? 'Featured Blogs' : 'Featured Case Studies' }}
           </p>
           <div class="flex items-center gap-3">
             <span class="text-sm text-gray-500">

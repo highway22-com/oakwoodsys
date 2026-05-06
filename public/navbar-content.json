@@ -3,7 +3,7 @@
     {
       "slug": "services",
       "label": "Services",
-      "routerLink": "/services/data-ai-solutions",
+      "routerLink": "/services",
       "index": 0,
       "hasDropdown": true
     },

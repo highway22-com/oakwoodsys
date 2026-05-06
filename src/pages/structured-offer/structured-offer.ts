@@ -1,5 +1,16 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal, inject, computed, PLATFORM_ID, input, effect } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+  signal,
+  inject,
+  computed,
+  PLATFORM_ID,
+  input,
+  effect,
+} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -23,6 +34,22 @@ interface StructuredOfferSection {
   };
 }
 
+interface StructuredOfferImage {
+  src: string;
+  alt: string;
+  caption?: string;
+}
+
+interface OverviewDeliveryGroup {
+  heading: string;
+  items: string[];
+}
+
+interface ParsedOverviewDelivery {
+  title: string | null;
+  groups: OverviewDeliveryGroup[];
+}
+
 interface SharedContactUsContent {
   shared?: {
     licensingCta?: {
@@ -37,9 +64,9 @@ interface SharedContactUsContent {
 export interface StructuredOfferContent {
   title: string;
   summary: string;
-  duration?: string;      // e.g., "4 Weeks"
-  delivery?: string;      // e.g., "Remote or Hybrid"
-  category?: string;      // e.g., "Data&AI"
+  duration?: string;
+  delivery?: string;
+  category?: string;
   sections: StructuredOfferSection[];
 }
 
@@ -85,6 +112,7 @@ export interface StructuredOfferPageConfig {
   heroCtaSecondary?: StructuredOfferCta;
   contactSection: StructuredOfferContactSection;
   featuredCaseStudySlugs: string[];
+  whatIsIncludedImage?: StructuredOfferImage;
   ctaSection: {
     title: string;
     description: string;
@@ -95,18 +123,18 @@ export interface StructuredOfferPageConfig {
 }
 
 const DEFAULT_HERO_VIDEO_URLS = [
-  'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Services-Data-Ai.mp4'
+  'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Services-Data-Ai.mp4',
 ];
 
 const DEFAULT_HERO_CTA_PRIMARY: StructuredOfferCta = {
   text: 'Contact Oakwood',
   link: '/contact-us',
-  backgroundColor: '#2A7EBF'
+  backgroundColor: '#2A7EBF',
 };
 
 const DEFAULT_HERO_CTA_SECONDARY: StructuredOfferCta = {
   text: 'Request Offer Details',
-  link: '/contact-us'
+  link: '/contact-us',
 };
 
 const DEFAULT_CONTACT_SECTION: StructuredOfferContactSection = {
@@ -114,48 +142,62 @@ const DEFAULT_CONTACT_SECTION: StructuredOfferContactSection = {
   backgroundImage: '/assets/bg-blue.png',
   sideImage: {
     src: '/assets/contact-offers.png',
-    alt: 'Team member ready to help'
+    alt: 'Team member ready to help',
   },
   sideTitle: 'Pricing',
-  sideDescription: 'This engagement may be eligible for Microsoft funding depending on your profile.',
+  sideDescription:
+    'This engagement may be eligible for Microsoft funding depending on your profile.',
   title: 'Contact us to get started',
-  description: 'Custom pricing based on scope and number of SQL workloads in scope.',
+  description:
+    'Custom pricing based on scope and number of SQL workloads in scope.',
   fields: {
     fullNameLabel: 'Name',
     fullNamePlaceholder: 'Your name',
     emailLabel: 'Work email address',
     emailPlaceholder: 'email@example.com',
     messageLabel: 'Message',
-    messagePlaceholder: "Describe what you need help with or what you're planning next"
+    messagePlaceholder:
+      "Describe what you need help with or what you're planning next",
   },
   errors: {
     fullNameRequired: 'Full name is required',
     emailRequired: 'Email is required',
-    messageRequired: 'Message is required'
+    messageRequired: 'Message is required',
   },
   submitButton: {
     idle: 'Send Message',
-    loading: 'Sending...'
-  }
+    loading: 'Sending...',
+  },
 };
 
 const DEFAULT_CTA_SECTION = {
   title: 'Need Microsoft licensing help?',
-  description: 'As a Tier-1 CSP, Oakwood can simplify, manage, and support your M365 and Azure licensing.',
+  description:
+    'As a Tier-1 CSP, Oakwood can simplify, manage, and support your M365 and Azure licensing.',
   primaryText: 'Speak to a licensing expert',
-  primaryLink: '/contact-us'
+  primaryLink: '/contact-us',
 };
 
 const DEFAULT_FEATURED_CASE_STUDY_SLUGS = ['data-ai-solutions'];
 
+const DEFAULT_WHAT_IS_INCLUDED_IMAGE: StructuredOfferImage = {
+  src: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Placeholder-Image.png',
+  alt: 'Structured engagement offer visual',
+  caption: '',
+};
+
 const STRUCTURED_OFFER_CONTENT: Record<string, StructuredOfferContent> = {};
-
-
 
 @Component({
   selector: 'app-structured-offer',
   standalone: true,
-  imports: [CommonModule, RouterLink, VideoHero, FormsModule, FeaturedCaseStudySectionComponent, CtaSectionComponent],
+  imports: [
+    CommonModule,
+    VideoHero,
+    FormsModule,
+    FeaturedCaseStudySectionComponent,
+    CtaSectionComponent,
+  ],
   templateUrl: './structured-offer.html',
   styleUrl: './structured-offer.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -171,49 +213,88 @@ export class StructuredOffer implements OnInit, OnDestroy {
   private scrollListener?: () => void;
 
   readonly slug = signal<string | null>(null);
-  /** When provided (edit preview), skip CMS/route loading and use this data directly. */
   readonly contentOverride = input<StructuredOfferPageConfig | null>(null);
-  /** Offer slug to render when contentOverride is active. */
   readonly slugOverride = input<string | null>(null);
   readonly pageConfig = signal<StructuredOfferPageConfig | null>(null);
-  readonly sharedLicensingCta = signal<StructuredOfferPageConfig['ctaSection'] | null>(null);
+  readonly sharedLicensingCta = signal<
+    StructuredOfferPageConfig['ctaSection'] | null
+  >(null);
   readonly pageConfigLoaded = signal(false);
   readonly pageConfigFailed = signal(false);
   readonly content = signal<StructuredOfferContent | null>(null);
   readonly error = signal<string | null>(null);
   readonly activeSection = signal<string>('overview');
 
-  // Form properties
   readonly formModel = signal({
     fullName: '',
     email: '',
-    message: ''
+    message: '',
   });
   readonly submitted = signal(false);
   readonly showFormAnimation = signal(true);
   readonly validationErrors = signal<Record<string, boolean>>({
     fullName: false,
     email: false,
-    message: false
+    message: false,
   });
   readonly isSubmitting = signal(false);
 
-  readonly heroVideoUrls = computed(() => this.pageConfig()?.heroVideoUrls ?? DEFAULT_HERO_VIDEO_URLS);
-  readonly heroCtaPrimary = computed(() => this.pageConfig()?.heroCtaPrimary ?? DEFAULT_HERO_CTA_PRIMARY);
-  readonly heroCtaSecondary = computed(() => this.pageConfig()?.heroCtaSecondary ?? DEFAULT_HERO_CTA_SECONDARY);
-  readonly contactSection = computed(() => this.pageConfig()?.contactSection ?? DEFAULT_CONTACT_SECTION);
-  readonly ctaSection = computed(() => this.pageConfig()?.ctaSection ?? this.sharedLicensingCta() ?? DEFAULT_CTA_SECTION);
-  readonly featuredCaseStudySlugs = computed(() => this.pageConfig()?.featuredCaseStudySlugs ?? DEFAULT_FEATURED_CASE_STUDY_SLUGS);
+  readonly heroVideoUrls = computed(
+    () => this.pageConfig()?.heroVideoUrls ?? DEFAULT_HERO_VIDEO_URLS,
+  );
+  readonly heroCtaPrimary = computed(
+    () => this.pageConfig()?.heroCtaPrimary ?? DEFAULT_HERO_CTA_PRIMARY,
+  );
+
+  readonly contactSection = computed(
+    () => this.pageConfig()?.contactSection ?? DEFAULT_CONTACT_SECTION,
+  );
+  readonly whatIsIncludedImage = computed(
+    () =>
+      this.pageConfig()?.whatIsIncludedImage ?? DEFAULT_WHAT_IS_INCLUDED_IMAGE,
+  );
+  readonly ctaSection = computed(
+    () =>
+      this.pageConfig()?.ctaSection ??
+      this.sharedLicensingCta() ??
+      DEFAULT_CTA_SECTION,
+  );
+  readonly featuredCaseStudySlugs = computed(
+    () =>
+      this.pageConfig()?.featuredCaseStudySlugs ??
+      DEFAULT_FEATURED_CASE_STUDY_SLUGS,
+  );
+  readonly loading = signal(true);
 
   readonly offerDetails = computed(() => {
     const data = this.content();
     if (!data) return [];
     return [
-      { offer: 'Duration', offervalue: data.duration ?? 'TBD', icon: 'duration' },
-      { offer: 'Delivery', offervalue: data.delivery ?? 'TBD', icon: 'delivery' },
-      { offer: 'Category', offervalue: data.category ?? 'TBD', icon: 'category' }
+      {
+        offer: 'Duration',
+        offervalue: data.duration ?? 'TBD',
+        icon: 'duration',
+      },
+      {
+        offer: 'Delivery',
+        offervalue: data.delivery ?? 'TBD',
+        icon: 'delivery',
+      },
+      {
+        offer: 'Category',
+        offervalue: data.category ?? 'TBD',
+        icon: 'category',
+      },
     ];
   });
+
+  readonly overviewSection = computed(
+    () => this.content()?.sections.find((s) => s.id === 'overview') ?? null,
+  );
+
+  readonly parsedOverviewDelivery = computed(() =>
+    this.parseOverviewDelivery(this.overviewSection()?.bullets ?? []),
+  );
 
   constructor() {
     effect(() => {
@@ -228,9 +309,10 @@ export class StructuredOffer implements OnInit, OnDestroy {
       const availableSlugs = Object.entries(override.offers ?? {})
         .filter(([, value]) => Boolean(value))
         .map(([key]) => key);
-      const resolvedSlug = requestedSlug && availableSlugs.includes(requestedSlug)
-        ? requestedSlug
-        : (availableSlugs[0] ?? null);
+      const resolvedSlug =
+        requestedSlug && availableSlugs.includes(requestedSlug)
+          ? requestedSlug
+          : (availableSlugs[0] ?? null);
 
       this.slug.set(resolvedSlug);
       this.loadContent();
@@ -241,12 +323,13 @@ export class StructuredOffer implements OnInit, OnDestroy {
     this.loadSharedLicensingCta();
 
     if (this.contentOverride()) {
+      this.loading.set(false);
       return;
     }
 
     this.loadPageConfig();
 
-    this.routeSubscription = this.route.paramMap.subscribe(params => {
+    this.routeSubscription = this.route.paramMap.subscribe((params) => {
       if (this.contentOverride()) {
         return;
       }
@@ -266,7 +349,7 @@ export class StructuredOffer implements OnInit, OnDestroy {
       .get<SharedContactUsContent>('/contact-us-content.json')
       .pipe(
         take(1),
-        catchError(() => of(null))
+        catchError(() => of(null)),
       )
       .subscribe((data) => {
         const cta = data?.shared?.licensingCta;
@@ -300,7 +383,9 @@ export class StructuredOffer implements OnInit, OnDestroy {
     const offers = this.pageConfig()?.offers ?? STRUCTURED_OFFER_CONTENT;
 
     if (!slugValue || !offers[slugValue]) {
-      const fallbackSlug = Object.keys(offers).find((key) => Boolean(offers[key]));
+      const fallbackSlug = Object.keys(offers).find((key) =>
+        Boolean(offers[key]),
+      );
       if (fallbackSlug) {
         this.slug.set(fallbackSlug);
         slugValue = fallbackSlug;
@@ -310,7 +395,7 @@ export class StructuredOffer implements OnInit, OnDestroy {
     if (slugValue && offers[slugValue]) {
       const offer = offers[slugValue];
       this.content.set(offer);
-      this.error.set(null);
+      this.loading.set(false);
       this.seoMeta.updateMeta({
         title: `${offer.title} | Oakwood Systems`,
         description: offer.summary,
@@ -320,10 +405,16 @@ export class StructuredOffer implements OnInit, OnDestroy {
     }
 
     this.content.set(null);
-    this.error.set(this.pageConfigFailed() ? 'Unable to load offer content.' : 'Offer not found.');
+    this.error.set(
+      this.pageConfigFailed()
+        ? 'Unable to load offer content.'
+        : 'Offer not found.',
+    );
+    this.loading.set(false);
     this.seoMeta.updateMeta({
       title: 'Structured Engagements | Oakwood Systems',
-      description: 'Drive efficiency and innovation with tailored, strategic engagements designed to align technology solutions with your unique business goals.',
+      description:
+        'Drive efficiency and innovation with tailored, strategic engagements designed to align technology solutions with your unique business goals.',
       canonicalPath: '/structured-engagement',
     });
   }
@@ -333,10 +424,11 @@ export class StructuredOffer implements OnInit, OnDestroy {
       return;
     }
 
-    this.graphql.getStructuredEngagementOfferPageContent()
+    this.graphql
+      .getStructuredEngagementOfferPageContent()
       .pipe(
         take(1),
-        catchError(() => of(null))
+        catchError(() => of(null)),
       )
       .subscribe((cmsData) => {
         if (this.contentOverride()) {
@@ -345,17 +437,18 @@ export class StructuredOffer implements OnInit, OnDestroy {
 
         const parsed = this.asStructuredOfferPageConfig(cmsData);
         if (parsed) {
-          this.pageConfig.set(parsed);
+          this.pageConfig.set(this.normalizePageConfig(parsed));
           this.pageConfigFailed.set(false);
           this.pageConfigLoaded.set(true);
           this.loadContent();
           return;
         }
 
-        this.http.get<StructuredOfferPageConfig>('/structured-offer-content.json')
+        this.http
+          .get<StructuredOfferPageConfig>('/structured-offer-content.json')
           .pipe(
             take(1),
-            catchError(() => of(null))
+            catchError(() => of(null)),
           )
           .subscribe((jsonData) => {
             if (this.contentOverride()) {
@@ -363,7 +456,7 @@ export class StructuredOffer implements OnInit, OnDestroy {
             }
 
             if (jsonData?.offers && typeof jsonData.offers === 'object') {
-              this.pageConfig.set(jsonData);
+              this.pageConfig.set(this.normalizePageConfig(jsonData));
               this.pageConfigFailed.set(false);
             } else {
               this.pageConfig.set(null);
@@ -376,7 +469,28 @@ export class StructuredOffer implements OnInit, OnDestroy {
       });
   }
 
-  private asStructuredOfferPageConfig(data: Record<string, unknown> | null): StructuredOfferPageConfig | null {
+  private normalizePageConfig(
+    config: StructuredOfferPageConfig,
+  ): StructuredOfferPageConfig {
+    if (!config.offers) return config;
+    for (const offer of Object.values(config.offers)) {
+      const timeline = offer.sections?.find(
+        (s: StructuredOfferSection) => s.id === 'engagement-timeline',
+      );
+      if (timeline && timeline.body && !timeline.bullets?.length) {
+        const parts = timeline.body.split(/(?<=\.)\s+(?=[A-Z0-9])/);
+        timeline.bullets = parts
+          .map((p: string) => p.replace(/\.$/, '').trim())
+          .filter((p: string) => p.length > 0);
+        delete timeline.body;
+      }
+    }
+    return config;
+  }
+
+  private asStructuredOfferPageConfig(
+    data: Record<string, unknown> | null,
+  ): StructuredOfferPageConfig | null {
     if (!data || typeof data !== 'object') return null;
 
     const candidate = data as Partial<StructuredOfferPageConfig>;
@@ -384,7 +498,10 @@ export class StructuredOffer implements OnInit, OnDestroy {
       return candidate as StructuredOfferPageConfig;
     }
 
-    const wrapped = data as { content?: Partial<StructuredOfferPageConfig>; page?: string };
+    const wrapped = data as {
+      content?: Partial<StructuredOfferPageConfig>;
+      page?: string;
+    };
     if (wrapped.content?.offers && typeof wrapped.content.offers === 'object') {
       return wrapped.content as StructuredOfferPageConfig;
     }
@@ -398,21 +515,17 @@ export class StructuredOffer implements OnInit, OnDestroy {
     const errors: Record<string, boolean> = {
       fullName: !form.fullName?.trim(),
       email: !form.email?.trim() || !this.isValidEmail(form.email),
-      message: !form.message?.trim()
+      message: !form.message?.trim(),
     };
 
     this.validationErrors.set(errors);
 
-    // Check if there are any errors
-    if (Object.values(errors).some(error => error)) {
+    if (Object.values(errors).some((error) => error)) {
       return;
     }
 
     this.isSubmitting.set(true);
-    // TODO: Add your form submission logic here
-    // For now, just simulate a submit
     setTimeout(() => {
-      console.log('Form submitted:', this.formModel());
       this.resetForm();
       this.isSubmitting.set(false);
     }, 1500);
@@ -427,27 +540,32 @@ export class StructuredOffer implements OnInit, OnDestroy {
     this.formModel.set({
       fullName: '',
       email: '',
-      message: ''
+      message: '',
     });
     this.submitted.set(false);
     this.validationErrors.set({
       fullName: false,
       email: false,
-      message: false
+      message: false,
     });
   }
 
   scrollToSection(sectionId: string) {
+    if (!isPlatformBrowser(this.platformId)) return;
     const element = document.getElementById(sectionId);
     if (element) {
-      const offsetTop = element.getBoundingClientRect().top + window.scrollY - 120; // 120px offset for navbar
+      const offsetTop =
+        element.getBoundingClientRect().top + window.scrollY - 120;
       window.scrollTo({ top: offsetTop, behavior: 'smooth' });
       this.activeSection.set(sectionId);
     }
   }
 
   private updateActiveSection() {
-    const sections = ['overview', ...(this.content()?.sections.map(s => s.id) ?? [])];
+    const sections = [
+      'overview',
+      ...(this.content()?.sections.map((s) => s.id) ?? []),
+    ];
 
     for (const sectionId of sections) {
       const element = document.getElementById(sectionId);
@@ -460,10 +578,55 @@ export class StructuredOffer implements OnInit, OnDestroy {
     }
   }
 
-  /** Slugs para app-featured-case-study (from the current category or default to data-ai-solutions) */
   getSlugsForFeaturedSection(): string[] {
     return this.featuredCaseStudySlugs();
   }
+
+  private parseOverviewDelivery(rawBullets: string[]): ParsedOverviewDelivery {
+    let title: string | null = null;
+    const groups: OverviewDeliveryGroup[] = [];
+    let currentGroup: OverviewDeliveryGroup | null = null;
+
+    for (const raw of rawBullets) {
+      const line = (raw ?? '').trim();
+      if (!line) continue;
+
+      if (/^delivery\s+approach:?$/i.test(line)) {
+        title = 'Delivery Approach';
+        currentGroup = null;
+        continue;
+      }
+
+      if (/^\d+\.\s+/.test(line)) {
+        currentGroup = { heading: line, items: [] };
+        groups.push(currentGroup);
+        continue;
+      }
+
+      const cleanedBullet = line.replace(/^[-•]\s*/, '').trim();
+      if (!cleanedBullet) continue;
+
+      if (!currentGroup) {
+        currentGroup = { heading: '', items: [] };
+        groups.push(currentGroup);
+      }
+
+      currentGroup.items.push(cleanedBullet);
+    }
+
+    return { title, groups };
+  }
+
+  getBulletHtml(item: string): string {
+    const colonIdx = item.indexOf(': ');
+    if (colonIdx > 0) {
+      const heading = item.substring(0, colonIdx);
+      const text = item.substring(colonIdx + 2);
+      return `<strong>${heading}:</strong> ${text}`;
+    }
+    if (item.trimEnd().endsWith(':')) {
+      return `<strong>${item}</strong>`;
+    }
+    return item;
+  }
 }
-
-

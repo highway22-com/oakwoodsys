@@ -1,6 +1,9 @@
 /
 /blog
 /resources/case-studies
+/blog/azure-arc-modernizing-your-environment-before-you-migrate-it
+/blog/linux-on-azure-modernizing-open-source-workloads-without-compromise
+/blog/power-bi-premium-is-retiring-what-microsoft-fabric-means-for-your-data-platform
 /blog/sql-server-on-azure-modernizing-the-data-layer-that-runs-your-business
 /blog/windows-server-on-azure-moving-beyond-migration-to-real-modernization
 /blog/oakwood-systems-group-achieves-microsoft-advanced-specialization-for-ai-applications-on-azure

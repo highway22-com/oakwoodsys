@@ -58,7 +58,7 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly el = inject(ElementRef);
-  readonly titleText = 'Featured Case Study'
+  readonly titleText = 'Featured Case Studies'
 
   readonly decodeHtmlEntities = decodeHtmlEntities;
 
@@ -214,7 +214,7 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
     const secondaryLink = primaryTagSlug ? `${basePath}?primaryTag=${primaryTagSlug}` : basePath;
 
     return {
-      label: 'Featured Case Study',
+      label: 'Featured Case Studies',
       tag,
       title: cs.title ?? '',
       description,

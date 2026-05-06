@@ -56,7 +56,7 @@
           "linkText": "View offer"
         },
         {
-          "title": "Vmware migrations",
+          "title": "VMware Migration to Azure",
           "description": "Transition VMware workloads to Azure using a proven discovery, planning, and execution framework that simplifies complexity and delivers a stable cloud environment.",
           "svgIcon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/vmware-migrations.png",
           "borderColor": "orange",

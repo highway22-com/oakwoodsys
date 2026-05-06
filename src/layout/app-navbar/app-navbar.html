@@ -1,7 +1,7 @@
 <nav class="w-full px-4 sm:px-6 md:px-8 lg:px-1 py-4 transition-all duration-300"
   [ngClass]="previewMode() ? 'relative' : 'fixed top-0 left-0 right-0 z-50'"
-  [class.navbar--gradient]="!hasNavbarBackground" [class.bg-white]="hasNavbarBackground"
-  [class.shadow-md]="hasNavbarBackground" [class.text-reds]="isNavbarDark">
+  [class.navbar--gradient]="!hasNavbarBackground && section() !== 'upcoming_event' " [class.bg-white]="hasNavbarBackground"
+[class.shadow-md]="hasNavbarBackground && section() !== 'past_event'">
   <div class="px-4 sm:px-6 md:px-8 lg:px-20 mx-auto flex items-center justify-between">
     <!-- Logo (siempre visible) -->
     <a [routerLink]="'/'" class="flex items-center gap-2 sm:gap-3">

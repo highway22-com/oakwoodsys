@@ -342,7 +342,7 @@ export default class Resources implements OnInit {
   }
 
   featuredCaseStudyLabel(): string {
-    return this.pageContent()?.featuredCaseStudy?.label ?? 'FEATURED CASE STUDY';
+    return this.pageContent()?.featuredCaseStudy?.label ?? 'FEATURED CASE STUDIES';
   }
 
   featuredCaseStudyReadMore(): string {
