@@ -88,6 +88,7 @@ export class AppNavbar implements OnInit, OnDestroy {
   hoveredIndex = signal<number | null>(null);
   isOnContactSuccess = signal(false);
   isOnStructuredEngagement = signal(false);
+  isOnWpPage = signal(false);
 
   /** Cuando se proporciona, se usa en lugar de cargar desde JSON (para preview en edit) */
   readonly contentOverride = input<NavbarContent | null>(null);
@@ -162,10 +163,14 @@ export class AppNavbar implements OnInit, OnDestroy {
       this.checkScrollPosition();
       // Check current route
       this.updateContactSuccessStatus();
+      this.updateWpPageStatus();
       // Listen to route changes
       this.router.events
         .pipe(filter((event) => event instanceof NavigationEnd))
-        .subscribe(() => this.updateContactSuccessStatus());
+        .subscribe(() => {
+          this.updateContactSuccessStatus();
+          this.updateWpPageStatus();
+        });
       // Cargar case studies y blogs solo en el cliente (GraphQL puede no estar disponible en SSR)
       this.graphql.getCaseStudies().subscribe((list) => {
         const filtered = [...list].filter((n) =>
@@ -313,6 +318,12 @@ export class AppNavbar implements OnInit, OnDestroy {
     );
   }
 
+  private updateWpPageStatus(): void {
+    let r: ActivatedRoute | null = this.route;
+    while (r?.firstChild) r = r.firstChild;
+    this.isOnWpPage.set(!!r?.snapshot?.data?.['isWpPage']);
+  }
+
   get isNavbarDark(): boolean {
     if (this.isOnStructuredEngagement()) return false;
     const hover = this.hoveredIndex();
@@ -321,6 +332,7 @@ export class AppNavbar implements OnInit, OnDestroy {
       hover !== null ||
       this.searchPanelOpen() ||
       this.isOnContactSuccess() ||
+      this.isOnWpPage() ||
       this.section() === 'past_event'
     ); // 👈 add this
   }
@@ -333,7 +345,8 @@ export class AppNavbar implements OnInit, OnDestroy {
       this.isScrolled ||
       this.hoveredIndex() !== null ||
       this.searchPanelOpen() ||
-      this.isOnContactSuccess()
+      this.isOnContactSuccess() ||
+      this.isOnWpPage()
     );
   }
 

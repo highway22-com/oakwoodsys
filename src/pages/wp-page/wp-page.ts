@@ -3,9 +3,16 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Apollo } from 'apollo-angular';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
-import { RESOLVE_WP_PAGE_BY_URI, ResolveWpPageByUriResponse, WpPageNode } from '../../app/api/graphql';
+import {
+  RESOLVE_WP_PAGE_BY_URI_BASIC,
+  RESOLVE_WP_PAGE_BY_URI_WITH_SEO,
+  ResolveWpPageByUriResponse,
+  WpPageNode,
+  WpYoastSeo,
+} from '../../app/api/graphql';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
 
@@ -15,7 +22,10 @@ interface RenderablePage {
   uri: string;
   sanitizedContent: SafeHtml;
   featuredImage?: { sourceUrl: string; altText: string | null } | null;
+  seo?: WpYoastSeo | null;
 }
+
+let yoastSeoAvailable: boolean | null = null;
 
 @Component({
   selector: 'app-wp-page',
@@ -56,28 +66,78 @@ export default class WpPage implements OnInit, OnDestroy {
     this.notFound.set(false);
     this.page.set(null);
 
-    this.querySub = this.apollo
+    this.querySub = this.fetchPage(uri).subscribe({
+      next: (node) => {
+        if (this.isWpPage(node)) {
+          this.renderPage(node);
+        } else {
+          this.handleNotFound(uri);
+        }
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('[WpPage] resolveRoute error for', uri, err);
+        this.handleNotFound(uri);
+        this.loading.set(false);
+      },
+    });
+  }
+
+  private fetchPage(uri: string): Observable<WpPageNode | { __typename: string } | null | undefined> {
+    if (yoastSeoAvailable === false) {
+      return this.queryBasic(uri);
+    }
+    return this.queryWithSeo(uri).pipe(
+      catchError((err: unknown) => {
+        if (this.isUnknownSeoFieldError(err)) {
+          yoastSeoAvailable = false;
+          return this.queryBasic(uri);
+        }
+        throw err;
+      }),
+      map((node) => {
+        if (yoastSeoAvailable === null) yoastSeoAvailable = true;
+        return node;
+      }),
+    );
+  }
+
+  private queryWithSeo(uri: string): Observable<WpPageNode | { __typename: string } | null | undefined> {
+    return this.apollo
       .query<ResolveWpPageByUriResponse>({
-        query: RESOLVE_WP_PAGE_BY_URI,
+        query: RESOLVE_WP_PAGE_BY_URI_WITH_SEO,
+        variables: { uri },
+        fetchPolicy: 'network-only',
+        errorPolicy: 'none',
+      })
+      .pipe(map((result) => result.data?.nodeByUri ?? null));
+  }
+
+  private queryBasic(uri: string): Observable<WpPageNode | { __typename: string } | null | undefined> {
+    return this.apollo
+      .query<ResolveWpPageByUriResponse>({
+        query: RESOLVE_WP_PAGE_BY_URI_BASIC,
         variables: { uri },
         fetchPolicy: 'network-only',
       })
-      .subscribe({
-        next: (result) => {
-          const node = result.data?.nodeByUri;
-          if (this.isWpPage(node)) {
-            this.renderPage(node);
-          } else {
-            this.handleNotFound(uri);
-          }
-          this.loading.set(false);
-        },
-        error: (err) => {
-          console.error('[WpPage] resolveRoute error for', uri, err);
-          this.handleNotFound(uri);
-          this.loading.set(false);
-        },
-      });
+      .pipe(
+        map((result) => result.data?.nodeByUri ?? null),
+        catchError(() => of(null)),
+      );
+  }
+
+  private isUnknownSeoFieldError(err: unknown): boolean {
+    const candidates: string[] = [];
+    const e = err as { message?: string; graphQLErrors?: Array<{ message?: string }>; networkError?: { result?: { errors?: Array<{ message?: string }> } } };
+    if (e?.message) candidates.push(e.message);
+    if (Array.isArray(e?.graphQLErrors)) {
+      for (const ge of e.graphQLErrors) if (ge?.message) candidates.push(ge.message);
+    }
+    const nwErrors = e?.networkError?.result?.errors;
+    if (Array.isArray(nwErrors)) {
+      for (const ne of nwErrors) if (ne?.message) candidates.push(ne.message);
+    }
+    return candidates.some((m) => /cannot query field\s+"?seo"?/i.test(m) || /unknown field\s+"?seo"?/i.test(m));
   }
 
   private isWpPage(node: unknown): node is WpPageNode {
@@ -97,17 +157,39 @@ export default class WpPage implements OnInit, OnDestroy {
             altText: node.featuredImage.node.altText ?? null,
           }
         : null,
+      seo: node.seo ?? null,
     };
 
     this.page.set(rendered);
 
+    const seo = rendered.seo ?? null;
+    const derivedDescription = this.deriveDescription(content);
+    const fallbackTitle = `${rendered.title} | Oakwood Systems`;
+    const featuredImageUrl = rendered.featuredImage?.sourceUrl;
+    const featuredImageAlt = rendered.featuredImage?.altText ?? rendered.title;
+
+    const ogType = ((): 'website' | 'article' => {
+      const t = seo?.opengraphType?.toLowerCase();
+      return t === 'website' ? 'website' : 'article';
+    })();
+
     this.seoMeta.updateMeta({
-      title: `${rendered.title} | Oakwood Systems`,
-      description: this.deriveDescription(content) || this.seoMeta.defaultDescription,
-      canonicalPath: rendered.uri.replace(/\/$/, '') || '/',
-      image: rendered.featuredImage?.sourceUrl,
-      imageAlt: rendered.featuredImage?.altText ?? rendered.title,
-      ogType: 'article',
+      title: seo?.title?.trim() || fallbackTitle,
+      description: seo?.metaDesc?.trim() || derivedDescription || this.seoMeta.defaultDescription,
+      keywords: seo?.metaKeywords?.trim() || undefined,
+      keyphrase: seo?.focuskw?.trim() || undefined,
+      canonicalPath: seo?.canonical?.trim() || rendered.uri.replace(/\/$/, '') || '/',
+      image: seo?.opengraphImage?.sourceUrl || featuredImageUrl,
+      imageAlt: seo?.opengraphImage?.altText || featuredImageAlt,
+      ogType,
+      ogTitle: seo?.opengraphTitle?.trim() || undefined,
+      ogDescription: seo?.opengraphDescription?.trim() || undefined,
+      twitterTitle: seo?.twitterTitle?.trim() || undefined,
+      twitterDescription: seo?.twitterDescription?.trim() || undefined,
+      twitterImage: seo?.twitterImage?.sourceUrl || undefined,
+      noindex: this.toBool(seo?.metaRobotsNoindex),
+      nofollow: this.toBool(seo?.metaRobotsNofollow),
+      jsonLd: seo?.schema?.raw?.trim() || undefined,
     });
   }
 
@@ -117,6 +199,7 @@ export default class WpPage implements OnInit, OnDestroy {
       title: 'Page not found | Oakwood Systems',
       description: 'The page you requested cannot be found.',
       canonicalPath: uri.replace(/\/$/, '') || '/',
+      noindex: true,
     });
   }
 
@@ -127,5 +210,11 @@ export default class WpPage implements OnInit, OnDestroy {
       .replace(/\s+/g, ' ')
       .trim();
     return text.length > 200 ? `${text.slice(0, 197)}...` : text;
+  }
+
+  private toBool(value: string | null | undefined): boolean {
+    if (value == null) return false;
+    const v = String(value).toLowerCase();
+    return v === 'noindex' || v === 'nofollow' || v === 'true' || v === '1' || v === 'yes';
   }
 }

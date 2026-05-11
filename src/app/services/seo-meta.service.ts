@@ -27,6 +27,14 @@ export interface SeoMetaConfig {
   keywords?: string;
   /** Keyphrase principal para incluir en description si no está presente (ej. primaryTag) */
   keyphrase?: string;
+  noindex?: boolean;
+  nofollow?: boolean;
+  ogTitle?: string;
+  ogDescription?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  twitterImage?: string;
+  jsonLd?: string;
 }
 
 const DEFAULT_TITLE = 'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
@@ -114,8 +122,8 @@ export class SeoMetaService {
     // Open Graph
     this.metaService.updateTag({ property: 'og:locale', content: 'en_US' });
     this.metaService.updateTag({ property: 'og:type', content: ogType });
-    this.metaService.updateTag({ property: 'og:title', content: title });
-    this.metaService.updateTag({ property: 'og:description', content: description });
+    this.metaService.updateTag({ property: 'og:title', content: config.ogTitle || title });
+    this.metaService.updateTag({ property: 'og:description', content: config.ogDescription || description });
     this.metaService.updateTag({ property: 'og:url', content: canonicalUrl });
     this.metaService.updateTag({ property: 'og:site_name', content: 'Oakwood Systems Group' });
     this.metaService.updateTag({ property: 'article:publisher', content: 'https://www.facebook.com/OakwoodSys/' });
@@ -130,15 +138,22 @@ export class SeoMetaService {
     // Twitter (summary_large_image requiere twitter:image para mostrar la imagen)
     this.metaService.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
     this.metaService.updateTag({ name: 'twitter:site', content: '@OakwoodInsights' });
-    this.metaService.updateTag({ name: 'twitter:title', content: title });
-    this.metaService.updateTag({ name: 'twitter:description', content: description });
-    this.metaService.updateTag({ name: 'twitter:image', content: image });
+    this.metaService.updateTag({ name: 'twitter:title', content: config.twitterTitle || title });
+    this.metaService.updateTag({ name: 'twitter:description', content: config.twitterDescription || description });
+    this.metaService.updateTag({ name: 'twitter:image', content: config.twitterImage || image });
     if (imageAlt) {
       this.metaService.updateTag({ name: 'twitter:image:alt', content: imageAlt });
     }
 
+    const robotsParts: string[] = [];
+    robotsParts.push(config.noindex ? 'noindex' : 'index');
+    robotsParts.push(config.nofollow ? 'nofollow' : 'follow');
+    this.metaService.updateTag({ name: 'robots', content: robotsParts.join(', ') });
+
     // Canonical
     this.setCanonical(canonicalUrl);
+
+    this.setJsonLd(config.jsonLd ?? '');
 
     // Debug: ver metadata actual en consola (solo en desarrollo)
     if (isDevMode()) {
@@ -164,6 +179,23 @@ export class SeoMetaService {
       head.appendChild(linkEl);
     }
     linkEl.setAttribute('href', url);
+  }
+
+  private setJsonLd(raw: string): void {
+    const doc = this.document as Document;
+    const head = doc.getElementsByTagName('head')[0];
+    if (!head) return;
+    const existing = doc.querySelector('script[data-managed="seo-jsonld"]') as HTMLScriptElement | null;
+    const trimmed = (raw ?? '').trim();
+    if (!trimmed) {
+      if (existing) existing.remove();
+      return;
+    }
+    const scriptEl = existing ?? doc.createElement('script');
+    scriptEl.setAttribute('type', 'application/ld+json');
+    scriptEl.setAttribute('data-managed', 'seo-jsonld');
+    scriptEl.textContent = trimmed;
+    if (!existing) head.appendChild(scriptEl);
   }
 
   /** Constantes para usar en otros componentes */

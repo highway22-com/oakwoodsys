@@ -869,8 +869,8 @@ export const GET_CMS_PAGE = gql`
   }
 `;
 
-export const RESOLVE_WP_PAGE_BY_URI = gql`
-  query ResolveWpPageByUri($uri: String!) {
+export const RESOLVE_WP_PAGE_BY_URI_BASIC = gql`
+  query ResolveWpPageByUriBasic($uri: String!) {
     nodeByUri(uri: $uri) {
       __typename
       ... on Page {
@@ -892,6 +892,71 @@ export const RESOLVE_WP_PAGE_BY_URI = gql`
   }
 `;
 
+export const RESOLVE_WP_PAGE_BY_URI_WITH_SEO = gql`
+  query ResolveWpPageByUriWithSeo($uri: String!) {
+    nodeByUri(uri: $uri) {
+      __typename
+      ... on Page {
+        id
+        title
+        uri
+        slug
+        content
+        date
+        modified
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+        seo {
+          title
+          metaDesc
+          metaKeywords
+          metaRobotsNoindex
+          metaRobotsNofollow
+          canonical
+          focuskw
+          opengraphTitle
+          opengraphDescription
+          opengraphType
+          opengraphImage {
+            sourceUrl
+            altText
+          }
+          twitterTitle
+          twitterDescription
+          twitterImage {
+            sourceUrl
+          }
+          schema {
+            raw
+          }
+        }
+      }
+    }
+  }
+`;
+
+export interface WpYoastSeo {
+  title?: string | null;
+  metaDesc?: string | null;
+  metaKeywords?: string | null;
+  metaRobotsNoindex?: string | null;
+  metaRobotsNofollow?: string | null;
+  canonical?: string | null;
+  focuskw?: string | null;
+  opengraphTitle?: string | null;
+  opengraphDescription?: string | null;
+  opengraphType?: string | null;
+  opengraphImage?: { sourceUrl?: string | null; altText?: string | null } | null;
+  twitterTitle?: string | null;
+  twitterDescription?: string | null;
+  twitterImage?: { sourceUrl?: string | null } | null;
+  schema?: { raw?: string | null } | null;
+}
+
 export interface WpPageNode {
   __typename: 'Page';
   id: string;
@@ -904,6 +969,7 @@ export interface WpPageNode {
   featuredImage?: {
     node: { sourceUrl: string; altText?: string | null };
   } | null;
+  seo?: WpYoastSeo | null;
 }
 
 export interface ResolveWpPageByUriResponse {

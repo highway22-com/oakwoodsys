@@ -129,7 +129,8 @@ export const routes: Routes = [
             },
             {
                 path: '**',
-                loadComponent: () => import('../pages/wp-page/wp-page')
+                loadComponent: () => import('../pages/wp-page/wp-page'),
+                data: { isWpPage: true }
             }
         ]
     }
