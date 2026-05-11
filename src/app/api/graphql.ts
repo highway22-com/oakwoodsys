@@ -869,6 +869,47 @@ export const GET_CMS_PAGE = gql`
   }
 `;
 
+export const RESOLVE_WP_PAGE_BY_URI = gql`
+  query ResolveWpPageByUri($uri: String!) {
+    nodeByUri(uri: $uri) {
+      __typename
+      ... on Page {
+        id
+        title
+        uri
+        slug
+        content
+        date
+        modified
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+      }
+    }
+  }
+`;
+
+export interface WpPageNode {
+  __typename: 'Page';
+  id: string;
+  title: string;
+  uri: string;
+  slug: string;
+  content: string | null;
+  date?: string | null;
+  modified?: string | null;
+  featuredImage?: {
+    node: { sourceUrl: string; altText?: string | null };
+  } | null;
+}
+
+export interface ResolveWpPageByUriResponse {
+  nodeByUri?: WpPageNode | { __typename: string } | null;
+}
+
 /** Item unificado para búsqueda (blog o case study): link, snippet, imagen. Búsqueda solo en título y excerpt. */
 export interface SearchResultItem {
   type: 'blog' | 'case-study';

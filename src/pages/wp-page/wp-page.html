@@ -1,0 +1,73 @@
+@if (loading()) {
+  <section class="min-h-[60vh] flex items-center justify-center px-4">
+    <div class="text-center text-s-600">
+      <div class="inline-block w-10 h-10 border-4 border-p-100 border-t-p-600 rounded-full animate-spin mb-4"></div>
+      <p class="text-base">Loading…</p>
+    </div>
+  </section>
+} @else if (page(); as p) {
+  <article class="min-h-screen bg-white">
+    @if (p.featuredImage?.sourceUrl) {
+      <section class="relative w-full h-[40vh] sm:h-[50vh] bg-slate-900 overflow-hidden">
+        <img
+          [src]="p.featuredImage!.sourceUrl"
+          [alt]="p.featuredImage!.altText || p.title"
+          class="absolute inset-0 w-full h-full object-cover opacity-80"
+        />
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/40 via-slate-900/20 to-slate-900/70"></div>
+        <div class="relative z-10 h-full flex items-end px-4 sm:px-6 md:px-8 lg:px-28 pb-10 sm:pb-14">
+          <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-light leading-tight max-w-5xl">
+            {{ p.title }}
+          </h1>
+        </div>
+      </section>
+    } @else {
+      <section class="px-4 sm:px-6 md:px-8 lg:px-28 pt-16 pb-8">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-s-900 font-light leading-tight max-w-5xl">
+          {{ p.title }}
+        </h1>
+      </section>
+    }
+
+    <section class="px-4 sm:px-6 md:px-8 lg:px-28 py-10 sm:py-16">
+      <div
+        class="wp-page-content max-w-4xl mx-auto text-s-800 text-base sm:text-lg leading-relaxed"
+        [innerHTML]="p.sanitizedContent"
+      ></div>
+    </section>
+  </article>
+} @else if (notFound()) {
+  <section
+    class="relative w-full min-h-[70vh] py-20 flex flex-col items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat"
+    style="background-image: url('/assets/404bg.png');"
+    aria-labelledby="wp-page-404-title"
+  >
+    <div class="px-4 sm:px-6 md:px-8 lg:px-12 max-w-4xl mx-auto text-center py-12 sm:py-16 md:py-20">
+      <p
+        id="wp-page-404-title"
+        class="text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] font-extralight leading-none text-p-100/90 tracking-tight select-none"
+        aria-hidden="true"
+      >
+        404
+      </p>
+      <h1
+        class="text-xl sm:text-2xl md:text-3xl font-light text-s-800 mt-4 sm:mt-6 mb-3 sm:mb-4"
+        style="font-family: var(--font-inter);"
+      >
+        We are sorry the page you requested cannot be found.
+      </h1>
+      <p class="text-base sm:text-lg text-s-600 max-w-xl mx-auto mb-8 sm:mb-10 md:mb-12">
+        The URL may be misspelled or the page you're looking for is no longer available.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+        <app-button-primary [text]="'Go to home'" [link]="'/'" />
+        <a
+          routerLink="/industries"
+          class="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-p-600 border-2 border-p-600 font-medium text-base hover:bg-p-10 hover:border-p-700 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-p-600 focus-visible:ring-offset-2"
+        >
+          Explore Industries
+        </a>
+      </div>
+    </div>
+  </section>
+}
