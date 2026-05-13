@@ -34,11 +34,17 @@
         </h1>
 
         <!-- Description -->
-        <p class="md:text-xl text-white/80 pb-6 font-light w-full max-w-xl md:max-w-2xl lg:max-w-3xl leading-relaxed font-segoe break-words"
-          [ngClass]="centerContent ? 'mx-auto' : ''"
-          style="font-weight: 100;">
+        <p [class]="descriptionClass + (centerContent ? ' mx-auto' : '')"
+          [ngStyle]="descriptionStyle">
           {{ currentDescription() }}
         </p>
+
+        @if (currentDescriptionSecondary()) {
+        <p [class]="descriptionSecondaryClass + (centerContent ? ' mx-auto' : '')"
+          [ngStyle]="descriptionSecondaryStyle">
+          {{ currentDescriptionSecondary() }}
+        </p>
+        }
       </div>
 
       <!-- Optional projected content right after hero text (e.g., social share) -->

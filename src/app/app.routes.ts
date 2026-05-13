@@ -20,6 +20,11 @@ export const routes: Routes = [
         path: '',
         component: MainLayout,
         children: [
+                        {
+                path: 'microsoft-licensing',
+                loadComponent: () => import('../pages/microsoft-licensing/microsoft-licensing')
+            },
+
             {
                 path: '',
                 loadComponent: () => import('../pages/home/home')

@@ -1,23 +1,34 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  HostListener,
   inject,
   NgZone,
   ViewChild,
   ElementRef,
   AfterViewInit,
+  OnInit,
   signal,
   ChangeDetectorRef,
+  DestroyRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { SvgIcons } from '../../shared/service-icons/service-icons';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
-
+import { GraphQLContentService } from '../../app/services/graphql-content.service';
+import {
+  getPrimaryTagName,
+  type GenContentListNode,
+} from '../../app/api/graphql';
+import { readingTimeMinutes } from '../../app/utils/reading-time.util';
+import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
+import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
 type SimpleCard = {
   icon: string;
   title: string;
@@ -34,6 +45,7 @@ type FocusSection = {
   bgImage: string;
   title: string;
   description: string;
+  description2?: string;
   focusCards: FocusCard[];
 };
 
@@ -57,18 +69,27 @@ type AccordionItem = {
 
 @Component({
   selector: 'app-microsoft-licensing',
-  imports: [CommonModule, VideoHero, FormsModule],
+  imports: [
+    CommonModule,
+    VideoHero,
+    FormsModule,
+    CtaSectionComponent,
+    ButtonPrimaryComponent,
+    RouterLink,
+  ],
   templateUrl: './microsoft-licensing.html',
   styleUrl: './microsoft-licensing.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class MicrosoftLicensing implements AfterViewInit {
+export default class MicrosoftLicensing implements AfterViewInit, OnInit {
   private readonly seoMeta = inject(SeoMetaService);
   readonly sanitizer = inject(DomSanitizer);
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly graphql = inject(GraphQLContentService);
   private readonly ngZone = inject(NgZone);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   @ViewChild('recaptchaHost') recaptchaHost?: ElementRef<HTMLElement>;
 
@@ -90,6 +111,20 @@ export default class MicrosoftLicensing implements AfterViewInit {
     environmentDetails: '',
   };
 
+  usersDropdownOpen = false;
+  interestDropdownOpen = false;
+  readonly numberOfUsersOptions = [
+    { value: '1-100', label: '1-100' },
+    { value: '501-1500', label: '501-1,500' },
+    { value: '1500+', label: '1,500+' },
+  ];
+  readonly primaryAreaOptions = [
+    { value: 'Microsoft 365 Licensing', label: 'Microsoft 365 Licensing' },
+    { value: 'Azure Cost Optimization', label: 'Azure Cost Optimization' },
+    { value: 'Copilot Readiness', label: 'Copilot Readiness' },
+    { value: 'General Licensing Review', label: 'General Licensing Review' },
+  ];
+
   validationErrors = {
     fullName: false,
     email: false,
@@ -107,6 +142,8 @@ export default class MicrosoftLicensing implements AfterViewInit {
     backgroundImage: '/assets/bg-blue-1.png',
     title: 'Microsoft Licensing Services',
     description:
+      'Simplify Microsoft 365 and Azure licensing with clarity, flexibility, and cost control.',
+    descriptionSecondary:
       'Oakwood helps organizations buy, manage, and optimize Microsoft licensing through a service-led approach backed by the Cloud Solution Provider model.',
     ctaPrimary: {
       text: 'Talk to a Licensing Specialist',
@@ -116,37 +153,49 @@ export default class MicrosoftLicensing implements AfterViewInit {
 
     ctaSecondary: {
       text: 'Customer Licensing Portal',
-      link: '/resources/case-studies',
+      link: 'https://marketplace.oakwoodsys.com/',
     },
   };
 
- readonly focusSection: FocusSection = {
-  bgImage: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/bg-our-focus.png',
-  title: 'Microsoft Licensing has Become a Moving Target',
-  description: 'Microsoft continues to evolve how its technologies are packaged and priced. What worked a year ago may not be the right fit today. Licensing decisions now impact more than procurement. They directly affect cost, security, and how effectively your teams operate.',
-  focusCards: [
-    {
-      image: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/file-contract.png',
-      title: 'Licensing Optimization',
-      summary: 'Identify overlapping, underutilized, and misaligned Microsoft licensing investments.',
-    },
-    {
-      image: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/chart-line.png',
-      title: 'Azure Cost & Consumption',
-      summary: 'Improve visibility into Azure usage and align infrastructure to operational demand.',
-    },
-    {
-      image: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/shield-halved.png',
-      title: 'Security & Compliance Alignment',
-      summary: 'Ensure licensing decisions support security, governance, and compliance requirements.',
-    },
-    {
-      image: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Subtract.png',
-      title: 'AI & Copilot Readiness',
-      summary: 'Prepare for emerging AI and Copilot licensing models with proper infrastructure.',
-    },
-  ]
-};
+  readonly focusSection: FocusSection = {
+    bgImage:
+      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/bg-our-focus.png',
+    title: 'Microsoft Licensing has Become a Moving Target',
+    description:
+      'Microsoft continues to evolve how its technologies are packaged and priced. What worked a year ago may not be the right fit today.',
+    description2:
+      'Licensing decisions now impact more than procurement. They directly affect cost, security, and how effectively your teams operate.',
+    focusCards: [
+      {
+        image:
+          'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/file-contract.png',
+        title: 'Licensing Optimization',
+        summary:
+          'Identify overlapping, underutilized, and misaligned Microsoft licensing investments across Microsoft 365, Azure, and security platforms.',
+      },
+      {
+        image:
+          'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/chart-line.png',
+        title: 'Azure Cost & Consumption',
+        summary:
+          'Improve visibility into Azure usage, forecast cloud consumption more effectively, and align infrastructure strategy to operational demand.',
+      },
+      {
+        image:
+          'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/shield-halved.png',
+        title: 'Security & Compliance Alignment',
+        summary:
+          'Ensure Microsoft licensing decisions support evolving security, governance, compliance, and identity management requirements.',
+      },
+      {
+        image:
+          'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Subtract.png',
+        title: 'AI & Copilot Readiness',
+        summary:
+          'Prepare for emerging Microsoft AI, Copilot, and consumption-based licensing models while aligning infrastructure and data readiness.',
+      },
+    ],
+  };
 
   readonly cspSteps = [
     {
@@ -377,7 +426,8 @@ export default class MicrosoftLicensing implements AfterViewInit {
       'One organization identified nearly $10,000/month in unnecessary Microsoft 365 licensing costs.',
     impactDescription:
       'Oakwood reviews your Microsoft 365 and Azure licensing environment to uncover cost savings, usage gaps, and optimization opportunities.',
-    imageSrc: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/microsoft-licensing.png',
+    imageSrc:
+      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/microsoft-licensing.png',
   };
 
   readonly licensingExpertChecklist: string[] = [
@@ -395,31 +445,45 @@ export default class MicrosoftLicensing implements AfterViewInit {
 
   readonly faqItems: AccordionItem[] = [
     {
-      title: 'What is the CSP program?',
+      title: 'What is Microsoft CSP (Cloud Solution Provider)?',
       description:
-        'Delivered teams are trusted to own outcomes, not just complete tasks. Responsibility are clearly defined, and decisions are made close to the work. When challenges arise, they surface early and are addressed directly and transparently.',
+        'Microsoft CSP is a licensing program that allows organizations to purchase and manage Microsoft cloud services through a trusted partner instead of directly through Microsoft. Through CSP, Oakwood helps clients manage Microsoft 365, Azure, security, and Copilot licensing while also providing guidance, support, and ongoing optimization.',
     },
     {
       title: 'Is CSP more expensive than buying direct from Microsoft?',
       description:
-        'CSP offers flexibility in billing and licensing models that can often result in cost savings compared to direct Microsoft purchases, depending on your organizational needs and usage patterns.',
+        'Working with a Microsoft partner provides an additional layer of strategy, support, and accountability. Beyond licensing procurement, Oakwood helps organizations navigate Microsoft changes, optimize costs, align technology investments, and connect licensing decisions to broader infrastructure, security, and AI initiatives.',
     },
     {
-      title: 'Can we move existing licenses into CSP?',
+      title: 'Is CSP more expensive than buying directly from Microsoft?',
       description:
-        'In most cases, yes. Oakwood can help assess your current licensing and develop a migration strategy that minimizes disruption while maximizing savings and flexibility.',
+        'In most cases, pricing is very similar to buying direct from Microsoft. The difference is that CSP gives organizations access to a partner who can help manage licensing, billing, renewals, optimization, and support instead of navigating it alone.',
     },
     {
-      title: 'How does billing work?',
+      title: 'Can we move our existing Microsoft licenses to CSP?',
       description:
-        'CSP billing is typically monthly or annual, with flexibility to adjust licenses as your needs change. Oakwood provides transparent billing with detailed insights into your consumption and costs.',
+        'Yes. Most Microsoft 365, Azure, and related subscriptions can be transitioned into the CSP model with minimal disruption. Oakwood helps coordinate the migration process and ensures licensing is aligned properly during the transition.',
     },
     {
-      title: 'What kind of support is included?',
+      title: 'How does billing work under CSP?',
       description:
-        'Oakwood provides direct support for your Microsoft licensing needs, including advisory, troubleshooting, and escalation management to ensure faster resolution of issues.',
+        'CSP simplifies Microsoft billing by consolidating services into a single, predictable invoice. Depending on the agreement, organizations can choose monthly or annual billing options for greater flexibility and budget planning.',
     },
   ];
+
+  readonly relatedLicensingBlogs = signal<
+    Array<{
+      id: string;
+      slug: string;
+      title: string;
+      imageUrl: string;
+      imageAlt: string;
+      primaryTag: string;
+      readingTimeMinutes: number;
+      date: string;
+    }>
+  >([]);
+  readonly relatedBlogsLoading = signal<boolean>(true);
 
   constructor() {
     this.seoMeta.updateMeta({
@@ -431,6 +495,87 @@ export default class MicrosoftLicensing implements AfterViewInit {
       keywords:
         'microsoft licensing, csp, microsoft 365 licensing, azure optimization, copilot readiness',
     });
+  }
+
+  ngOnInit(): void {
+    this.loadRelatedLicensingBlogs();
+  }
+
+  private loadRelatedLicensingBlogs(): void {
+    this.relatedBlogsLoading.set(true);
+
+    this.graphql
+      .getGenContentsByTagAndCategory('microsoft-licensing', 'blog', 6)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((nodes) => {
+        if (nodes.length > 0) {
+          this.relatedLicensingBlogs.set(
+            this.mapRelatedBlogCards(nodes).slice(0, 3),
+          );
+          this.relatedBlogsLoading.set(false);
+          this.cdr.markForCheck();
+          return;
+        }
+
+        // Fallback: derive from all blogs if the tag slug differs in WP.
+        this.graphql
+          .getBlogs()
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe((allBlogs) => {
+            const filtered = allBlogs.filter((post) =>
+              this.isMicrosoftLicensingPost(post),
+            );
+            this.relatedLicensingBlogs.set(
+              this.mapRelatedBlogCards(filtered).slice(0, 3),
+            );
+            this.relatedBlogsLoading.set(false);
+            this.cdr.markForCheck();
+          });
+      });
+  }
+
+  private mapRelatedBlogCards(nodes: GenContentListNode[]) {
+    return nodes.map((post) => ({
+      id: post.id ?? post.slug ?? '',
+      slug: post.slug ?? '',
+      title: post.title ?? 'Blog post',
+      imageUrl:
+        post.featuredImage?.node?.sourceUrl ??
+        'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/default-blog-image.jpg',
+      imageAlt:
+        post.featuredImage?.node?.altText ??
+        post.title ??
+        'Microsoft Licensing insight',
+      primaryTag:
+        getPrimaryTagName(post.primaryTagName) ??
+        post.tags?.[0] ??
+        'Microsoft Licensing',
+      readingTimeMinutes: readingTimeMinutes(
+        (post.content ?? '') || (post.excerpt ?? ''),
+      ),
+      date: post.date ?? '',
+    }));
+  }
+
+  private isMicrosoftLicensingPost(post: GenContentListNode): boolean {
+    const normalizedTarget = 'microsoft-licensing';
+    const norm = (value: string | null | undefined) =>
+      (value ?? '').toLowerCase().trim().replace(/\s+/g, '-');
+
+    const hasTagSlug =
+      post.genContentTags?.nodes?.some(
+        (tag) => norm(tag.slug) === normalizedTarget,
+      ) ?? false;
+    const hasTagName =
+      post.genContentTags?.nodes?.some(
+        (tag) => norm(tag.name) === normalizedTarget,
+      ) ?? false;
+    const hasLegacyTag =
+      post.tags?.some((tag) => norm(tag) === normalizedTarget) ?? false;
+    const hasPrimaryTag =
+      norm(getPrimaryTagName(post.primaryTagName)) === normalizedTarget;
+
+    return hasTagSlug || hasTagName || hasLegacyTag || hasPrimaryTag;
   }
 
   getIconSvg(iconKey: string) {
@@ -502,6 +647,76 @@ export default class MicrosoftLicensing implements AfterViewInit {
     return emailRegex.test(email);
   }
 
+  toggleUsersDropdown(event?: MouseEvent): void {
+    event?.stopPropagation();
+    this.interestDropdownOpen = false;
+    this.usersDropdownOpen = !this.usersDropdownOpen;
+  }
+
+  closeUsersDropdown(): void {
+    this.usersDropdownOpen = false;
+  }
+
+  selectUsersOption(value: string): void {
+    this.licensingFormModel.numberOfUsers = value;
+    this.validationErrors = {
+      ...this.validationErrors,
+      numberOfUsers: false,
+    };
+    this.usersDropdownOpen = false;
+  }
+
+  get selectedUsersLabel(): string {
+    const selected = this.numberOfUsersOptions.find(
+      (option) => option.value === this.licensingFormModel.numberOfUsers,
+    );
+    return selected?.label ?? 'Select number of users';
+  }
+
+  toggleInterestDropdown(event?: MouseEvent): void {
+    event?.stopPropagation();
+    this.usersDropdownOpen = false;
+    this.interestDropdownOpen = !this.interestDropdownOpen;
+  }
+
+  selectInterestOption(value: string): void {
+    this.licensingFormModel.primaryAreaOfInterest = value;
+    this.validationErrors = {
+      ...this.validationErrors,
+      primaryAreaOfInterest: false,
+    };
+    this.interestDropdownOpen = false;
+  }
+
+  get selectedInterestLabel(): string {
+    const selected = this.primaryAreaOptions.find(
+      (option) =>
+        option.value === this.licensingFormModel.primaryAreaOfInterest,
+    );
+    return selected?.label ?? 'Select primary area of interest';
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target;
+    if (!(target instanceof Element)) {
+      return;
+    }
+
+    if (!target.closest('.ml-users-dropdown')) {
+      this.usersDropdownOpen = false;
+    }
+    if (!target.closest('.ml-interest-dropdown')) {
+      this.interestDropdownOpen = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    this.usersDropdownOpen = false;
+    this.interestDropdownOpen = false;
+  }
+
   onLicensingReviewSubmit() {
     this.submitted = true;
 
@@ -532,10 +747,21 @@ export default class MicrosoftLicensing implements AfterViewInit {
 
     this.isSubmitting = true;
 
+    const message = [
+      'Licensing review request details:',
+      `Full Name: ${this.licensingFormModel.fullName}`,
+      `Email: ${this.licensingFormModel.email}`,
+      `Name of Company: ${this.licensingFormModel.company}`,
+      `Number of users: ${this.licensingFormModel.numberOfUsers}`,
+      `Primary area of interest: ${this.licensingFormModel.primaryAreaOfInterest}`,
+      `Environment details: ${this.licensingFormModel.environmentDetails}`,
+    ].join('\n');
+
     const payload = {
       fullName: this.licensingFormModel.fullName,
       email: this.licensingFormModel.email,
       company: this.licensingFormModel.company,
+      message,
       numberOfUsers: this.licensingFormModel.numberOfUsers,
       primaryAreaOfInterest: this.licensingFormModel.primaryAreaOfInterest,
       environmentDetails: this.licensingFormModel.environmentDetails,
