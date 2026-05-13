@@ -55,7 +55,7 @@ export class ButtonPrimaryComponent {
     if (border === 'white')
       mods.push('border-white text-white borer-solid border-1');
     else if (border === 'black')
-      mods.push(' border-black text-black borer-solid border-1');
+      mods.push('border border-[#454545] text-black');
     else mods.push('text-white');
     return [base, ...mods].join(' ');
   });

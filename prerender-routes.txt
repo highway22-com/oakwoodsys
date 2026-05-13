@@ -23,6 +23,11 @@
 /blog/microsoft-365-price-increases-coming-july-2026
 /blog/unify-your-data-estate-for-ai
 /blog/the-key-to-a-secure-cloud-migration
+/resources/case-studies/devops-and-iac-modernization
+/resources/case-studies/microsoft-365-tenant-migration-to-support-growth-and-acquisition-strategy
+/resources/case-studies/active-directory-governance-and-security-modernization-for-a-financial-services-organization
+/resources/case-studies/microsoft-teams-phone-migration-for-a-multi-location-nonprofit-organization
+/resources/case-studies/26986
 /resources/case-studies/managed-services-for-manufacturing
 /resources/case-studies/sharepoint-online-intranet-modernization
 /resources/case-studies/power-bi-report-development

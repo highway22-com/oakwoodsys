@@ -126,6 +126,31 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://oakwoodsys.com/resources/case-studies/devops-and-iac-modernization</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/resources/case-studies/microsoft-365-tenant-migration-to-support-growth-and-acquisition-strategy</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/resources/case-studies/active-directory-governance-and-security-modernization-for-a-financial-services-organization</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/resources/case-studies/microsoft-teams-phone-migration-for-a-multi-location-nonprofit-organization</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/resources/case-studies/26986</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://oakwoodsys.com/resources/case-studies/managed-services-for-manufacturing</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

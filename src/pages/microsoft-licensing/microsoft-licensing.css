@@ -1,0 +1,204 @@
+:host {
+  display: block;
+}
+
+.microsoft-licensing-outcomes {
+  background: url('/assets/bg-image-microsoft-licensing.png') lightgray 50% / cover no-repeat;
+  background-color: var(--Navy-Blue, #001258);
+  background-blend-mode: plus-lighter;
+}
+
+/* FAQ Accordion Styles */
+.faq-accordion-item {
+  transition: all 0.3s ease-in-out;
+}
+
+.faq-accordion-item.expanded {
+  box-shadow: 0 4px 12px rgba(42, 126, 191, 0.1);
+}
+
+.faq-accordion-content {
+  animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Select field styling with custom dropdown icon */
+select {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%236b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9l-7 7-7-7"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem 1rem;
+  padding-right: 2.5rem;
+}
+
+select:hover,
+select:focus {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%231D69AC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9l-7 7-7-7"/></svg>');
+}
+
+/* Number of Users custom dropdown */
+.ml-users-dropdown {
+  position: relative;
+}
+
+.ml-users-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #1e293b;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.ml-users-dropdown-trigger:hover {
+  border-color: #1d69ac;
+  box-shadow: 0 6px 14px -10px rgb(13 83 162 / 55%);
+}
+
+.ml-users-dropdown-trigger:focus-visible {
+  outline: 2px solid #1d69ac;
+  outline-offset: 2px;
+  border-color: #1d69ac;
+}
+
+.ml-users-dropdown-trigger--error {
+  border-color: #d32f2f;
+}
+
+.ml-users-dropdown-trigger svg {
+  margin-left: auto;
+}
+
+.ml-users-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  box-shadow: 0 12px 18px -12px rgb(0 0 0 / 35%);
+  animation: mlUsersDropdownIn 0.18s ease-out;
+}
+
+.ml-users-dropdown-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-align: left;
+  color: #1e293b;
+
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.ml-users-dropdown-option:hover {
+  background: var(--color-p-10);
+}
+
+.ml-users-dropdown-option--selected {
+  color: #ffffff;
+  background-color: #3b74c9;
+}
+
+.ml-users-dropdown-option--selected:hover {
+  background-color: #3b74c9;
+}
+
+@keyframes mlUsersDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.ml-users-dropdown,
+.ml-interest-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.ml-users-dropdown-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 14px;
+  color: #1e293b;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.ml-users-dropdown-trigger:hover,
+.ml-users-dropdown-trigger:focus {
+  border-color: #1d69ac;
+}
+
+.ml-users-dropdown-trigger--error {
+  border-color: #d32f2f !important;
+}
+
+.ml-users-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 50;
+  padding: 4px 0;
+  overflow: hidden;
+}
+
+.ml-users-dropdown-option {
+  width: 100%;
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #1e293b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.ml-users-dropdown-option:hover {
+  background-color: #eef6ff;
+  color: #1d69ac;
+}
+
+.ml-users-dropdown-option--selected {
+  background-color: #f2f8fd;
+  color: #1d69ac;
+  font-weight: 500;
+}
