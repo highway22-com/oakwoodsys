@@ -30,6 +30,18 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   @Input() title: string | string[] = '';
   /** Descripción única o una por video (cambia con el índice del video actual). */
   @Input() description: string | string[] = '';
+  /** Segunda descripción opcional (texto secundario) única o una por video. */
+  @Input() descriptionSecondary: string | string[] = '';
+  /** Clases opcionales para layout del texto descriptivo. */
+  @Input() descriptionClass =
+    'md:text-xl text-white/80 pb-6 font-light w-full max-w-xl md:max-w-2xl lg:max-w-3xl leading-relaxed font-segoe break-words';
+  /** Estilos CSS específicos para la descripción (color, font-size, etc.). */
+  @Input() descriptionStyle: Record<string, string> | null = null;
+  /** Clases opcionales para la segunda descripción. */
+  @Input() descriptionSecondaryClass =
+    'md:text-xl text-white/80 pb-6 font-light w-full max-w-xl md:max-w-2xl lg:max-w-3xl leading-relaxed font-segoe break-words';
+  /** Estilos CSS específicos para la segunda descripción. */
+  @Input() descriptionSecondaryStyle: Record<string, string> | null = null;
   /** CTA principal: objeto único o array (uno por video, se muestra según currentVideoIndex). */
   @Input() ctaPrimary?: { text: string; link: string; backgroundColor?: string } | { text: string; link: string; backgroundColor?: string }[];
   @Input() ctaSecondary?: { text: string; link: string; queryParams?: Record<string, string>; borderColor?: string };
@@ -48,6 +60,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   readonly videoUrlsSignal = signal<string[]>(PLACEHOLDER_VIDEO_URLS);
   readonly titleSignal = signal<string | string[]>([]);
   readonly descriptionSignal = signal<string | string[]>([]);
+  readonly descriptionSecondarySignal = signal<string | string[]>([]);
   readonly ctaPrimarySignal = signal<{ text: string; link: string; backgroundColor?: string } | { text: string; link: string; backgroundColor?: string }[] | undefined>(undefined);
   readonly currentVideoIndex = signal(0);
   readonly textFadeOpacity = signal(1);
@@ -74,6 +87,14 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   /** Descripción a mostrar: si description es array, la que corresponde a currentVideoIndex; si no, el string. */
   readonly currentDescription = computed(() => {
     const d = this.descriptionSignal();
+    const idx = this.currentVideoIndex();
+    if (typeof d === 'string') return d;
+    if (Array.isArray(d) && d.length) return (d[idx] ?? d[0] ?? '') as string;
+    return '';
+  });
+  /** Segunda descripción a mostrar: si descriptionSecondary es array, usa currentVideoIndex; si no, string. */
+  readonly currentDescriptionSecondary = computed(() => {
+    const d = this.descriptionSecondarySignal();
     const idx = this.currentVideoIndex();
     if (typeof d === 'string') return d;
     if (Array.isArray(d) && d.length) return (d[idx] ?? d[0] ?? '') as string;
@@ -108,6 +129,9 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     if (changes['description']) {
       this.descriptionSignal.set(this.description);
     }
+    if (changes['descriptionSecondary']) {
+      this.descriptionSecondarySignal.set(this.descriptionSecondary);
+    }
     if (changes['ctaPrimary']) {
       this.ctaPrimarySignal.set(this.ctaPrimary);
     }
@@ -136,6 +160,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     this.videoUrlsSignal.set(usePlaceholders ? PLACEHOLDER_VIDEO_URLS : this.videoUrls);
     this.titleSignal.set(this.title);
     this.descriptionSignal.set(this.description);
+    this.descriptionSecondarySignal.set(this.descriptionSecondary);
     this.ctaPrimarySignal.set(this.ctaPrimary);
 
     setTimeout(() => {
