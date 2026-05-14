@@ -36,7 +36,7 @@ const STRUCTURED_SLUGS = [
   'copilot-extensibility-workshop',
   'custom-copilot-development',
   'application-migration-to-azure',
-  'semisol-security-essentials-poc',
+  'sentinel-security-essentials-poc',
   'teams-voice-in-a-box',
   'vmware-migrations',
   'azure-hpc-core-poc',

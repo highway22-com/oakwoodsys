@@ -620,7 +620,7 @@
         }
       ]
     },
-    "semisol-security-essentials-poc": {
+    "sentinel-security-essentials-poc": {
       "title": "Semisol security essentials PoC",
       "summary": "Validate Microsoft Sentinel as a cloud-native SIEM/SOAR foundation with a production-ready proof of concept focused on visibility, detection, and response.",
       "duration": "4–6 Weeks",
