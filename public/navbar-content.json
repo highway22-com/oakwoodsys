@@ -22,7 +22,7 @@
       "hasDropdown": true
     },
    {
-      "slug": "microsoft-licensing",
+      "slug": "licensing",
       "label": "Microsoft Licensing",
       "routerLink": "/microsoft-licensing",
       "index": 3,
