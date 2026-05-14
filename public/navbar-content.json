@@ -32,7 +32,7 @@
       "slug": "about",
       "label": "About",
       "routerLink": "/about",
-      "index": null,
+      "index": 4,
       "hasDropdown": false
     }
   ],
