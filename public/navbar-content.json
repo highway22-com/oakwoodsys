@@ -3,7 +3,7 @@
     {
       "slug": "services",
       "label": "Services",
-      "routerLink": "/services",
+      "routerLink": "/services/data-ai-solutions",
       "index": 0,
       "hasDropdown": true
     },
@@ -21,6 +21,13 @@
       "index": 2,
       "hasDropdown": true
     },
+   {
+      "slug": "microsoft-licensing",
+      "label": "Microsoft Licensing",
+      "routerLink": "/microsoft-licensing",
+      "index": 3,
+      "hasDropdown": false
+    },
     {
       "slug": "about",
       "label": "About",
@@ -35,7 +42,7 @@
         "id": "01",
         "name": "Data & AI Solutions",
         "link": "/services/data-ai-solutions",
-        "desc": "Unify, govern, and activate your data estate",
+        "desc": "Unify, govern, and activate your data to power real AI outcomes.",
         "details": "Deliver real AI outcomes by unifying, governing, and activating your data estate to power intelligent innovation.",
         "icon": "/assets/ai.svg",
         "iconSize": "38px"
@@ -44,7 +51,7 @@
         "id": "02",
         "name": "Cloud & Infrastructure",
         "link": "/services/cloud-and-infrastructure",
-        "desc": "Modernize, secure, and optimize your cloud",
+        "desc": "Modernize your infrastructure and run secure, scalable workloads across cloud and hybrid environments.",
         "details": "Modernize, secure, and optimize your cloud estate with Oakwood and Microsoft Azure for scalable, reliable infrastructure.",
         "icon": "/assets/cloud.svg",
         "iconSize": "38px"
@@ -53,8 +60,7 @@
         "id": "03",
         "name": "Application Innovation",
         "link": "/services/application-innovation",
-        "desc": "Ship faster, run safer, and scale efficiently",
-        "details": "Ship faster, run safer, and scale efficiently with modern applications on Azure built for performance and reliability.",
+        "desc": "Design, build, and modernize applications that scale reliably and support evolving business needs.",
         "icon": "/assets/application.svg",
         "iconSize": "38px"
       },
@@ -62,7 +68,7 @@
         "id": "04",
         "name": "High-Performance Computing (HPC)",
         "link": "/services/high-performance-computing-hpc",
-        "desc": "Scale simulations, AI training, and PLM workloads",
+        "desc": "Run complex simulations, AI workloads, and engineering models with high-performance compute in the cloud.",
         "details": "Scale simulations, AI training, and PLM workloads with the power of Azure HPC for maximum computational performance.",
         "icon": "/assets/hpc.svg",
         "iconSize": "30px"
@@ -71,7 +77,7 @@
         "id": "05",
         "name": "Modern Work",
         "link": "/services/modern-work",
-        "desc": "Boost productivity with Microsoft 365 and Copilot",
+        "desc": "Improve collaboration, security, and productivity across Microsoft 365, Teams, and employee endpoints.",
         "details": "Boost productivity, protect data, and improve employee experience with Microsoft 365 and Copilot for modern collaboration.",
         "icon": "/assets/modern.svg",
         "iconSize": "38px"
@@ -80,7 +86,7 @@
         "id": "06",
         "name": "Managed Services",
         "link": "/services/managed-services",
-        "desc": "Keep your Microsoft cloud running fast and secure",
+        "desc": "Proactively manage, secure, and optimize your IT environment with reliable, ongoing support.",
         "details": "Keep your Microsoft cloud running fast, secure, and cost effective with Oakwood managed services and expert support.",
         "icon": "/assets/services.svg",
         "iconSize": "38px"
@@ -91,28 +97,28 @@
         "id": "01",
         "name": "Manufacturing",
         "link": "/industries/manufacturing",
-        "desc": "Unlock innovation, optimize operations, empower workers, and enhance the customer experience.",
+        "desc": "Innovate, optimize, empower, and enhance experiences.",
         "icon": "/assets/manu.svg"
       },
       {
-        "id": "04",
+        "id": "02",
         "name": "Retail",
         "link": "/industries/retail",
         "desc": "Helping retailers outperform their competition",
         "icon": "/assets/reta.svg"
       },
       {
-        "id": "02",
+        "id": "03",
         "name": "Healthcare",
         "link": "/industries/healthcare",
-        "desc": "We create connected healthcare ecosystems by coordinating data, people, and processes.",
+        "desc": "Coordinating data, people, and processes for healthcare.",
         "icon": "/assets/heal.svg"
       },
       {
-        "id": "05",
+        "id": "04",
         "name": "Education / Public Sector",
         "link": "/industries/education-public-sector",
-        "desc": "Unlock innovation, optimize operations, empower workers, and enhance the customer experience.",
+        "desc": "Innovate, optimize, empower, and enhance experiences.",
         "icon": "/assets/edu.svg"
       },
       {
@@ -126,7 +132,7 @@
         "id": "06",
         "name": "Electronic Design Automation (EDA)",
         "link": "/industries/electronic-design-automation-eda",
-        "desc": "Explore exciting opportunities to learn and connect with industry experts through our engaging webinars and conferences!",
+        "desc": "Learn from industry experts in our webinars and conferences!",
         "icon": "/assets/eda.svg"
       }
     ],
@@ -149,9 +155,24 @@
         "id": "03",
         "name": "Structured Engagements",
         "link": "/resources/structured-engagements",
-        "desc": "Oakwood’s SQL Server Migration to Azure engagement and helps organizations.",
+        "desc": "SQL Server Migration to Azure engagement by Oakwood.",
         "icon": "/assets/struct.svg"
+      },
+  {
+        "id": "04",
+        "name": "Events",
+        "link": "/resources/events",
+        "desc": "Join us at upcoming webinars, conferences, and more.",
+        "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/04/event-icon-ee251e.svg"
+      },
+  {
+        "id": "05",
+        "name": "Technology Partners",
+        "link": "/technology-partners",
+        "desc": "Strategic relationships with leading technology providers that help drive innovation.",
+        "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Icon-Label-31f91c.svg"
       }
     ]
-  }
+  },
+  "page": "menu"
 }
