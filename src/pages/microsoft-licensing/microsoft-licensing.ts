@@ -144,7 +144,7 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
     description:
       'Simplify Microsoft 365 and Azure licensing with clarity, flexibility, and cost control.',
     descriptionSecondary:
-      'Oakwood helps organizations buy, manage, and optimize Microsoft licensing through a service-led approach backed by the Cloud Solution Provider model.',
+      'Oakwood helps organizations buy, manage, and optimize Microsoft licensing through a service-led approach backed by the Cloud Solution Provider (CSP) model.',
     ctaPrimary: {
       text: 'Talk to a Licensing Specialist',
       link: '/contact-us',
@@ -207,7 +207,7 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
     {
       step: '02',
       title: 'Oakwood',
-      subtitle: 'CSP Licensing · Support · Optimization · Services',
+      subtitle: 'CSP Licensing · Support · Optimization Services',
       icon: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Group-71.png',
     },
     {
@@ -450,7 +450,7 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
         'Microsoft CSP is a licensing program that allows organizations to purchase and manage Microsoft cloud services through a trusted partner instead of directly through Microsoft. Through CSP, Oakwood helps clients manage Microsoft 365, Azure, security, and Copilot licensing while also providing guidance, support, and ongoing optimization.',
     },
     {
-      title: 'Is CSP more expensive than buying direct from Microsoft?',
+      title: 'Why work with a Microsoft partner instead of buying direct?',
       description:
         'Working with a Microsoft partner provides an additional layer of strategy, support, and accountability. Beyond licensing procurement, Oakwood helps organizations navigate Microsoft changes, optimize costs, align technology investments, and connect licensing decisions to broader infrastructure, security, and AI initiatives.',
     },
@@ -468,6 +468,26 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
       title: 'How does billing work under CSP?',
       description:
         'CSP simplifies Microsoft billing by consolidating services into a single, predictable invoice. Depending on the agreement, organizations can choose monthly or annual billing options for greater flexibility and budget planning.',
+    },
+        {
+      title: 'What kind of support is included with CSP?',
+      description:
+        'Support varies by partner, but Oakwood provides direct access to engineers and licensing specialists who understand both the Microsoft platform and your environment. This includes assistance with licensing questions, subscription management, escalations, and ongoing optimization recommendations.',
+    },
+        {
+      title: 'Can Oakwood help optimize our Microsoft licensing costs?',
+      description:
+        'Yes. Many organizations are overlicensed, underutilizing features, or carrying redundant subscriptions. Oakwood regularly helps clients identify opportunities to reduce unnecessary licensing spend while improving alignment to actual business needs.',
+    },
+        {
+      title: 'Can CSP help with Microsoft Copilot licensing?',
+      description:
+        'Yes. As Microsoft continues evolving Copilot and AI-related licensing, CSP provides a more guided approach to understanding prerequisites, licensing requirements, security considerations, and adoption planning.',
+    },
+           {
+      title: 'Do we have to move everything to CSP?',
+      description:
+        'No. Organizations can transition services over time depending on their licensing structure, agreements, and business goals. Oakwood can help evaluate the best approach for hybrid licensing environments.',
     },
   ];
 
