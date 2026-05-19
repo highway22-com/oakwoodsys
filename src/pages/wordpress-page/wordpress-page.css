@@ -1,0 +1,105 @@
+.wordpress-page {
+  min-height: 100vh;
+  padding: 3rem 1.25rem 5rem;
+  background:
+    radial-gradient(circle at top left, rgba(255, 197, 92, 0.14), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(7, 37, 65, 0.08), transparent 28%),
+    linear-gradient(180deg, #f7f4ee 0%, #ffffff 54%, #f5f8fb 100%);
+}
+
+.wordpress-page__shell {
+  width: min(1400px, 100%);
+  margin: 0 auto;
+}
+
+.wordpress-page__panel {
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(18, 28, 43, 0.08);
+  border-radius: 28px;
+  box-shadow: 0 22px 64px rgba(16, 24, 40, 0.08);
+  overflow: hidden;
+}
+
+.wordpress-page__state,
+.wordpress-page__header,
+.wordpress-page__content {
+  padding: clamp(1.5rem, 3vw, 3rem);
+}
+
+.wordpress-page__state {
+  min-height: 35vh;
+  display: grid;
+  align-content: center;
+  gap: 0.75rem;
+}
+
+.wordpress-page__eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: #0a2942;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.wordpress-page__state h1,
+.wordpress-page__header h1 {
+  margin: 0;
+  color: #0f172a;
+  line-height: 1.05;
+  font-size: clamp(2rem, 4vw, 4.25rem);
+  letter-spacing: -0.04em;
+}
+
+.wordpress-page__state p,
+.wordpress-page__header p {
+  margin: 0;
+  max-width: 72ch;
+  color: #445065;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.wordpress-page__content {
+  color: #1f2937;
+  line-height: 1.8;
+}
+
+.wordpress-page__content :is(h2, h3, h4, h5, h6) {
+  color: #0f172a;
+  line-height: 1.2;
+  margin-top: 2rem;
+}
+
+.wordpress-page__content :is(p, ul, ol, blockquote, figure) {
+  margin-top: 1rem;
+}
+
+.wordpress-page__content img,
+.wordpress-page__content video,
+.wordpress-page__content iframe {
+  max-width: 100%;
+  height: auto;
+  border-radius: 20px;
+}
+
+.wordpress-page__content a {
+  color: #0a4a7a;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.18em;
+}
+
+@media (max-width: 768px) {
+  .wordpress-page {
+    padding-inline: 0.75rem;
+  }
+
+  .wordpress-page__panel {
+    border-radius: 22px;
+  }
+}
