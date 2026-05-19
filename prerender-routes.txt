@@ -76,7 +76,7 @@
 /structured-engagement/copilot-extensibility-workshop
 /structured-engagement/custom-copilot-development
 /structured-engagement/application-migration-to-azure
-/structured-engagement/semisol-security-essentials-poc
+/structured-engagement/sentinel-security-essentials-poc
 /structured-engagement/teams-voice-in-a-box
 /structured-engagement/vmware-migrations
 /structured-engagement/azure-hpc-core-poc
