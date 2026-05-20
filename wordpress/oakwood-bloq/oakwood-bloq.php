@@ -337,7 +337,7 @@ function oakwood_bloq_normalize_related_ids( $value ) {
  * primaryTagName evita conflicto con el campo primaryTag de ACF (tipo PrimaryTag).
  *
  * Permite consultar:
- * genContent(id: "...") { showContactSection tags primaryTagName relatedBloqs { id title uri } relatedBloqIds relatedCaseStudies { id title uri } relatedCaseStudyIds }
+ * genContent(id: "...") { showContactSection tags primaryTagName relatedBloqs { id title uri } relatedBloqIds relatedCaseStudies { id title uri } relatedCaseStudyIds relatedCaseStudySlugs }
  */
 function oakwood_bloq_register_graphql_fields() {
 	if ( ! function_exists( 'register_graphql_field' ) ) {
@@ -611,6 +611,54 @@ function oakwood_bloq_register_graphql_fields() {
 				}
 
 				return oakwood_bloq_normalize_related_ids( $value );
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'relatedCaseStudySlugs',
+		array(
+			'type'        => array( 'list_of' => 'String' ),
+			'description' => __( 'Related Case Study Gen Content slugs (ACF: related_case_studies). To request full data by slug without resolving list_of GenContent.', 'oakwood-blog' ),
+			'resolve'     => function ( $post ) {
+				$post_id = null;
+				if ( is_object( $post ) && isset( $post->ID ) ) {
+					$post_id = (int) $post->ID;
+				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
+					$post_id = (int) $post['databaseId'];
+				}
+				if ( ! $post_id ) {
+					return array();
+				}
+
+				$value = null;
+				if ( function_exists( 'get_field' ) ) {
+					$value = get_field( 'related_case_studies', $post_id );
+				} else {
+					$value = get_post_meta( $post_id, 'related_case_studies', true );
+				}
+
+				$ids = oakwood_bloq_normalize_related_ids( $value );
+				if ( empty( $ids ) ) {
+					return array();
+				}
+
+				$slugs = array();
+				foreach ( $ids as $id ) {
+					$id = (int) $id;
+					if ( $id <= 0 ) {
+						continue;
+					}
+					$p = get_post( $id );
+					if ( ! $p || ! isset( $p->post_type ) || $p->post_type !== 'gen_content' || $p->post_status !== 'publish' ) {
+						continue;
+					}
+					if ( ! empty( $p->post_name ) ) {
+						$slugs[] = $p->post_name;
+					}
+				}
+				return $slugs;
 			},
 		)
 	);
