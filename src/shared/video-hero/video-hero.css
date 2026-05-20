@@ -13,3 +13,7 @@
       transparent 80%);
   pointer-events: none;
 }
+
+.video-hero__offer-grid {
+  align-items: stretch;
+}
