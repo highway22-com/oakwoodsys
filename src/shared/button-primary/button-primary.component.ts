@@ -42,9 +42,11 @@ export class ButtonPrimaryComponent {
     if (this.isBgDefault()) return 'var(--color-p-700)';
     return this.backgroundColor() ?? 'var(--color-p-700)';
   });
+
   isExternal(url: string | null | undefined): boolean {
     return !!url && (url.startsWith('http://') || url.startsWith('https://'));
   }
+
   /** Clases del trigger (un solo binding en el template). */
   readonly triggerClasses = computed(() => {
     const base =
