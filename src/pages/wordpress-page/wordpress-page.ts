@@ -1,5 +1,5 @@
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, PLATFORM_ID, ViewEncapsulation, inject, signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { filter, Subscription } from 'rxjs';
@@ -12,6 +12,7 @@ import { WordPressFooterScript, WordPressInlineStyle, WordPressPageResponse, Wor
   templateUrl: './wordpress-page.html',
   styleUrl: './wordpress-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export default class WordpressPageComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);

@@ -1,10 +1,7 @@
 .wordpress-page {
   min-height: 100vh;
   padding: 3rem 1.25rem 5rem;
-  background:
-    radial-gradient(circle at top left, rgba(255, 197, 92, 0.14), transparent 32%),
-    radial-gradient(circle at bottom right, rgba(7, 37, 65, 0.08), transparent 28%),
-    linear-gradient(180deg, #f7f4ee 0%, #ffffff 54%, #f5f8fb 100%);
+
 }
 
 .wordpress-page__shell {
@@ -12,14 +9,7 @@
   margin: 0 auto;
 }
 
-.wordpress-page__panel {
-  background: rgba(255, 255, 255, 0.86);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(18, 28, 43, 0.08);
-  border-radius: 28px;
-  box-shadow: 0 22px 64px rgba(16, 24, 40, 0.08);
-  overflow: hidden;
-}
+
 
 .wordpress-page__state,
 .wordpress-page__header,
@@ -65,19 +55,31 @@
   line-height: 1.7;
 }
 
-.wordpress-page__content {
-  color: #1f2937;
-  line-height: 1.8;
-}
 
-.wordpress-page__content :is(h2, h3, h4, h5, h6) {
-  color: #0f172a;
-  line-height: 1.2;
-  margin-top: 2rem;
-}
+
+
 
 .wordpress-page__content :is(p, ul, ol, blockquote, figure) {
   margin-top: 1rem;
+}
+
+.wordpress-page__content ul,
+.wordpress-page__content ul.wp-block-list {
+  list-style-type: disc;
+  list-style-position: outside;
+  padding-inline-start: 1.5rem;
+}
+
+.wordpress-page__content ol,
+.wordpress-page__content ol.wp-block-list {
+  list-style-type: decimal;
+  list-style-position: outside;
+  padding-inline-start: 1.5rem;
+}
+
+.wordpress-page__content :is(ul, ol) > li {
+  display: list-item;
+  margin-bottom: 0.35rem;
 }
 
 .wordpress-page__content img,
@@ -88,11 +90,7 @@
   border-radius: 20px;
 }
 
-.wordpress-page__content a {
-  color: #0a4a7a;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.18em;
-}
+
 
 @media (max-width: 768px) {
   .wordpress-page {
