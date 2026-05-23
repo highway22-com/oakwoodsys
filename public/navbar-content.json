@@ -21,8 +21,8 @@
       "index": 2,
       "hasDropdown": true
     },
-   {
-      "slug": "microsoft-licensing",
+    {
+      "slug": "licensing",
       "label": "Microsoft Licensing",
       "routerLink": "/microsoft-licensing",
       "index": 3,
@@ -158,14 +158,14 @@
         "desc": "SQL Server Migration to Azure engagement by Oakwood.",
         "icon": "/assets/struct.svg"
       },
-  {
+      {
         "id": "04",
         "name": "Events",
         "link": "/resources/events",
         "desc": "Join us at upcoming webinars, conferences, and more.",
         "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/04/event-icon-ee251e.svg"
       },
-  {
+      {
         "id": "05",
         "name": "Technology Partners",
         "link": "/technology-partners",

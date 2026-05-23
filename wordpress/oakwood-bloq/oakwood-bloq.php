@@ -230,7 +230,6 @@ add_filter( 'manage_gen_content_posts_columns', 'oakwood_bloq_add_primary_tag_co
 add_action( 'manage_gen_content_posts_custom_column', 'oakwood_bloq_render_primary_tag_column', 10, 2 );
 
 add_action( 'init', 'oakwood_bloq_create_default_category_terms', 99 );
-add_action( 'init', 'oakwood_bloq_create_default_tag_terms', 99 );
 
 /**
  * Categorías: solo Blog y Case Study (tipo de contenido). ACF y queries dependen de estos slugs.
@@ -261,9 +260,9 @@ function oakwood_bloq_create_default_category_terms() {
  */
 function oakwood_bloq_get_default_tag_terms() {
 	return array(
-		array( 'name' => 'High-Performance Computing (HPC)', 'slug' => 'high-performance-computing-hpc-hpc' ),
+		array( 'name' => 'High-Performance Computing (HPC)', 'slug' => 'high-performance-computing-hpc' ),
 		array( 'name' => 'Data & AI Solutions', 'slug' => 'data-ai-solutions' ),
-		array( 'name' => 'Cloud & Infrastructure', 'slug' => 'cloud-infrastructure' ),
+		array( 'name' => 'Cloud & Infrastructure', 'slug' => 'cloud-and-infrastructure' ),
 		array( 'name' => 'Application Innovation', 'slug' => 'application-innovation' ),
 		array( 'name' => 'Modern Work', 'slug' => 'modern-work' ),
 		array( 'name' => 'Managed Services', 'slug' => 'managed-services' ),
@@ -291,6 +290,75 @@ function oakwood_bloq_create_default_tag_terms() {
 		}
 	}
 }
+
+const OAKWOOD_BLOQ_TAG_SLUG_MIGRATION_V1 = 'oakwood_bloq_tag_slug_migration_v1';
+
+/**
+ * Migración única: fusionar tags duplicados (slugs viejos del seed) con los canónicos del sitio.
+ */
+function oakwood_bloq_migrate_duplicate_tag_slugs() {
+	if ( get_option( OAKWOOD_BLOQ_TAG_SLUG_MIGRATION_V1, false ) ) {
+		return;
+	}
+	if ( ! taxonomy_exists( 'gen_content_tag' ) ) {
+		return;
+	}
+
+	$pairs = array(
+		'cloud-infrastructure'                 => 'cloud-and-infrastructure',
+		'high-performance-computing-hpc-hpc' => 'high-performance-computing-hpc',
+	);
+
+	foreach ( $pairs as $old_slug => $canonical_slug ) {
+		$old_term = get_term_by( 'slug', $old_slug, 'gen_content_tag' );
+		if ( ! $old_term || is_wp_error( $old_term ) ) {
+			continue;
+		}
+
+		$canonical = get_term_by( 'slug', $canonical_slug, 'gen_content_tag' );
+		if ( ! $canonical || is_wp_error( $canonical ) ) {
+			wp_update_term(
+				$old_term->term_id,
+				'gen_content_tag',
+				array( 'slug' => $canonical_slug )
+			);
+			continue;
+		}
+
+		$post_ids = get_posts(
+			array(
+				'post_type'      => 'gen_content',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'tax_query'      => array(
+					array(
+						'taxonomy' => 'gen_content_tag',
+						'field'    => 'term_id',
+						'terms'    => (int) $old_term->term_id,
+					),
+				),
+			)
+		);
+
+		foreach ( $post_ids as $post_id ) {
+			$term_ids = wp_get_post_terms( $post_id, 'gen_content_tag', array( 'fields' => 'ids' ) );
+			if ( is_wp_error( $term_ids ) ) {
+				continue;
+			}
+			$term_ids = array_map( 'intval', $term_ids );
+			$term_ids = array_values( array_diff( $term_ids, array( (int) $old_term->term_id ) ) );
+			if ( ! in_array( (int) $canonical->term_id, $term_ids, true ) ) {
+				$term_ids[] = (int) $canonical->term_id;
+			}
+			wp_set_post_terms( $post_id, $term_ids, 'gen_content_tag' );
+		}
+
+		wp_delete_term( (int) $old_term->term_id, 'gen_content_tag' );
+	}
+
+	update_option( OAKWOOD_BLOQ_TAG_SLUG_MIGRATION_V1, true );
+}
+add_action( 'init', 'oakwood_bloq_migrate_duplicate_tag_slugs', 99 );
 
 /**
  * Helpers: normalizar valores ACF de relación a IDs (database IDs).
@@ -337,7 +405,7 @@ function oakwood_bloq_normalize_related_ids( $value ) {
  * primaryTagName evita conflicto con el campo primaryTag de ACF (tipo PrimaryTag).
  *
  * Permite consultar:
- * genContent(id: "...") { showContactSection tags primaryTagName relatedBloqs { id title uri } relatedBloqIds relatedCaseStudies { id title uri } relatedCaseStudyIds }
+ * genContent(id: "...") { showContactSection tags primaryTagName relatedBloqs { id title uri } relatedBloqIds relatedCaseStudies { id title uri } relatedCaseStudyIds relatedCaseStudySlugs }
  */
 function oakwood_bloq_register_graphql_fields() {
 	if ( ! function_exists( 'register_graphql_field' ) ) {
@@ -611,6 +679,54 @@ function oakwood_bloq_register_graphql_fields() {
 				}
 
 				return oakwood_bloq_normalize_related_ids( $value );
+			},
+		)
+	);
+
+	register_graphql_field(
+		'GenContent',
+		'relatedCaseStudySlugs',
+		array(
+			'type'        => array( 'list_of' => 'String' ),
+			'description' => __( 'Related Case Study Gen Content slugs (ACF: related_case_studies). To request full data by slug without resolving list_of GenContent.', 'oakwood-blog' ),
+			'resolve'     => function ( $post ) {
+				$post_id = null;
+				if ( is_object( $post ) && isset( $post->ID ) ) {
+					$post_id = (int) $post->ID;
+				} elseif ( is_array( $post ) && isset( $post['databaseId'] ) ) {
+					$post_id = (int) $post['databaseId'];
+				}
+				if ( ! $post_id ) {
+					return array();
+				}
+
+				$value = null;
+				if ( function_exists( 'get_field' ) ) {
+					$value = get_field( 'related_case_studies', $post_id );
+				} else {
+					$value = get_post_meta( $post_id, 'related_case_studies', true );
+				}
+
+				$ids = oakwood_bloq_normalize_related_ids( $value );
+				if ( empty( $ids ) ) {
+					return array();
+				}
+
+				$slugs = array();
+				foreach ( $ids as $id ) {
+					$id = (int) $id;
+					if ( $id <= 0 ) {
+						continue;
+					}
+					$p = get_post( $id );
+					if ( ! $p || ! isset( $p->post_type ) || $p->post_type !== 'gen_content' || $p->post_status !== 'publish' ) {
+						continue;
+					}
+					if ( ! empty( $p->post_name ) ) {
+						$slugs[] = $p->post_name;
+					}
+				}
+				return $slugs;
 			},
 		)
 	);

@@ -1,6 +1,7 @@
 /
 /blog
 /resources/case-studies
+/blog/azure-virtual-desktop-in-2026-where-it-actually-fits-in-a-modernization-strategy
 /blog/zero-trust-is-not-a-project-it-is-a-security-maturity-journey
 /blog/azure-arc-modernizing-your-environment-before-you-migrate-it
 /blog/linux-on-azure-modernizing-open-source-workloads-without-compromise
