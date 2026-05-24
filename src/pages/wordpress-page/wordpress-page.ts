@@ -72,6 +72,11 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
         this.pageTitle.set('');
         this.pageExcerpt.set('');
         this.pageHtml.set(null);
+        this.seoMeta.updateMeta({
+          title: status === 404 ? 'Page not found | Oakwood Systems' : 'WordPress page unavailable | Oakwood Systems',
+          description: status === 404 ? 'The requested WordPress page could not be found.' : 'The requested WordPress page could not be loaded.',
+          canonicalPath: `/${path}`,
+        });
       },
     });
   }
@@ -100,7 +105,11 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       this.applyBodyClasses(page.bodyClasses ?? []);
       this.injectStylesheets(page.stylesheets ?? []);
       this.injectInlineStyles(page.inlineStyles ?? []);
-      this.injectFooterScripts(page.footerScripts ?? []);
+      this.schedulePageScripts(path, [
+        ...this.extractScriptsFromHtml(page.headHtml ?? ''),
+        ...this.extractScriptsFromHtml(page.content ?? ''),
+        ...(page.footerScripts ?? []),
+      ]);
     }
   }
 
@@ -169,9 +178,44 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  private injectFooterScripts(scripts: WordPressFooterScript[]): void {
+  private extractScriptsFromHtml(html: string): WordPressFooterScript[] {
+    if (!html.trim()) {
+      return [];
+    }
+
+    const template = this.document.createElement('template');
+    template.innerHTML = html;
+
+    return Array.from(template.content.querySelectorAll('script')).map((script) => ({
+      id: script.id || null,
+      src: script.getAttribute('src') || undefined,
+      type: script.getAttribute('type') || null,
+      nonce: script.getAttribute('nonce') || null,
+      async: script.hasAttribute('async'),
+      defer: script.hasAttribute('defer'),
+      code: script.getAttribute('src') ? undefined : script.textContent || undefined,
+    }));
+  }
+
+  private schedulePageScripts(path: string, scripts: WordPressFooterScript[]): void {
+    const win = this.document.defaultView;
+    const inject = (): void => {
+      if (this.currentPath === path) {
+        void this.injectPageScripts(scripts);
+      }
+    };
+
+    if (win?.requestAnimationFrame) {
+      win.requestAnimationFrame(() => inject());
+      return;
+    }
+
+    setTimeout(inject, 0);
+  }
+
+  private async injectPageScripts(scripts: WordPressFooterScript[]): Promise<void> {
     const body = this.document.body;
-    scripts.forEach((scriptData, index) => {
+    for (const [index, scriptData] of scripts.entries()) {
       const script = this.document.createElement('script');
       script.setAttribute('data-wordpress-page-script', `${this.currentPath}-${index}`);
       if (scriptData.id) script.id = scriptData.id;
@@ -185,6 +229,20 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       if (scriptData.code && !scriptData.src) {
         script.text = scriptData.code;
       }
+      await this.appendScriptInOrder(body, script, scriptData);
+    }
+  }
+
+  private appendScriptInOrder(body: HTMLElement, script: HTMLScriptElement, scriptData: WordPressFooterScript): Promise<void> {
+    return new Promise((resolve) => {
+      if (scriptData.src && !scriptData.async && !scriptData.defer) {
+        script.async = false;
+        script.addEventListener('load', () => resolve(), { once: true });
+        script.addEventListener('error', () => resolve(), { once: true });
+      } else {
+        resolve();
+      }
+
       body.appendChild(script);
       this.injectedBodyNodes.push(script);
     });

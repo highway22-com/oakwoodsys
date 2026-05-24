@@ -1,5 +1,5 @@
 import { AngularAppEngine, createRequestHandler } from '@angular/ssr';
-import { CMS_BASE_URL, WORDPRESS_LOCAL_BASE_URL } from './app/config/cms.config';
+import { CMS_BASE_URL } from './app/config/cms.config';
 import { getContext } from '@netlify/angular-runtime/context.mjs'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
@@ -347,7 +347,7 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
         return Response.json({ error: 'Missing path parameter' }, { status: 400, headers: corsHeaders });
       }
 
-      const targetUrl = `${WORDPRESS_LOCAL_BASE_URL}/wp-json/custom/v1/rendered-page?path=${encodeURIComponent(pagePath)}`;
+      const targetUrl = `${CMS_BASE_URL}/wp-json/custom/v1/rendered-page?path=${encodeURIComponent(pagePath)}`;
 
       console.log(`[wordpress-page] Fetching page for path: "${pagePath}" from ${targetUrl}`);
       const controller = new AbortController();
