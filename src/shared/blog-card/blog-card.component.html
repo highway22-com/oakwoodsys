@@ -12,6 +12,7 @@
     <!-- Post Content -->
     <div class="p-5 sm:p-6 flex flex-col flex-grow">
         <!-- Tags, Reading Time -->
+        @if (showMeta()) {
         <div class="flex items-center mb-4 flex-wrap gap-2">
             <div class="flex items-center gap-2 flex-wrap">
                 @if (tag()) {
@@ -20,6 +21,7 @@
             </div>
             <span class="text-[#5D5D5D] font-inter text-xs font-normal leading-[150%]">{{ readingTimeMinutes() }} min read</span>
         </div>
+        }
 
         <!-- Title -->
         <h3 class="min-w-0 whitespace-normal break-words text-black font-inter text-[20px] sm:text-[24px] font-medium leading-[130%] tracking-[-0.2px] sm:tracking-[-0.24px] lg:text-[28px] lg:tracking-[-0.28px] mb-3 sm:mb-4 pb-10">
