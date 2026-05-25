@@ -15,7 +15,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VideoHero } from '../../shared/video-hero/video-hero';
@@ -29,6 +29,7 @@ import {
 import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
+import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
 type SimpleCard = {
   icon: string;
   title: string;
@@ -75,7 +76,7 @@ type AccordionItem = {
     FormsModule,
     CtaSectionComponent,
     ButtonPrimaryComponent,
-    RouterLink,
+    BlogCardComponent,
   ],
   templateUrl: './microsoft-licensing.html',
   styleUrl: './microsoft-licensing.css',

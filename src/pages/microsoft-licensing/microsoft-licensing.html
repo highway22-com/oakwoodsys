@@ -5,20 +5,18 @@
   [title]="hero.title"
   [description]="hero.description"
   [descriptionSecondary]="hero.descriptionSecondary"
-  descriptionClass="mb-3 w-full max-w-xl md:max-w-2xl lg:max-w-3xl break-words"
+  descriptionClass="mb-3 w-full max-w-xl md:max-w-2xl lg:max-w-3xl break-words text-[16px] md:text-[20px]"
   [descriptionStyle]="{
     color: 'var(--White, #FFF)',
     fontFamily: 'Segoe UI',
-    fontSize: '20px',
     fontStyle: 'normal',
     fontWeight: '700',
     lineHeight: '150%',
   }"
-  descriptionSecondaryClass="pb-6 w-full max-w-xl md:max-w-2xl lg:max-w-3xl break-words"
+  descriptionSecondaryClass="pb-6 w-full max-w-xl md:max-w-2xl lg:max-w-3xl break-words text-[16px] md:text-[20px]"
   [descriptionSecondaryStyle]="{
     color: 'rgba(255, 255, 255, 0.8)',
     fontFamily: 'Segoe UI',
-    fontSize: '20px',
     fontStyle: 'normal',
     fontWeight: '400',
     lineHeight: '150%',
@@ -29,10 +27,10 @@
 ></app-video-hero>
 
 <!-- Microsoft Licensing has Become a Moving Target -->
-<section class="w-full my-10 px-6 lg:px-10" aria-labelledby="ml-hero-title">
+<section class="w-full my-10 px-4 lg:px-10" aria-labelledby="ml-hero-title">
   <!-- Hero Banner -->
   <div
-    class="relative min-h-[400px] sm:min-h-[500px] md:min-h-[60vh] w-full overflow-hidden"
+    class="relative min-h-[540px] sm:min-h-[500px] md:min-h-[60vh] w-full overflow-hidden"
   >
     <div class="absolute inset-0 z-0">
       <img
@@ -76,13 +74,13 @@
           let last = $last
         ) {
           <div
-            class="bg-[#F2F8FD] flex flex-col py-12 px-2 lg:px-6 m-0"
+            class="bg-[#F2F8FD] flex flex-col py-6 lg:py-12 px-2 lg:px-6 m-0"
             [ngClass]="{
               'border-b border-[#D1D1D1] lg:border-b-0 lg:border-r': !last,
             }"
           >
-            <div class="mb-8 sm:mb-6">
-              <div class="w-10 h-10">
+            <div class="mb-4 sm:mb-8">
+              <div class="w-9 h-9 sm:w-10 sm:h-10">
                 <img
                   [src]="card.image"
                   [alt]="card.title"
@@ -91,7 +89,7 @@
               </div>
             </div>
             <h3
-              class="text-[#242424] text-[28px] font-semibold leading-[140%] mb-3 sm:mb-4 lg:text-[#242424] lg:font-['Inter'] lg:text-[24px] lg:leading-[130%]"
+              class="text-[#242424] text-[24px] font-semibold leading-[140%] mb-3 sm:mb-4 lg:text-[#242424] lg:font-['Inter'] lg:text-[24px] lg:leading-[130%]"
             >
               {{ card.title }}
             </h3>
@@ -99,7 +97,7 @@
               class="text-[#3D3D3D] text-[18px] font-normal leading-[150%]"
             ></p>
             <p
-              class="text-[#3D3D3D] text-[18px] font-normal leading-[150%] lg:text-[#3D3D3D] lg:font-['Inter'] lg:text-[18px] lg:leading-[150%]"
+              class="text-[#3D3D3D] text-[16px] font-normal leading-[150%] lg:text-[#3D3D3D] lg:font-['Inter'] lg:text-[18px] lg:leading-[150%]"
             >
               {{ card.summary }}
             </p>
@@ -118,18 +116,18 @@
   <div class="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-10">
     <div class="text-center mb-10 lg:mb-14">
       <p
-        class="text-[#2A7EBF] font-['Inter'] text-[13px] font-semibold uppercase tracking-[0.08em] mb-2 lg:text-[#2A7EBF] lg:text-[18px] lg:leading-[150%]"
+        class="text-[#2A7EBF] font-['Inter'] text-[14px] font-semibold uppercase tracking-[0.08em] mb-2 lg:text-[#2A7EBF] lg:text-[18px] lg:leading-[150%]"
       >
         Cloud Solution Provider
       </p>
       <h2
         id="csp-title"
-        class="text-[#121212] font-['Inter'] text-[34px] sm:text-[40px] lg:text-[#000] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] lg:text-center mb-3"
+        class="text-[#121212] font-['Inter'] text-[32px] sm:text-[32px] lg:text-[#000] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] lg:text-center mb-3"
       >
         What Is a Microsoft Cloud Solution Provider (CSP)?
       </h2>
       <p
-        class="text-[#454545] font-['Segoe_UI'] text-[17px] leading-[150%] max-w-9xl mx-auto lg:text-[#454545] lg:text-[18px] lg:text-center"
+        class="text-[#454545] font-['Segoe_UI'] text-[16px] leading-[150%] max-w-9xl mx-auto lg:text-[#454545] lg:text-[18px] lg:text-center"
       >
         Oakwood delivers Microsoft licensing through the Cloud Solution Provider
         model. This approach shifts licensing from a transactional purchase to
@@ -145,6 +143,29 @@
       ) {
         <div class="relative text-center">
           @if (!first) {
+            <div class="md:hidden flex justify-center mb-3" aria-hidden="true">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="44"
+                viewBox="0 0 14 44"
+                fill="none"
+              >
+                <path
+                  d="M7 2V34"
+                  stroke="#B0B0B0"
+                  stroke-width="1.5"
+                  stroke-dasharray="4 4"
+                />
+                <path
+                  d="M3 31L7 35L11 31"
+                  stroke="#B0B0B0"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
             <div
               class="hidden md:block absolute pointer-events-none"
               style="
@@ -172,7 +193,7 @@
 
           <!-- Circle -->
           <div
-            class="mx-auto w-[140px] h-[140px] flex items-center justify-center mb-4"
+            class="mx-auto w-[100px] h-[100px] lg:w-[140px] lg:h-[140px] flex items-center justify-center mb-4"
             style="
               border-radius: 200px;
               border: 2px solid #e4eefa;
@@ -182,20 +203,20 @@
             <img
               [src]="step.icon"
               [alt]="step.title"
-              class="w-12 h-12 object-contain"
+              class="w-10 h-10 lg:w-12 lg:h-12 object-contain"
             />
           </div>
 
-          <p class="text-[#0D53A2] text-[28px] font-medium mb-4">
+          <p class="text-[#0D53A2] text-[18px] lg:text-[28px] font-medium mb-4">
             {{ step.step }}
           </p>
           <h3
-            class="text-[#242424] font-['Inter'] text-[32px] font-semibold leading-[130%] mb-1 lg:text-[#242424] lg:text-[32px] lg:text-center"
+            class="text-[#242424] font-['Inter'] text-[24px] font-semibold leading-[130%] mb-1 lg:text-[#242424] lg:text-[32px] lg:text-center"
           >
             {{ step.title }}
           </h3>
           <p
-            class="text-[#454545] font-['Inter'] text-[15px] font-normal leading-[150%] lg:text-[#3D3D3D] lg:text-[20px] lg:text-center"
+            class="text-[#454545] font-['Inter'] text-[16px] font-normal leading-[150%] lg:text-[#3D3D3D] lg:text-[18px] lg:text-center"
           >
             {{ step.subtitle }}
           </p>
@@ -242,18 +263,18 @@
   <div class="mx-auto max-w-[1500px] px-4 sm:px-6">
     <div class="text-center mb-10 lg:mb-14">
       <p
-        class="text-[#2A7EBF] text-[13px] font-semibold uppercase tracking-[0.08em] mb-2 lg:text-[#2A7EBF] lg:font-['Inter'] lg:text-[18px] lg:leading-[150%]"
+        class="text-[#2A7EBF] text-[14px] font-semibold uppercase tracking-[0.08em] mb-2 lg:text-[#2A7EBF] lg:font-['Inter'] lg:text-[18px] lg:leading-[150%]"
       >
         Why Oakwood
       </p>
       <h2
         id="why-oakwood-title"
-        class="text-[#121212] w-full text-[34px] sm:text-[40px] lg:text-[#000] lg:font-['Inter'] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] lg:text-center mb-3"
+        class="text-[#121212] w-full text-[32px] sm:text-[40px] lg:text-[#000] lg:font-['Inter'] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] lg:text-center mb-3"
       >
         Why Organizations Choose Oakwood for Microsoft Licensing
       </h2>
       <p
-        class="text-[#454545] text-[17px] leading-[150%] max-w-4xl mx-auto lg:text-[#454545] lg:text-center lg:font-['Segoe_UI'] lg:text-[18px] lg:font-normal lg:leading-[150%]"
+        class="text-[#454545] text-[16px] leading-[150%] max-w-4xl mx-auto lg:text-[#454545] lg:text-center lg:font-['Segoe_UI'] lg:text-[18px] lg:font-normal lg:leading-[150%]"
       >
         Most providers focus on selling licenses. Oakwood focuses on making sure
         those licenses are working for you.
@@ -319,12 +340,12 @@
         <div class="absolute inset-0 p-8 lg:p-10 flex flex-col justify-end">
           <h2
             id="licensing-service-areas-title"
-            class="text-white text-[36px] sm:text-[42px] lg:font-['Inter'] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] mb-3"
+            class="text-white text-[32px] sm:text-[32px] lg:font-['Inter'] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] mb-3"
           >
             What Microsoft Licensing Services Include
           </h2>
           <p
-            class="text-white text-[16px] sm:text-[18px] leading-[150%] max-w-xl lg:text-[#F6F6F6] lg:font-['Segoe_UI'] lg:text-[18px] lg:font-normal lg:leading-[150%]"
+            class="text-white text-[16px] sm:text-[16px] leading-[150%] max-w-xl lg:text-[#F6F6F6] lg:font-['Segoe_UI'] lg:text-[18px] lg:font-normal lg:leading-[150%]"
           >
             Oakwood delivers a full set of services around Microsoft licensing,
             from strategy through ongoing management.
@@ -335,7 +356,7 @@
       <div class="flex flex-col gap-4 sm:gap-5">
         @for (card of serviceAreaCards; track card.title) {
           <article class="bg-white border border-[#D1D1D1] p-5 sm:p-7">
-            <div class="w-10 h-10 mb-6">
+            <div class="w-9 h-9 lg:w-10 lg:h-10 mb-6">
               <img
                 [src]="card.icon"
                 [alt]="card.title"
@@ -343,7 +364,7 @@
               />
             </div>
             <h3
-              class="text-[#242424] text-[34px] font-semibold leading-[120%] mb-3 lg:text-[#242424] lg:font-['Inter'] lg:text-[32px] lg:leading-[130%]"
+              class="text-[#242424] text-[24px] font-semibold leading-[120%] mb-3 lg:text-[#242424] lg:font-['Inter'] lg:text-[32px] lg:leading-[130%]"
             >
               {{ card.title }}
             </h3>
@@ -363,7 +384,7 @@
 
 <!-- Outcomes section -->
 <section
-  class="relative w-full py-16 sm:py-20 overflow-hidden"
+  class="relative w-full py-8 sm:py-20 overflow-hidden"
   aria-labelledby="outcomes-title"
   [style.backgroundColor]="'#001258'"
 >
@@ -386,12 +407,12 @@
     </p>
     <h2
       id="outcomes-title"
-      class="text-white font-inter font-normal text-[28px] sm:text-[50px] lg:text-[50px] leading-[1.2] sm:leading-[1.1] lg:leading-[110%] tracking-normal text-center max-w-[1400px] mx-auto mb-2"
+      class="text-white font-inter font-normal text-[32px] sm:text-[50px] lg:text-[50px] leading-[1.2] sm:leading-[1.1] lg:leading-[110%] tracking-normal text-center max-w-[1400px] mx-auto mb-2"
     >
       What Better Licensing Actually Looks Like
     </h2>
     <p
-      class="text-white font-['Segoe_UI'] font-normal text-[15px] sm:text-[26.67px] lg:text-[18px] leading-[22px] sm:leading-[37.33px] lg:leading-[150%] tracking-normal text-center max-w-5xl mx-auto mb-20"
+      class="text-white font-['Segoe_UI'] font-normal text-[16px] sm:text-[26.67px] lg:text-[18px] leading-[22px] sm:leading-[37.33px] lg:leading-[150%] tracking-normal text-center max-w-5xl mx-auto mb-20"
     >
       When Microsoft licensing is managed correctly, the impact is immediate and
       measurable.
@@ -401,13 +422,14 @@
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-4 text-left w-full max-w-[1420px]"
     >
       @for (item of outcomes; track item) {
-        <div class="px-3">
+        <div class="px-3 flex items-center gap-3 lg:block">
           <div
-            class="w-10 h-10 rounded-full bg-[#2C8B50] mb-3 flex items-center justify-center"
+            class="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-[#2C8B50] mb-0 lg:mb-3 flex items-center justify-center flex-shrink-0"
           >
             <svg
-              width="18"
-              height="17"
+              width="14"
+              height="13"
+              class="lg:w-[18px] lg:h-[17px]"
               viewBox="0 0 18 17"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -419,7 +441,7 @@
             </svg>
           </div>
           <p
-            class="text-[#E4EEFA] font-['Inter'] text-[24px] font-medium leading-[140%]"
+            class="text-[#E4EEFA] font-['Inter'] text-[16px] lg:text-[24px] font-medium leading-[140%]"
           >
             {{ item }}
           </p>
@@ -437,18 +459,18 @@
   <div class="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-10">
     <div class="text-center mb-10 lg:mb-14">
       <p
-        class="text-[#2A7EBF] font-['Inter'] text-[13px] font-semibold uppercase tracking-[0.08em] mb-2 lg:text-[#2A7EBF] lg:text-[18px] lg:leading-[150%]"
+        class="text-[#2A7EBF] font-['Inter'] text-[14px] font-semibold uppercase tracking-[0.08em] mb-2 lg:text-[#2A7EBF] lg:text-[18px] lg:leading-[150%]"
       >
         {{ managedServicesConnection.tagline }}
       </p>
       <h2
         id="managed-services-connection-title"
-        class="text-[#121212] font-['Inter'] text-[34px] sm:text-[40px] lg:text-[#000] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] lg:text-center mb-3"
+        class="text-[#121212] font-['Inter'] text-[32px] sm:text-[32px] lg:text-[#000] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] lg:text-center mb-3"
       >
         {{ managedServicesConnection.title }}
       </h2>
       <p
-        class="text-[#454545] font-['Segoe_UI'] text-[17px] leading-[150%] max-w-5xl mx-auto lg:text-[#454545] lg:text-[18px] lg:text-center"
+        class="text-[#454545] font-['Segoe_UI'] text-[16px] leading-[150%] max-w-9xl mx-auto lg:text-[#454545] lg:text-[18px] lg:text-center"
       >
         {{ managedServicesConnection.description }}
       </p>
@@ -463,6 +485,29 @@
       ) {
         <div class="relative text-center">
           @if (!first) {
+            <div class="md:hidden flex justify-center mb-3" aria-hidden="true">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="44"
+                viewBox="0 0 14 44"
+                fill="none"
+              >
+                <path
+                  d="M7 2V34"
+                  stroke="#B0B0B0"
+                  stroke-width="1.5"
+                  stroke-dasharray="4 4"
+                />
+                <path
+                  d="M3 31L7 35L11 31"
+                  stroke="#B0B0B0"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
             <div
               class="hidden md:block absolute pointer-events-none"
               style="
@@ -489,7 +534,7 @@
           }
 
           <div
-            class="mx-auto w-[140px] h-[140px] flex items-center justify-center mb-4"
+            class="mx-auto w-[100px] h-[100px] lg:w-[140px] lg:h-[140px] flex items-center justify-center mb-4"
             style="
               border-radius: 200px;
               border: 2px solid #e4eefa;
@@ -499,20 +544,20 @@
             <img
               [src]="step.icon"
               [alt]="step.title"
-              class="w-12 h-12 object-contain"
+              class="w-10 h-10 lg:w-12 lg:h-12 object-contain"
             />
           </div>
 
-          <p class="text-[#0D53A2] text-[28px] font-medium mb-4">
+          <p class="text-[#0D53A2] text-[18px] lg:text-[28px] font-medium mb-4">
             {{ step.step }}
           </p>
           <h3
-            class="text-[#242424] font-['Inter'] text-[32px] font-semibold leading-[130%] mb-1 lg:text-[#242424] lg:text-[32px] lg:text-center"
+            class="text-[#242424] font-['Inter'] text-[24px] font-semibold leading-[130%] mb-1 lg:text-[#242424] lg:text-[32px] lg:text-center"
           >
             {{ step.title }}
           </h3>
           <p
-            class="text-[#454545] font-['Inter'] text-[15px] font-normal leading-[150%] lg:text-[#3D3D3D] lg:text-[20px] lg:text-center"
+            class="text-[#454545] font-['Inter'] text-[16px] font-normal leading-[150%] lg:text-[#3D3D3D] lg:text-[18px] lg:text-center"
           >
             {{ step.subtitle }}
           </p>
@@ -532,23 +577,25 @@
           class="px-5 py-6 border-b lg:border-b-0 border-[#D1D1D1] flex align-items-center"
           [class.lg:border-r]="!last"
         >
-          <div class="w-10 h-10 mb-3">
+          <div class="w-9 h-9 lg:w-10 lg:h-10 mb-3">
             <img
               [src]="item.icon"
               [alt]="item.title"
               class="w-full h-full object-contain"
             />
           </div>
-          <h4
-            class="pl-4 text-[#242424] text-[18px] font-semibold leading-[130%] mb-2"
-          >
-            {{ item.title }}
-          </h4>
-          @if (item.description) {
-            <p class="text-[#454545] text-[15px] leading-[150%]">
-              {{ item.description }}
-            </p>
-          }
+          <div class="pl-4">
+            <h4
+              class="text-[#3D3D3D] font-['Inter'] text-[18px] font-semibold leading-[130%] mb-2"
+            >
+              {{ item.title }}
+            </h4>
+            @if (item.description) {
+              <p class="text-[#3D3D3D] text-[16px] leading-[150%]">
+                {{ item.description }}
+              </p>
+            }
+          </div>
         </article>
       }
     </div>
@@ -568,12 +615,12 @@
       </p>
       <h2
         id="self-diagnosis-title"
-        class="text-[#121212] font-['Inter'] text-[34px] sm:text-[40px] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] lg:text-[#000] lg:text-center mb-3"
+        class="text-[#121212] font-['Inter'] text-[32px] sm:text-[32px] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] lg:text-[#000] lg:text-center mb-3"
       >
         {{ selfDiagnosis.title }}
       </h2>
       <p
-        class="text-[#454545] font-['Segoe_UI'] text-[17px] lg:text-[18px] font-normal leading-[150%] text-center max-w-5xl mx-auto"
+        class="text-[#454545] font-['Segoe_UI'] text-[16px] lg:text-[18px] font-normal leading-[150%] text-center max-w-5xl mx-auto"
       >
         {{ selfDiagnosis.description }}
       </p>
@@ -597,7 +644,7 @@
             {{ card.title }}
           </h3>
           <p
-            class="font-['Inter'] text-[#454545] lg:text-[#3D3D3D] text-[15px] lg:text-[16px] font-normal leading-[150%]"
+            class="font-['Inter'] text-[#454545] lg:text-[#3D3D3D] text-[16px] lg:text-[16px] font-normal leading-[150%]"
           >
             {{ card.description }}
           </p>
@@ -625,29 +672,29 @@
 
       <div class="py-2">
         <p
-          class="text-[#2A7EBF] font-['Inter'] text-[13px] lg:text-[18px] font-semibold leading-[150%] uppercase tracking-[0.08em] mb-2"
+          class="text-[#2A7EBF] font-['Inter'] text-[14px] lg:text-[18px] font-semibold leading-[150%] uppercase tracking-[0.08em] mb-2"
         >
           {{ licensingExpert.tagline }}
         </p>
         <h2
           id="licensing-review-title"
-          class="text-[#121212] font-['Inter'] text-[36px] sm:text-[42px] lg:text-[58px] font-normal leading-[112%] lg:leading-[130%] lg:tracking-[-1.16px] lg:text-[#000] mb-4"
+          class="text-[#121212] font-['Inter'] text-[36px] sm:text-[36px] lg:text-[58px] font-normal leading-[112%] lg:leading-[130%] lg:tracking-[-1.16px] lg:text-[#000] mb-4"
         >
           {{ licensingExpert.title }}
         </h2>
         <p
-          class="text-[#454545] font-['Segoe_UI'] text-[17px] lg:text-[18px] font-normal leading-[150%] mb-12"
+          class="text-[#454545] font-['Segoe_UI'] text-[16px] lg:text-[18px] font-normal leading-[150%] mb-12"
         >
           {{ licensingExpert.description }}
         </p>
 
         <h3
-          class="text-[#1E5FA8] font-['Inter'] text-[35px] font-semibold leading-[130%] lg:text-[#0D53A2] lg:text-[32px] mb-3"
+          class="text-[#1E5FA8] font-['Inter'] text-[28px] font-semibold leading-[130%] lg:text-[#0D53A2] lg:text-[32px] mb-3"
         >
           {{ licensingExpert.impactTitle }}
         </h3>
         <p
-          class="text-[#242424] font-['Inter'] text-[26px] font-semibold leading-[140%] lg:text-[#242424] lg:text-[24px] lg:leading-[150%] mb-3"
+          class="text-[#242424] font-['Inter'] text-[24px] font-semibold leading-[140%] lg:text-[#242424] lg:text-[24px] lg:leading-[150%] mb-3"
         >
           {{ licensingExpert.impactHeadline }}
         </p>
@@ -660,7 +707,7 @@
         <ul class="space-y-2">
           @for (item of licensingExpertChecklist; track item) {
             <li
-              class="flex items-start gap-3 text-[#242424] text-[15px] leading-[150%]"
+              class="flex items-start gap-3 text-[#242424] text-[16px] leading-[150%]"
             >
               <span class="mt-1 text-[#41B86A]">
                 <svg
@@ -716,7 +763,7 @@
         <div>
           <h2
             id="licensing-form-title"
-            class="text-[#000000] font-['Inter'] text-[42px] sm:text-[50px] font-normal leading-[120%] mb-3 lg:text-[#000] lg:font-['Inter'] lg:text-[58px] lg:font-normal lg:leading-[130%] lg:tracking-[-1.16px]"
+            class="text-[#000000] font-['Inter'] text-[36px] sm:text-[58px] font-normal leading-[120%] mb-3 lg:text-[#000] lg:font-['Inter'] lg:text-[58px] lg:font-normal lg:leading-[130%] lg:tracking-[-1.16px]"
           >
             Request Your Licensing Review
           </h2>
@@ -736,7 +783,7 @@
               class="w-7 h-7 object-contain"
             />
             <p
-              class="text-[#3D3D3D] text-[13px] leading-[150%] lg:text-[#3D3D3D] lg:font-['Segoe_UI'] lg:text-[16px] lg:font-normal lg:leading-[150%]"
+              class="text-[#3D3D3D] text-[14px] leading-[150%] lg:text-[#3D3D3D] lg:font-['Segoe_UI'] lg:text-[16px] lg:font-normal lg:leading-[150%]"
             >
               Unbiased insights from licensing experts
             </p>
@@ -748,7 +795,7 @@
               class="w-7 h-7 object-contain"
             />
             <p
-              class="text-[#3D3D3D] text-[13px] leading-[150%] lg:text-[#3D3D3D] lg:font-['Segoe_UI'] lg:text-[16px] lg:font-normal lg:leading-[150%]"
+              class="text-[#3D3D3D] text-[14px] leading-[150%] lg:text-[#3D3D3D] lg:font-['Segoe_UI'] lg:text-[16px] lg:font-normal lg:leading-[150%]"
             >
               Identify savings and reduce waste
             </p>
@@ -760,7 +807,7 @@
               class="w-7 h-7 object-contain"
             />
             <p
-              class="text-[#3D3D3D] text-[13px] leading-[150%] lg:text-[#3D3D3D] lg:font-['Segoe_UI'] lg:text-[16px] lg:font-normal lg:leading-[150%]"
+              class="text-[#3D3D3D] text-[14px] leading-[150%] lg:text-[#3D3D3D] lg:font-['Segoe_UI'] lg:text-[16px] lg:font-normal lg:leading-[150%]"
             >
               Align licensing with your business goals
             </p>
@@ -772,7 +819,7 @@
       <form (ngSubmit)="onLicensingReviewSubmit()" class="flex flex-col gap-4">
         <!-- Full Name -->
         <div class="flex flex-col gap-2">
-          <label class="font-['Inter'] text-[15px] text-[#000000]"
+          <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]"
             >Your full name</label
           >
           <input
@@ -795,7 +842,7 @@
         <!-- Email + Company -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label class="font-['Inter'] text-[15px] text-[#000000]"
+            <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]"
               >Work email address</label
             >
             <input
@@ -817,7 +864,7 @@
             }
           </div>
           <div class="flex flex-col gap-2">
-            <label class="font-['Inter'] text-[15px] text-[#000000]"
+            <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]"
               >Company name</label
             >
             <input
@@ -843,7 +890,7 @@
         <!-- Users + Area of Interest -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label class="font-['Inter'] text-[15px] text-[#000000]"
+            <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]"
               >Number of Users</label
             >
             <div class="ml-users-dropdown">
@@ -907,7 +954,7 @@
             }
           </div>
           <div class="flex flex-col gap-2">
-            <label class="font-['Inter'] text-[15px] text-[#000000]"
+            <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]"
               >Primary Area of Interest</label
             >
             <div class="ml-interest-dropdown">
@@ -976,7 +1023,7 @@
 
         <!-- Environment Details -->
         <div class="flex flex-col gap-2">
-          <label class="font-['Inter'] text-[15px] text-[#000000]"
+          <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]"
             >Environment details</label
           >
           <textarea
@@ -1073,53 +1120,21 @@
         }
       </div>
     } @else if (relatedLicensingBlogs().length > 0) {
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mb-8">
+      <div
+        class="flex items-stretch overflow-x-auto whitespace-nowrap gap-6 sm:gap-8 mb-10 sm:mb-12 md:grid md:grid-cols-3 md:overflow-visible md:whitespace-normal snap-x snap-mandatory"
+      >
         @for (post of relatedLicensingBlogs(); track post.id) {
-          <a
-            [routerLink]="['/blog', post.slug]"
-            class="mb-3 group min-w-0 whitespace-normal bg-[#FFFFFF]/80 overflow-hidden transition-shadow duration-300 flex-1 flex flex-col outline-gray-300 outline hover:bg-p-30 cursor-pointer"
-          >
-            <div
-              class="relative w-full min-w-[220px] max-w-[340px] sm:min-w-0 sm:max-w-none overflow-hidden bg-transparent group-hover:bg-p-30 transition-colors duration-300 px-2 pt-2 pb-0 sm:px-12 lg:px-6 lg:pt-6 sm:pt-2 py-5"
-            >
-              <div class="relative w-full aspect-video overflow-hidden">
-                <img
-                  [src]="post.imageUrl"
-                  [alt]="post.imageAlt"
-                  class="w-full h-full object-cover object-top transition-transform duration-300 ease-out group-hover:scale-110"
-                  loading="lazy"
-                />
-              </div>
-            </div>
-
-            <div class="p-5 sm:p-6 flex flex-col flex-grow">
-              <h3
-                class="min-w-0 whitespace-normal break-words text-black font-inter text-[20px] sm:text-[24px] font-medium leading-[130%] tracking-[-0.2px] sm:tracking-[-0.24px] lg:text-[28px] lg:tracking-[-0.28px] mb-3 sm:mb-4 pb-10"
-              >
-                {{ post.title }}
-              </h3>
-
-              <div
-                class="font-inter font-semibold text-base leading-none tracking-normal text-[#454545] group-hover:text-[#2A7EBF] transition-colors duration-200 inline-flex items-center gap-3 mt-auto pb-2"
-              >
-                <span class="align-middle">Read more</span>
-                <span class="align-middle flex items-center mt-[0.35px]">
-                  <svg
-                    width="8"
-                    height="13"
-                    viewBox="0 0 8 13"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M6.83594 5.60547C7.19141 5.93359 7.19141 6.50781 6.83594 6.83594L1.58594 12.0859C1.25781 12.4414 0.683594 12.4414 0.355469 12.0859C0 11.7578 0 11.1836 0.355469 10.8555L4.97656 6.20703L0.355469 1.58594C0 1.25781 0 0.683594 0.355469 0.355469C0.683594 0 1.25781 0 1.58594 0.355469L6.83594 5.60547Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </span>
-              </div>
-            </div>
-          </a>
+          <app-blog-card
+            [slug]="post.slug"
+            [imageUrl]="post.imageUrl"
+            [imageAlt]="post.imageAlt"
+            [tag]="post.primaryTag"
+            [readingTimeMinutes]="post.readingTimeMinutes"
+            [showMeta]="false"
+            [title]="post.title"
+            [date]="post.date"
+            class="border border-[#D1D1D1] w-[72vw] max-w-[280px] h-auto sm:w-auto sm:h-auto sm:max-w-none md:w-auto md:h-auto snap-start mr-0 sm:mr-4 md:mr-0 flex flex-shrink-0 self-stretch"
+          />
         }
       </div>
 
@@ -1179,7 +1194,7 @@
     <!-- Header -->
     <div class="text-center mb-10 lg:mb-14">
       <p
-        class="text-[#2A7EBF] font-['Inter'] text-[13px] lg:text-[18px] font-semibold leading-[150%] uppercase text-center tracking-[0.08em] mb-4"
+        class="text-[#2A7EBF] font-['Inter'] text-[14px] lg:text-[18px] font-semibold leading-[150%] uppercase text-center tracking-[0.08em] mb-4"
       >
         {{ faqSection.label }}
       </p>
@@ -1188,7 +1203,7 @@
       <div class="flex items-center justify-center gap-4 mb-2">
         <h2
           id="faq-title"
-          class="text-[#000] font-['Inter'] text-[34px] sm:text-[40px] lg:text-[50px] font-normal leading-[112%] lg:leading-[120%] text-center lg:tracking-[-0.5px]"
+          class="text-[#000] font-['Inter'] text-[40px] sm:text-[40px] lg:text-[50px] font-normal leading-[112%] lg:leading-[120%] text-center lg:tracking-[-0.5px]"
         >
           {{ faqSection.title }}
         </h2>
@@ -1216,55 +1231,60 @@
           "
         >
           <!-- Question row -->
-          <div class="flex items-center gap-4 px-5 sm:px-6 py-6 sm:py-5">
-            <span
-              class="text-[15px] sm:text-[17px] leading-[130%] text-[#242424] flex-1"
+          <div class="flex items-center gap-4 px-5 sm:px-6 py-6 sm:py-5 ">
+     <span
+              class="text-[18px] sm:text-[24px] leading-[130%] text-[#242424]  font-bold flex-1"
               [class.font-semibold]="selectedAccordionItem === item"
               [class.font-normal]="selectedAccordionItem !== item"
             >
-              {{ item.title }}
-            </span>
+  {{ item.title }}
+</span>
 
             <!-- Plus / Minus icon -->
-            <span class="flex-shrink-0">
-              @if (selectedAccordionItem !== item) {
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <rect
-                    x="4"
-                    y="9.5"
-                    width="12"
-                    height="1.5"
-                    rx="0.75"
-                    fill="#888888"
-                  />
-                  <rect
-                    x="9.5"
-                    y="4"
-                    width="1.5"
-                    height="12"
-                    rx="0.75"
-                    fill="#888888"
-                  />
-                </svg>
-              } @else {
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <rect
-                    x="4"
-                    y="9.5"
-                    width="12"
-                    height="1.5"
-                    rx="0.75"
-                    fill="#888888"
-                  />
-                </svg>
-              }
+            <span class="ml-auto flex-shrink-0">
+              <span
+                [class.rotate-180]="selectedAccordionItem === item"
+                [class.rotate-0]="selectedAccordionItem !== item"
+                class="transition-transform duration-200 inline-block"
+              >
+                @if (selectedAccordionItem !== item) {
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect
+                      x="4"
+                      y="9.5"
+                      width="12"
+                      height="1.5"
+                      rx="0.75"
+                      fill="#888888"
+                    />
+                    <rect
+                      x="9.5"
+                      y="4"
+                      width="1.5"
+                      height="12"
+                      rx="0.75"
+                      fill="#888888"
+                    />
+                  </svg>
+                } @else {
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect
+                      x="4"
+                      y="9.5"
+                      width="12"
+                      height="1.5"
+                      rx="0.75"
+                      fill="#888888"
+                    />
+                  </svg>
+                }
+              </span>
             </span>
           </div>
-
-          <!-- Answer -->
+      <!-- Answer -->
           @if (selectedAccordionItem === item) {
             <div
-              class="px-5 sm:px-6 pb-5 text-[14px] sm:text-[15px] lg:text-[18px] leading-[160%] lg:leading-[24px] text-[#3D3D3D] font-['Segoe_UI'] font-normal"
+              class="px-5 sm:px-6 pb-5 text-[16px] sm:text-[15px] lg:text-[18px] leading-[160%] lg:leading-[24px] text-[#3D3D3D] font-['Segoe_UI'] font-normal"
             >
               <p class="pt-4">{{ item.description }}</p>
             </div>

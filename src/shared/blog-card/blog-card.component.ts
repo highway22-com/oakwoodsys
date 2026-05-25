@@ -41,6 +41,8 @@ export class BlogCardComponent {
   readonly date = input<string>('');
   /** Texto del enlace "Read more". */
   readonly readMoreText = input<string>('Read more');
+  /** Muestra etiqueta y tiempo de lectura. */
+  readonly showMeta = input<boolean>(true);
 
   /** URL de imagen por defecto cuando no hay featuredImage. */
   readonly defaultImageUrl = 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80';
