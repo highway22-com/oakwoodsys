@@ -78,8 +78,9 @@
             </button>
             <div *ngIf="openGroupIdx() === idx" id="footer-group-{{ idx }}" class=" pb-4">
               <ul class="space-y-4 pt-3">
+
                 @for (link of group.links; track link.text) {
-                  @if (link.text !== 'Whitepapers' && link.text !== 'Webinars') {
+                  @if (link.text !== 'Whitepapers' && link.text !== 'Webinars' && link.text !== 'Microsoft Licensing') {
                   <li>
                     <a [routerLink]="resolveFooterRouterLink(link)" class="font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-white/70  hover:text-blue-300 transition-colors duration-200">
                       {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
@@ -89,6 +90,35 @@
                 }
               </ul>
             </div>
+
+            @if (group.title == 'Company') {
+              @for (link of group.links; track link.text) {
+                @if (link.text == 'Microsoft Licensing') {
+                <div class="pt-5 mt-2">
+                    <a
+                      [routerLink]="resolveFooterRouterLink(link)"
+                      class="flex items-center justify-between px-4 py-3 bg-[rgba(42,126,191,0.10)]"
+                    >
+                    <span class="flex items-center gap-3">
+                      <img
+                        src="/assets/icons/microsoft-footer-icon.png"
+                        alt="Microsoft Licensing icon"
+                        class="w-4 h-4 object-contain"
+                      />
+                      <span class="font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-[#E4EEFA]">
+                        {{ link.text }}
+                      </span>
+                    </span>
+                    <img
+                      src="/assets/icons/arrow-right.png"
+                      alt="Arrow right"
+                      class="w-5 h-5 object-contain"
+                    />
+                  </a>
+                </div>
+                }
+              }
+            }
           </div>
           <!-- Desktop: Always expanded, each group in its own column -->
           <div class="hidden lg:block col-span-1">
@@ -96,13 +126,39 @@
               {{ group.title }}</h3>
             <ul class="space-y-4">
               @for (link of group.links; track link.text) {
-                @if (link.text !== 'Whitepapers' && link.text !== 'Webinars') {
-                <li>
+                    @if (link.text == 'Microsoft Licensing') {
+    
+                  <li class="pt-8 mt-2 border-t border-[#4F4F4F]">
+                    <a
+                      [routerLink]="resolveFooterRouterLink(link)"
+                      class="flex items-center justify-between px-4 py-3 bg-[rgba(42,126,191,0.10)]"
+                    >
+                      <span class="flex items-center gap-3">
+                        <img
+                          src="/assets/icons/microsoft-footer-icon.png"
+                          alt="Microsoft Licensing icon"
+                          class="w-4 h-4 object-contain"
+                        />
+                        <span class="font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-[#E4EEFA]">
+                          {{ link.text }}
+                        </span>
+                      </span>
+                      <img
+                        src="/assets/icons/arrow-right.png"
+                        alt="Arrow right"
+                        class="w-5 h-5 object-contain"
+                      />
+                    </a>
+                  </li>
+                  } 
+                @if (link.text !== 'Whitepapers' && link.text !== 'Webinars' && link.text !== 'Microsoft Licensing') {
+                <li [class.pb-4]="link.text == 'Contact Us'">
                   <a [routerLink]="resolveFooterRouterLink(link)" class="text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200 whitespace-nowrap">
                     {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
                   </a>
                 </li>
                 }
+                 
               }
             </ul>
           </div>
