@@ -157,7 +157,7 @@ const DEFAULT_STRUCTURED_ENGAGEMENTS_DATA: StructuredEngagementsSection = {
 `,
       borderColor: 'green',
       category: 'Cloud and Infrastructure',
-      link: '/structured-engagement/semisol-security-essentials-poc',
+      link: '/structured-engagement/sentinel-security-essentials-poc',
       linkText: 'View offer',
     },
     {

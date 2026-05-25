@@ -54,7 +54,7 @@ export class CtaSectionComponent {
       this.bgImg = '/bg-imgs/home-page-bg.jpg';
     } else if (url.includes('services')) {
       this.bgImg = '/bg-imgs/services-page-bg.jpg';
-    } else if (url.includes('industries')) {
+    } else if (url.includes('industries')|| url.includes('microsoft-licensing')) {
       this.bgImg = '/bg-imgs/industries-page-bg.jpg';
     } else {
       this.bgImg = '/bg-imgs/home-page-bg.jpg';

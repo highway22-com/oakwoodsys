@@ -1,4 +1,8 @@
-<section class="relative w-full overflow-hidden" [ngClass]="hvh70 ? 'min-h-[80vh]' : 'min-h-screen'">
+<section class="relative w-full" [ngClass]="{
+    'min-h-[80vh] h-auto overflow-x-hidden': hvh70 && offerdetails && offerdetails.length > 0,
+  'min-h-[80vh] overflow-hidden': hvh70 && (!offerdetails || offerdetails.length === 0),
+    'min-h-screen overflow-hidden': !hvh70
+  }">
   <!-- Background Video -->
   <div class="absolute inset-0 z-0">
     <video class="absolute inset-0 w-full h-full object-cover" autoplay muted playsinline preload="auto" #videoElement
@@ -18,12 +22,21 @@
   </div>
 
   <!-- Content -->
-  <div class="absolute inset-0 z-10 px-4 sm:px-6 md:px-8 lg:px-20 pt-20 sm:pt-24 md:pt-28 pb-12 sm:pb-12 flex flex-col"
-    [ngClass]="centerContent
-      ? 'items-center text-center justify-center'
-      : 'items-start text-left justify-end md:justify-center md:items-start md:text-left'">
-    <div class="w-full min-w-0 flex flex-col" [ngClass]="centerContent ? 'items-center text-center' : 'items-start text-left'">
-      <div class="video-hero__text-fade w-full" [style.opacity]="textFadeOpacity()">
+  <div class="z-10 px-4 sm:px-6 md:px-8 lg:px-20 pt-20 sm:pt-24 md:pt-28 pb-12 sm:pb-12 flex flex-col"
+    [ngClass]="(offerdetails && offerdetails.length > 0
+      ? 'relative min-h-[95vh] sm:min-h-[80vh]'
+      : 'absolute inset-0') + (centerContent
+      ? ' items-center text-center justify-center'
+      : (offerdetails && offerdetails.length > 0
+        ? ' items-start text-left justify-end'
+        : ' items-start text-left justify-end md:justify-center md:items-start md:text-left'))">
+    <div class="w-full min-w-0 flex flex-col"
+      [ngClass]="centerContent
+        ? 'items-center text-center'
+        : (offerdetails && offerdetails.length > 0
+          ? 'items-start text-left gap-y-2 md:gap-y-6'
+          : 'items-start text-left')">
+      <div class="video-hero__text-fade w-full shrink-0" [style.opacity]="textFadeOpacity()">
         <ng-content select="[hero-breadcrumbs]"></ng-content>
 
         <!-- Title -->
@@ -34,21 +47,27 @@
         </h1>
 
         <!-- Description -->
-        <p class="md:text-xl text-white/80 pb-6 font-light w-full max-w-xl md:max-w-2xl lg:max-w-3xl leading-relaxed font-segoe break-words"
-          [ngClass]="centerContent ? 'mx-auto' : ''"
-          style="font-weight: 100;">
+        <p [class]="descriptionClass + (centerContent ? ' mx-auto' : '')"
+          [ngStyle]="descriptionStyle">
           {{ currentDescription() }}
         </p>
+
+        @if (currentDescriptionSecondary()) {
+        <p [class]="descriptionSecondaryClass + (centerContent ? ' mx-auto' : '')"
+          [ngStyle]="descriptionSecondaryStyle">
+          {{ currentDescriptionSecondary() }}
+        </p>
+        }
       </div>
 
       <!-- Optional projected content right after hero text (e.g., social share) -->
-      <div class="video-hero__text-fade pt-6 pb-6" [style.opacity]="textFadeOpacity()">
+      <div class="video-hero__text-fade pt-2 pb-2 md:pt-6 md:pb-6" [style.opacity]="textFadeOpacity()">
         <ng-content select="[hero-share]"></ng-content>
       </div>
 
       <!-- Offer Details Cards -->
       @if (offerdetails && offerdetails.length > 0) {
-      <div class="w-full grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-8 pb-2">
+      <div class="video-hero__offer-grid w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5 mb-6 md:mb-8 shrink-0">
         @for (item of offerdetails; track item.offer) {
         <div class="min-w-0 w-full flex flex-col bg-white/10 px-4 sm:px-6 py-3 rounded"
           style="backdrop-filter: blur(8px);">
@@ -92,7 +111,7 @@
               {{ item.offer }}</p>
           </div>
           <p
-            class="font-['Segoe UI'] font-semibold text-[18px] sm:text-[24px] leading-[130%] tracking-[0em] align-middle text-[#F6F6F6] mt-2 break-words [overflow-wrap:anywhere]">
+            class="font-['Segoe UI'] font-semibold text-base sm:text-lg md:text-xl lg:text-2xl leading-[130%] tracking-[0em] align-middle text-[#F6F6F6] mt-2 break-words [overflow-wrap:anywhere]">
             {{ item.offervalue }}</p>
         </div>
         }
@@ -100,7 +119,7 @@
       }
 
       <!-- CTA Buttons -->
-      <div class="video-hero__text-fade flex flex-wrap gap-4 pb-8 sm:pb-12" [style.opacity]="textFadeOpacity()">
+      <div class="video-hero__text-fade flex flex-wrap gap-4 pb-8 sm:pb-12 shrink-0" [style.opacity]="textFadeOpacity()">
         @if (currentCtaPrimary(); as cta) {
         <div class="flex mb-3">
           <app-button-primary [text]="cta.text" [link]="cta.link" [isBgDefault]="!cta.backgroundColor" />

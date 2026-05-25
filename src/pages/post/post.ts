@@ -124,6 +124,18 @@ export default class Post implements OnInit, OnDestroy {
     return this.router.url.startsWith('/resources/case-studies') ? '/resources/case-studies' : '/blog';
   }
 
+  /** Lista de relacionados: ACF → mismo primary tag (2) → otros al azar (2). */
+  getRelatedItems(p: PostDetail): PostDetail[] {
+    if (this.isCaseStudy()) {
+      const manual = p.relatedCaseStudies ?? [];
+      if (manual.length > 0) return manual;
+      return p.relatedPosts ?? [];
+    }
+    const manual = p.relatedBloqs ?? [];
+    if (manual.length > 0) return manual;
+    return p.relatedPosts ?? [];
+  }
+
   /** Breadcrumbs: Home, (IT Blog | Case Studies), título del post. Basado en app.routes (blog vs resources/case-studies). */
   getBreadcrumbs(): { label: string; link?: string }[] {
     const isCaseStudy = this.router.url.startsWith('/resources/case-studies');
@@ -146,29 +158,97 @@ export default class Post implements OnInit, OnDestroy {
     return true;
   }
 
-  /** Carga relatedPosts por primaryTag (busca posts con el mismo tag). */
-  private loadRelatedPostsByTag(postData: PostDetail, currentSlug: string): void {
-    const primaryTag = postData.primaryTag;
-    if (!primaryTag?.trim()) return;
+  private setRelatedPosts(related: PostDetail[]): void {
+    this.ngZone.run(() => {
+      const current = this.post();
+      if (current) this.post.set({ ...current, relatedPosts: related });
+    });
+  }
+
+  /** Case studies: ACF manual → 2 del mismo primary tag → 2 aleatorios. */
+  private loadCaseStudyRelated(postData: PostDetail, currentSlug: string, manualSlugs: string[]): void {
+    if (manualSlugs.length > 0) {
+      this.loadRelatedBySlugs(manualSlugs, 'relatedCaseStudies', () =>
+        this.loadCaseStudyRelatedFallback(postData, currentSlug)
+      );
+      return;
+    }
+    this.loadCaseStudyRelatedFallback(postData, currentSlug);
+  }
+
+  private loadCaseStudyRelatedFallback(postData: PostDetail, currentSlug: string): void {
+    const primaryTag = postData.primaryTag?.trim();
+    if (!primaryTag) {
+      this.loadRandomCaseStudies(currentSlug);
+      return;
+    }
     const tags = this.graphql.genContentTags();
-    const tagMatch = tags.find((t) => t.name?.toLowerCase() === primaryTag.trim().toLowerCase());
+    const tagMatch = tags.find((t) => t.name?.toLowerCase() === primaryTag.toLowerCase());
+    const tagSlug = tagMatch?.slug;
+    if (!tagSlug) {
+      this.loadRandomCaseStudies(currentSlug);
+      return;
+    }
+    this.graphql.getGenContentsByTagAndCategory(tagSlug, 'case-study', 6).subscribe({
+      next: (nodes) => {
+        const filtered = nodes.filter((n) => n.slug !== currentSlug).slice(0, 2);
+        if (filtered.length > 0) {
+          this.setRelatedPosts(this.mapRelatedBloqs(filtered as unknown as Record<string, unknown>[]));
+        } else {
+          this.loadRandomCaseStudies(currentSlug);
+        }
+      },
+      error: () => this.loadRandomCaseStudies(currentSlug),
+    });
+  }
+
+  private loadRandomCaseStudies(currentSlug: string): void {
+    this.graphql.getCaseStudies().subscribe({
+      next: (studies) => {
+        const pool = studies.filter((s) => s.slug && s.slug !== currentSlug);
+        const ordered = isPlatformBrowser(this.platformId) ? this.shuffleArray(pool) : pool;
+        const picked = ordered.slice(0, 2);
+        const raw = picked.map((s) => ({
+          id: s.id,
+          title: s.title,
+          slug: s.slug,
+          excerpt: s.excerpt,
+          date: s.date,
+          primaryTagName: s.primaryTagName,
+          featuredImage: s.featuredImage,
+        })) as Record<string, unknown>[];
+        if (raw.length > 0) {
+          this.setRelatedPosts(this.mapRelatedBloqs(raw));
+        }
+      },
+    });
+  }
+
+  private shuffleArray<T>(items: T[]): T[] {
+    const arr = [...items];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  /** Blogs: fallback por primaryTag (2). */
+  private loadRelatedPostsByTag(postData: PostDetail, currentSlug: string): void {
+    const primaryTag = postData.primaryTag?.trim();
+    if (!primaryTag) return;
+    const tags = this.graphql.genContentTags();
+    const tagMatch = tags.find((t) => t.name?.toLowerCase() === primaryTag.toLowerCase());
     const tagSlug = tagMatch?.slug;
     if (!tagSlug) return;
-    const isCaseStudy = this.router.url.startsWith('/resources/case-studies');
-    const categorySlug = isCaseStudy ? 'case-study' : 'blog';
-    this.graphql
-      .getGenContentsByTagAndCategory(tagSlug, categorySlug, 2)
-      .subscribe({
-        next: (nodes) => {
-          const filtered = nodes.filter((n) => n.slug !== currentSlug);
-          const raw = filtered as unknown as Record<string, unknown>[];
-          const related = this.mapRelatedBloqs(raw);
-          this.ngZone.run(() => {
-            const current = this.post();
-            if (current) this.post.set({ ...current, relatedPosts: related });
-          });
-        },
-      });
+    this.graphql.getGenContentsByTagAndCategory(tagSlug, 'blog', 6).subscribe({
+      next: (nodes) => {
+        const filtered = nodes.filter((n) => n.slug !== currentSlug).slice(0, 2);
+        if (filtered.length > 0) {
+          this.setRelatedPosts(this.mapRelatedBloqs(filtered as unknown as Record<string, unknown>[]));
+        }
+      },
+    });
   }
 
   private mapRelatedBloqs(raw: Record<string, unknown>[]): PostDetail[] {
@@ -190,6 +270,42 @@ export default class Post implements OnInit, OnDestroy {
         primaryTag: getPrimaryTagName(r['primaryTagName'] as string | null) ?? null,
       } as PostDetail;
     });
+  }
+
+  /** Conserva el orden definido en ACF (related_bloqs / related_case_studies). */
+  private orderNodesBySlugs(nodes: Record<string, unknown>[], slugs: string[]): Record<string, unknown>[] {
+    const bySlug = new Map(nodes.map((n) => [(n['slug'] as string) ?? '', n]));
+    return slugs.map((s) => bySlug.get(s)).filter((n): n is Record<string, unknown> => !!n);
+  }
+
+  private loadRelatedBySlugs(
+    slugs: string[],
+    field: 'relatedBloqs' | 'relatedCaseStudies',
+    onEmpty?: () => void
+  ): void {
+    if (!slugs.length) {
+      onEmpty?.();
+      return;
+    }
+    this.apollo
+      .query({ query: GET_GEN_CONTENTS_BY_SLUGS, variables: { slugs }, fetchPolicy: 'network-only' })
+      .subscribe({
+        next: (result) => {
+          const nodes = ((result.data as { genContents?: { nodes?: Record<string, unknown>[] } } | undefined)
+            ?.genContents?.nodes ?? []) as Record<string, unknown>[];
+          const ordered = this.orderNodesBySlugs(nodes, slugs);
+          const related = this.mapRelatedBloqs(ordered);
+          if (related.length === 0) {
+            onEmpty?.();
+            return;
+          }
+          this.ngZone.run(() => {
+            const current = this.post();
+            if (current) this.post.set({ ...current, [field]: related });
+          });
+        },
+        error: () => onEmpty?.(),
+      });
   }
 
   /** Autor a mostrar: authorPerson si existe, sino author WP. */
@@ -259,6 +375,7 @@ export default class Post implements OnInit, OnDestroy {
               headGeoPosition
               headJsonLdData
               relatedBloqSlugs
+              relatedCaseStudySlugs
             }
             postBy(slug: $slug) {
               id
@@ -333,20 +450,20 @@ export default class Post implements OnInit, OnDestroy {
               setTimeout(() => this.initRecaptcha(), 400);
             }
             this.updateSeoMeta(postData, slugValue);
-            const relatedSlugs = (raw['relatedBloqSlugs'] as string[] | null | undefined) ?? [];
-            if (relatedSlugs.length > 0 && data?.genContent) {
-              this.apollo.query({ query: GET_GEN_CONTENTS_BY_SLUGS, variables: { slugs: relatedSlugs }, fetchPolicy: 'network-only' }).subscribe({
-                next: (res: any) => {
-                  const nodes = (res?.data?.genContents?.nodes ?? []) as Record<string, unknown>[];
-                  const related = this.mapRelatedBloqs(nodes);
-                  this.ngZone.run(() => {
-                    const current = this.post();
-                    if (current) this.post.set({ ...current, relatedBloqs: related });
-                  });
-                },
-              });
+            const isCaseStudy = this.router.url.startsWith('/resources/case-studies');
+            const relatedCaseStudySlugs = (raw['relatedCaseStudySlugs'] as string[] | null | undefined) ?? [];
+            const relatedBloqSlugs = (raw['relatedBloqSlugs'] as string[] | null | undefined) ?? [];
+            if (data?.genContent) {
+              if (isCaseStudy) {
+                this.loadCaseStudyRelated(postData, slugValue, relatedCaseStudySlugs);
+              } else if (relatedBloqSlugs.length > 0) {
+                this.loadRelatedBySlugs(relatedBloqSlugs, 'relatedBloqs', () =>
+                  this.loadRelatedPostsByTag(postData, slugValue)
+                );
+              } else {
+                this.loadRelatedPostsByTag(postData, slugValue);
+              }
             }
-            this.loadRelatedPostsByTag(postData, slugValue);
             if (isPlatformBrowser(this.platformId)) {
               setTimeout(() => {
                 this.setupScrollListener();
