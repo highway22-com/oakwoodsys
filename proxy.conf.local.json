@@ -1,0 +1,50 @@
+{
+  "/api/cms": {
+    "target": "http://wordpress-stagging.local/wp-content/uploads/oakwood-cms",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/cms": ""
+    }
+  },
+  "/api/graphql": {
+    "target": "http://wordpress-stagging.local",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  },
+  "/api/contact": {
+    "target": "http://wordpress-stagging.local",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/contact": "/wp-json/oakwood/v1/send-contact"
+    }
+  },
+  "/api/contact-fields": {
+    "target": "http://wordpress-stagging.local",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/contact-fields": "/wp-json/oakwood/v1/contact-fields"
+    }
+  },
+  "/api/eventbrite": {
+    "target": "http://wordpress-stagging.local",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/eventbrite": "/wp-json/oakwood/v1/eventbrite"
+    }
+  },
+  "/api/wordpress-page": {
+    "target": "http://wordpress-stagging.local",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/wordpress-page": "/wp-json/custom/v1/rendered-page"
+    }
+  }
+}
