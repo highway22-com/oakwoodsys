@@ -32,6 +32,13 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/api/wordpress-page"
+  to = "https://oakwoodsystemsgroup.com/wp-json/custom/v1/rendered-page"
+  status = 200
+  force = true
+  headers = {Cache-Control = "no-store, no-cache", Pragma = "no-cache"}
+
 # CMS JSON (home.json, services.json, service-*.json)
 [[redirects]]
   from = "/api/cms/*"
