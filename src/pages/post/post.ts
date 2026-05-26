@@ -489,7 +489,6 @@ export default class Post implements OnInit, OnDestroy {
     const canonicalPath = isCaseStudy ? `/resources/case-studies/${slug}` : `/blog/${slug}`;
     const title = post.headTitle || `${post.title} | Oakwood Systems`;
     const description = post.headDescription || post.excerpt || this.seoMeta.defaultDescription;
-    const canonicalUrl = post.headCanonicalUrl || undefined;
     const imgSrc = post.featuredImage?.node?.sourceUrl;
     const image = imgSrc?.startsWith('http')
       ? imgSrc
@@ -502,7 +501,7 @@ export default class Post implements OnInit, OnDestroy {
       description,
       keywords,
       keyphrase: post.primaryTag ?? undefined,
-      canonicalPath: canonicalUrl ?? canonicalPath,
+      canonicalPath,
       image,
       imageAlt: post.featuredImage?.node?.altText ?? post.title,
       ogType: 'article',

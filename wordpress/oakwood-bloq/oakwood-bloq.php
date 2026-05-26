@@ -400,6 +400,116 @@ function oakwood_bloq_normalize_related_ids( $value ) {
 }
 
 /**
+ * URL pública del sitio headless (Angular en oakwoodsys.com).
+ *
+ * @return string
+ */
+function oakwood_bloq_public_site_url() {
+	return 'https://oakwoodsys.com';
+}
+
+/**
+ * Slug de gen_content_category principal del post (blog | case-study).
+ *
+ * @param int $post_id Post ID.
+ * @return string
+ */
+function oakwood_bloq_get_content_category_slug( $post_id ) {
+	$terms = get_the_terms( $post_id, 'gen_content_category' );
+	if ( ! $terms || is_wp_error( $terms ) ) {
+		return 'blog';
+	}
+	foreach ( $terms as $term ) {
+		if ( $term->slug === 'case-study' ) {
+			return 'case-study';
+		}
+	}
+	foreach ( $terms as $term ) {
+		if ( $term->slug === 'blog' || $term->slug === 'bloq' ) {
+			return 'blog';
+		}
+	}
+	return isset( $terms[0]->slug ) ? (string) $terms[0]->slug : 'blog';
+}
+
+/**
+ * Ruta Angular canónica para un Gen Content.
+ *
+ * @param int $post_id Post ID.
+ * @return string|null
+ */
+function oakwood_bloq_angular_canonical_path( $post_id ) {
+	$p = get_post( $post_id );
+	if ( ! $p || ! $p->post_name ) {
+		return null;
+	}
+	$slug     = $p->post_name;
+	$category = oakwood_bloq_get_content_category_slug( $post_id );
+	if ( $category === 'case-study' ) {
+		return '/resources/case-studies/' . $slug;
+	}
+	return '/blog/' . $slug;
+}
+
+/**
+ * Canonical URL absoluta para el frontend público (oakwoodsys.com).
+ *
+ * @param int $post_id Post ID.
+ * @return string|null
+ */
+function oakwood_bloq_public_canonical_url( $post_id ) {
+	$path = oakwood_bloq_angular_canonical_path( $post_id );
+	if ( ! $path ) {
+		return null;
+	}
+	return rtrim( oakwood_bloq_public_site_url(), '/' ) . $path;
+}
+
+/**
+ * Normaliza ACF canonical legacy hacia la URL Angular pública.
+ *
+ * @param string|null $raw_url Valor ACF oakwood_head_canonical.
+ * @param int         $post_id Post ID.
+ * @return string|null
+ */
+function oakwood_bloq_normalize_head_canonical( $raw_url, $post_id ) {
+	$default = oakwood_bloq_public_canonical_url( $post_id );
+	if ( $raw_url === null || $raw_url === '' ) {
+		return $default;
+	}
+	$raw_url = trim( (string) $raw_url );
+	$p       = get_post( $post_id );
+	$slug    = ( $p && $p->post_name ) ? $p->post_name : '';
+
+	$parsed = wp_parse_url( $raw_url );
+	$path   = isset( $parsed['path'] ) ? untrailingslashit( (string) $parsed['path'] ) : '';
+	$host   = isset( $parsed['host'] ) ? strtolower( (string) $parsed['host'] ) : '';
+
+	$is_public = ( $host === 'oakwoodsys.com' || $host === 'www.oakwoodsys.com' );
+	if ( $is_public && ( strpos( $path, '/blog/' ) === 0 || strpos( $path, '/resources/case-studies/' ) === 0 ) ) {
+		return rtrim( oakwood_bloq_public_site_url(), '/' ) . $path;
+	}
+
+	if ( $slug !== '' ) {
+		$legacy_paths = array(
+			'/' . $slug,
+			'/bloq/' . $slug,
+			'/gen-content/' . $slug,
+		);
+		if ( in_array( $path, $legacy_paths, true ) ) {
+			return $default;
+		}
+	}
+
+	// WP permalink (oakwoodsystemsgroup.com/gen-content/…) u otro dominio → URL Angular.
+	if ( $host !== '' && strpos( $host, 'oakwoodsys.com' ) === false ) {
+		return $default;
+	}
+
+	return $default;
+}
+
+/**
  * WPGraphQL: registrar campos showContactSection + tags + primaryTagName + relatedBloqs en el tipo GenContent.
  * tags y primaryTagName se derivan de la taxonomía gen_content_tag (tema/industry).
  * primaryTagName evita conflicto con el campo primaryTag de ACF (tipo PrimaryTag).
@@ -786,22 +896,17 @@ function oakwood_bloq_register_graphql_fields() {
 		'headCanonicalUrl',
 		array(
 			'type'        => 'String',
-			'description' => __( 'Canonical URL for <head>. ACF oakwood_head_canonical; if empty: post permalink.', 'oakwood-blog' ),
+			'description' => __( 'Canonical URL for <head>. Public Angular URL on oakwoodsys.com (/blog/ or /resources/case-studies/).', 'oakwood-blog' ),
 			'resolve'     => function ( $post ) {
 				$post_id = isset( $post->ID ) ? (int) $post->ID : ( isset( $post['databaseId'] ) ? (int) $post['databaseId'] : 0 );
 				if ( ! $post_id ) {
 					return null;
 				}
 				$v = function_exists( 'get_field' ) ? get_field( 'oakwood_head_canonical', $post_id ) : get_post_meta( $post_id, 'oakwood_head_canonical', true );
-				if ( $v !== null && $v !== '' ) {
-					return is_scalar( $v ) ? trim( (string) $v ) : null;
+				if ( $v !== null && $v !== '' && is_scalar( $v ) ) {
+					return oakwood_bloq_normalize_head_canonical( trim( (string) $v ), $post_id );
 				}
-				$p = get_post( $post_id );
-				if ( ! $p ) {
-					return null;
-				}
-				$permalink = get_permalink( $p );
-				return is_string( $permalink ) ? $permalink : null;
+				return oakwood_bloq_public_canonical_url( $post_id );
 			},
 		)
 	);
