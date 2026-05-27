@@ -7,8 +7,8 @@
       <div class="h-8 bg-gray-700 rounded w-1/4 mb-8"></div>
     </div>
     } @else if (footerData(); as data) {
-    <div
-      class="flex flex-col lg:grid lg:grid-cols-[470px_1fr_1fr_1fr_1fr] gap-4 lg:gap-10 mb-8 sm:mb-10 md:mb-12">
+ <div
+      class="flex flex-col lg:grid lg:grid-cols-[minmax(0,470px)_1fr_1fr_1fr_1fr] gap-4 mb-8 sm:mb-10 md:mb-12">
       <div class="mb-6 lg:mb-0 col-span-1 flex flex-col lg:justify-between lg:h-full">
         @if (data.logo) {
         <div class="flex items-center gap-2 mb-8 lg:mb-14 lg:mt-0">
@@ -97,22 +97,22 @@
                 <div class="pt-5 mt-2">
                     <a
                       [routerLink]="resolveFooterRouterLink(link)"
-                      class="flex items-center justify-between px-4 py-3 bg-[rgba(42,126,191,0.10)]"
+                      class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-[rgba(42,126,191,0.10)]"
                     >
-                    <span class="flex items-center gap-3">
+                    <span class="flex items-center gap-3 min-w-0">
                       <img
                         src="/assets/icons/microsoft-footer-icon.png"
                         alt="Microsoft Licensing icon"
-                        class="w-4 h-4 object-contain"
+                        class="w-4 h-4 object-contain shrink-0"
                       />
-                      <span class="font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-[#E4EEFA]">
+                      <span class="block font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-[#E4EEFA] break-words">
                         {{ link.text }}
                       </span>
                     </span>
                     <img
                       src="/assets/icons/arrow-right.png"
                       alt="Arrow right"
-                      class="w-5 h-5 object-contain"
+                      class="w-5 h-5 object-contain shrink-0"
                     />
                   </a>
                 </div>
@@ -124,36 +124,37 @@
           <div class="hidden lg:block col-span-1">
             <h3 class="text-white font-['Inter'] text-[16px] font-semibold leading-[1.5] mb-4 sm:mb-6 tracking-wide">
               {{ group.title }}</h3>
-            <ul class="space-y-4">
+            <ul class="space-y-4 flex flex-col h-full">
               @for (link of group.links; track link.text) {
                     @if (link.text == 'Microsoft Licensing') {
     
-                  <li class="pt-8 mt-2 border-t border-[#4F4F4F]">
-                    <a
-                      [routerLink]="resolveFooterRouterLink(link)"
-                      class="flex items-center justify-between px-4 py-3 bg-[rgba(42,126,191,0.10)]"
-                    >
-                      <span class="flex items-center gap-3">
+                <li class="pt-8 mt-2 border-t border-[#4F4F4F]">
+  <a
+    [routerLink]="resolveFooterRouterLink(link)"
+    class="flex items-center justify-between gap-3 px-4 py-3 bg-[rgba(42,126,191,0.10)] min-w-0"
+  >
+              
+                      <span class="flex items-center gap-3 min-w-0">
                         <img
                           src="/assets/icons/microsoft-footer-icon.png"
                           alt="Microsoft Licensing icon"
-                          class="w-4 h-4 object-contain"
+                          class="w-4 h-4 object-contain shrink-0"
                         />
-                        <span class="font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-[#E4EEFA]">
+                        <span class="block font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-[#E4EEFA] break-words">
                           {{ link.text }}
                         </span>
                       </span>
                       <img
                         src="/assets/icons/arrow-right.png"
                         alt="Arrow right"
-                        class="w-5 h-5 object-contain"
+                        class="w-5 h-5 object-contain shrink-0"
                       />
                     </a>
                   </li>
                   } 
                 @if (link.text !== 'Whitepapers' && link.text !== 'Webinars' && link.text !== 'Microsoft Licensing') {
                 <li [class.pb-4]="link.text == 'Contact Us'">
-                  <a [routerLink]="resolveFooterRouterLink(link)" class="text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200 whitespace-nowrap">
+                  <a [routerLink]="resolveFooterRouterLink(link)" class="text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200">
                     {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
                   </a>
                 </li>
