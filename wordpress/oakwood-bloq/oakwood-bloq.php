@@ -3,7 +3,7 @@
  * Plugin Name: Oakwood Blog
  * Plugin URI: https://oakwoodsys.com
  * Description: Registra el CPT "Gen Content" (gen_content) + taxonomía, agrega campos ACF (show_contact_section, related_bloqs) y los expone en WPGraphQL.
- * Version: 7.0.15
+ * Version: 7.0.17
  * Author: Aetro
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -464,6 +464,125 @@ function oakwood_bloq_public_canonical_url( $post_id ) {
 	}
 	return rtrim( oakwood_bloq_public_site_url(), '/' ) . $path;
 }
+
+/**
+ * Slug del primary tag (gen_content_tag) para fragmentos #tag en el frontend.
+ *
+ * @param int $post_id Post ID.
+ * @return string|null
+ */
+function oakwood_bloq_get_primary_tag_slug_for_post( $post_id ) {
+	$resolve_slug = static function ( $term_id ) {
+		if ( empty( $term_id ) ) {
+			return null;
+		}
+		$term = get_term( (int) $term_id, 'gen_content_tag' );
+		if ( $term && ! is_wp_error( $term ) && ! empty( $term->slug ) ) {
+			return (string) $term->slug;
+		}
+		return null;
+	};
+
+	$primary_id = function_exists( 'get_field' ) ? get_field( 'oakwood_primary_tag', $post_id ) : get_post_meta( $post_id, 'oakwood_primary_tag', true );
+	$slug       = $resolve_slug( $primary_id );
+	if ( $slug !== null ) {
+		return $slug;
+	}
+
+	if ( function_exists( 'yoast_get_primary_term_id' ) ) {
+		$slug = $resolve_slug( yoast_get_primary_term_id( 'gen_content_tag', $post_id ) );
+		if ( $slug !== null ) {
+			return $slug;
+		}
+	}
+
+	$terms = get_the_terms( $post_id, 'gen_content_tag' );
+	if ( $terms && ! is_wp_error( $terms ) && ! empty( $terms[0]->slug ) ) {
+		return (string) $terms[0]->slug;
+	}
+
+	return null;
+}
+
+/**
+ * URL pública para "View" en el admin (oakwoodsys.com + ruta Angular + #primaryTag opcional).
+ *
+ * @param int $post_id Post ID.
+ * @return string|null
+ */
+function oakwood_bloq_public_view_url( $post_id ) {
+	$url = oakwood_bloq_public_canonical_url( $post_id );
+	if ( ! $url ) {
+		return null;
+	}
+	$tag_slug = oakwood_bloq_get_primary_tag_slug_for_post( $post_id );
+	if ( $tag_slug !== null && $tag_slug !== '' ) {
+		return $url . '#' . rawurlencode( $tag_slug );
+	}
+	return $url;
+}
+
+/**
+ * Enlaces View/Preview del admin → frontend Angular (no WP /gen-content/ en oakwoodsystemsgroup.com).
+ *
+ * @param string  $permalink Permalink generado por WordPress.
+ * @param WP_Post $post      Post.
+ * @return string
+ */
+function oakwood_bloq_filter_post_type_link( $permalink, $post, $leavename, $sample ) {
+	unset( $leavename, $sample );
+	if ( ! $post instanceof WP_Post || $post->post_type !== 'gen_content' ) {
+		return $permalink;
+	}
+	$url = oakwood_bloq_public_view_url( (int) $post->ID );
+	return $url ? $url : $permalink;
+}
+add_filter( 'post_type_link', 'oakwood_bloq_filter_post_type_link', 99, 4 );
+
+/**
+ * @param string  $preview_link Enlace de vista previa.
+ * @param WP_Post $post         Post.
+ * @return string
+ */
+function oakwood_bloq_filter_preview_post_link( $preview_link, $post ) {
+	if ( ! $post instanceof WP_Post || $post->post_type !== 'gen_content' ) {
+		return $preview_link;
+	}
+	$url = oakwood_bloq_public_view_url( (int) $post->ID );
+	return $url ? $url : $preview_link;
+}
+add_filter( 'preview_post_link', 'oakwood_bloq_filter_preview_post_link', 99, 2 );
+
+/**
+ * Fuerza "View" en el listado Gen Content → oakwoodsys.com.
+ *
+ * @param array   $actions Acciones de fila.
+ * @param WP_Post $post    Post.
+ * @return array
+ */
+function oakwood_bloq_post_row_actions( $actions, $post ) {
+	if ( ! $post instanceof WP_Post || $post->post_type !== 'gen_content' || $post->post_status !== 'publish' ) {
+		return $actions;
+	}
+	$url = oakwood_bloq_public_view_url( (int) $post->ID );
+	if ( ! $url ) {
+		return $actions;
+	}
+	$actions['view'] = sprintf(
+		'<a href="%1$s" rel="bookmark" aria-label="%2$s">%3$s</a>',
+		esc_url( $url ),
+		esc_attr(
+			sprintf(
+				/* translators: %s: post title */
+				__( 'View &#8220;%s&#8221;', 'oakwood-blog' ),
+				get_the_title( $post )
+			)
+		),
+		__( 'View', 'oakwood-blog' )
+	);
+	return $actions;
+}
+add_filter( 'post_row_actions', 'oakwood_bloq_post_row_actions', 99, 2 );
 
 /**
  * Normaliza ACF canonical legacy hacia la URL Angular pública.
