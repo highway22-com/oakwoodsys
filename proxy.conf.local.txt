@@ -1,47 +1,47 @@
 {
   "/api/cms": {
-    "target": "https://oakwoodsystemsgroup.com/wp-content/uploads/oakwood-cms",
-    "secure": true,
+    "target": "http://wordpress-stagging.local/wp-content/uploads/oakwood-cms",
+    "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
       "^/api/cms": ""
     }
   },
   "/api/graphql": {
-    "target": "https://oakwoodsystemsgroup.com",
-    "secure": true,
+    "target": "http://wordpress-stagging.local",
+    "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
       "^/api": ""
     }
   },
   "/api/contact": {
-    "target": "https://oakwoodsystemsgroup.com",
-    "secure": true,
+    "target": "http://wordpress-stagging.local",
+    "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
       "^/api/contact": "/wp-json/oakwood/v1/send-contact"
     }
   },
   "/api/contact-fields": {
-    "target": "https://oakwoodsystemsgroup.com",
-    "secure": true,
+    "target": "http://wordpress-stagging.local",
+    "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
       "^/api/contact-fields": "/wp-json/oakwood/v1/contact-fields"
     }
   },
   "/api/eventbrite": {
-    "target": "https://oakwoodsystemsgroup.com",
-    "secure": true,
+    "target": "http://wordpress-stagging.local",
+    "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
       "^/api/eventbrite": "/wp-json/oakwood/v1/eventbrite"
     }
   },
   "/api/wordpress-page": {
-    "target": "https://oakwoodsystemsgroup.com",
-    "secure": true,
+    "target": "http://wordpress-stagging.local",
+    "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
       "^/api/wordpress-page": "/wp-json/custom/v1/rendered-page"
