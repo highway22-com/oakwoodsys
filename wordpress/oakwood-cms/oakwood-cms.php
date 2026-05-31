@@ -3,7 +3,7 @@
  * Plugin Name: Oakwood CMS
  * Plugin URI: https://oakwoodsys.com
  * Description: Serves page JSON from files. No database: place home.json, services.json, etc. in wp-content/uploads/oakwood-cms/ and this plugin exposes them via GraphQL (WPGraphQL).
- * Version: 1.0.5
+ * Version: 1.0.7
  * Author: Aetro
  * Author URI: https://torre.ai/luisnoejasso?r=7zLtySsb
  * License: GPL v2 or later
@@ -65,6 +65,106 @@ function oakwood_cms_register_post_type() {
 	register_post_type( 'oakwood_page', $args );
 }
 add_action( 'init', 'oakwood_cms_register_post_type' );
+
+/**
+ * URL del sitio público (Angular en oakwoodsys.com).
+ *
+ * @return string
+ */
+function oakwood_cms_public_site_url() {
+	return 'https://oakwoodsys.com';
+}
+
+/**
+ * Mapea el slug del CPT oakwood_page a la ruta del frontend.
+ *
+ * @param string $slug post_name.
+ * @return string Path con barra inicial.
+ */
+function oakwood_cms_slug_to_frontend_path( $slug ) {
+	$map = array(
+		'home'                          => '/',
+		'about-us'                      => '/about',
+		'about'                         => '/about',
+		'bloq'                          => '/blog',
+		'blog'                          => '/blog',
+		'services'                      => '/services',
+		'industries'                    => '/industries',
+		'resources'                     => '/resources',
+		'footer'                        => '/',
+		'menu'                          => '/',
+		'structured-engagement-page'    => '/resources/structured-engagements',
+		'structured-engagement-offer-page' => '/structured-engagement',
+		'contact-us'                    => '/contact-us',
+		'privacy-policy'                => '/privacy-policy',
+	);
+	if ( isset( $map[ $slug ] ) ) {
+		return $map[ $slug ];
+	}
+	return '/' . ltrim( $slug, '/' );
+}
+
+/**
+ * URL pública para "View" en el admin (CMS Pages → oakwoodsys.com).
+ *
+ * @param int $post_id Post ID.
+ * @return string|null
+ */
+function oakwood_cms_public_view_url( $post_id ) {
+	$post = get_post( $post_id );
+	if ( ! $post || $post->post_type !== 'oakwood_page' || $post->post_name === '' ) {
+		return null;
+	}
+	$path = oakwood_cms_slug_to_frontend_path( $post->post_name );
+	return rtrim( oakwood_cms_public_site_url(), '/' ) . $path;
+}
+
+/**
+ * @param string  $permalink Permalink WP.
+ * @param WP_Post $post      Post.
+ * @return string
+ */
+function oakwood_cms_filter_post_type_link( $permalink, $post, $leavename, $sample ) {
+	unset( $leavename, $sample );
+	if ( ! $post instanceof WP_Post || $post->post_type !== 'oakwood_page' ) {
+		return $permalink;
+	}
+	$url = oakwood_cms_public_view_url( (int) $post->ID );
+	return $url ? $url : $permalink;
+}
+add_filter( 'post_type_link', 'oakwood_cms_filter_post_type_link', 99, 4 );
+
+/**
+ * Añade "View" en el listado aunque el CPT no sea public (public => false).
+ *
+ * @param array   $actions Acciones de fila.
+ * @param WP_Post $post    Post.
+ * @return array
+ */
+function oakwood_cms_post_row_actions( $actions, $post ) {
+	if ( ! $post instanceof WP_Post || $post->post_type !== 'oakwood_page' || $post->post_status !== 'publish' ) {
+		return $actions;
+	}
+	$url = oakwood_cms_public_view_url( (int) $post->ID );
+	if ( ! $url ) {
+		return $actions;
+	}
+	$actions['view'] = sprintf(
+		'<a href="%1$s" rel="bookmark" aria-label="%2$s">%3$s</a>',
+		esc_url( $url ),
+		esc_attr(
+			sprintf(
+				/* translators: %s: post title */
+				__( 'View &#8220;%s&#8221;', 'oakwood-cms' ),
+				get_the_title( $post )
+			)
+		),
+		__( 'View', 'oakwood-cms' )
+	);
+	return $actions;
+}
+add_filter( 'post_row_actions', 'oakwood_cms_post_row_actions', 99, 2 );
+add_filter( 'page_row_actions', 'oakwood_cms_post_row_actions', 99, 2 );
 
 /**
  * Base path where JSON files are read (directory inside uploads).
