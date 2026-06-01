@@ -323,6 +323,59 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
     }
   }
 
+  // API endpoint for rendered WordPress pages (proxy to local WordPress REST)
+  if (pathname === '/api/wordpress-page') {
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Content-Type': 'application/json'
+    };
+
+    if (request.method === 'OPTIONS') {
+      return new Response('', { status: 200, headers: corsHeaders });
+    }
+
+    if (request.method !== 'GET') {
+      return Response.json({ error: 'Method not allowed' }, { status: 405, headers: corsHeaders });
+    }
+
+    try {
+      const url = new URL(request.url);
+      const pagePath = url.searchParams.get('path')?.trim() ?? '';
+      if (!pagePath) {
+        return Response.json({ error: 'Missing path parameter' }, { status: 400, headers: corsHeaders });
+      }
+
+      const targetUrl = `${CMS_BASE_URL}/wp-json/custom/v1/rendered-page?path=${encodeURIComponent(pagePath)}`;
+
+      console.log(`[wordpress-page] Fetching page for path: "${pagePath}" from ${targetUrl}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      const response = await fetch(targetUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      const contentType = response.headers.get('content-type') ?? 'application/json';
+      const body = contentType.includes('application/json')
+        ? await response.json().catch(() => null)
+        : await response.text();
+
+      if (body == null) {
+        return new Response(null, { status: response.status, headers: corsHeaders });
+      }
+
+      return typeof body === 'string'
+        ? new Response(body, { status: response.status, headers: { ...corsHeaders, 'Content-Type': contentType } })
+        : Response.json(body, { status: response.status, headers: corsHeaders });
+    } catch (error: any) {
+      if (error?.name === 'AbortError') {
+        return Response.json({ error: 'Request timeout', message: 'WordPress page request took too long' }, { status: 504, headers: corsHeaders });
+      }
+      console.error('[wordpress-page] Proxy error:', error);
+      return Response.json({ error: 'WordPress page proxy error', message: error instanceof Error ? error.message : 'Unknown error' }, { status: 500, headers: corsHeaders });
+    }
+  }
+
   // API endpoint for GraphQL proxy (bypasses CORS)
   if (pathname === '/api/graphql') {
     const corsHeaders = {

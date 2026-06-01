@@ -7,7 +7,8 @@
     "build": "node scripts/prerender-routes.mjs && ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:oaw": "node dist/oaw/server/server.mjs"
+    "serve:ssr:oaw": "node dist/oaw/server/server.mjs",
+    "start:local":"ng serve --proxy-config proxy.conf.local.json"
   },
   "prettier": {
     "overrides": [
