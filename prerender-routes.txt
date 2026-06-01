@@ -1,6 +1,7 @@
 /
 /blog
 /resources/case-studies
+/blog/is-it-time-to-rethink-your-vmware-strategy
 /blog/azure-backup-and-disaster-recovery
 /blog/azure-virtual-desktop-in-2026-where-it-actually-fits-in-a-modernization-strategy
 /blog/zero-trust-is-not-a-project-it-is-a-security-maturity-journey
