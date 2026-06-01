@@ -500,7 +500,6 @@ export default class Post implements OnInit, OnDestroy {
       title,
       description,
       keywords,
-      keyphrase: post.primaryTag ?? undefined,
       canonicalPath,
       image,
       imageAlt: post.featuredImage?.node?.altText ?? post.title,
@@ -511,10 +510,11 @@ export default class Post implements OnInit, OnDestroy {
   /** Keywords SEO: primaryTag + tags del post, o default. */
   private getSeoKeywords(post: PostDetail): string {
     const parts: string[] = [];
-    if (post.primaryTag?.trim()) parts.push(post.primaryTag.trim());
+    if (post.primaryTag?.trim()) parts.push(decodeHtmlEntities(post.primaryTag).trim());
     if (post.tags?.length) {
       for (const t of post.tags) {
-        if (t?.trim() && !parts.includes(t.trim())) parts.push(t.trim());
+        const tag = t?.trim() ? decodeHtmlEntities(t).trim() : '';
+        if (tag && !parts.includes(tag)) parts.push(tag);
       }
     }
     return parts.length > 0 ? parts.join(', ') : this.seoMeta.defaultKeywords;
