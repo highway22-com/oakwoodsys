@@ -1,5 +1,5 @@
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, PLATFORM_ID, ViewEncapsulation, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, NgZone, OnDestroy, OnInit, PLATFORM_ID, ViewEncapsulation, inject, signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { filter, Subscription } from 'rxjs';
@@ -22,8 +22,11 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
   private readonly seoMeta = inject(SeoMetaService);
   private readonly document = inject(DOCUMENT);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly zone = inject(NgZone);
 
-  readonly loading = signal(true);
+  // Starts false so SSR-rendered DOM matches the initial signal value, preventing
+  // a hydration mismatch that would otherwise flash the loading state immediately.
+  readonly loading = signal(false);
   readonly notFound = signal(false);
   readonly error = signal<string | null>(null);
   readonly pageTitle = signal('');
@@ -35,8 +38,17 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
   private readonly injectedBodyClasses = new Set<string>();
   private readonly subscriptions = new Subscription();
   private currentPath = '';
+  // Path that SSR rendered into the current HTML, consumed once on hydration to
+  // skip the loading flash for content that is already in the DOM.
+  private ssrRenderedPath: string | null = null;
 
   ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      // Detect if SSR rendered this page; if so, skip the loading flash on first hydration.
+      const marker = this.document.querySelector('meta[name="wp-page-ssr"]') as HTMLMetaElement | null;
+      this.ssrRenderedPath = marker?.content ?? null;
+      marker?.parentNode?.removeChild(marker);
+    }
     this.loadCurrentPage();
     this.subscriptions.add(
       this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)).subscribe(() => {
@@ -58,25 +70,49 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
 
     this.currentPath = path;
     this.cleanupInjectedAssets();
-    this.loading.set(true);
     this.notFound.set(false);
     this.error.set(null);
 
+    // On the very first browser render after SSR hydration, the content is already
+    // in the DOM and styles are already in <head>. Skip the loading flash in that case.
+    // On every other navigation (SPA nav, direct load without SSR) show loading normally.
+    const skipLoading = isPlatformBrowser(this.platformId) && this.ssrRenderedPath === path;
+    this.ssrRenderedPath = null; // consume — only skip once
+    if (!skipLoading) {
+      this.loading.set(true);
+    }
+
     this.wordpressPageService.getPage(path).subscribe({
-      next: (page) => this.applyPageResponse(path, page),
+      // In the browser, defer one macrotask so Angular renders loading=true before
+      // processing a synchronous transfer-cache response. On SSR, apply synchronously
+      // because Angular SSR does not await setTimeout callbacks.
+      next: (page) => {
+        if (isPlatformBrowser(this.platformId)) {
+          setTimeout(() => this.applyPageResponse(path, page));
+        } else {
+          this.applyPageResponse(path, page);
+        }
+      },
       error: (error) => {
-        const status = error?.status ?? 0;
-        this.loading.set(false);
-        this.notFound.set(status === 404);
-        this.error.set(status === 404 ? 'WordPress page not found.' : 'Unable to load the WordPress page.');
-        this.pageTitle.set('');
-        this.pageExcerpt.set('');
-        this.pageHtml.set(null);
-        this.seoMeta.updateMeta({
-          title: status === 404 ? 'Page not found | Oakwood Systems' : 'WordPress page unavailable | Oakwood Systems',
-          description: status === 404 ? 'The requested WordPress page could not be found.' : 'The requested WordPress page could not be loaded.',
-          canonicalPath: `/${path}`,
-        });
+        const handler = () => {
+          const status = error?.status ?? 0;
+          this.loading.set(false);
+          this.notFound.set(status === 404);
+          this.error.set(status === 404 ? 'WordPress page not found.' : 'Unable to load the WordPress page.');
+          this.pageTitle.set('');
+          this.pageExcerpt.set('');
+          this.pageHtml.set(null);
+          this.seoMeta.updateMeta({
+            title: status === 404 ? 'Page not found | Oakwood Systems' : 'WordPress page unavailable | Oakwood Systems',
+            description: status === 404 ? 'The requested WordPress page could not be found.' : 'The requested WordPress page could not be loaded.',
+            canonicalPath: `/${path}`,
+          });
+        };
+        if (isPlatformBrowser(this.platformId)) {
+          setTimeout(handler);
+        } else {
+          handler();
+        }
       },
     });
   }
@@ -88,7 +124,6 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
   }
 
   private applyPageResponse(path: string, page: WordPressPageResponse): void {
-    this.loading.set(false);
     this.notFound.set(false);
 
     this.pageTitle.set(page.title ?? this.humanizePath(path));
@@ -103,13 +138,54 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
 
     if (isPlatformBrowser(this.platformId)) {
       this.applyBodyClasses(page.bodyClasses ?? []);
-      this.injectStylesheets(page.stylesheets ?? []);
       this.injectInlineStyles(page.inlineStyles ?? []);
+      // Inject stylesheets and reveal content only after they have loaded,
+      // preventing a flash of unstyled content.
+      this.injectStylesheetsAndReveal(page.stylesheets ?? []);
       this.schedulePageScripts(path, [
         ...this.extractScriptsFromHtml(page.headHtml ?? ''),
         ...this.extractScriptsFromHtml(page.content ?? ''),
         ...(page.footerScripts ?? []),
       ]);
+    } else {
+      // SSR: inject stylesheets and inline styles into <head> so the browser
+      // receives them in the initial HTML and avoids a flash of unstyled content.
+      const head = this.document.head;
+
+      (page.inlineStyles ?? []).forEach((inlineStyle, index) => {
+        if (!inlineStyle?.css) return;
+        const style = this.document.createElement('style');
+        if (inlineStyle.id) style.id = inlineStyle.id;
+        if (inlineStyle.media) style.media = inlineStyle.media;
+        style.setAttribute('data-wordpress-ssr-inline', `${index}`);
+        style.textContent = inlineStyle.css;
+        head.appendChild(style);
+      });
+
+      (page.stylesheets ?? []).filter((s) => s?.href).forEach((styleSheet) => {
+        if (
+          (styleSheet.id && this.document.getElementById(styleSheet.id)) ||
+          this.document.querySelector(`link[href="${styleSheet.href}"]`)
+        ) {
+          return; // already present
+        }
+        const link = this.document.createElement('link');
+        link.rel = styleSheet.rel ?? 'stylesheet';
+        link.href = styleSheet.href!;
+        if (styleSheet.id) link.id = styleSheet.id;
+        if (styleSheet.media) link.media = styleSheet.media;
+        if (styleSheet.type) link.type = styleSheet.type;
+        head.appendChild(link);
+      });
+
+      // Stamp a marker so the browser knows SSR rendered this path; consumed once
+      // during hydration to skip the loading flash.
+      const ssrMarker = this.document.createElement('meta');
+      ssrMarker.setAttribute('name', 'wp-page-ssr');
+      ssrMarker.setAttribute('content', path);
+      this.document.head.appendChild(ssrMarker);
+
+      this.loading.set(false);
     }
   }
 
@@ -142,20 +218,45 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
     nextClasses.forEach((className) => this.injectedBodyClasses.add(className));
   }
 
-  private injectStylesheets(stylesheets: WordPressPageStylesheet[]): void {
+  private injectStylesheetsAndReveal(stylesheets: WordPressPageStylesheet[]): void {
     const head = this.document.head;
-    stylesheets.forEach((styleSheet) => {
-      if (!styleSheet?.href) {
+    const toLoad = stylesheets.filter((s) => s?.href);
+
+    if (!toLoad.length) {
+      this.loading.set(false);
+      return;
+    }
+
+    let pending = toLoad.length;
+
+    // Safety valve: reveal after 8 s even if a stylesheet stalls or errors.
+    const safetyTimer = setTimeout(() => {
+      this.zone.run(() => this.loading.set(false));
+    }, 8000);
+
+    const settle = (): void => {
+      if (--pending <= 0) {
+        clearTimeout(safetyTimer);
+        this.zone.run(() => this.loading.set(false));
+      }
+    };
+
+    toLoad.forEach((styleSheet) => {
+      // If the stylesheet was already injected by SSR, count it as ready and skip.
+      if (this.document.querySelector(`link[href="${styleSheet.href}"]`)) {
+        settle();
         return;
       }
 
       const link = this.document.createElement('link');
       link.rel = styleSheet.rel ?? 'stylesheet';
-      link.href = styleSheet.href;
-      link.setAttribute('data-wordpress-page-href', styleSheet.href);
+      link.href = styleSheet.href!;
+      link.setAttribute('data-wordpress-page-href', styleSheet.href!);
       if (styleSheet.id) link.id = styleSheet.id;
       if (styleSheet.media) link.media = styleSheet.media;
       if (styleSheet.type) link.type = styleSheet.type;
+      link.addEventListener('load', settle, { once: true });
+      link.addEventListener('error', settle, { once: true });
       head.appendChild(link);
       this.injectedHeadNodes.push(link);
     });
