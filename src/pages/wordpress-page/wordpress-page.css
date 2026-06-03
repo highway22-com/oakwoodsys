@@ -40,7 +40,6 @@
 .wordpress-page__state h1,
 .wordpress-page__header h1 {
   margin: 0;
-  color: #0f172a;
   line-height: 1.05;
   font-size: clamp(2rem, 4vw, 4.25rem);
   letter-spacing: -0.04em;

@@ -1,28 +1,33 @@
-<section class="wordpress-page py-90">
-  <div class="wordpress-page__shell">
-    <div class="wordpress-page__panel">
-      <div *ngIf="loading(); else loadedState" class="wordpress-page__state wordpress-page__state--loading">
-        <span class="wordpress-page__eyebrow">WordPress</span>
-        <h1>Loading page</h1>
-        <p>Fetching the latest content from WordPress.</p>
-      </div>
+<app-navbar></app-navbar>
 
-      <ng-template #loadedState>
-        <div *ngIf="notFound(); else contentState" class="wordpress-page__state wordpress-page__state--empty">
-          <span class="wordpress-page__eyebrow">Not found</span>
-          <h1>We could not find this page</h1>
-          <p>{{ error() }}</p>
+<div id="wp-content-root">
+  <section class="wordpress-page py-90">
+    <div class="wordpress-page__shell">
+      <div class="wordpress-page__panel">
+        <div *ngIf="loading(); else loadedState" class="wordpress-page__state wordpress-page__state--loading">
+          <span class="wordpress-page__eyebrow">WordPress</span>
+          <h1>Loading page</h1>
+          <p>Fetching the latest content from WordPress.</p>
         </div>
 
-        <ng-template #contentState>
-          <header class="wordpress-page__header" *ngIf="pageTitle()">
-        
-            <p *ngIf="pageExcerpt()">{{ pageExcerpt() }}</p>
-          </header>
+        <ng-template #loadedState>
+          <div *ngIf="notFound(); else contentState" class="wordpress-page__state wordpress-page__state--empty">
+            <span class="wordpress-page__eyebrow">Not found</span>
+            <h1>We could not find this page</h1>
+            <p>{{ error() }}</p>
+          </div>
 
-          <article class="wordpress-page__content" [innerHTML]="pageHtml()"></article>
+          <ng-template #contentState>
+            <header class="wordpress-page__header" *ngIf="pageTitle()">
+              <p *ngIf="pageExcerpt()">{{ pageExcerpt() }}</p>
+            </header>
+
+            <article class="wordpress-page__content" [innerHTML]="pageHtml()"></article>
+          </ng-template>
         </ng-template>
-      </ng-template>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
+
+<app-footer></app-footer>

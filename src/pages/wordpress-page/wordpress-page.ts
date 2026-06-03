@@ -5,10 +5,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { filter, Subscription } from 'rxjs';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { WordPressFooterScript, WordPressInlineStyle, WordPressPageResponse, WordPressPageService, WordPressPageStylesheet } from '../../app/services/wordpress-page.service';
+import { AppNavbar } from '../../layout/app-navbar/app-navbar';
+import { Footer } from '../../layout/footer/footer';
 
 @Component({
   selector: 'app-wordpress-page',
-  imports: [CommonModule],
+  imports: [CommonModule, AppNavbar, Footer],
   templateUrl: './wordpress-page.html',
   styleUrl: './wordpress-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -152,31 +154,44 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       // receives them in the initial HTML and avoids a flash of unstyled content.
       const head = this.document.head;
 
+      // Inline styles: scoped to #wp-content-root so they cannot affect navbar/footer.
       (page.inlineStyles ?? []).forEach((inlineStyle, index) => {
         if (!inlineStyle?.css) return;
         const style = this.document.createElement('style');
         if (inlineStyle.id) style.id = inlineStyle.id;
         if (inlineStyle.media) style.media = inlineStyle.media;
         style.setAttribute('data-wordpress-ssr-inline', `${index}`);
-        style.textContent = inlineStyle.css;
+        style.textContent = `@scope (#wp-content-root) {\n${this.prepCssForScope(inlineStyle.css)}\n}`;
         head.appendChild(style);
       });
 
-      (page.stylesheets ?? []).filter((s) => s?.href).forEach((styleSheet) => {
-        if (
-          (styleSheet.id && this.document.getElementById(styleSheet.id)) ||
-          this.document.querySelector(`link[href="${styleSheet.href}"]`)
-        ) {
-          return; // already present
-        }
-        const link = this.document.createElement('link');
-        link.rel = styleSheet.rel ?? 'stylesheet';
-        link.href = styleSheet.href!;
-        if (styleSheet.id) link.id = styleSheet.id;
-        if (styleSheet.media) link.media = styleSheet.media;
-        if (styleSheet.type) link.type = styleSheet.type;
-        head.appendChild(link);
-      });
+      // External stylesheets: when the plugin provides CSS text, scope and inject inline.
+      // When not (CDN/external), use @import url() layer() as best-effort protection.
+      const validSheets = (page.stylesheets ?? []).filter((s) => s?.href);
+      const ssrWithText = validSheets.filter((s) => s.css);
+      const ssrWithoutText = validSheets.filter((s) => !s.css);
+
+      if (ssrWithText.length > 0) {
+        const scopedStyle = this.document.createElement('style');
+        scopedStyle.setAttribute('data-wp-ssr-scoped', 'true');
+        scopedStyle.textContent = ssrWithText
+          .map((s) => `@scope (#wp-content-root) {\n${this.prepCssForScope(s.css!)}\n}`)
+          .join('\n');
+        head.appendChild(scopedStyle);
+      }
+
+      if (ssrWithoutText.length > 0) {
+        // In SSR, use <link rel="stylesheet"> so the browser treats them as
+        // render-blocking and applies them before first paint.
+        ssrWithoutText.forEach((s) => {
+          const link = this.document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = s.href!;
+          if (s.media) link.media = s.media;
+          link.setAttribute('data-wp-ssr-link', 'true');
+          head.appendChild(link);
+        });
+      }
 
       // Stamp a marker so the browser knows SSR rendered this path; consumed once
       // during hydration to skip the loading flash.
@@ -187,6 +202,35 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
 
       this.loading.set(false);
     }
+  }
+
+  /**
+   * Pre-process raw WordPress CSS before wrapping it in `@scope (#wp-content-root) { ... }`.
+   *
+   * Inside `@scope`, the scope root is `#wp-content-root` (a div). The CSS pseudo-class
+   * `:root` refers to the document root (`<html>`), which is an ANCESTOR of the scope
+   * root — so the `@scope` filter excludes it and any declarations on `:root { }` are
+   * silently dropped. WordPress places all its CSS custom properties (colour presets,
+   * font-size presets, etc.) in `global-styles-inline-css` under `:root { }`, e.g.:
+   *
+   *   :root { --wp--preset--color--white: #fff; ... }
+   *
+   * Without the properties, `has-white-color { color: var(--wp--preset--color--white) }`
+   * resolves to an invalid value and text falls back to the inherited dark colour from
+   * the `is-light` modifier — which is exactly the "text appears black" bug.
+   *
+   * Fix: replace `:root` with `:scope` so declarations are set on `#wp-content-root`
+   * itself. Because CSS custom properties are inherited, all child elements still receive
+   * them. We also replace bare `body` selectors for the same reason.
+   */
+  private prepCssForScope(css: string): string {
+    return css
+      // :root → :scope (e.g. :root { --wp--preset--color--white: #fff })
+      .replace(/:root\b/g, ':scope')
+      // bare `body` selector → :scope  (e.g. body { font-family: ... })
+      // Use a lookbehind so we don't touch class names like .has-body-font or
+      // attribute values inside url() strings — only CSS selector tokens.
+      .replace(/(?<=[\s,{};>+~(]|^)body(?=[\s,{}>+~[:.#*]|$)/gm, ':scope');
   }
 
   private humanizePath(path: string): string {
@@ -227,9 +271,48 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    let pending = toLoad.length;
+    // Remove SSR-injected import/scoped styles (untracked).
+    this.document.querySelectorAll('style[data-wp-ssr-scoped], link[data-wp-ssr-link]').forEach((el) => {
+      el.parentNode?.removeChild(el);
+    });
 
-    // Safety valve: reveal after 8 s even if a stylesheet stalls or errors.
+    // Stylesheets that the PHP plugin returned with raw CSS text can be fully
+    // scoped to #wp-content-root — these rules can NEVER match the navbar or footer.
+    const withText = toLoad.filter((s) => s.css);
+    // Stylesheets without CSS text (CDN, external) fall back to a cascade layer
+    // so at least Angular's unlayered rules always win on specificity clashes.
+    const withoutText = toLoad.filter((s) => !s.css);
+
+    if (withText.length > 0) {
+      const style = this.document.createElement('style');
+      style.setAttribute('data-wp-scoped', 'true');
+      style.textContent = withText
+        .map((s) => `@scope (#wp-content-root) {\n${this.prepCssForScope(s.css!)}\n}`)
+        .join('\n');
+      head.appendChild(style);
+      this.injectedHeadNodes.push(style);
+    }
+
+    // For stylesheets without CSS text use <link rel="stylesheet"> directly.
+    // This is more reliable than @import inside a <style> element:
+    // - load/error events fire exactly when the sheet is parsed and applied
+    // - no preload hint required; the link itself is the request
+    // - avoids a blank window between @import parsing and style application
+    const linkEls: HTMLLinkElement[] = [];
+    withoutText.forEach((s) => {
+      const link = this.document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = s.href!;
+      if (s.media) link.media = s.media;
+      head.appendChild(link);
+      this.injectedHeadNodes.push(link);
+      linkEls.push(link);
+    });
+
+    // Wait for every <link> to load before revealing content.
+    const externalCount = linkEls.length;
+    let pending = externalCount || 1;
+
     const safetyTimer = setTimeout(() => {
       this.zone.run(() => this.loading.set(false));
     }, 8000);
@@ -237,32 +320,30 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
     const settle = (): void => {
       if (--pending <= 0) {
         clearTimeout(safetyTimer);
-        this.zone.run(() => this.loading.set(false));
+        const win = this.document.defaultView;
+        const reveal = () => this.zone.run(() => this.loading.set(false));
+        win?.requestAnimationFrame ? win.requestAnimationFrame(reveal) : reveal();
       }
     };
 
-    toLoad.forEach((styleSheet) => {
-      // If the stylesheet was already injected by SSR, count it as ready and skip.
-      if (this.document.querySelector(`link[href="${styleSheet.href}"]`)) {
-        settle();
-        return;
-      }
-
-      const link = this.document.createElement('link');
-      link.rel = styleSheet.rel ?? 'stylesheet';
-      link.href = styleSheet.href!;
-      link.setAttribute('data-wordpress-page-href', styleSheet.href!);
-      if (styleSheet.id) link.id = styleSheet.id;
-      if (styleSheet.media) link.media = styleSheet.media;
-      if (styleSheet.type) link.type = styleSheet.type;
-      link.addEventListener('load', settle, { once: true });
-      link.addEventListener('error', settle, { once: true });
-      head.appendChild(link);
-      this.injectedHeadNodes.push(link);
-    });
+    if (externalCount === 0) {
+      // All stylesheets were scoped inline — reveal on next RAF.
+      settle();
+    } else {
+      linkEls.forEach((link) => {
+        link.addEventListener('load', settle, { once: true });
+        link.addEventListener('error', settle, { once: true });
+      });
+    }
   }
 
+
   private injectInlineStyles(inlineStyles: WordPressInlineStyle[]): void {
+    // Remove SSR-injected inline styles (untracked); replace with tracked versions.
+    this.document.querySelectorAll('style[data-wordpress-ssr-inline]').forEach((el) => {
+      el.parentNode?.removeChild(el);
+    });
+
     const head = this.document.head;
     inlineStyles.forEach((inlineStyle, index) => {
       if (!inlineStyle?.css) {
@@ -273,7 +354,10 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       style.setAttribute('data-wordpress-page-inline-style', `${this.currentPath}-${index}`);
       if (inlineStyle.id) style.id = inlineStyle.id;
       if (inlineStyle.media) style.media = inlineStyle.media;
-      style.textContent = inlineStyle.css;
+      // @scope restricts rules to only match inside #wp-content-root.
+      // Navbar and footer are siblings (not descendants), so they are structurally
+      // excluded — no @layer needed, @scope alone is sufficient.
+      style.textContent = `@scope (#wp-content-root) {\n${this.prepCssForScope(inlineStyle.css)}\n}`;
       head.appendChild(style);
       this.injectedHeadNodes.push(style);
     });
@@ -359,6 +443,13 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       const node = this.injectedBodyNodes.pop();
       node?.parentNode?.removeChild(node);
     }
+
+    // Also remove SSR-injected WP assets. These are not in injectedHeadNodes because
+    // they were added server-side. If the user navigates directly from a WP page to
+    // another route, these would otherwise linger and break other page styles.
+    this.document.querySelectorAll('style[data-wp-ssr-imports], style[data-wp-ssr-scoped], style[data-wordpress-ssr-inline], link[data-wp-ssr-link]').forEach((el) => {
+      el.parentNode?.removeChild(el);
+    });
 
     if (isPlatformBrowser(this.platformId)) {
       this.injectedBodyClasses.forEach((className) => this.document.body.classList.remove(className));

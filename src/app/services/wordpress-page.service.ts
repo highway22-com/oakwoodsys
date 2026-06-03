@@ -8,6 +8,8 @@ export interface WordPressPageStylesheet {
   rel?: string | null;
   media?: string | null;
   type?: string | null;
+  /** Raw CSS text returned by the PHP plugin for client-side scoping. Null when the file is external/CDN. */
+  css?: string | null;
 }
 
 export interface WordPressInlineStyle {
