@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 2,
+  "settings": {
+    "color": {
+      "palette": [
+        { "slug": "white", "color": "#FFFFFF", "name": "White" },
+        { "slug": "black", "color": "#000000", "name": "Black" },
+        { "slug": "primary-500", "color": "#2A7EBF", "name": "Primary" },
+        { "slug": "primary-700", "color": "#0D53A2", "name": "Modern Blue" },
+        { "slug": "primary-300", "color": "#8FC2EA", "name": "Primary 300" },
+        { "slug": "primary-100", "color": "#E4EEFA", "name": "Primary 100" },
+        { "slug": "primary-50", "color": "#F2F8FD", "name": "Primary 50" },
+        { "slug": "navy", "color": "#001258", "name": "Navy Blue" },
+        { "slug": "secondary-950", "color": "#242424", "name": "Secondary 950" },
+        { "slug": "secondary-900", "color": "#3D3D3D", "name": "Secondary 900" },
+        { "slug": "secondary-800", "color": "#454545", "name": "Secondary 800" },
+        { "slug": "secondary-700", "color": "#4F4F4F", "name": "Secondary 700" },
+        { "slug": "secondary-400", "color": "#888888", "name": "Secondary 400" },
+        { "slug": "secondary-25", "color": "#FBFBFB", "name": "Secondary 25" }
+      ]
+    },
+    "typography": {
+      "fontFamilies": [
+        {
+          "fontFamily": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          "slug": "inter",
+          "name": "Inter"
+        },
+        {
+          "fontFamily": "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
+          "slug": "segoe-ui",
+          "name": "Segoe UI"
+        }
+      ],
+      "fontSizes": [
+        { "slug": "small", "size": "14px", "name": "Text Small" },
+        { "slug": "regular", "size": "16px", "name": "Text Regular" },
+        { "slug": "medium", "size": "18px", "name": "Text Medium" },
+        { "slug": "card-title", "size": "24px", "name": "Card Title" },
+        { "slug": "section-title", "size": "50px", "name": "Section Title" },
+        { "slug": "hero-title", "size": "68px", "name": "Hero Title" },
+        { "slug": "cta-title", "size": "64px", "name": "CTA Title" }
+      ]
+    }
+  },
+  "styles": {
+    "typography": {
+      "fontFamily": "var(--wp--preset--font-family--inter)",
+      "fontSize": "var(--wp--preset--font-size--regular)",
+      "lineHeight": "1.5"
+    },
+    "color": {
+      "text": "var(--wp--preset--color--secondary-950)"
+    }
+  }
+}
