@@ -40,7 +40,7 @@
     }
   },
   "/api/wordpress-page": {
-    "target": "http://wordpress-stagging.local",
+    "target": "http://new-stagging-elementor-testing.local",
     "secure": true,
     "changeOrigin": true,
     "pathRewrite": {
