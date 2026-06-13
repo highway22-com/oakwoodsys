@@ -5,44 +5,82 @@
 /* Font families
    Inter: se carga en index.html desde Google Fonts (link correcto).
    Segoe UI: se carga en index.html desde CDN (fonts.cdnfonts.com) para macOS/Linux; en Windows viene con el SO. */
+/* Design tokens — synced with shared/design-tokens.json (Figma Oakwood Website 2026) */
 :root {
     --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     --font-segoe: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-sans: var(--font-inter);
+
     --color-primary-blue: #1D69AC;
     --color-p-10: #F0F7FF;
     --color-p-30: #F2F8FD;
-    --color-p-50: #E6F1FF;
-    --color-p-100: #C3DDF4;
+    --color-p-50: #F2F8FD;
+    --color-p-100: #E4EEFA;
     --color-p-200: #53A2DD;
-
+    --color-p-300: #8FC2EA;
     --color-p-500: #2A7EBF;
     --color-p-600: #0D53A2;
     --color-p-700: #0D53A2;
+    --color-navy: #001258;
 
+    --color-s-950: #242424;
+    --color-s-900: #3D3D3D;
     --color-s-800: #454545;
+    --color-s-700: #4F4F4F;
     --color-s-600: #5D5D5D;
-    --color-s-900: #000;
+    --color-s-400: #888888;
+    --color-s-300: #B0B0B0;
+    --color-s-200: #D1D1D1;
+    --color-s-100: #E7E7E7;
+    --color-s-50: #F6F6F6;
+    --color-s-25: #FBFBFB;
     --color-gray-200: #888888;
     --color-white-900: #FBFBFB;
+
+    --color-hero-title: #FFFFFF;
+    --color-hero-subtitle: rgba(255, 255, 255, 0.8);
+    --color-section-eyebrow: #0D53A2;
+    --color-section-title: #000000;
+    --color-section-body: #3D3D3D;
+    --color-card-title: #242424;
 }
 
-/* Tailwind theme: colors and font Segoe UI */
+/* Tailwind theme: colors and fonts */
 @theme {
     --color-primary-blue: #1D69AC;
     --color-p-10: #F0F7FF;
     --color-p-30: #F2F8FD;
-    --color-p-50: #E6F1FF;
-    --color-p-100: #C3DDF4;
+    --color-p-50: #F2F8FD;
+    --color-p-100: #E4EEFA;
     --color-p-200: #53A2DD;
+    --color-p-300: #8FC2EA;
     --color-p-500: #2A7EBF;
     --color-p-600: #0D53A2;
     --color-p-700: #0D53A2;
+    --color-navy: #001258;
 
+    --color-s-950: #242424;
+    --color-s-900: #3D3D3D;
     --color-s-800: #454545;
+    --color-s-700: #4F4F4F;
     --color-s-600: #5D5D5D;
-    --color-s-900: #000;
+    --color-s-400: #888888;
+    --color-s-300: #B0B0B0;
+    --color-s-200: #D1D1D1;
+    --color-s-100: #E7E7E7;
+    --color-s-50: #F6F6F6;
+    --color-s-25: #FBFBFB;
     --color-gray-200: #888888;
     --color-white-900: #FBFBFB;
+
+    --color-hero-title: #FFFFFF;
+    --color-hero-subtitle: rgba(255, 255, 255, 0.8);
+    --color-section-eyebrow: #0D53A2;
+    --color-section-title: #000000;
+    --color-section-body: #3D3D3D;
+    --color-card-title: #242424;
+
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     --font-segoe: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
@@ -53,6 +91,95 @@ body {
 /* Segoe UI: variable directa para que funcione (Tailwind puede no generar font-segoe en todos los contextos) */
 .font-segoe {
     font-family: var(--font-segoe);
+}
+
+.font-sans {
+    font-family: var(--font-sans);
+}
+
+@layer components {
+    .hero-title {
+        font-family: var(--font-sans);
+        font-weight: 400;
+        font-size: clamp(2rem, 4vw, 4.25rem);
+        line-height: 1.3;
+        letter-spacing: -1.36px;
+        color: var(--color-hero-title);
+        word-break: break-word;
+    }
+
+    @media (min-width: 1024px) {
+        .hero-title {
+            font-size: 4.25rem;
+        }
+    }
+
+    .hero-subtitle {
+        font-family: var(--font-segoe);
+        font-weight: 400;
+        font-size: 1.25rem;
+        line-height: 1.5;
+        color: var(--color-hero-subtitle);
+        word-break: break-word;
+    }
+
+    .section-eyebrow {
+        font-family: var(--font-sans);
+        font-weight: 600;
+        font-size: 1.125rem;
+        line-height: 1.5;
+        text-transform: uppercase;
+        color: var(--color-section-eyebrow);
+    }
+
+    .section-title {
+        font-family: var(--font-sans);
+        font-weight: 400;
+        font-size: clamp(2rem, 4vw, 3.125rem);
+        line-height: 1.1;
+        color: var(--color-section-title);
+    }
+
+    .section-description {
+        font-family: var(--font-segoe);
+        font-weight: 400;
+        font-size: 1.125rem;
+        line-height: 1.5;
+        color: var(--color-section-body);
+    }
+
+    .card-title {
+        font-family: var(--font-sans);
+        font-weight: 600;
+        font-size: 1.5rem;
+        line-height: 1.3;
+        color: var(--color-card-title);
+    }
+
+    .cta-title {
+        font-family: var(--font-sans);
+        font-weight: 400;
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        line-height: 1.1;
+        letter-spacing: -1.28px;
+        color: var(--color-section-title);
+        text-align: center;
+    }
+
+    .cta-description {
+        font-family: var(--font-segoe);
+        font-weight: 400;
+        font-size: 1.125rem;
+        line-height: 1.5;
+        color: var(--color-section-title);
+        text-align: center;
+    }
+
+    @media (min-width: 1024px) {
+        .cta-description {
+            font-size: 1.25rem;
+        }
+    }
 }
 
 /* Estilo base para todos los h1 (el color se define en cada contexto: text-white, text-gray-900, etc.) */

@@ -3,6 +3,7 @@ import { inject, Injectable, DOCUMENT, isDevMode, PLATFORM_ID } from '@angular/c
 import { Title, Meta } from '@angular/platform-browser';
 
 import { serverSitePublicUrl } from '../config/site-public.config';
+import { decodeHtmlEntities } from '../utils/cast';
 
 export interface SeoMetaConfig {
   /** Título de la página (para <title> y og:title) */
@@ -25,8 +26,6 @@ export interface SeoMetaConfig {
   ogType?: 'website' | 'article';
   /** Keywords (opcional, usa default si no se pasa) */
   keywords?: string;
-  /** Keyphrase principal para incluir en description si no está presente (ej. primaryTag) */
-  keyphrase?: string;
 }
 
 const DEFAULT_TITLE = 'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
@@ -49,12 +48,11 @@ function getImageTypeFromUrl(url: string): string {
   return mime[ext] ?? 'image/png';
 }
 
-/** Trunca description a ~155 chars (Google). Corte en palabra. Incluye keyphrase si no está. */
-function normalizeMetaDescription(description: string, keyphrase?: string): string {
-  let text = description.trim();
-  if (keyphrase?.trim() && !text.toLowerCase().includes(keyphrase.toLowerCase())) {
-    text = `${keyphrase.trim()}. ${text}`;
-  }
+/** Decodifica entidades HTML y elimina tags; trunca a ~155 chars (Google). */
+function normalizeMetaDescription(description: string): string {
+  let text = decodeHtmlEntities(description)
+    .replace(/<[^>]*>/g, '')
+    .trim();
   if (text.length <= META_DESCRIPTION_MAX_LENGTH) return text;
   const max = META_DESCRIPTION_MAX_LENGTH - 3;
   const cut = text.slice(0, max);
@@ -91,7 +89,7 @@ export class SeoMetaService {
     const publicBase = this.resolvePublicBaseUrl();
     const title = config.title || DEFAULT_TITLE;
     const rawDescription = config.description || DEFAULT_DESCRIPTION;
-    const description = normalizeMetaDescription(rawDescription, config.keyphrase);
+    const description = normalizeMetaDescription(rawDescription);
     const keywords = config.keywords ?? DEFAULT_KEYWORDS;
     const canonicalPath = config.canonicalPath ?? '/';
     const canonicalUrl = canonicalPath.startsWith('http')

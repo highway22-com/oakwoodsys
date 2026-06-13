@@ -548,7 +548,6 @@ export default class EventDetail implements OnInit, OnDestroy {
       title,
       description,
       keywords,
-      keyphrase: e.tag?.trim() || undefined,
       canonicalPath,
       image,
       imageAlt: (e.imageAlt ?? '').trim() || e.title,

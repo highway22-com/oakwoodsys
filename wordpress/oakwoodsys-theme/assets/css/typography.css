@@ -1,0 +1,272 @@
+/**
+ * Oakwoodsys typography utility classes — Figma Solutions Template 1.
+ */
+
+.oak-hero-title {
+    font-family: var(--oak-font-inter);
+    font-weight: 400;
+    font-size: var(--oak-text-hero);
+    line-height: 1.3;
+    letter-spacing: -1.36px;
+    color: var(--oak-color-hero-title);
+    word-break: break-word;
+}
+
+@media (min-width: 1024px) {
+    .oak-hero-title {
+        font-size: var(--oak-text-hero-lg);
+    }
+}
+
+.oak-hero-subtitle {
+    font-family: var(--oak-font-segoe);
+    font-weight: 400;
+    font-size: var(--oak-text-hero-subtitle);
+    line-height: 1.5;
+    color: var(--oak-color-hero-subtitle);
+    word-break: break-word;
+}
+
+.oak-section-eyebrow {
+    font-family: var(--oak-font-inter);
+    font-weight: 600;
+    font-size: var(--oak-text-medium);
+    line-height: 1.5;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: var(--oak-color-section-eyebrow);
+}
+
+.oak-section-title {
+    font-family: var(--oak-font-inter);
+    font-weight: 400;
+    font-size: clamp(2rem, 4vw, var(--oak-text-section-title));
+    line-height: 1.1;
+    color: var(--oak-color-section-title);
+}
+
+.oak-section-body {
+    font-family: var(--oak-font-segoe);
+    font-weight: 400;
+    font-size: var(--oak-text-medium);
+    line-height: 1.5;
+    color: var(--oak-color-section-body);
+}
+
+.oak-card-title {
+    font-family: var(--oak-font-inter);
+    font-weight: 600;
+    font-size: var(--oak-text-card-title);
+    line-height: 1.3;
+    color: var(--oak-color-card-title);
+}
+
+.oak-cta-title {
+    font-family: var(--oak-font-inter);
+    font-weight: 400;
+    font-size: clamp(2.5rem, 5vw, var(--oak-text-cta-title));
+    line-height: 1.1;
+    letter-spacing: -1.28px;
+    color: var(--oak-color-section-title);
+    text-align: center;
+}
+
+.oak-cta-description {
+    font-family: var(--oak-font-segoe);
+    font-weight: 400;
+    font-size: var(--oak-text-medium);
+    line-height: 1.5;
+    color: var(--oak-color-section-title);
+    text-align: center;
+}
+
+@media (min-width: 1024px) {
+    .oak-cta-description {
+        font-size: 20px;
+    }
+}
+
+.oak-button-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--oak-font-inter);
+    font-weight: 600;
+    font-size: var(--oak-text-regular);
+    line-height: normal;
+    color: var(--oak-color-button-text);
+    background-color: var(--oak-color-button-bg);
+    padding: 12px 24px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.oak-button-primary:hover {
+    background-color: var(--oak-color-p-600);
+    color: var(--oak-color-button-text);
+}
+
+.oak-text-small {
+    font-family: var(--oak-font-inter);
+    font-size: var(--oak-text-small);
+    line-height: 1.5;
+}
+
+.oak-text-regular {
+    font-family: var(--oak-font-inter);
+    font-size: var(--oak-text-regular);
+    line-height: 1.5;
+}
+
+.oak-text-medium {
+    font-family: var(--oak-font-segoe);
+    font-size: var(--oak-text-medium);
+    line-height: 1.5;
+}
+
+.oak-font-segoe {
+    font-family: var(--oak-font-segoe);
+}
+
+.oak-font-sans {
+    font-family: var(--oak-font-sans);
+}
+
+/* Gutenberg block styles (sidebar → Styles) map to is-style-* classes */
+.is-style-oak-hero-title {
+    font-family: var(--oak-font-inter);
+    font-weight: 400;
+    font-size: var(--oak-text-hero);
+    line-height: 1.3;
+    letter-spacing: -1.36px;
+    color: var(--oak-color-hero-title);
+}
+
+.is-style-oak-section-title {
+    font-family: var(--oak-font-inter);
+    font-weight: 400;
+    font-size: clamp(2rem, 4vw, var(--oak-text-section-title));
+    line-height: 1.1;
+    color: var(--oak-color-section-title);
+}
+
+.is-style-oak-card-title {
+    font-family: var(--oak-font-inter);
+    font-weight: 600;
+    font-size: var(--oak-text-card-title);
+    line-height: 1.3;
+    color: var(--oak-color-card-title);
+}
+
+.is-style-oak-cta-title {
+    font-family: var(--oak-font-inter);
+    font-weight: 400;
+    font-size: clamp(2.5rem, 5vw, var(--oak-text-cta-title));
+    line-height: 1.1;
+    letter-spacing: -1.28px;
+    color: var(--oak-color-section-title);
+}
+
+.is-style-oak-hero-subtitle {
+    font-family: var(--oak-font-segoe);
+    font-weight: 400;
+    font-size: var(--oak-text-hero-subtitle);
+    line-height: 1.5;
+    color: var(--oak-color-hero-subtitle);
+}
+
+.is-style-oak-section-eyebrow {
+    font-family: var(--oak-font-inter);
+    font-weight: 600;
+    font-size: var(--oak-text-medium);
+    line-height: 1.5;
+    text-transform: uppercase;
+    color: var(--oak-color-section-eyebrow);
+}
+
+.is-style-oak-section-body {
+    font-family: var(--oak-font-segoe);
+    font-weight: 400;
+    font-size: var(--oak-text-medium);
+    line-height: 1.5;
+    color: var(--oak-color-section-body);
+}
+
+.is-style-oak-cta-description {
+    font-family: var(--oak-font-segoe);
+    font-weight: 400;
+    font-size: var(--oak-text-medium);
+    line-height: 1.5;
+    color: var(--oak-color-section-title);
+}
+
+.wp-block-button.is-style-oak-button-primary .wp-block-button__link {
+    font-family: var(--oak-font-inter);
+    font-weight: 600;
+    font-size: var(--oak-text-regular);
+    color: var(--oak-color-button-text);
+    background-color: var(--oak-color-button-bg);
+    border-radius: 0;
+    padding: 12px 24px;
+}
+
+.wp-block-button.is-style-oak-button-primary .wp-block-button__link:hover {
+    background-color: var(--oak-color-p-600);
+    color: var(--oak-color-button-text);
+}
+
+.oak-hero-section {
+    background-color: var(--oak-color-navy);
+}
+
+.oak-features-section {
+    background-color: var(--oak-color-p-50);
+}
+
+.oak-section-header--centered {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.oak-feature-grid {
+    align-items: stretch;
+}
+
+.oak-feature-grid > .wp-block-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.oak-feature-card {
+    flex: 1;
+    height: 100%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.oak-feature-icon {
+    font-size: 32px;
+    line-height: 1;
+    color: var(--oak-color-p-500);
+    margin: 0;
+    min-height: 32px;
+}
+
+.oak-feature-icon::before {
+    content: "\25CF";
+    display: block;
+    color: var(--oak-color-p-500);
+    font-size: 32px;
+    line-height: 1;
+}
+
+@media (max-width: 781px) {
+    .oak-feature-grid.wp-block-columns {
+        flex-wrap: wrap !important;
+    }
+
+    .oak-feature-grid.wp-block-columns > .wp-block-column {
+        flex-basis: 100% !important;
+    }
+}
