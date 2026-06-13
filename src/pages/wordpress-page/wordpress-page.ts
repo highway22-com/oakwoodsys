@@ -43,6 +43,9 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
   // Path that SSR rendered into the current HTML, consumed once on hydration to
   // skip the loading flash for content that is already in the DOM.
   private ssrRenderedPath: string | null = null;
+  // MutationObserver to track DOM nodes injected directly into <body> by WP scripts
+  // (e.g. BaguetteBox lightbox overlay) so they can be cleaned up on navigation.
+  private scriptDomObserver: MutationObserver | null = null;
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -98,15 +101,19 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       error: (error) => {
         const handler = () => {
           const status = error?.status ?? 0;
+          if (status === 404) {
+            this.router.navigate(['/404'], { replaceUrl: true });
+            return;
+          }
           this.loading.set(false);
-          this.notFound.set(status === 404);
-          this.error.set(status === 404 ? 'WordPress page not found.' : 'Unable to load the WordPress page.');
+          this.notFound.set(false);
+          this.error.set('Unable to load the WordPress page.');
           this.pageTitle.set('');
           this.pageExcerpt.set('');
           this.pageHtml.set(null);
           this.seoMeta.updateMeta({
-            title: status === 404 ? 'Page not found | Oakwood Systems' : 'WordPress page unavailable | Oakwood Systems',
-            description: status === 404 ? 'The requested WordPress page could not be found.' : 'The requested WordPress page could not be loaded.',
+            title: 'WordPress page unavailable | Oakwood Systems',
+            description: 'The requested WordPress page could not be loaded.',
             canonicalPath: `/${path}`,
           });
         };
@@ -400,6 +407,20 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
 
   private async injectPageScripts(scripts: WordPressFooterScript[]): Promise<void> {
     const body = this.document.body;
+    // Observe any non-script nodes appended directly to <body> by WP scripts
+    // (e.g. BaguetteBox lightbox overlay) so they can be removed on cleanup.
+    if (isPlatformBrowser(this.platformId) && !this.scriptDomObserver) {
+      this.scriptDomObserver = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          mutation.addedNodes.forEach((node) => {
+            if (node instanceof HTMLElement && node.tagName !== 'SCRIPT') {
+              this.injectedBodyNodes.push(node);
+            }
+          });
+        }
+      });
+      this.scriptDomObserver.observe(body, { childList: true });
+    }
     for (const [index, scriptData] of scripts.entries()) {
       const script = this.document.createElement('script');
       script.setAttribute('data-wordpress-page-script', `${this.currentPath}-${index}`);
@@ -434,6 +455,12 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
   }
 
   private cleanupInjectedAssets(): void {
+    // Stop observing body mutations before cleanup to avoid re-tracking removals.
+    if (this.scriptDomObserver) {
+      this.scriptDomObserver.disconnect();
+      this.scriptDomObserver = null;
+    }
+
     while (this.injectedHeadNodes.length > 0) {
       const node = this.injectedHeadNodes.pop();
       node?.parentNode?.removeChild(node);
