@@ -44,7 +44,7 @@
     "secure": true,
     "changeOrigin": true,
     "pathRewrite": {
-      "^/api/wordpress-page": "/wp-json/custom/v1/rendered-page"
+      "^/api/wordpress-page": "/wp-json/oakwood/v1/rendered-page"
     }
   }
 }

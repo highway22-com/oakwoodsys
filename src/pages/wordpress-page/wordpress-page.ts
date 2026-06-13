@@ -1,6 +1,6 @@
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, NgZone, OnDestroy, OnInit, PLATFORM_ID, ViewEncapsulation, inject, signal } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { filter, Subscription } from 'rxjs';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
@@ -60,6 +60,16 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
         this.loadCurrentPage();
       })
     );
+    // Sweep script-injected body overlays (BaguetteBox etc.) at the very start
+    // of every navigation — before Angular swaps routes or destroys the component.
+    // This guarantees cleanup even when the browser back button is used.
+    if (isPlatformBrowser(this.platformId)) {
+      this.subscriptions.add(
+        this.router.events.pipe(filter((event): event is NavigationStart => event instanceof NavigationStart)).subscribe(() => {
+          this.removeScriptBodyOverlays();
+        })
+      );
+    }
   }
 
   ngOnDestroy(): void {
@@ -479,8 +489,23 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
     });
 
     if (isPlatformBrowser(this.platformId)) {
+      this.removeScriptBodyOverlays();
+    }
+
+    if (isPlatformBrowser(this.platformId)) {
       this.injectedBodyClasses.forEach((className) => this.document.body.classList.remove(className));
     }
     this.injectedBodyClasses.clear();
+  }
+
+  /**
+   * Removes DOM overlays appended directly to <body> by WordPress scripts
+   * (BaguetteBox lightbox, etc.). Called on NavigationStart and during full
+   * asset cleanup, so it runs regardless of MutationObserver timing.
+   */
+  private removeScriptBodyOverlays(): void {
+    this.document.querySelectorAll(
+      '#baguetteBox-overlay, [id^="baguetteBox"], [class*="baguetteBox"]'
+    ).forEach((el) => el.parentNode?.removeChild(el));
   }
 }
