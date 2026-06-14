@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Solutions Template 2
- * Slug: oakwood-blocks/solutions-template-2
+ * Slug: oakwood-theme/solutions-template-2
  * Categories: oakwood
  * Description: Oakwood Solutions page — Hero, Cards, Governance Accordion, Achievements, How Oakwood Helps, Licensing, CTA.
  * Keywords: oakwood, copilot, solutions, landing, hero, governance, licensing, cta

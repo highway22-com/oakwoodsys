@@ -96,7 +96,7 @@
   /* right padding leaves room for the +/- icon */
   padding: 18px 52px 18px 16px !important;
   font-size: 24px !important;
-  font-family: "Inter" !important;
+  font-family: var(--oak-font) !important;
   font-weight: 600 !important;
   line-height: 32px;
   color: #242424!important;
@@ -167,7 +167,7 @@
 .oak-acc-row .wp-block-details > p,
 .oak-acc-row details > p {
   color: #3D3D3D !important;
-  font-family: "Inter" !important;
+  font-family: var(--oak-font) !important;
   font-size: 18px !important;
   font-style: normal !important;
   font-weight: 400 !important;

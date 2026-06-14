@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Solutions Template 1
- * Slug: oakwood-blocks/solutions-template-1
+ * Slug: oakwood-theme/solutions-template-1
  * Categories: oakwood
  * Description: Oakwood Solutions page — Hero, Cards, Governance Accordion, Sticky Impact Section, Azure Services, Why Organizations, Achievements, How Oakwood Helps, CTA.
  * Keywords: oakwood, azure, solutions, landing, hero, governance, sticky, cta
