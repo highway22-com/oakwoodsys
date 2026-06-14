@@ -1,0 +1,210 @@
+/* ================================================================
+   OAKWOOD ACCORDION
+   Structure: .oak-acc-row (flex) > [wp:image icon] + [wp:details]
+   +/- on details::after anchored to summary height via summary padding
+   ================================================================ */
+
+.oak-accordion {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ── Row ── */
+.oak-acc-row,
+.oak-acc-row.wp-block-group {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  position: relative !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  margin: 10px 0px !important;
+  padding: 10px 0px !important;
+  box-sizing: border-box !important;
+  transition: background 0.2s ease !important;
+}
+.oak-acc-row:last-child { border-bottom: none !important; }
+
+/* Hover on closed rows */
+.oak-acc-row:has(.oak-acc-item:not([open])):hover {
+  background: #F8FAFC !important;
+}
+
+/* Open row — blue left bar */
+.oak-acc-row:has(.oak-acc-item[open])::before {
+  content: '' !important;
+  position: absolute !important;
+  left: 0 !important; top: 0 !important; bottom: 0 !important;
+  width: 1px !important;
+  background: #2A7EBF !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+}
+.oak-acc-row:has(.oak-acc-item[open]) {
+  background: #F4F6F8 !important;
+}
+
+/* ── Icon — 40x40px, no background badge, #3D3D3D colour ── */
+.oak-acc-icon-img,
+.oak-acc-row > figure.wp-block-image.oak-acc-icon-img,
+.oak-acc-row > .wp-block-image.oak-acc-icon-img {
+  flex: 0 0 40px !important;
+  width: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+   align-self: flex-start !important;  /* was: center */
+  margin: 18px 0 0 20px !important;
+  padding: 0 !important;
+  background: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 0 !important;
+}
+.oak-acc-icon-img img {
+  width: 40px !important;
+  height: 40px !important;
+  object-fit: contain !important;
+  display: block !important;
+  background: none !important;
+}
+
+/* ── Details — fills row ── */
+.oak-acc-item,
+.oak-acc-row > .wp-block-details.oak-acc-item,
+.oak-acc-row > details.oak-acc-item {
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  width: auto !important;
+  border-bottom: none !important;
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* ── Summary ── */
+.oak-acc-item > summary,
+.oak-acc-row .wp-block-details > summary,
+.oak-acc-row details > summary {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+  /* right padding leaves room for the +/- icon */
+  padding: 18px 52px 18px 16px !important;
+  font-size: 24px !important;
+  font-family: "Inter" !important;
+  font-weight: 600 !important;
+  line-height: 32px;
+  color: #242424!important;
+  cursor: pointer !important;
+  list-style: none !important;
+  user-select: none !important;
+  white-space: normal !important;
+  word-break: normal !important;
+  grid-template-columns: unset !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+.oak-acc-item > summary::-webkit-details-marker,
+.oak-acc-row details > summary::-webkit-details-marker { display: none !important; }
+
+/* Kill WP default ::before and ::after on summary */
+.oak-acc-item > summary::before,
+.oak-acc-row details > summary::before {
+  display: none !important; content: none !important;
+  background: none !important; width: 0 !important; height: 0 !important;
+}
+.oak-acc-item > summary::after,
+.oak-acc-row details > summary::after {
+  display: none !important; content: none !important;
+}
+
+/* ── +/- on details::after
+   Anchored to TOP of details + same top offset as summary padding
+   so it always aligns with the first line of the summary text ── */
+.oak-acc-item::after,
+.oak-acc-row .wp-block-details::after,
+.oak-acc-row details::after {
+  content: '' !important;
+  position: absolute !important;
+  right: 20px !important;
+  /* Match summary padding-top so icon sits in the summary row */
+  top: 18px !important;
+  width: 20px !important;
+  height: 20px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M10 4v12M4 10h12' stroke='%23888888' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  background-position: center !important;
+  pointer-events: none !important;
+  z-index: 3 !important;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s ease !important;
+  transform: rotate(0deg) !important;
+}
+
+/* Open — minus with rotation */
+.oak-acc-item[open]::after,
+.oak-acc-row .wp-block-details[open]::after,
+.oak-acc-row details[open]::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M4 10h12' stroke='%23888888' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+  transform: rotate(180deg) !important;
+}
+
+/* Flash on toggle */
+.oak-acc-item.is-toggling::after,
+.oak-acc-row details.is-toggling::after {
+  opacity: 0.35 !important;
+}
+
+/* ── Body paragraph ── */
+.oak-acc-item > p,
+.oak-acc-row .wp-block-details > p,
+.oak-acc-row details > p {
+  color: #3D3D3D !important;
+  font-family: "Inter" !important;
+  font-size: 18px !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  line-height: 24px !important;
+  margin: 0 !important;
+  padding: 0 52px 18px 16px !important;
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .oak-acc-icon-img,
+  .oak-acc-row > figure.wp-block-image.oak-acc-icon-img {
+    margin-left: 14px !important;
+    flex: 0 0 28px !important;
+    width: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+  }
+  .oak-acc-icon-img img {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  .oak-acc-item > summary,
+  .oak-acc-row details > summary {
+    padding: 15px 44px 15px 12px !important;
+    font-size: 16px !important;
+  }
+  .oak-acc-item::after,
+  .oak-acc-row details::after {
+    right: 14px !important;
+    top: 15px !important;
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .oak-acc-item > p,
+  .oak-acc-row details > p {
+    padding: 0 44px 15px 12px !important;
+    font-size: 14px !important;
+  }
+}
