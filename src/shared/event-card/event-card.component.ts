@@ -74,10 +74,6 @@ export class EventCardComponent {
 
   // Uses event's own timezone from BE if available, else falls back to browser timezone
   private viewerTimeZoneId(): string | undefined {
-    console.log(
-      this.eventTimeZone(),
-      'this.eventTimeZone()this.eventTimeZone()this.eventTimeZone()',
-    );
     return (
       this.eventTimeZone() ?? Intl.DateTimeFormat().resolvedOptions().timeZone
     );

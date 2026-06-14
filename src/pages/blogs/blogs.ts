@@ -360,7 +360,6 @@ export default class Blogs implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ nodes }) => {
-          console.log(nodes);
           if (nodes.length > 0) {
             this.posts.set({ nodes: this.transformNodes(nodes) });
           }

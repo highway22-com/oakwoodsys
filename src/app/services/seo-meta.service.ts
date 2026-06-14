@@ -146,7 +146,6 @@ export class SeoMetaService {
         const attr = m.getAttribute('property') ?? m.getAttribute('name') ?? 'unknown';
         metaObj[attr] = m.getAttribute('content') ?? '';
       });
-      console.log('[SeoMeta] Actualizado:', { title, ogType, image, canonicalUrl, metaTags: metaObj });
     }
   }
 

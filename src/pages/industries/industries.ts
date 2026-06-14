@@ -197,7 +197,6 @@ export default class Industries implements OnInit, OnDestroy {
     // 1) Fetch from WordPress CMS page via GraphQL
     this.graphql.getIndustryByCMSSlug(slugValue).pipe(take(1)).subscribe({
       next: (data) => {
-        console.log('Fetched industry content from CMS page:', slugValue, data);
         if (data?.industries) {
           this.applyIndustriesContent(data as IndustriesContent);
         } else {
