@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Oakwood Page With Styles API
  * Description: Custom REST endpoint to return rendered page content with styles and scripts.
- * Version: 1.4.0
+ * Version: 1.4.2
  * Author: Oakwood
  */
 
@@ -11,6 +11,86 @@ defined('ABSPATH') || exit;
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Public view URLs (Pages → oakwoodsys.com)
+// ---------------------------------------------------------------------------
+
+function oakwood_page_builder_public_site_url() {
+	if ( function_exists( 'oakwood_cms_public_site_url' ) ) {
+		return oakwood_cms_public_site_url();
+	}
+	return 'https://oakwoodsys.com';
+}
+
+function oakwood_page_builder_page_frontend_path( $post_id ) {
+	$post = get_post( $post_id );
+	if ( ! ( $post instanceof WP_Post ) || $post->post_type !== 'page' || $post->post_name === '' ) {
+		return null;
+	}
+	$uri = get_page_uri( $post );
+	if ( is_string( $uri ) && $uri !== '' ) {
+		return '/' . trim( $uri, '/' );
+	}
+	return '/' . $post->post_name;
+}
+
+function oakwood_page_builder_public_view_url( $post_id ) {
+	$path = oakwood_page_builder_page_frontend_path( $post_id );
+	if ( $path === null ) {
+		return null;
+	}
+	return rtrim( oakwood_page_builder_public_site_url(), '/' ) . $path;
+}
+
+function oakwood_page_builder_filter_page_link( $link, $post_id, $sample ) {
+	unset( $sample );
+	$url = oakwood_page_builder_public_view_url( (int) $post_id );
+	return $url ? $url : $link;
+}
+add_filter( 'page_link', 'oakwood_page_builder_filter_page_link', 99, 3 );
+
+function oakwood_page_builder_filter_preview_post_link( $preview_link, $post ) {
+	if ( ! ( $post instanceof WP_Post ) || $post->post_type !== 'page' ) {
+		return $preview_link;
+	}
+	$url = oakwood_page_builder_public_view_url( (int) $post->ID );
+	return $url ? $url : $preview_link;
+}
+add_filter( 'preview_post_link', 'oakwood_page_builder_filter_preview_post_link', 99, 2 );
+
+function oakwood_page_builder_page_row_actions( $actions, $post ) {
+	if ( ! ( $post instanceof WP_Post ) || $post->post_type !== 'page' || $post->post_status !== 'publish' ) {
+		return $actions;
+	}
+	$url = oakwood_page_builder_public_view_url( (int) $post->ID );
+	if ( ! $url ) {
+		return $actions;
+	}
+	$actions['view'] = sprintf(
+		'<a href="%1$s" rel="bookmark" aria-label="%2$s">%3$s</a>',
+		esc_url( $url ),
+		esc_attr( sprintf( __( 'View &#8220;%s&#8221;' ), get_the_title( $post ) ) ),
+		__( 'View' )
+	);
+	return $actions;
+}
+add_filter( 'page_row_actions', 'oakwood_page_builder_page_row_actions', 99, 2 );
+
+function oakwood_page_builder_rest_prepare_page( $response, $post, $request ) {
+	unset( $request );
+	if ( ! ( $response instanceof WP_REST_Response ) || ! ( $post instanceof WP_Post ) || $post->post_type !== 'page' ) {
+		return $response;
+	}
+	$url = oakwood_page_builder_public_view_url( (int) $post->ID );
+	if ( $url ) {
+		$data           = $response->get_data();
+		$data['link']   = $url;
+		$response->set_data( $data );
+	}
+	return $response;
+}
+add_filter( 'rest_prepare_page', 'oakwood_page_builder_rest_prepare_page', 99, 3 );
 
 function oakwood_cms_public_post_types() {
 $post_types = get_post_types(array('public' => true), 'names');
