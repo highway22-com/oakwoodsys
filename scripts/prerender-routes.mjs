@@ -6,7 +6,8 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
-const GRAPHQL_URL = 'https://oakwoodsystemsgroup.com/graphql';
+const WP_BASE_URL = 'https://oakwoodsystemsgroup.com';
+const GRAPHQL_URL = `${WP_BASE_URL}/graphql`;
 
 const BLOG_SLUGS_QUERY = `query GetSlugsForPrerender {
   blog: genContentCategory(id: "blog", idType: SLUG) {
@@ -159,6 +160,34 @@ const CASE_STUDY_SLUGS_FALLBACK = [
   'enterprise-reporting-and-data-roadmap-development',
 ];
 
+async function fetchWordPressPageSlugs() {
+  const slugs = [];
+  let page = 1;
+  const perPage = 100;
+
+  try {
+    while (true) {
+      const url = `${WP_BASE_URL}/wp-json/wp/v2/pages?per_page=${perPage}&page=${page}&status=publish&_fields=slug`;
+      const res = await fetch(url);
+      if (!res.ok) break;
+      const batch = await res.json();
+      if (!Array.isArray(batch) || batch.length === 0) break;
+      for (const item of batch) {
+        const slug = item?.slug;
+        if (typeof slug === 'string' && slug && !RESERVED_ROOT_SLUGS.has(slug)) {
+          slugs.push(slug);
+        }
+      }
+      if (batch.length < perPage) break;
+      page += 1;
+    }
+  } catch (e) {
+    console.warn('[prerender-routes] WordPress pages fetch failed:', e.message);
+  }
+
+  return slugs;
+}
+
 async function main() {
   const routes = ['/', '/blog', '/resources/case-studies'];
 
@@ -175,6 +204,10 @@ async function main() {
   SERVICE_SLUGS.forEach((s) => routes.push(`/services/${s}`));
 
   STRUCTURED_SLUGS.forEach((s) => routes.push(`/structured-engagement/${s}`));
+
+  const wpPageSlugs = await fetchWordPressPageSlugs();
+  wpPageSlugs.forEach((s) => routes.push(`/${s}`));
+  console.log(`[prerender-routes] Added ${wpPageSlugs.length} WordPress page slugs`);
 
   const eventSlugs = getSlugsFromJson('public/events-content.json', 'events', 'slug');
   // Event detail URLs are SSR-only; do not add to prerender-routes.txt (see app.routes.server.ts).

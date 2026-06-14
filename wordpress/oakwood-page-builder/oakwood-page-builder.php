@@ -92,6 +92,270 @@ function oakwood_page_builder_rest_prepare_page( $response, $post, $request ) {
 }
 add_filter( 'rest_prepare_page', 'oakwood_page_builder_rest_prepare_page', 99, 3 );
 
+/**
+ * Normalize a Yoast/public URL to a frontend path on oakwoodsys.com.
+ *
+ * @param string $url_or_path Absolute or relative URL.
+ * @param int    $post_id     Post ID for fallback path.
+ * @return string Path with leading slash (e.g. /27244-2).
+ */
+function oakwood_page_builder_seo_canonical_path( $url_or_path, $post_id ) {
+	if ( is_string( $url_or_path ) && $url_or_path !== '' ) {
+		$parsed = wp_parse_url( $url_or_path );
+		if ( is_array( $parsed ) && ! empty( $parsed['path'] ) ) {
+			$path = '/' . trim( $parsed['path'], '/' );
+			return $path === '/' ? '/' : $path;
+		}
+		if ( strpos( $url_or_path, '/' ) === 0 ) {
+			$path = '/' . trim( $url_or_path, '/' );
+			return $path === '/' ? '/' : $path;
+		}
+	}
+
+	$frontend = oakwood_page_builder_page_frontend_path( (int) $post_id );
+	return $frontend ? $frontend : '/';
+}
+
+/**
+ * Resolve Yoast OG / Twitter image URL for a post.
+ *
+ * @param int $post_id Post ID.
+ * @return string Absolute image URL or empty string.
+ */
+function oakwood_page_builder_seo_og_image_url( $post_id ) {
+	$attachment_id = (int) get_post_meta( $post_id, '_yoast_wpseo_opengraph-image-id', true );
+	if ( $attachment_id <= 0 ) {
+		$attachment_id = (int) get_post_meta( $post_id, '_yoast_wpseo_twitter-image-id', true );
+	}
+	if ( $attachment_id > 0 ) {
+		$url = wp_get_attachment_image_url( $attachment_id, 'full' );
+		if ( is_string( $url ) && $url !== '' ) {
+			return $url;
+		}
+	}
+
+	$meta_url = get_post_meta( $post_id, '_yoast_wpseo_opengraph-image', true );
+	if ( is_string( $meta_url ) && $meta_url !== '' ) {
+		return $meta_url;
+	}
+
+	$meta_url = get_post_meta( $post_id, '_yoast_wpseo_twitter-image', true );
+	if ( is_string( $meta_url ) && $meta_url !== '' ) {
+		return $meta_url;
+	}
+
+	$thumb = get_the_post_thumbnail_url( $post_id, 'full' );
+	return is_string( $thumb ) ? $thumb : '';
+}
+
+/**
+ * Default document title like WordPress (post title + site name).
+ *
+ * @param WP_Post $post Post object.
+ * @return string
+ */
+function oakwood_page_builder_default_seo_title( WP_Post $post ) {
+	$title = trim( get_the_title( $post ) );
+	if ( $title === '' ) {
+		return '';
+	}
+	$site_name = get_bloginfo( 'name' );
+	if ( $site_name !== '' ) {
+		return $title . ' | ' . $site_name;
+	}
+	return $title;
+}
+
+/**
+ * Reject Yoast titles that are empty or only a site-name suffix (e.g. " | Site Name").
+ *
+ * @param string $title Candidate SEO title.
+ * @return string Sanitized title or empty string.
+ */
+function oakwood_page_builder_sanitize_seo_title( $title ) {
+	$title = trim( (string) $title );
+	if ( $title === '' ) {
+		return '';
+	}
+	if ( preg_match( '/^\s*\|/', $title ) ) {
+		return '';
+	}
+	if ( preg_match( '/^[\s|]+$/', $title ) ) {
+		return '';
+	}
+	$parts = explode( '|', $title, 2 );
+	$main  = trim( $parts[0] );
+	if ( function_exists( 'mb_strlen' ) ) {
+		if ( mb_strlen( $main ) < 2 ) {
+			return '';
+		}
+	} elseif ( strlen( $main ) < 2 ) {
+		return '';
+	}
+	return $title;
+}
+
+/**
+ * Extract plain text from the first H1 in post content.
+ *
+ * @param WP_Post $post Post object.
+ * @return string
+ */
+function oakwood_page_builder_extract_h1_title( WP_Post $post ) {
+	if ( ! is_string( $post->post_content ) || $post->post_content === '' ) {
+		return '';
+	}
+	if ( ! preg_match( '/<h1[^>]*>(.*?)<\/h1>/is', $post->post_content, $matches ) ) {
+		return '';
+	}
+	$text = wp_strip_all_tags( $matches[1] );
+	$text = html_entity_decode( $text, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+	return trim( $text );
+}
+
+/**
+ * Humanize a post slug for display (e.g. 27244-2 → 27244 2).
+ *
+ * @param string $slug Post slug.
+ * @return string
+ */
+function oakwood_page_builder_humanize_slug( $slug ) {
+	$slug = str_replace( array( '-', '_' ), ' ', (string) $slug );
+	$slug = trim( preg_replace( '/\s+/', ' ', $slug ) );
+	if ( $slug === '' ) {
+		return '';
+	}
+	return ucwords( $slug );
+}
+
+/**
+ * Append site name when missing from a title fragment.
+ *
+ * @param string $title Title fragment.
+ * @return string
+ */
+function oakwood_page_builder_title_with_site_name( $title ) {
+	$title = trim( (string) $title );
+	if ( $title === '' ) {
+		return '';
+	}
+	$site_name = get_bloginfo( 'name' );
+	if ( $site_name !== '' && stripos( $title, $site_name ) === false ) {
+		return $title . ' | ' . $site_name;
+	}
+	return $title;
+}
+
+/**
+ * SEO meta for headless Angular pages (Yoast SEO → REST `seo` object).
+ *
+ * @param int $post_id Post ID.
+ * @return array{title:string,description:string,ogImage:string,keywords:string,slug:string,canonicalPath:string}
+ */
+function oakwood_page_builder_get_seo_meta( $post_id ) {
+	$post_id = (int) $post_id;
+	$post    = get_post( $post_id );
+
+	if ( ! ( $post instanceof WP_Post ) ) {
+		return array(
+			'title'         => '',
+			'description'   => '',
+			'ogImage'       => '',
+			'keywords'      => '',
+			'slug'          => '',
+			'canonicalPath' => '/',
+		);
+	}
+
+	$title       = '';
+	$description = '';
+	$canonical   = '';
+	$keywords    = trim( (string) get_post_meta( $post_id, '_yoast_wpseo_focuskw', true ) );
+	$og_from_yoast = '';
+
+	if ( class_exists( 'YoastSEO' ) ) {
+		try {
+			$meta = YoastSEO()->meta->for_post( $post_id );
+			if ( $meta ) {
+				if ( ! empty( $meta->title ) ) {
+					$title = oakwood_page_builder_sanitize_seo_title( (string) $meta->title );
+				}
+				if ( ! empty( $meta->description ) ) {
+					$description = (string) $meta->description;
+				}
+				if ( ! empty( $meta->canonical ) ) {
+					$canonical = (string) $meta->canonical;
+				}
+				if ( isset( $meta->open_graph_images ) && is_array( $meta->open_graph_images ) && ! empty( $meta->open_graph_images ) ) {
+					$first = $meta->open_graph_images[0];
+					if ( is_object( $first ) && ! empty( $first->url ) ) {
+						$og_from_yoast = (string) $first->url;
+					}
+				}
+			}
+		} catch ( Throwable $e ) {
+			unset( $e );
+		}
+	}
+
+	if ( $title === '' ) {
+		$raw_title = trim( (string) get_post_meta( $post_id, '_yoast_wpseo_title', true ) );
+		if ( $raw_title !== '' && class_exists( 'WPSEO_Replace_Vars' ) ) {
+			$replacer = new WPSEO_Replace_Vars();
+			$title    = oakwood_page_builder_sanitize_seo_title( $replacer->replace( $raw_title, $post ) );
+		} elseif ( $raw_title !== '' ) {
+			$title = oakwood_page_builder_sanitize_seo_title( $raw_title );
+		}
+	}
+
+	if ( $title === '' ) {
+		$h1 = oakwood_page_builder_extract_h1_title( $post );
+		if ( $h1 !== '' ) {
+			$title = oakwood_page_builder_title_with_site_name( $h1 );
+		}
+	}
+
+	if ( $title === '' ) {
+		$title = oakwood_page_builder_sanitize_seo_title( oakwood_page_builder_default_seo_title( $post ) );
+	}
+
+	if ( $title === '' ) {
+		$humanized = oakwood_page_builder_humanize_slug( $post->post_name );
+		if ( $humanized !== '' ) {
+			$title = oakwood_page_builder_title_with_site_name( $humanized );
+		}
+	}
+
+	$title = oakwood_page_builder_sanitize_seo_title( $title );
+
+	if ( $description === '' ) {
+		$description = trim( (string) get_post_meta( $post_id, '_yoast_wpseo_metadesc', true ) );
+	}
+	if ( $description === '' && has_excerpt( $post ) ) {
+		$description = get_the_excerpt( $post );
+	}
+	if ( $description === '' ) {
+		$description = wp_trim_words( wp_strip_all_tags( $post->post_content ), 30 );
+	}
+
+	if ( $canonical === '' ) {
+		$canonical = trim( (string) get_post_meta( $post_id, '_yoast_wpseo_canonical', true ) );
+	}
+
+	$og_image = $og_from_yoast !== '' ? $og_from_yoast : oakwood_page_builder_seo_og_image_url( $post_id );
+
+	$slug = $post->post_name;
+
+	return array(
+		'title'         => $title,
+		'description'   => $description,
+		'ogImage'       => $og_image,
+		'keywords'      => $keywords,
+		'slug'          => $slug,
+		'canonicalPath' => oakwood_page_builder_seo_canonical_path( $canonical, $post_id ),
+	);
+}
+
 function oakwood_cms_public_post_types() {
 $post_types = get_post_types(array('public' => true), 'names');
 unset($post_types['attachment']);
@@ -1015,6 +1279,7 @@ return rest_ensure_response(array(
 'footerScripts' => $footer_scripts,
 'headHtml'      => $head_html,
 'footerHtml'    => $footer_html,
+'seo'           => oakwood_page_builder_get_seo_meta( (int) $page->ID ),
 ));
 }
 

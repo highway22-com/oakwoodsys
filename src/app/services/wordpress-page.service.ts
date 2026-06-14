@@ -28,6 +28,15 @@ export interface WordPressFooterScript {
   code?: string;
 }
 
+export interface WordPressPageSeo {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  keywords?: string;
+  slug?: string;
+  canonicalPath?: string;
+}
+
 export interface WordPressPageResponse {
   path: string;
   slug: string;
@@ -42,6 +51,7 @@ export interface WordPressPageResponse {
   footerScripts: WordPressFooterScript[];
   headHtml?: string;
   footerHtml?: string;
+  seo?: WordPressPageSeo;
 }
 
 @Injectable({ providedIn: 'root' })

@@ -149,15 +149,22 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
   private applyPageResponse(path: string, page: WordPressPageResponse): void {
     this.notFound.set(false);
 
-    this.pageTitle.set(page.title ?? this.humanizePath(path));
+    this.pageTitle.set(this.resolveDisplayTitle(path, page));
     this.pageExcerpt.set(page.excerpt ?? '');
     const normalizedContent = this.transformMicrosoftFormsEmbeds(path, page.content ?? '');
     this.pageHtml.set(this.sanitizer.bypassSecurityTrustHtml(normalizedContent));
 
+    const seo = page.seo;
     this.seoMeta.updateMeta({
-      title: page.title ? `${page.title} | Oakwood Systems` : `${this.humanizePath(path)} | Oakwood Systems`,
-      description: page.excerpt?.trim() || page.title || 'WordPress page content.',
-      canonicalPath: `/${path}`,
+      title: this.resolveSeoDocumentTitle(path, page),
+      description:
+        seo?.description?.trim() ||
+        page.excerpt?.trim() ||
+        this.resolveDisplayTitle(path, page) ||
+        'WordPress page content.',
+      canonicalPath: seo?.canonicalPath?.trim() || `/${path}`,
+      image: seo?.ogImage?.trim() || undefined,
+      keywords: seo?.keywords?.trim() || undefined,
     });
 
     if (isPlatformBrowser(this.platformId)) {
@@ -311,6 +318,42 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       .map((segment) => segment.replace(/[-_]+/g, ' '))
       .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
       .join(' / ');
+  }
+
+  /** Reject Yoast titles that are empty or only a site-name suffix (e.g. " | Site Name"). */
+  private isUsableSeoTitle(title: string | undefined | null): boolean {
+    const trimmed = title?.trim() ?? '';
+    if (!trimmed) return false;
+    if (/^\s*\|/.test(trimmed)) return false;
+    const main = trimmed.split('|')[0]?.trim() ?? '';
+    return main.length >= 2;
+  }
+
+  private extractH1FromHtml(html: string): string {
+    const match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+    if (!match?.[1]) return '';
+    return match[1].replace(/<[^>]*>/g, '').trim();
+  }
+
+  private resolveDisplayTitle(path: string, page: WordPressPageResponse): string {
+    const wpTitle = page.title?.trim();
+    if (wpTitle) return wpTitle;
+    const h1 = this.extractH1FromHtml(page.content ?? '');
+    if (h1) return h1;
+    return this.humanizePath(path);
+  }
+
+  private resolveSeoDocumentTitle(path: string, page: WordPressPageResponse): string {
+    const seoTitle = page.seo?.title?.trim();
+    if (this.isUsableSeoTitle(seoTitle)) return seoTitle!;
+
+    const wpTitle = page.title?.trim();
+    if (wpTitle) return `${wpTitle} | Oakwood Systems`;
+
+    const h1 = this.extractH1FromHtml(page.content ?? '');
+    if (h1) return `${h1} | Oakwood Systems`;
+
+    return `${this.humanizePath(path)} | Oakwood Systems`;
   }
 
   private applyBodyClasses(classes: string[]): void {
