@@ -1,28 +1,32 @@
+
+
+#wp-content-root {
+  padding-bottom: 6rem;
+  overflow-x: clip;
+}
+
+app-footer {
+  display: block;
+  margin-top: 1rem;
+}
+
 .wordpress-page {
-  min-height: 100vh;
-  padding: 3rem 1.25rem 5rem;
-
+  overflow-x: clip;
 }
 
-.wordpress-page__shell {
-  width: min(1400px, 100%);
-  margin: 0 auto;
+/* Hide orphaned lightbox controls that can remain after route/back navigation. */
+body > #baguetteBox-overlay,
+body > #close-button,
+body > #next-button,
+body > #previous-button,
+body > .baguetteBox-button,
+body > .mfp-close {
+  display: none !important;
 }
 
 
 
-.wordpress-page__state,
-.wordpress-page__header,
-.wordpress-page__content {
-  padding: clamp(1.5rem, 3vw, 3rem);
-}
 
-.wordpress-page__state {
-  min-height: 35vh;
-  display: grid;
-  align-content: center;
-  gap: 0.75rem;
-}
 
 .wordpress-page__eyebrow {
   display: inline-flex;
@@ -40,7 +44,6 @@
 .wordpress-page__state h1,
 .wordpress-page__header h1 {
   margin: 0;
-  color: #0f172a;
   line-height: 1.05;
   font-size: clamp(2rem, 4vw, 4.25rem);
   letter-spacing: -0.04em;
@@ -83,10 +86,69 @@
 }
 
 .wordpress-page__content img,
-.wordpress-page__content video,
-.wordpress-page__content iframe {
+.wordpress-page__content video {
   max-width: 100%;
   height: auto;
+}
+
+/* Preserve WordPress responsive embed behavior (YouTube/Vimeo/etc.).
+   A generic iframe{height:auto} causes embeds to render too short. */
+.wordpress-page__content .wp-block-embed__wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.wordpress-page__content .wp-has-aspect-ratio .wp-block-embed__wrapper {
+  aspect-ratio: var(--wp--embed--aspect-ratio, 16 / 9);
+}
+
+.wordpress-page__content .wp-has-aspect-ratio .wp-block-embed__wrapper iframe {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Fallback when aspect-ratio utility classes are not present in markup. */
+.wordpress-page__content iframe {
+  max-width: 100%;
+}
+
+.wordpress-page__content .wp-ms-form-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100% !important;
+  max-width: 540px !important;
+  min-width: 320px;
+  min-height: 500px;
+  margin: 0 auto;
+  padding: 2.25rem 2rem;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 0;
+  background: #007e88;
+  color: #ffffff;
+  box-sizing: border-box;
+  flex: 0 0 540px;
+}
+
+.wordpress-page__content .wp-ms-form-card__title {
+  font-size: clamp(1.8rem, 2.2vw, 2.5rem);
+  line-height: 1.1;
+}
+
+.wordpress-page__content .wp-ms-form-card__cta {
+  font-size: 1.125rem;
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.wordpress-page__content .wp-ms-form-card:hover {
+  filter: brightness(0.97);
 }
 
 

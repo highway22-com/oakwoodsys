@@ -16,6 +16,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://oakwoodsys.com/blog/microsoft-defender-for-cloud</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://oakwoodsys.com/blog/is-it-time-to-rethink-your-vmware-strategy</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
