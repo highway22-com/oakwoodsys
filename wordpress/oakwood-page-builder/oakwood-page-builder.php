@@ -2,91 +2,11 @@
 /**
  * Plugin Name: Oakwood Page With Styles API
  * Description: Custom REST endpoint to return rendered page content with styles and scripts.
- * Version: 1.4.1
+ * Version: 1.4.0
  * Author: Oakwood
  */
 
 defined('ABSPATH') || exit;
-
-// ---------------------------------------------------------------------------
-// Public view URLs (Pages → oakwoodsys.com)
-// ---------------------------------------------------------------------------
-
-function oakwood_page_builder_public_site_url() {
-	if (function_exists('oakwood_cms_public_site_url')) {
-		return oakwood_cms_public_site_url();
-	}
-	return 'https://oakwoodsys.com';
-}
-
-function oakwood_page_builder_page_frontend_path($post_id) {
-	$post = get_post($post_id);
-	if (!($post instanceof WP_Post) || $post->post_type !== 'page' || $post->post_name === '') {
-		return null;
-	}
-	$uri = get_page_uri($post);
-	if (is_string($uri) && $uri !== '') {
-		return '/' . trim($uri, '/');
-	}
-	return '/' . $post->post_name;
-}
-
-function oakwood_page_builder_public_view_url($post_id) {
-	$path = oakwood_page_builder_page_frontend_path($post_id);
-	if ($path === null) {
-		return null;
-	}
-	return rtrim(oakwood_page_builder_public_site_url(), '/') . $path;
-}
-
-function oakwood_page_builder_filter_page_link($link, $post_id, $sample) {
-	unset($sample);
-	$url = oakwood_page_builder_public_view_url((int) $post_id);
-	return $url ? $url : $link;
-}
-add_filter('page_link', 'oakwood_page_builder_filter_page_link', 99, 3);
-
-function oakwood_page_builder_filter_preview_post_link($preview_link, $post) {
-	if (!($post instanceof WP_Post) || $post->post_type !== 'page') {
-		return $preview_link;
-	}
-	$url = oakwood_page_builder_public_view_url((int) $post->ID);
-	return $url ? $url : $preview_link;
-}
-add_filter('preview_post_link', 'oakwood_page_builder_filter_preview_post_link', 99, 2);
-
-function oakwood_page_builder_page_row_actions($actions, $post) {
-	if (!($post instanceof WP_Post) || $post->post_type !== 'page' || $post->post_status !== 'publish') {
-		return $actions;
-	}
-	$url = oakwood_page_builder_public_view_url((int) $post->ID);
-	if (!$url) {
-		return $actions;
-	}
-	$actions['view'] = sprintf(
-		'<a href="%1$s" rel="bookmark" aria-label="%2$s">%3$s</a>',
-		esc_url($url),
-		esc_attr(sprintf(__('View &#8220;%s&#8221;'), get_the_title($post))),
-		__('View')
-	);
-	return $actions;
-}
-add_filter('page_row_actions', 'oakwood_page_builder_page_row_actions', 99, 2);
-
-function oakwood_page_builder_rest_prepare_page($response, $post, $request) {
-	unset($request);
-	if (!($response instanceof WP_REST_Response) || !($post instanceof WP_Post) || $post->post_type !== 'page') {
-		return $response;
-	}
-	$url = oakwood_page_builder_public_view_url((int) $post->ID);
-	if ($url) {
-		$data = $response->get_data();
-		$data['link'] = $url;
-		$response->set_data($data);
-	}
-	return $response;
-}
-add_filter('rest_prepare_page', 'oakwood_page_builder_rest_prepare_page', 99, 3);
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -146,7 +66,6 @@ libxml_use_internal_errors(true);
 
 $dom = new DOMDocument();
 
-// Wrap in a full document so libxml parses it predictably.
 $wrapped = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>'
 . $html
 . '</body></html>';
@@ -238,6 +157,63 @@ $result[] = array(
 return $result;
 }
 
+/**
+ * Given a public stylesheet URL, attempt to read the CSS text from the local
+ * filesystem (wp-content/...) so the Angular app can scope every rule to
+ * #wp-content-root without a client-side fetch round-trip.
+ *
+ * Returns the CSS string on success, or null when the file cannot be resolved
+ * (e.g. a CDN URL or a file that does not exist on disk).
+ */
+function oakwood_cms_read_stylesheet_text($href) {
+if (!is_string($href) || $href === '') {
+return null;
+}
+
+$href_clean = strtok($href, '?#');
+
+if (!is_string($href_clean)) {
+return null;
+}
+
+$parsed   = parse_url($href_clean);
+$url_path = isset($parsed['path']) ? $parsed['path'] : '';
+
+if ($url_path === '') {
+return null;
+}
+
+$wp_content_prefix = '/wp-content/';
+if (strpos($url_path, $wp_content_prefix) !== 0) {
+return null;
+}
+
+$relative  = substr($url_path, strlen($wp_content_prefix));
+$file_path = WP_CONTENT_DIR . '/' . $relative;
+
+if (!file_exists($file_path) || !is_readable($file_path)) {
+return null;
+}
+
+$css = file_get_contents($file_path);
+return ($css !== false && $css !== '') ? $css : null;
+}
+
+/**
+ * Enrich each stylesheet entry with a 'css' key containing the file text so
+ * the Angular client can scope the rules to #wp-content-root at injection time.
+ */
+function oakwood_cms_enrich_stylesheets_with_text($stylesheets) {
+return array_map(function ($sheet) {
+if (!isset($sheet['css'])) {
+$sheet['css'] = oakwood_cms_read_stylesheet_text(
+isset($sheet['href']) ? $sheet['href'] : ''
+);
+}
+return $sheet;
+}, $stylesheets);
+}
+
 function oakwood_cms_dedupe_stylesheets($stylesheets) {
 $map = array();
 
@@ -281,20 +257,120 @@ return array_values($map);
 }
 
 /**
- * Heuristic: meta value is likely CSS, not a timestamp or flag.
+ * Admin-only assets (toolbar/editor/admin UI) should never be shipped to the
+ * headless frontend response because they can override page CSS and distort
+ * layout (e.g. top margin bump from admin-bar styles).
  */
-function oakwood_cms_looks_like_css($value) {
-	if (!is_string($value)) {
-		return false;
-	}
-	$trimmed = trim($value);
-	if ($trimmed === '') {
-		return false;
-	}
-	if (preg_match('/^\d+$/', $trimmed)) {
-		return false;
-	}
-	return strpos($trimmed, '{') !== false || strpos($trimmed, ':') !== false;
+function oakwood_cms_is_admin_asset($id, $href = '') {
+$id = strtolower((string) $id);
+$href = strtolower((string) $href);
+
+$admin_id_tokens = array(
+'admin-bar',
+'dashicons',
+'wp-components',
+'wp-preferences',
+'media-views',
+'wpcode-admin-bar',
+'yoast-seo-adminbar',
+'wp-mail-smtp-admin-bar',
+'wpforms-admin-bar',
+'popup-maker-admin-bar',
+);
+
+foreach ($admin_id_tokens as $token) {
+if ($id !== '' && strpos($id, $token) !== false) {
+return true;
+}
+}
+
+if (
+strpos($href, '/wp-admin/') !== false ||
+strpos($href, '/wp-includes/css/admin-bar') !== false ||
+strpos($href, 'admin-bar.css') !== false
+) {
+return true;
+}
+
+return false;
+}
+
+function oakwood_cms_filter_frontend_stylesheets($stylesheets) {
+return array_values(array_filter($stylesheets, function ($sheet) {
+$id = isset($sheet['id']) ? $sheet['id'] : '';
+$href = isset($sheet['href']) ? $sheet['href'] : '';
+return !oakwood_cms_is_admin_asset($id, $href);
+}));
+}
+
+function oakwood_cms_filter_frontend_inline_styles($inline_styles) {
+return array_values(array_filter($inline_styles, function ($style) {
+$id = isset($style['id']) ? strtolower((string) $style['id']) : '';
+
+if ($id === '') {
+return true;
+}
+
+$admin_inline_tokens = array(
+'admin-bar-inline-css',
+'wpforms-admin-bar-inline-css',
+'wpcode-admin-bar',
+);
+
+foreach ($admin_inline_tokens as $token) {
+if (strpos($id, $token) !== false) {
+return false;
+}
+}
+
+return true;
+}));
+}
+
+function oakwood_cms_filter_frontend_scripts($scripts) {
+return array_values(array_filter($scripts, function ($script) {
+$id  = isset($script['id']) ? strtolower((string) $script['id']) : '';
+$src = isset($script['src']) ? strtolower((string) $script['src']) : '';
+
+if (
+strpos($id, 'admin-bar') !== false ||
+strpos($id, 'wpcode-admin-bar') !== false ||
+strpos($id, 'popup-maker-admin-bar') !== false ||
+strpos($src, '/wp-admin/') !== false ||
+strpos($src, '/wp-includes/js/admin-bar') !== false
+) {
+return false;
+}
+
+return true;
+}));
+}
+
+/**
+ * Wrap block content with the same classes WordPress theme templates apply
+ * around post content so global block-layout rules can match in headless UI.
+ */
+function oakwood_cms_wrap_block_content_for_headless($content_html, $page) {
+if (!is_string($content_html) || trim($content_html) === '') {
+return $content_html;
+}
+
+if (!($page instanceof WP_Post)) {
+return $content_html;
+}
+
+if (!function_exists('has_blocks') || !has_blocks((int) $page->ID)) {
+return $content_html;
+}
+
+// Avoid double wrapping if a wrapper was already introduced upstream.
+if (strpos($content_html, 'wp-block-post-content') !== false) {
+return $content_html;
+}
+
+return '<div class="entry-content wp-block-post-content has-global-padding is-layout-constrained wp-block-post-content-is-layout-constrained">'
+. $content_html
+. '</div>';
 }
 
 // ---------------------------------------------------------------------------
@@ -379,15 +455,9 @@ return $result;
 
 $post_id    = (int) $post_id;
 $upload_dir = wp_upload_dir();
+$base_dir   = trailingslashit($upload_dir['basedir']);
+$base_url   = trailingslashit($upload_dir['baseurl']);
 
-if (!empty($upload_dir['error'])) {
-	return $result;
-}
-
-$base_dir = trailingslashit($upload_dir['basedir']);
-$base_url = trailingslashit($upload_dir['baseurl']);
-
-// ---- Global block stylesheet ----
 $global_css_file = $base_dir . 'uag-plugin/custom-style-blocks.css';
 $global_css_url  = $base_url . 'uag-plugin/custom-style-blocks.css';
 
@@ -401,16 +471,12 @@ $result['stylesheets'][] = array(
 );
 }
 
-// ---- Per-page CSS file (Spectra stores it in a blog-id subfolder) ----
 $pattern = $base_dir . 'uag-plugin/assets/*/uag-css-' . $post_id . '.css';
 $matches = glob($pattern);
 
-$has_uagb_file = false;
-
 if (!empty($matches) && is_array($matches)) {
 $css_file = $matches[0];
-if (is_readable($css_file) && filesize($css_file) > 0) {
-$css_url = $base_url . ltrim(
+$css_url  = $base_url . ltrim(
 str_replace(
 wp_normalize_path($base_dir),
 '',
@@ -426,22 +492,21 @@ $result['stylesheets'][] = array(
 'media' => 'all',
 'type'  => 'text/css',
 );
-$has_uagb_file = true;
-}
+
+return $result;
 }
 
-// ---- Fallback: try known Spectra meta keys (only if no non-empty CSS file) ----
-if (!$has_uagb_file) {
 $spectra_meta_keys = array(
 '_uagb_css',
 '_uag_page_assets',
 '_spectra_page_assets',
+'uagb_style_timestamp',
 );
 
 foreach ($spectra_meta_keys as $meta_key) {
 $inline_css = get_post_meta($post_id, $meta_key, true);
 
-if (oakwood_cms_looks_like_css($inline_css)) {
+if (is_string($inline_css) && trim($inline_css) !== '') {
 $result['inlineStyles'][] = array(
 'id'    => 'uagb-post-inline-css-' . $post_id,
 'media' => 'all',
@@ -451,7 +516,6 @@ break;
 }
 }
 
-// ---- Last resort: generate CSS dynamically via Spectra's own method ----
 if (empty($result['inlineStyles'])) {
 $dynamic_css = oakwood_cms_generate_uagb_dynamic_css($post_id);
 
@@ -463,15 +527,10 @@ $result['inlineStyles'][] = array(
 );
 }
 }
-}
 
 return $result;
 }
 
-/**
- * Try to generate Spectra block CSS dynamically by calling its own internal
- * CSS-generation classes. Works with Spectra 2.x.
- */
 function oakwood_cms_generate_uagb_dynamic_css($post_id) {
 $post_id = (int) $post_id;
 
@@ -517,11 +576,116 @@ return '';
 }
 
 // ---------------------------------------------------------------------------
+// Elementor helpers (kept from working v1.3.0 — renders Elementor correctly)
+// ---------------------------------------------------------------------------
+
+/**
+ * Whether the page is built with Elementor.
+ */
+function oakwood_cms_is_elementor(int $post_id) {
+if (!did_action('elementor/loaded') || !class_exists('\Elementor\Plugin')) {
+return false;
+}
+$documents = \Elementor\Plugin::$instance->documents ?? null;
+if (!$documents) {
+return false;
+}
+$document = $documents->get($post_id);
+return $document && method_exists($document, 'is_built_with_elementor') && $document->is_built_with_elementor();
+}
+
+/**
+ * Ensure Elementor enqueues its frontend assets before wp_head/wp_footer capture.
+ */
+function oakwood_cms_enqueue_builder_assets(int $post_id) {
+if (did_action('elementor/loaded') && class_exists('\Elementor\Plugin')) {
+$frontend = \Elementor\Plugin::$instance->frontend;
+if ($frontend && method_exists($frontend, 'enqueue_styles')) {
+$frontend->enqueue_styles();
+}
+if ($frontend && method_exists($frontend, 'enqueue_scripts')) {
+$frontend->enqueue_scripts();
+}
+}
+do_action('oakwood_cms_enqueue_builder_assets', $post_id);
+}
+
+/**
+ * Render content. For Elementor pages use the builder API so document styles
+ * (classic widget CSS + atomic base-desktop.css + per-document local-{id}-frontend-{device}.css)
+ * are enqueued. The plain the_content filter omits the atomic/responsive layout CSS.
+ */
+function oakwood_cms_render_builder_content(WP_Post $page) {
+if (oakwood_cms_is_elementor((int) $page->ID)) {
+$frontend = \Elementor\Plugin::$instance->frontend;
+if ($frontend && method_exists($frontend, 'get_builder_content_for_display')) {
+$html = $frontend->get_builder_content_for_display((int) $page->ID, true);
+if (is_string($html) && $html !== '') {
+return $html;
+}
+}
+}
+return apply_filters('the_content', $page->post_content);
+}
+
+/**
+ * Per-document Elementor CSS files that physically exist in uploads/elementor/css.
+ * Deterministic safety net so atomic/responsive layout CSS is always returned even
+ * if Elementor's runtime enqueue does not fire inside the REST context.
+ *
+ * @return array<int,array<string,string|null>>
+ */
+function oakwood_cms_elementor_css_assets(int $post_id) {
+$assets = array();
+$upload = wp_upload_dir();
+if (empty($upload['basedir']) || empty($upload['baseurl'])) {
+return $assets;
+}
+
+$css_dir = trailingslashit($upload['basedir']) . 'elementor/css';
+$css_url = trailingslashit($upload['baseurl']) . 'elementor/css';
+
+if (!is_dir($css_dir)) {
+return $assets;
+}
+
+// base-desktop.css = atomic foundation (defines .e-flexbox-base display, --display, etc.)
+$candidates = array('base-desktop.css', 'post-' . $post_id . '.css');
+foreach (array('desktop', 'tablet', 'mobile') as $device) {
+$candidates[] = 'local-' . $post_id . '-frontend-' . $device . '.css';
+}
+
+foreach ($candidates as $file) {
+$path = $css_dir . '/' . $file;
+if (!is_readable($path)) {
+continue;
+}
+$version = (string) @filemtime($path);
+$assets[] = array(
+'href'  => $css_url . '/' . $file . ($version !== '' ? '?ver=' . $version : ''),
+'id'    => 'oakwood-elementor-' . sanitize_title($file) . '-css',
+'rel'   => 'stylesheet',
+'media' => 'all',
+'type'  => 'text/css',
+);
+}
+
+return $assets;
+}
+
+// ---------------------------------------------------------------------------
 // Main REST callback
 // ---------------------------------------------------------------------------
 
 function oakwood_cms_rendered_page_response(WP_REST_Request $request) {
 global $post, $wp_query;
+
+$admin_bar_filter_added = false;
+
+if (is_user_logged_in()) {
+add_filter('show_admin_bar', '__return_false');
+$admin_bar_filter_added = true;
+}
 
 $request_path = oakwood_cms_normalize_request_path(
 $request->get_param('path')
@@ -562,79 +726,82 @@ $previous_queried_object_id = isset($wp_query->queried_object_id) ? $wp_query->q
 $previous_is_singular       = isset($wp_query->is_singular)       ? $wp_query->is_singular       : false;
 $previous_is_page           = isset($wp_query->is_page)           ? $wp_query->is_page           : false;
 $previous_is_single         = isset($wp_query->is_single)         ? $wp_query->is_single         : false;
-// FIX: snapshot is_404 so we can restore it — Claude's version set it but never restored it.
 $previous_is_404            = isset($wp_query->is_404)            ? $wp_query->is_404            : false;
 
 // ---- Set up context ----
 $post = $page;
 setup_postdata($post);
 
-$wp_query->post              = $post;
-$wp_query->queried_object    = $post;
-$wp_query->queried_object_id = $post->ID;
-$wp_query->is_singular       = true;
-$wp_query->is_page           = ($post->post_type === 'page');
-$wp_query->is_single         = ($post->post_type !== 'page');
-$wp_query->is_404            = false;
+$wp_query->post               = $post;
+$wp_query->queried_object     = $post;
+$wp_query->queried_object_id  = $post->ID;
+$wp_query->is_singular        = true;
+$wp_query->is_page            = ($post->post_type === 'page');
+$wp_query->is_single          = ($post->post_type !== 'page');
+$wp_query->is_404             = false;
 
-$using_themes_filter = static function () {
-	return true;
-};
+// Trick plugins that guard on is_main_query() / wp_using_themes().
+add_filter('wp_using_themes', '__return_true');
+
 $the_posts_filter = static function ($posts) use ($page) {
-	return empty($posts) ? array($page) : $posts;
+return empty($posts) ? array($page) : $posts;
 };
-
-add_filter('wp_using_themes', $using_themes_filter);
 add_filter('the_posts', $the_posts_filter, 999);
 
-$content_html = '';
-$head_html    = '';
-$footer_html  = '';
-$body_classes = array();
-$render_error = null;
+// ---- Enqueue Elementor builder assets ----
+// For Elementor pages: calls enqueue_styles/enqueue_scripts on the Elementor
+// frontend object so its CSS is in $wp_styles before wp_head() is captured.
+oakwood_cms_enqueue_builder_assets((int) $page->ID);
 
-try {
-	$content_html = apply_filters('the_content', $post->post_content ?? '');
+// ---- Render content ----
+// For Elementor pages: uses get_builder_content_for_display() which enqueues
+// the atomic/responsive CSS files (base-desktop.css, local-{id}-frontend-*.css).
+// For all other pages: apply_filters('the_content') as normal.
+$content_html = oakwood_cms_render_builder_content($page);
+$content_html = oakwood_cms_wrap_block_content_for_headless($content_html, $page);
 
-	if (!did_action('wp_enqueue_scripts')) {
-		do_action('wp_enqueue_scripts');
-	} else {
-		do_action('uagb_register_page_specific_styles', $post->ID);
-		do_action('kadence_blocks_render_inline_css', $post->ID);
-	}
-
-	$head_html   = oakwood_cms_capture_output('wp_head');
-	$footer_html = oakwood_cms_capture_output('wp_footer');
-	$body_classes = array_values(array_unique(get_body_class()));
-} catch (Throwable $e) {
-	$render_error = $e;
-} finally {
-	remove_filter('the_posts', $the_posts_filter, 999);
-	remove_filter('wp_using_themes', $using_themes_filter);
-	wp_reset_postdata();
-
-	$post                        = $previous_post;
-	$wp_query->post              = $previous_query_post;
-	$wp_query->queried_object    = $previous_queried_object;
-	$wp_query->queried_object_id = $previous_queried_object_id;
-	$wp_query->is_singular       = $previous_is_singular;
-	$wp_query->is_page           = $previous_is_page;
-	$wp_query->is_single         = $previous_is_single;
-	$wp_query->is_404            = $previous_is_404;
+// Fire wp_enqueue_scripts so non-Elementor plugins enqueue their block assets.
+if (!did_action('wp_enqueue_scripts')) {
+do_action('wp_enqueue_scripts');
+} else {
+do_action('uagb_register_page_specific_styles', $post->ID);
+do_action('kadence_blocks_render_inline_css', $post->ID);
 }
 
-if ($render_error instanceof Throwable) {
-	return new WP_Error(
-		'oakwood_page_render_failed',
-		__('Failed to render page content.', 'oakwood-cms'),
-		array('status' => 500)
-	);
-}
+// ---- Force-enqueue WP core block library styles ----
+// In REST context these are never auto-enqueued because the normal WordPress
+// template loop (which calls wp_enqueue_block_assets etc.) never runs.
+// Without them, Gutenberg pages lose layout, colour, and typography CSS.
+wp_enqueue_style('wp-block-library');
+wp_enqueue_style('wp-block-library-theme');
+wp_enqueue_style('global-styles');
 
-// ---- Collect stylesheets from head + footer ----
+// ---- Capture head + footer HTML ----
+$head_html   = oakwood_cms_capture_output('wp_head');
+$footer_html = oakwood_cms_capture_output('wp_footer');
+
+$body_classes = array_values(array_unique(get_body_class()));
+
+// ---- Restore globals ----
+remove_filter('the_posts', $the_posts_filter, 999);
+remove_filter('wp_using_themes', '__return_true');
+
+wp_reset_postdata();
+
+$post                         = $previous_post;
+$wp_query->post               = $previous_query_post;
+$wp_query->queried_object     = $previous_queried_object;
+$wp_query->queried_object_id  = $previous_queried_object_id;
+$wp_query->is_singular        = $previous_is_singular;
+$wp_query->is_page            = $previous_is_page;
+$wp_query->is_single          = $previous_is_single;
+$wp_query->is_404             = $previous_is_404;
+
+// ---- Collect stylesheets from head + footer + content ----
 $all_links = array_merge(
 oakwood_cms_extract_elements($head_html, 'link'),
-oakwood_cms_extract_elements($footer_html, 'link')
+oakwood_cms_extract_elements($footer_html, 'link'),
+oakwood_cms_extract_elements($content_html, 'link')
 );
 
 $stylesheets = array_values(array_filter(array_map(function ($element) {
@@ -661,21 +828,23 @@ return array(
 
 $stylesheets = oakwood_cms_dedupe_stylesheets($stylesheets);
 
-// ---- Collect inline styles from head + footer ----
+// ---- Collect inline styles from head + footer + content ----
 $inline_styles = array_merge(
 oakwood_cms_extract_style_tags_raw($head_html),
-oakwood_cms_extract_style_tags_raw($footer_html)
+oakwood_cms_extract_style_tags_raw($footer_html),
+oakwood_cms_extract_style_tags_raw($content_html)
 );
 
 $inline_styles = oakwood_cms_dedupe_inline_styles($inline_styles);
 
-// ---- Also collect inline styles embedded in the content HTML itself ----
-// (Kadence Blocks and some others print <style> directly inside post content)
-$content_inline_styles = oakwood_cms_extract_style_tags_raw($content_html);
-
-if (!empty($content_inline_styles)) {
-$inline_styles = oakwood_cms_dedupe_inline_styles(
-array_merge($inline_styles, $content_inline_styles)
+// ---- Deterministic Elementor per-document CSS files ----
+// Adds base-desktop.css (atomic foundation) + post-{id}.css + responsive
+// local-{id}-frontend-{device}.css files that exist on disk, even if
+// Elementor's runtime enqueue didn't fire inside the REST context.
+$elementor_assets = oakwood_cms_elementor_css_assets((int) $page->ID);
+if (!empty($elementor_assets)) {
+$stylesheets = oakwood_cms_dedupe_stylesheets(
+array_merge($stylesheets, $elementor_assets)
 );
 }
 
@@ -738,6 +907,20 @@ return array(
 );
 }, oakwood_cms_extract_elements($footer_html, 'script'))));
 
+// ---- Enrich stylesheets with raw CSS text for client-side scoping ----
+// The Angular app scopes every rule to #wp-content-root so WP styles cannot
+// affect the navbar, footer, or any other Angular component.
+$stylesheets = oakwood_cms_enrich_stylesheets_with_text($stylesheets);
+
+// Remove admin-only assets from the API payload.
+$stylesheets   = oakwood_cms_filter_frontend_stylesheets($stylesheets);
+$inline_styles = oakwood_cms_filter_frontend_inline_styles($inline_styles);
+$footer_scripts = oakwood_cms_filter_frontend_scripts($footer_scripts);
+
+if ($admin_bar_filter_added) {
+remove_filter('show_admin_bar', '__return_false');
+}
+
 return rest_ensure_response(array(
 'path'          => $request_path,
 'slug'          => $page->post_name,
@@ -745,7 +928,7 @@ return rest_ensure_response(array(
 'title'         => get_the_title($page),
 'excerpt'       => has_excerpt($page) ? get_the_excerpt($page) : '',
 'content'       => $content_html,
-'permalink'     => ($page->post_type === 'page' ? oakwood_page_builder_public_view_url($page->ID) : null) ?: get_permalink($page),
+'permalink'     => get_permalink($page),
 'bodyClasses'   => $body_classes,
 'stylesheets'   => $stylesheets,
 'inlineStyles'  => $inline_styles,
@@ -790,7 +973,7 @@ if (empty($src) || !is_string($src)) {
 continue;
 }
 
-if (strpos($src, '//') !== 0 && strpos($src, 'http') !== 0 && strpos($src, 'https') !== 0) {
+if (strpos($src, '//') === false && strpos($src, 'http') !== 0) {
 $src = site_url($src);
 }
 

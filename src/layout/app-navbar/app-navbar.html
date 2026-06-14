@@ -36,7 +36,7 @@
             ' hover:text-primary-blue': !isScrolled,
             ' hover:text-blue-600': isScrolled,
             activeLink: item.hasDropdown && hoveredIndex() === item.index,
-          }" class="transition-colors duration-200 flex items-center gap-1 group p-4"
+          }" class="transition-colors duration-200 flex items-center gap-1 group p-4" (mouseleave)="handleTopLinkMouseLeave(item)"
         [class.text-gray-900]="hasNavbarBackground" [class.text-white]="!hasNavbarBackground">
         {{ item.label }}
         @if (item.hasDropdown === true) {

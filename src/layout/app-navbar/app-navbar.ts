@@ -430,6 +430,20 @@ export class AppNavbar implements OnInit, OnDestroy {
       if (item.index === 0) {
         this.ensureFeaturedBlogsLoaded();
       }
+      return;
+    }
+
+    // Non-dropdown items (e.g. Microsoft Licensing) should still trigger
+    // the light navbar mode on hover.
+    this.hoveredIndex.set(-1);
+  }
+
+  public handleTopLinkMouseLeave(item: {
+    hasDropdown: boolean;
+  }): void {
+    // For non-dropdown links, clear hover state when pointer leaves the link.
+    if (!item.hasDropdown) {
+      this.hoveredIndex.set(null);
     }
   }
 

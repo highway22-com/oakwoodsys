@@ -94,6 +94,10 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
     const skipLoading = isPlatformBrowser(this.platformId) && this.ssrRenderedPath === path;
     this.ssrRenderedPath = null; // consume — only skip once
     if (!skipLoading) {
+      // Clear stale content so loader remains visible until new content arrives.
+      this.pageHtml.set(null);
+    }
+    if (!skipLoading) {
       this.loading.set(true);
     }
 
@@ -147,7 +151,8 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
 
     this.pageTitle.set(page.title ?? this.humanizePath(path));
     this.pageExcerpt.set(page.excerpt ?? '');
-    this.pageHtml.set(this.sanitizer.bypassSecurityTrustHtml(page.content ?? ''));
+    const normalizedContent = this.transformMicrosoftFormsEmbeds(path, page.content ?? '');
+    this.pageHtml.set(this.sanitizer.bypassSecurityTrustHtml(normalizedContent));
 
     this.seoMeta.updateMeta({
       title: page.title ? `${page.title} | Oakwood Systems` : `${this.humanizePath(path)} | Oakwood Systems`,
@@ -248,6 +253,55 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       // Use a lookbehind so we don't touch class names like .has-body-font or
       // attribute values inside url() strings — only CSS selector tokens.
       .replace(/(?<=[\s,{};>+~(]|^)body(?=[\s,{}>+~[:.#*]|$)/gm, ':scope');
+  }
+
+  /**
+   * On the AI readiness page, render the Microsoft Forms embed as a compact CTA
+   * card instead of opening the full form inside the layout column.
+   */
+  private transformMicrosoftFormsEmbeds(path: string, content: string): string {
+    if (path !== 'artificial-intelligence-ai-readiness-assessment' || !content.trim()) {
+      return content;
+    }
+
+    const template = this.document.createElement('template');
+    template.innerHTML = content;
+
+    const iframes = Array.from(template.content.querySelectorAll('iframe'));
+    for (const iframe of iframes) {
+      const rawSrc = iframe.getAttribute('src') ?? '';
+      const src = rawSrc.replace(/\s+/g, '').trim();
+      if (!src || !/forms\.(microsoft|office)\.com/i.test(src)) {
+        continue;
+      }
+
+      const href = src.replace(/([?&])embed=true(&?)/i, (_m, p1: string, p2: string) => {
+        if (p1 === '?' && p2) return '?';
+        if (p1 === '&' && p2) return '&';
+        return '';
+      }).replace(/[?&]$/, '');
+
+      const card = this.document.createElement('a');
+      card.className = 'wp-ms-form-card';
+      card.href = href || src;
+      card.target = '_blank';
+      card.rel = 'noopener noreferrer';
+      card.setAttribute('aria-label', 'Open Microsoft Form in a new tab');
+
+      const heading = this.document.createElement('span');
+      heading.className = 'wp-ms-form-card__title';
+      heading.textContent = 'Microsoft Forms';
+
+      const cta = this.document.createElement('span');
+      cta.className = 'wp-ms-form-card__cta';
+      cta.textContent = 'Fill out the form';
+
+      card.appendChild(heading);
+      card.appendChild(cta);
+      iframe.replaceWith(card);
+    }
+
+    return template.innerHTML;
   }
 
   private humanizePath(path: string): string {
@@ -423,7 +477,16 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       this.scriptDomObserver = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
           mutation.addedNodes.forEach((node) => {
-            if (node instanceof HTMLElement && node.tagName !== 'SCRIPT') {
+            if (!(node instanceof HTMLElement)) {
+              return;
+            }
+
+            if (node.id === 'baguetteBox-overlay' || node.classList.contains('baguetteBox-button') || node.classList.contains('mfp-close')) {
+              node.parentNode?.removeChild(node);
+              return;
+            }
+
+            if (node.tagName !== 'SCRIPT') {
               this.injectedBodyNodes.push(node);
             }
           });
@@ -447,6 +510,9 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       }
       await this.appendScriptInOrder(body, script, scriptData);
     }
+
+    // Clean up any overlay that a script injected as soon as it finishes loading.
+    this.removeScriptBodyOverlays();
   }
 
   private appendScriptInOrder(body: HTMLElement, script: HTMLScriptElement, scriptData: WordPressFooterScript): Promise<void> {
@@ -505,7 +571,13 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
    */
   private removeScriptBodyOverlays(): void {
     this.document.querySelectorAll(
-      '#baguetteBox-overlay, [id^="baguetteBox"], [class*="baguetteBox"]'
+      '#baguetteBox-overlay, [id^="baguetteBox"], [class*="baguetteBox"], .mfp-wrap, .mfp-bg, [class*="mfp-"]'
+    ).forEach((el) => el.parentNode?.removeChild(el));
+
+    // Some lightbox plugins leave orphan controls in <body> when navigating
+    // with browser back/forward (e.g. bare #close-button showing as a stray X).
+    this.document.querySelectorAll(
+      'body > #close-button, body > #next-button, body > #previous-button, body > .baguetteBox-button, body > .mfp-close, body > [class*="baguetteBox-button"], body > [class*="mfp-close"]'
     ).forEach((el) => el.parentNode?.removeChild(el));
   }
 }

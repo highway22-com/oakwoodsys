@@ -1,12 +1,12 @@
 <app-navbar></app-navbar>
 
-<div id="wp-content-root">
+<div id="wp-content-root" class="pb-20 mb-20">
   <section class="wordpress-page">
-    <div *ngIf="loading()" class="min-h-screen flex items-center justify-center">
+    <div *ngIf="loading() || (!pageHtml() && !error())" class="min-h-screen flex items-center justify-center">
       <div class="animate-spin h-12 w-12 border-b-2 border-blue-600 rounded-full"></div>
     </div>
 
-    <ng-container *ngIf="!loading()">
+    <ng-container *ngIf="!loading() && pageHtml()">
       <article class="wordpress-page__content" [innerHTML]="pageHtml()"></article>
     </ng-container>
   </section>
