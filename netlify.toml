@@ -102,11 +102,7 @@
   status = 200
   force = true
 
-# SPA: rutas sin archivo estático sirven index.html (Angular Router)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# SSR: @netlify/angular-runtime maneja el catch-all (no usar /* → /index.html; bloquea SSR).
 
 # Security headers (HTTPS + upgrade passive mixed content)
 [[headers]]
