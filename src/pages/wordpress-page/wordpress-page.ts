@@ -8,6 +8,8 @@ import { CMS_BASE_URL } from '../../app/config/cms.config';
 import { WordPressFooterScript, WordPressInlineStyle, WordPressPageResponse, WordPressPageService, WordPressPageStylesheet } from '../../app/services/wordpress-page.service';
 import { AppNavbar } from '../../layout/app-navbar/app-navbar';
 import { Footer } from '../../layout/footer/footer';
+import { applyWordPressPageSeo, resolveWordPressDisplayTitle } from './wordpress-page.seo';
+import { resolveWordPressPathFromRoute } from './wordpress-page.resolver';
 
 @Component({
   selector: 'app-wordpress-page',
@@ -55,10 +57,10 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       this.ssrRenderedPath = marker?.content ?? null;
       marker?.parentNode?.removeChild(marker);
     }
-    this.loadCurrentPage();
+    this.loadCurrentPage(true);
     this.subscriptions.add(
       this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)).subscribe(() => {
-        this.loadCurrentPage();
+        this.loadCurrentPage(false);
       })
     );
     // Sweep script-injected body overlays (BaguetteBox etc.) at the very start
@@ -78,7 +80,7 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
     this.cleanupInjectedAssets();
   }
 
-  private loadCurrentPage(): void {
+  private loadCurrentPage(useResolverData: boolean): void {
     const path = this.resolvePath();
     if (!path || path === this.currentPath) {
       return;
@@ -102,55 +104,65 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       this.loading.set(true);
     }
 
+    if (useResolverData) {
+      const resolvedPage = this.route.snapshot.data['wpPage'] as WordPressPageResponse | null | undefined;
+      if (resolvedPage) {
+        this.runWhenReady(() => this.applyPageResponse(path, resolvedPage));
+        return;
+      }
+      if (resolvedPage === null) {
+        this.runWhenReady(() => this.handlePageLoadError(path, 404));
+        return;
+      }
+    }
+
     this.wordpressPageService.getPage(path).subscribe({
       // In the browser, defer one macrotask so Angular renders loading=true before
       // processing a synchronous transfer-cache response. On SSR, apply synchronously
       // because Angular SSR does not await setTimeout callbacks.
       next: (page) => {
-        if (isPlatformBrowser(this.platformId)) {
-          setTimeout(() => this.applyPageResponse(path, page));
-        } else {
-          this.applyPageResponse(path, page);
-        }
+        this.runWhenReady(() => this.applyPageResponse(path, page));
       },
       error: (error) => {
-        const handler = () => {
-          const status = error?.status ?? 0;
-          if (status === 404) {
-            this.router.navigate(['/404'], { replaceUrl: true });
-            return;
-          }
-          this.loading.set(false);
-          this.notFound.set(false);
-          this.error.set('Unable to load the WordPress page.');
-          this.pageTitle.set('');
-          this.pageExcerpt.set('');
-          this.pageHtml.set(null);
-          this.seoMeta.updateMeta({
-            title: 'WordPress page unavailable | Oakwood Systems',
-            description: 'The requested WordPress page could not be loaded.',
-            canonicalPath: `/${path}`,
-          });
-        };
-        if (isPlatformBrowser(this.platformId)) {
-          setTimeout(handler);
-        } else {
-          handler();
-        }
+        this.runWhenReady(() => this.handlePageLoadError(path, error?.status ?? 0));
       },
     });
   }
 
+  private runWhenReady(fn: () => void): void {
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(fn);
+    } else {
+      fn();
+    }
+  }
+
+  private handlePageLoadError(path: string, status: number): void {
+    if (status === 404) {
+      this.router.navigate(['/404'], { replaceUrl: true });
+      return;
+    }
+    this.loading.set(false);
+    this.notFound.set(false);
+    this.error.set('Unable to load the WordPress page.');
+    this.pageTitle.set('');
+    this.pageExcerpt.set('');
+    this.pageHtml.set(null);
+    this.seoMeta.updateMeta({
+      title: 'WordPress page unavailable | Oakwood Systems',
+      description: 'The requested WordPress page could not be loaded.',
+      canonicalPath: `/${path}`,
+    });
+  }
+
   private resolvePath(): string {
-    const routePath = this.route.snapshot.url.map((segment) => segment.path).join('/');
-    const routerPath = this.router.url.split('?')[0].split('#')[0].replace(/^\/+|\/+$/g, '');
-    return decodeURIComponent(routePath || routerPath);
+    return resolveWordPressPathFromRoute(this.route.snapshot, this.router);
   }
 
   private applyPageResponse(path: string, page: WordPressPageResponse): void {
     this.notFound.set(false);
 
-    this.pageTitle.set(this.resolveDisplayTitle(path, page));
+    this.pageTitle.set(resolveWordPressDisplayTitle(path, page));
     this.pageExcerpt.set(page.excerpt ?? '');
     const normalizedContent = this.transformMicrosoftFormsEmbeds(
       path,
@@ -158,18 +170,7 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
     );
     this.pageHtml.set(this.sanitizer.bypassSecurityTrustHtml(normalizedContent));
 
-    const seo = page.seo;
-    this.seoMeta.updateMeta({
-      title: this.resolveSeoDocumentTitle(path, page),
-      description:
-        seo?.description?.trim() ||
-        page.excerpt?.trim() ||
-        this.resolveDisplayTitle(path, page) ||
-        'WordPress page content.',
-      canonicalPath: seo?.canonicalPath?.trim() || `/${path}`,
-      image: seo?.ogImage?.trim() || undefined,
-      keywords: seo?.keywords?.trim() || undefined,
-    });
+    applyWordPressPageSeo(this.seoMeta, path, page);
 
     if (isPlatformBrowser(this.platformId)) {
       this.applyBodyClasses(page.bodyClasses ?? []);
@@ -355,51 +356,6 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
     }
 
     return template.innerHTML;
-  }
-
-  private humanizePath(path: string): string {
-    return path
-      .split('/')
-      .filter(Boolean)
-      .map((segment) => segment.replace(/[-_]+/g, ' '))
-      .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
-      .join(' / ');
-  }
-
-  /** Reject Yoast titles that are empty or only a site-name suffix (e.g. " | Site Name"). */
-  private isUsableSeoTitle(title: string | undefined | null): boolean {
-    const trimmed = title?.trim() ?? '';
-    if (!trimmed) return false;
-    if (/^\s*\|/.test(trimmed)) return false;
-    const main = trimmed.split('|')[0]?.trim() ?? '';
-    return main.length >= 2;
-  }
-
-  private extractH1FromHtml(html: string): string {
-    const match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
-    if (!match?.[1]) return '';
-    return match[1].replace(/<[^>]*>/g, '').trim();
-  }
-
-  private resolveDisplayTitle(path: string, page: WordPressPageResponse): string {
-    const wpTitle = page.title?.trim();
-    if (wpTitle) return wpTitle;
-    const h1 = this.extractH1FromHtml(page.content ?? '');
-    if (h1) return h1;
-    return this.humanizePath(path);
-  }
-
-  private resolveSeoDocumentTitle(path: string, page: WordPressPageResponse): string {
-    const seoTitle = page.seo?.title?.trim();
-    if (this.isUsableSeoTitle(seoTitle)) return seoTitle!;
-
-    const wpTitle = page.title?.trim();
-    if (wpTitle) return `${wpTitle} | Oakwood Systems`;
-
-    const h1 = this.extractH1FromHtml(page.content ?? '');
-    if (h1) return `${h1} | Oakwood Systems`;
-
-    return `${this.humanizePath(path)} | Oakwood Systems`;
   }
 
   private applyBodyClasses(classes: string[]): void {

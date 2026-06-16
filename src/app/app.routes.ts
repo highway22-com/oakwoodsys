@@ -6,6 +6,7 @@ import { ContactUs } from '../pages/contact-us/contact-us';
 import { ContactSuccess } from '../pages/contact-success/contact-success';
 import { Login } from '../pages/login/login';
 import { MainLayout } from '../layout/main-layout/main-layout';
+import { wordpressPageResolver } from '../pages/wordpress-page/wordpress-page.resolver';
 
 export const routes: Routes = [
     {
@@ -136,6 +137,7 @@ export const routes: Routes = [
     },
     {
         path: '**',
-        loadComponent: () => import('../pages/wordpress-page/wordpress-page')
+        loadComponent: () => import('../pages/wordpress-page/wordpress-page'),
+        resolve: { wpPage: wordpressPageResolver },
     }
 ];

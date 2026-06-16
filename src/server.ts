@@ -15,7 +15,56 @@ async function getBlobsStore() {
   }
 }
 
-const angularAppEngine = new AngularAppEngine()
+const angularAppEngine = new AngularAppEngine({
+  allowedHosts: [
+    'oakwoodsys.com',
+    'www.oakwoodsys.com',
+    '*.netlify.app',
+    'localhost',
+  ],
+});
+
+/** Paths served by the WordPress catch-all route (app.routes.ts `**`). */
+const ANGULAR_ROUTE_PREFIXES = new Set([
+  'blog',
+  'services',
+  'resources',
+  'industries',
+  'structured-engagement',
+  'about',
+  'contact-us',
+  'contact-success',
+  'careers',
+  'privacy-policy',
+  'technology-partners',
+  'microsoft-licensing',
+  'home',
+  'admin',
+  '404',
+  'edit',
+  'events',
+  'api',
+  'wp-admin',
+]);
+
+function isWordPressCatchAllPath(pathname: string): boolean {
+  const normalized = pathname.replace(/^\/+|\/+$/g, '');
+  if (!normalized) return false;
+  if (normalized === 'sitemap.xml' || normalized === 'robots.txt') return false;
+  const firstSegment = normalized.split('/')[0];
+  return !ANGULAR_ROUTE_PREFIXES.has(firstSegment);
+}
+
+function withNoCacheHeaders(response: Response): Response {
+  const headers = new Headers(response.headers);
+  headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+  headers.set('Pragma', 'no-cache');
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
 
 // Authentication helper functions
 // Helper functions for base64 encoding/decoding (compatible with Deno/Edge Functions)
@@ -701,6 +750,9 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
   }
 
   const result = await angularAppEngine.handle(request, context)
+  if (result && isWordPressCatchAllPath(pathname)) {
+    return withNoCacheHeaders(result);
+  }
   return result || new Response('Not found', { status: 404 })
 }
 

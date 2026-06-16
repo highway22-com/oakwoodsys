@@ -1,7 +1,7 @@
-import { isPlatformServer } from '@angular/common';
-import { inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { inject, Injectable, makeStateKey, PLATFORM_ID, TransferState } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
 
 import { CMS_BASE_URL } from '../config/cms.config';
 
@@ -57,16 +57,37 @@ export interface WordPressPageResponse {
   seo?: WordPressPageSeo;
 }
 
+const wpPageStateKey = (path: string) => makeStateKey<WordPressPageResponse>(`wp-page:${path}`);
+
 @Injectable({ providedIn: 'root' })
 export class WordPressPageService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly transferState = inject(TransferState);
 
   getPage(path: string): Observable<WordPressPageResponse> {
-    const encoded = encodeURIComponent(path);
+    const normalizedPath = path.trim();
+    const stateKey = wpPageStateKey(normalizedPath);
+
+    if (isPlatformBrowser(this.platformId)) {
+      const cached = this.transferState.get(stateKey, null);
+      if (cached) {
+        this.transferState.remove(stateKey);
+        return of(cached);
+      }
+    }
+
+    const encoded = encodeURIComponent(normalizedPath);
     const url = isPlatformServer(this.platformId)
       ? `${CMS_BASE_URL}/wp-json/custom/v1/rendered-page?path=${encoded}`
       : `/api/wordpress-page?path=${encoded}`;
-    return this.http.get<WordPressPageResponse>(url);
+
+    return this.http.get<WordPressPageResponse>(url).pipe(
+      tap((page) => {
+        if (isPlatformServer(this.platformId)) {
+          this.transferState.set(stateKey, page);
+        }
+      }),
+    );
   }
 }
