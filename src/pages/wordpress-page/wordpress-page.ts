@@ -4,6 +4,7 @@ import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { filter, Subscription } from 'rxjs';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
+import { CMS_BASE_URL } from '../../app/config/cms.config';
 import { WordPressFooterScript, WordPressInlineStyle, WordPressPageResponse, WordPressPageService, WordPressPageStylesheet } from '../../app/services/wordpress-page.service';
 import { AppNavbar } from '../../layout/app-navbar/app-navbar';
 import { Footer } from '../../layout/footer/footer';
@@ -151,7 +152,10 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
 
     this.pageTitle.set(this.resolveDisplayTitle(path, page));
     this.pageExcerpt.set(page.excerpt ?? '');
-    const normalizedContent = this.transformMicrosoftFormsEmbeds(path, page.content ?? '');
+    const normalizedContent = this.transformMicrosoftFormsEmbeds(
+      path,
+      this.normalizeInsecureUrls(page.content ?? ''),
+    );
     this.pageHtml.set(this.sanitizer.bypassSecurityTrustHtml(normalizedContent));
 
     const seo = page.seo;
@@ -253,13 +257,55 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
    * them. We also replace bare `body` selectors for the same reason.
    */
   private prepCssForScope(css: string): string {
-    return css
+    return this.normalizeInsecureUrls(css)
       // :root → :scope (e.g. :root { --wp--preset--color--white: #fff })
       .replace(/:root\b/g, ':scope')
       // bare `body` selector → :scope  (e.g. body { font-family: ... })
       // Use a lookbehind so we don't touch class names like .has-body-font or
       // attribute values inside url() strings — only CSS selector tokens.
       .replace(/(?<=[\s,{};>+~(]|^)body(?=[\s,{}>+~[:.#*]|$)/gm, ':scope');
+  }
+
+  /**
+   * Rewrite http:// and staging/local media URLs so HTTPS pages do not trigger
+   * "Not secure" warnings from mixed content in WordPress CSS/HTML.
+   */
+  private normalizeInsecureUrls(text: string): string {
+    if (!text) return text;
+
+    const cmsOrigin = CMS_BASE_URL.replace(/\/$/, '');
+    let publicOrigin = 'https://oakwoodsys.com';
+    if (isPlatformBrowser(this.platformId)) {
+      const origin = this.document.defaultView?.location?.origin?.replace(/\/$/, '');
+      if (origin && /^https?:\/\//i.test(origin)) {
+        publicOrigin = origin;
+      }
+    }
+
+    let result = text
+      .replace(/http:\/\/www\.oakwoodsys\.com/gi, publicOrigin)
+      .replace(/http:\/\/oakwoodsys\.com/gi, publicOrigin)
+      .replace(/http:\/\/www\.oakwoodsystemsgroup\.com/gi, cmsOrigin)
+      .replace(/http:\/\/oakwoodsystemsgroup\.com/gi, cmsOrigin);
+
+    const stagingHosts = [
+      'new-stagging-elementor-testing.local',
+      'wordpress-stagging.local',
+      'localhost',
+      '127.0.0.1',
+    ];
+
+    for (const host of stagingHosts) {
+      const escaped = host.replace(/\./g, '\\.');
+      result = result.replace(
+        new RegExp(`https?://${escaped}(/wp-content/[^"'\\s>)]+)`, 'gi'),
+        `${cmsOrigin}$1`,
+      );
+    }
+
+    result = result.replace(/http:\/\/[^/"'\s>]+(\/wp-content\/[^"'\\s>)]+)/gi, `${cmsOrigin}$1`);
+
+    return result;
   }
 
   /**

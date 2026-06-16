@@ -8,6 +8,36 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Inter stack for editor-font-family and theme presets (must be a literal stack, not var()).
+ *
+ * @return string
+ */
+function oak_font_family_inter() {
+	if ( function_exists( 'oakwoodsys_theme_get_tokens' ) ) {
+		$tokens = oakwoodsys_theme_get_tokens();
+		if ( ! empty( $tokens['fonts']['inter']['family'] ) ) {
+			return $tokens['fonts']['inter']['family'];
+		}
+	}
+	return '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+}
+
+/**
+ * Segoe UI stack for editor-font-family and theme presets (must be a literal stack, not var()).
+ *
+ * @return string
+ */
+function oak_font_family_segoe() {
+	if ( function_exists( 'oakwoodsys_theme_get_tokens' ) ) {
+		$tokens = oakwoodsys_theme_get_tokens();
+		if ( ! empty( $tokens['fonts']['segoe']['family'] ) ) {
+			return $tokens['fonts']['segoe']['family'];
+		}
+	}
+	return '"Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif';
+}
+
+/**
  * Register Inter and Segoe UI font stylesheets.
  */
 function oak_register_fonts() {
@@ -222,12 +252,12 @@ function oak_theme_support() {
 		array(
 			'name'       => 'Inter',
 			'slug'       => 'inter',
-			'fontFamily' => 'var(--font-inter)',
+			'fontFamily' => oak_font_family_inter(),
 		),
 		array(
 			'name'       => 'Segoe UI',
 			'slug'       => 'segoe',
-			'fontFamily' => 'var(--font-segoe)',
+			'fontFamily' => oak_font_family_segoe(),
 		),
 	) );
 }

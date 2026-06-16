@@ -209,6 +209,9 @@ async function main() {
   wpPageSlugs.forEach((s) => routes.push(`/${s}`));
   console.log(`[prerender-routes] Added ${wpPageSlugs.length} WordPress page slugs`);
 
+  writeFileSync(join(ROOT, 'wp-page-slugs.json'), JSON.stringify({ slugs: wpPageSlugs }, null, 2), 'utf8');
+  console.log(`[prerender-routes] Wrote wp-page-slugs.json (${wpPageSlugs.length} slugs)`);
+
   const eventSlugs = getSlugsFromJson('public/events-content.json', 'events', 'slug');
   // Event detail URLs are SSR-only; do not add to prerender-routes.txt (see app.routes.server.ts).
 

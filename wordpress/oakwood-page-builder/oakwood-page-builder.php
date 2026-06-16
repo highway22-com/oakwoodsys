@@ -93,6 +93,133 @@ function oakwood_page_builder_rest_prepare_page( $response, $post, $request ) {
 add_filter( 'rest_prepare_page', 'oakwood_page_builder_rest_prepare_page', 99, 3 );
 
 /**
+ * Production WordPress origin for media rewrites (always HTTPS).
+ *
+ * @return string
+ */
+function oakwood_page_builder_cms_origin() {
+	$home = home_url( '/', 'https' );
+	if ( is_string( $home ) && $home !== '' ) {
+		return rtrim( $home, '/' );
+	}
+	return 'https://oakwoodsystemsgroup.com';
+}
+
+/**
+ * Hostnames that must never be served to the public frontend (staging/local).
+ *
+ * @return string[]
+ */
+function oakwood_page_builder_insecure_hosts() {
+	$hosts = array(
+		'new-stagging-elementor-testing.local',
+		'wordpress-stagging.local',
+		'localhost',
+		'127.0.0.1',
+	);
+	return apply_filters( 'oakwood_page_builder_insecure_hosts', $hosts );
+}
+
+/**
+ * Upgrade http:// and rewrite staging/local asset URLs to production HTTPS.
+ *
+ * Prevents browser "Not secure" warnings from mixed content on oakwoodsys.com.
+ *
+ * @param string $text HTML or CSS.
+ * @return string
+ */
+function oakwood_page_builder_normalize_https_urls( $text ) {
+	if ( ! is_string( $text ) || $text === '' ) {
+		return $text;
+	}
+
+	$public_origin = rtrim( oakwood_page_builder_public_site_url(), '/' );
+	$cms_origin    = oakwood_page_builder_cms_origin();
+
+	$text = str_replace(
+		array(
+			'http://www.oakwoodsys.com',
+			'http://oakwoodsys.com',
+			'http://www.oakwoodsystemsgroup.com',
+			'http://oakwoodsystemsgroup.com',
+		),
+		array(
+			$public_origin,
+			$public_origin,
+			$cms_origin,
+			$cms_origin,
+		),
+		$text
+	);
+
+	foreach ( oakwood_page_builder_insecure_hosts() as $host ) {
+		$pattern = '#https?://' . preg_quote( $host, '#' ) . '(/wp-content/[^"\'\s<>)]*)#i';
+		$text    = preg_replace( $pattern, $cms_origin . '$1', $text );
+	}
+
+	// Any remaining http://…/wp-content/ on unknown hosts → production CMS (media lives there).
+	$text = preg_replace(
+		'#http://[^/"\'\s<>]+(/wp-content/[^"\'\s<>)]*)#i',
+		$cms_origin . '$1',
+		$text
+	);
+
+	return $text;
+}
+
+/**
+ * Normalize URLs in rendered-page API payload fields.
+ *
+ * @param array<string,mixed> $payload Response array.
+ * @return array<string,mixed>
+ */
+function oakwood_page_builder_normalize_rendered_payload( array $payload ) {
+	foreach ( array( 'content', 'headHtml', 'footerHtml', 'excerpt' ) as $key ) {
+		if ( isset( $payload[ $key ] ) && is_string( $payload[ $key ] ) ) {
+			$payload[ $key ] = oakwood_page_builder_normalize_https_urls( $payload[ $key ] );
+		}
+	}
+
+	if ( ! empty( $payload['stylesheets'] ) && is_array( $payload['stylesheets'] ) ) {
+		foreach ( $payload['stylesheets'] as $index => $sheet ) {
+			if ( ! is_array( $sheet ) ) {
+				continue;
+			}
+			if ( ! empty( $sheet['href'] ) && is_string( $sheet['href'] ) ) {
+				$payload['stylesheets'][ $index ]['href'] = oakwood_page_builder_normalize_https_urls( $sheet['href'] );
+			}
+			if ( ! empty( $sheet['css'] ) && is_string( $sheet['css'] ) ) {
+				$payload['stylesheets'][ $index ]['css'] = oakwood_page_builder_normalize_https_urls( $sheet['css'] );
+			}
+		}
+	}
+
+	if ( ! empty( $payload['inlineStyles'] ) && is_array( $payload['inlineStyles'] ) ) {
+		foreach ( $payload['inlineStyles'] as $index => $inline ) {
+			if ( is_array( $inline ) && ! empty( $inline['css'] ) && is_string( $inline['css'] ) ) {
+				$payload['inlineStyles'][ $index ]['css'] = oakwood_page_builder_normalize_https_urls( $inline['css'] );
+			}
+		}
+	}
+
+	if ( ! empty( $payload['footerScripts'] ) && is_array( $payload['footerScripts'] ) ) {
+		foreach ( $payload['footerScripts'] as $index => $script ) {
+			if ( ! is_array( $script ) ) {
+				continue;
+			}
+			if ( ! empty( $script['src'] ) && is_string( $script['src'] ) ) {
+				$payload['footerScripts'][ $index ]['src'] = oakwood_page_builder_normalize_https_urls( $script['src'] );
+			}
+			if ( ! empty( $script['code'] ) && is_string( $script['code'] ) ) {
+				$payload['footerScripts'][ $index ]['code'] = oakwood_page_builder_normalize_https_urls( $script['code'] );
+			}
+		}
+	}
+
+	return $payload;
+}
+
+/**
  * Normalize a Yoast/public URL to a frontend path on oakwoodsys.com.
  *
  * @param string $url_or_path Absolute or relative URL.
@@ -1265,7 +1392,9 @@ if ($admin_bar_filter_added) {
 remove_filter('show_admin_bar', '__return_false');
 }
 
-return rest_ensure_response(array(
+return rest_ensure_response(
+	oakwood_page_builder_normalize_rendered_payload(
+		array(
 'path'          => $request_path,
 'slug'          => $page->post_name,
 'postType'      => $page->post_type,
@@ -1280,7 +1409,9 @@ return rest_ensure_response(array(
 'headHtml'      => $head_html,
 'footerHtml'    => $footer_html,
 'seo'           => oakwood_page_builder_get_seo_meta( (int) $page->ID ),
-));
+		)
+	)
+);
 }
 
 // ---------------------------------------------------------------------------

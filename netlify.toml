@@ -5,6 +5,9 @@
 [build.environment]
   NODE_VERSION = "20"
 
+[[plugins]]
+  package = "@netlify/angular-runtime"
+
 # oakwoodsys.com → Angular. WordPress en oakwoodsystemsgroup.com.
 # Proxy solo para API (GraphQL, contact) — evita CORS
 [[redirects]]
@@ -104,3 +107,10 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Security headers (HTTPS + upgrade passive mixed content)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    Content-Security-Policy = "upgrade-insecure-requests"

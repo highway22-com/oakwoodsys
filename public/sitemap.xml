@@ -16,6 +16,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://oakwoodsys.com/blog/microsoft-build-2026</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://oakwoodsys.com/blog/microsoft-defender-for-cloud</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -442,6 +447,21 @@
   </url>
   <url>
     <loc>https://oakwoodsys.com/structured-engagement/azure-hpc-pro-poc</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/solutions-template-one-2</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/solutions-template-one</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/testingtemplate</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

@@ -23,6 +23,9 @@
   --font-segoe: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
   --oak-font: var(--font-inter);
   --oak-font-segoe: var(--font-segoe);
+  /* WordPress editor presets (slug: inter / segoe) — literal stacks for Gutenberg */
+  --wp--preset--font-family--inter: var(--font-inter);
+  --wp--preset--font-family--segoe: var(--font-segoe);
   --oak-max-w: 1500px;
   --oak-pad-x: 24px;
   --oak-secondary-950: #242424;
@@ -40,6 +43,17 @@
   --oak-radius-md: 8px;
   --oak-radius-lg: 10px;
   --oak-radius-xl: 16px;
+}
+
+/* ── Font utilities (editor slug + Tailwind-style class) ── */
+.font-inter,
+.has-inter-font-family {
+  font-family: var(--font-inter) !important;
+}
+
+.font-segoe,
+.has-segoe-font-family {
+  font-family: var(--font-segoe) !important;
 }
 
 /* ── Base reset ── */

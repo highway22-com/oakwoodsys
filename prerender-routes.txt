@@ -1,6 +1,7 @@
 /
 /blog
 /resources/case-studies
+/blog/microsoft-build-2026
 /blog/microsoft-defender-for-cloud
 /blog/is-it-time-to-rethink-your-vmware-strategy
 /blog/azure-backup-and-disaster-recovery
@@ -87,6 +88,9 @@
 /structured-engagement/azure-hpc-migration-assessment
 /structured-engagement/azure-hpc-max-poc
 /structured-engagement/azure-hpc-pro-poc
+/solutions-template-one-2
+/solutions-template-one
+/testingtemplate
 /27244-2
 /theme-test
 /testing-standalone-pages

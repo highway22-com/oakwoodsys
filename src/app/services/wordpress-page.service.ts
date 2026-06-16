@@ -1,6 +1,9 @@
-import { inject, Injectable } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
+import { CMS_BASE_URL } from '../config/cms.config';
 
 export interface WordPressPageStylesheet {
   href: string;
@@ -57,8 +60,13 @@ export interface WordPressPageResponse {
 @Injectable({ providedIn: 'root' })
 export class WordPressPageService {
   private readonly http = inject(HttpClient);
+  private readonly platformId = inject(PLATFORM_ID);
 
   getPage(path: string): Observable<WordPressPageResponse> {
-    return this.http.get<WordPressPageResponse>(`/api/wordpress-page?path=${encodeURIComponent(path)}`);
+    const encoded = encodeURIComponent(path);
+    const url = isPlatformServer(this.platformId)
+      ? `${CMS_BASE_URL}/wp-json/custom/v1/rendered-page?path=${encoded}`
+      : `/api/wordpress-page?path=${encoded}`;
+    return this.http.get<WordPressPageResponse>(url);
   }
 }
