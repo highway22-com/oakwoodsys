@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, input, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, PLATFORM_ID, computed, inject, signal, input, effect } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { YoutubePlayerComponent } from '../../app/youtube-player/youtube-player.component';
@@ -93,6 +94,7 @@ export interface AboutContent {
 export default class AboutUs implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly seoMeta = inject(SeoMetaService);
+  private readonly platformId = inject(PLATFORM_ID);
   /** For edit mode: override content if provided */
   readonly contentOverride = input<AboutContent | null>(null);
 
@@ -176,7 +178,7 @@ export default class AboutUs implements OnInit {
     }
 
     this.lastScrollVisible = false;
-    if (typeof window !== 'undefined') {
+    if (isPlatformBrowser(this.platformId)) {
       window.addEventListener('scroll', this.handleScrollAnimation.bind(this));
       setTimeout(() => this.handleScrollAnimation(), 100);
     }
@@ -216,6 +218,7 @@ export default class AboutUs implements OnInit {
   }
 
   handleScrollAnimation() {
+    if (!isPlatformBrowser(this.platformId)) return;
     const el = document.querySelector('.scroll-animation-section');
     if (!el) return;
     const rect = el.getBoundingClientRect();

@@ -13,7 +13,7 @@ import {
   effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule, NgClass } from '@angular/common';
+import { CommonModule, isPlatformBrowser, NgClass } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
@@ -144,7 +144,7 @@ export default class Home implements OnInit {
         },
       });
     this.lastScrollVisible = false;
-    if (typeof window !== 'undefined') {
+    if (isPlatformBrowser(this.platformId)) {
       window.addEventListener('scroll', this.handleScrollAnimation.bind(this));
       setTimeout(() => this.handleScrollAnimation(), 100);
     }
@@ -402,6 +402,7 @@ export default class Home implements OnInit {
   }
 
   handleScrollAnimation() {
+    if (!isPlatformBrowser(this.platformId)) return;
     const el = document.querySelector('.scroll-animation-section');
     if (!el) return;
     const rect = el.getBoundingClientRect();
