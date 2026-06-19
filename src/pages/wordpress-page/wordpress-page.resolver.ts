@@ -7,6 +7,11 @@ import { WordPressPageResponse, WordPressPageService } from '../../app/services/
 import { applyWordPressPageSeo } from './wordpress-page.seo';
 
 export function resolveWordPressPathFromRoute(route: ActivatedRouteSnapshot, router: Router): string {
+  const paramSlug = route.paramMap.get('wpPageSlug');
+  if (paramSlug) {
+    return decodeURIComponent(paramSlug);
+  }
+
   const routePath = route.url.map((segment) => segment.path).join('/');
   if (routePath) {
     return decodeURIComponent(routePath);

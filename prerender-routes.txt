@@ -88,6 +88,8 @@
 /structured-engagement/azure-hpc-migration-assessment
 /structured-engagement/azure-hpc-max-poc
 /structured-engagement/azure-hpc-pro-poc
+/microsoft-agent-365
+/microsoft-defender-threat-protection
 /microsoft-sentinel-services-security-monitoring-solutions
 /microsoft-entra-id
 /identity-and-access-management

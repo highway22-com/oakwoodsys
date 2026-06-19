@@ -136,6 +136,11 @@ export const routes: Routes = [
         ]
     },
     {
+        path: ':wpPageSlug',
+        loadComponent: () => import('../pages/wordpress-page/wordpress-page'),
+        resolve: { wpPage: wordpressPageResolver },
+    },
+    {
         path: '**',
         loadComponent: () => import('../pages/wordpress-page/wordpress-page'),
         resolve: { wpPage: wordpressPageResolver },

@@ -249,6 +249,58 @@ function oakwood_page_builder_seo_canonical_path( $url_or_path, $post_id ) {
  * @param int $post_id Post ID.
  * @return string Absolute image URL or empty string.
  */
+/**
+ * Yoast site-wide default social image (Settings → Social).
+ *
+ * @return string Absolute image URL or empty string.
+ */
+function oakwood_page_builder_seo_yoast_site_default_og_image() {
+	if ( ! class_exists( 'WPSEO_Options' ) ) {
+		return '';
+	}
+
+	$attachment_id = (int) WPSEO_Options::get( 'og_default_image_id', 0 );
+	if ( $attachment_id > 0 ) {
+		$url = wp_get_attachment_image_url( $attachment_id, 'full' );
+		if ( is_string( $url ) && $url !== '' ) {
+			return $url;
+		}
+	}
+
+	$url = trim( (string) WPSEO_Options::get( 'og_image', '' ) );
+	if ( $url !== '' ) {
+		return $url;
+	}
+
+	return '';
+}
+
+/**
+ * Extract first og:image URL from Yoast Meta surface (handles object or array entries).
+ *
+ * @param mixed $meta Yoast meta object from YoastSEO()->meta->for_post().
+ * @return string
+ */
+function oakwood_page_builder_seo_og_image_from_yoast_meta( $meta ) {
+	if ( ! is_object( $meta ) || ! isset( $meta->open_graph_images ) || ! is_array( $meta->open_graph_images ) ) {
+		return '';
+	}
+
+	foreach ( $meta->open_graph_images as $image ) {
+		if ( is_object( $image ) && ! empty( $image->url ) ) {
+			return (string) $image->url;
+		}
+		if ( is_array( $image ) && ! empty( $image['url'] ) ) {
+			return (string) $image['url'];
+		}
+		if ( is_string( $image ) && $image !== '' ) {
+			return $image;
+		}
+	}
+
+	return '';
+}
+
 function oakwood_page_builder_seo_og_image_url( $post_id ) {
 	$attachment_id = (int) get_post_meta( $post_id, '_yoast_wpseo_opengraph-image-id', true );
 	if ( $attachment_id <= 0 ) {
@@ -272,7 +324,11 @@ function oakwood_page_builder_seo_og_image_url( $post_id ) {
 	}
 
 	$thumb = get_the_post_thumbnail_url( $post_id, 'full' );
-	return is_string( $thumb ) ? $thumb : '';
+	if ( is_string( $thumb ) && $thumb !== '' ) {
+		return $thumb;
+	}
+
+	return oakwood_page_builder_seo_yoast_site_default_og_image();
 }
 
 /**
@@ -413,12 +469,7 @@ function oakwood_page_builder_get_seo_meta( $post_id ) {
 				if ( ! empty( $meta->canonical ) ) {
 					$canonical = (string) $meta->canonical;
 				}
-				if ( isset( $meta->open_graph_images ) && is_array( $meta->open_graph_images ) && ! empty( $meta->open_graph_images ) ) {
-					$first = $meta->open_graph_images[0];
-					if ( is_object( $first ) && ! empty( $first->url ) ) {
-						$og_from_yoast = (string) $first->url;
-					}
-				}
+				$og_from_yoast = oakwood_page_builder_seo_og_image_from_yoast_meta( $meta );
 			}
 		} catch ( Throwable $e ) {
 			unset( $e );

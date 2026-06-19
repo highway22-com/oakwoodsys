@@ -1,5 +1,7 @@
 {
   "slugs": [
+    "microsoft-agent-365",
+    "microsoft-defender-threat-protection",
     "microsoft-sentinel-services-security-monitoring-solutions",
     "microsoft-entra-id",
     "identity-and-access-management",
