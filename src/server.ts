@@ -17,6 +17,71 @@ async function getBlobsStore() {
 
 const angularAppEngine = new AngularAppEngine()
 
+const GOOGLE_AW_TAG_ID = 'AW-967209685';
+const GOOGLE_AW_TAG_SRC = `https://www.googletagmanager.com/gtag/js?id=${GOOGLE_AW_TAG_ID}`;
+const GOOGLE_GA4_TAG_ID = 'G-0BS8T310YP';
+const GOOGLE_GA4_TAG_SNIPPET = `<script>window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', '${GOOGLE_GA4_TAG_ID}');</script>`;
+
+function appendGoogleTagsToWordPressPayload(payload: unknown): unknown {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return payload;
+  }
+
+  const page = payload as Record<string, unknown>;
+  const footerScripts = Array.isArray(page['footerScripts'])
+    ? [...(page['footerScripts'] as unknown[])]
+    : [];
+
+  const hasAwTagInScripts = footerScripts.some((script) => {
+    if (!script || typeof script !== 'object' || Array.isArray(script)) {
+      return false;
+    }
+    const scriptRecord = script as Record<string, unknown>;
+    const src = typeof scriptRecord['src'] === 'string' ? scriptRecord['src'] : '';
+    const code = typeof scriptRecord['code'] === 'string' ? scriptRecord['code'] : '';
+    return src.includes(GOOGLE_AW_TAG_ID) || code.includes(GOOGLE_AW_TAG_ID);
+  });
+
+  const hasAwTagInHtml = (typeof page['headHtml'] === 'string' && page['headHtml'].includes(GOOGLE_AW_TAG_ID))
+    || (typeof page['content'] === 'string' && page['content'].includes(GOOGLE_AW_TAG_ID))
+    || (typeof page['footerHtml'] === 'string' && page['footerHtml'].includes(GOOGLE_AW_TAG_ID));
+
+  const hasGa4TagInScripts = footerScripts.some((script) => {
+    if (!script || typeof script !== 'object' || Array.isArray(script)) {
+      return false;
+    }
+    const scriptRecord = script as Record<string, unknown>;
+    const src = typeof scriptRecord['src'] === 'string' ? scriptRecord['src'] : '';
+    const code = typeof scriptRecord['code'] === 'string' ? scriptRecord['code'] : '';
+    return src.includes(GOOGLE_GA4_TAG_ID) || code.includes(GOOGLE_GA4_TAG_ID);
+  });
+
+  const hasGa4TagInHtml = (typeof page['headHtml'] === 'string' && page['headHtml'].includes(GOOGLE_GA4_TAG_ID))
+    || (typeof page['content'] === 'string' && page['content'].includes(GOOGLE_GA4_TAG_ID))
+    || (typeof page['footerHtml'] === 'string' && page['footerHtml'].includes(GOOGLE_GA4_TAG_ID));
+
+  if (!hasAwTagInScripts && !hasAwTagInHtml) {
+    footerScripts.push({
+      id: 'google-aw-tag-js',
+      src: GOOGLE_AW_TAG_SRC,
+      async: true,
+    });
+
+    footerScripts.push({
+      id: 'google-aw-tag-config',
+      code: `window.dataLayer = window.dataLayer || [];\nwindow.gtag = window.gtag || function(){window.dataLayer.push(arguments);};\nwindow.gtag('js', new Date());\nwindow.gtag('config', '${GOOGLE_AW_TAG_ID}');`,
+    });
+  }
+
+  if (!hasGa4TagInScripts && !hasGa4TagInHtml) {
+    const headHtml = typeof page['headHtml'] === 'string' ? page['headHtml'] : '';
+    page['headHtml'] = `${headHtml}${headHtml && !headHtml.endsWith('\n') ? '\n' : ''}${GOOGLE_GA4_TAG_SNIPPET}`;
+  }
+
+  page['footerScripts'] = footerScripts;
+  return page;
+}
+
 // Authentication helper functions
 // Helper functions for base64 encoding/decoding (compatible with Deno/Edge Functions)
 function base64Encode(str: string): string {
@@ -364,9 +429,12 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
         return new Response(null, { status: response.status, headers: corsHeaders });
       }
 
-      return typeof body === 'string'
-        ? new Response(body, { status: response.status, headers: { ...corsHeaders, 'Content-Type': contentType } })
-        : Response.json(body, { status: response.status, headers: corsHeaders });
+      if (typeof body === 'string') {
+        return new Response(body, { status: response.status, headers: { ...corsHeaders, 'Content-Type': contentType } });
+      }
+
+      const bodyWithGoogleTag = appendGoogleTagsToWordPressPayload(body);
+      return Response.json(bodyWithGoogleTag, { status: response.status, headers: corsHeaders });
     } catch (error: any) {
       if (error?.name === 'AbortError') {
         return Response.json({ error: 'Request timeout', message: 'WordPress page request took too long' }, { status: 504, headers: corsHeaders });

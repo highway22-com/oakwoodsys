@@ -457,7 +457,7 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
     const win = this.document.defaultView;
     const inject = (): void => {
       if (this.currentPath === path) {
-        void this.injectPageScripts(scripts);
+        void this.injectPageScripts(this.deduplicateScripts(scripts));
       }
     };
 
@@ -513,6 +513,29 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
 
     // Clean up any overlay that a script injected as soon as it finishes loading.
     this.removeScriptBodyOverlays();
+  }
+
+  private deduplicateScripts(scripts: WordPressFooterScript[]): WordPressFooterScript[] {
+    const seen = new Set<string>();
+
+    return scripts.filter((script) => {
+      const signature = [
+        script.id ?? '',
+        script.src ?? '',
+        script.type ?? '',
+        script.nonce ?? '',
+        script.code ?? '',
+        script.async ? '1' : '0',
+        script.defer ? '1' : '0',
+      ].join('|');
+
+      if (seen.has(signature)) {
+        return false;
+      }
+
+      seen.add(signature);
+      return true;
+    });
   }
 
   private appendScriptInOrder(body: HTMLElement, script: HTMLScriptElement, scriptData: WordPressFooterScript): Promise<void> {

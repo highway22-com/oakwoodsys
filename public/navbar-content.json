@@ -7,6 +7,13 @@
       "index": 0,
       "hasDropdown": true
     },
+{
+      "slug": "solutions",
+      "label": "Solutions",
+      "routerLink": "/solutions",
+      "index": 0,
+      "hasDropdown": true
+    },
     {
       "slug": "industries",
       "label": "Industries",
@@ -172,7 +179,60 @@
         "desc": "Strategic relationships with leading technology providers that help drive innovation.",
         "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Icon-Label-31f91c.svg"
       }
+    ],
+
+  "solutions": {
+    "ai": [
+      { "name": "AI Application Development", "slug": "ai-application-development" },
+      { "name": "Azure OpenAI", "slug": "azure-openai" },
+      { "name": "Microsoft AI Foundry", "slug": "microsoft-ai-foundry" },
+      { "name": "Microsoft Copilot", "slug": "microsoft-copilot" },
+      { "name": "AI Governance", "slug": "ai-governance" },
+      { "name": "Machine Learning", "slug": "machine-learning" }
+    ],
+    "dataAndAnalytics": [
+      { "name": "Power BI", "slug": "power-bi" },
+      { "name": "Microsoft Fabric", "slug": "microsoft-fabric" },
+      { "name": "Data Engineering", "slug": "data-engineering" },
+      { "name": "Data Warehousing", "slug": "data-warehousing" },
+      { "name": "Microsoft Purview", "slug": "microsoft-purview" },
+      { "name": "Real-Time Analytics", "slug": "real-time-analytics" }
+    ],
+    "cloud": [
+      { "name": "Azure Migration Services", "slug": "azure-migration-services" },
+      { "name": "Azure VMware Solution", "slug": "azure-vmware-solution" },
+      { "name": "Backup & Disaster Recovery", "slug": "backup-disaster-recovery" },
+      { "name": "Microsoft Azure", "slug": "microsoft-azure" },
+      { "name": "Azure Arc", "slug": "azure-arc" },
+      { "name": "High-Performance Computing", "slug": "high-performance-computing" }
+    ],
+    "modernWork": [
+      { "name": "Microsoft 365", "slug": "microsoft-365" },
+      { "name": "Microsoft Copilot for Work", "slug": "microsoft-copilot-for-work" },
+      { "name": "Microsoft Teams", "slug": "microsoft-teams" },
+      { "name": "SharePoint & Intranet", "slug": "sharepoint-intranet" },
+      { "name": "Microsoft Intune", "slug": "microsoft-intune" },
+      { "name": "Microsoft Agent 365", "slug": "microsoft-agent-365" }
+    ],
+    "security": [
+      { "name": "Microsoft Defender", "slug": "microsoft-defender" },
+      { "name": "Microsoft Sentinel", "slug": "microsoft-sentinel" },
+      { "name": "Microsoft Entra ID", "slug": "microsoft-entra-id" },
+      { "name": "Identity & Access Management", "slug": "identity-access-management" },
+      { "name": "Data Security & Compliance", "slug": "data-security-compliance" },
+      { "name": "Azure Cloud Security", "slug": "azure-cloud-security" }
+    ],
+    "applications": [
+      { "name": "Power Platform", "slug": "power-platform" },
+      { "name": "Application Modernization", "slug": "application-modernization" },
+      { "name": "Custom Applications", "slug": "custom-applications" },
+      { "name": "API & Integration Services", "slug": "api-integration-services" },
+      { "name": "DevOps & CI/CD", "slug": "devops-ci-cd" },
+      { "name": "Cloud Native Applications", "slug": "cloud-native-applications" }
     ]
+  }
+
+
   },
   "page": "menu"
 }

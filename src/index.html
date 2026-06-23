@@ -130,10 +130,11 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-0BS8T310YP"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
+    function gtag(...args) { dataLayer.push(args); }
     gtag('js', new Date());
 
     gtag('config', 'G-0BS8T310YP');
+    gtag('config', 'AW-967209685');
   </script>
 
   <!-- Dealfront / Leadfeeder -->
@@ -147,11 +148,11 @@
   <script id="chatbot-script-js-after" defer>
     (function () {
       if (!window.chatbase || window.chatbase("getState") !== "initialized") {
-        window.chatbase = (...arguments) => {
+        window.chatbase = (...args) => {
           if (!window.chatbase.q) {
             window.chatbase.q = []
           }
-          window.chatbase.q.push(arguments)
+          window.chatbase.q.push(args)
         };
         window.chatbase = new Proxy(window.chatbase, {
           get(target, prop) {
