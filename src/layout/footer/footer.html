@@ -8,33 +8,15 @@
     </div>
     } @else if (footerData(); as data) {
  <div
-      class="flex flex-col lg:grid lg:grid-cols-[minmax(0,470px)_1fr_1fr_1fr_1fr] gap-4 mb-8 sm:mb-10 md:mb-12">
-      <div class="mb-6 lg:mb-0 col-span-1 flex flex-col lg:justify-between lg:h-full">
+      class="flex flex-col lg:grid lg:grid-cols-[minmax(0,340px)_1fr_1fr_1fr_1fr_1fr] gap-6 mb-8 sm:mb-10 md:mb-12">
+      <div class="mb-6 lg:mb-0 col-span-1 flex flex-col lg:justify-start">
         @if (data.logo) {
-        <div class="flex items-center gap-2 mb-8 lg:mb-14 lg:mt-0">
+        <div class="flex items-center gap-2 mb-8 lg:mb-10 lg:mt-0">
           <img src="/assets/logo.svg" alt="Oakwood" class="h-8 w-auto">
         </div>
         }
-        @if (data.contact) {
-        <h3 class="text-[#B0B0B0] font-['Inter'] text-[18px] font-semibold leading-[1.5] mb-4" style="font-family: var(--font-inter)!important;">{{
-          data.contact.heading }}</h3>
-        <div class="space-y-1 mb-6 lg:mb-14">
-          @if (data.contact.phone) {
-          <a target="_blank" [href]="data.contact.phone.link"
-            class="block text-white/70 font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-white underline hover:text-blue-300 transition-colors duration-200">
-            {{ data.contact.phone.text }}
-          </a>
-          }
-          @if (data.contact.email) {
-          <a target="_blank" [href]="data.contact.email.link"
-            class="block text-white/70 font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-white underline hover:text-blue-300 transition-colors duration-200">
-            {{ data.contact.email.text }}
-          </a>
-          }
-        </div>
-        }
         @if (data.socialMedia && data.socialMedia.length) {
-        <div class="flex items-center gap-2  lg:mt-12 lg:mt-0">
+        <div class="flex items-center gap-2 lg:mt-2">
           @for (social of data.socialMedia; track social.name) {
           <a target="_blank" [href]="social.link" [attr.aria-label]="social.name"
             class="w-8 h-8 sm:w-10 sm:h-10  rounded flex items-center justify-center  transition-colors duration-200 ">
@@ -124,48 +106,92 @@
           <div class="hidden lg:block col-span-1">
             <h3 class="text-white font-['Inter'] text-[16px] font-semibold leading-[1.5] mb-4 sm:mb-6 tracking-wide">
               {{ group.title }}</h3>
-            <ul class="space-y-4 flex flex-col h-full">
+            <ul class="space-y-2 flex flex-col">
               @for (link of group.links; track link.text) {
-                    @if (link.text == 'Microsoft Licensing') {
-    
-                <li class="pt-8 mt-2 border-t border-[#4F4F4F]">
-  <a
-    [routerLink]="resolveFooterRouterLink(link)"
-    class="flex items-center justify-between gap-3 px-4 py-3 bg-[rgba(42,126,191,0.10)] min-w-0"
-  >
-              
-                      <span class="flex items-center gap-3 min-w-0">
-                        <img
-                          src="/assets/icons/microsoft-footer-icon.png"
-                          alt="Microsoft Licensing icon"
-                          class="w-4 h-4 object-contain shrink-0"
-                        />
-                        <span class="block font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-[#E4EEFA] break-words">
-                          {{ link.text }}
-                        </span>
-                      </span>
-                      <img
-                        src="/assets/icons/arrow-right.png"
-                        alt="Arrow right"
-                        class="w-5 h-5 object-contain shrink-0"
-                      />
-                    </a>
-                  </li>
-                  } 
                 @if (link.text !== 'Whitepapers' && link.text !== 'Webinars' && link.text !== 'Microsoft Licensing') {
-                <li [class.pb-4]="link.text == 'Contact Us'">
+                <li [class.py-4]="link.text == 'Contact Us'" [class.border-t]="link.text == 'Contact Us'" [class.border-[#FFFFFF33]]="link.text == 'Contact Us'">
                   <a [routerLink]="resolveFooterRouterLink(link)" class="text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200">
                     {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
                   </a>
                 </li>
-                }
+                } 
                  
               }
             </ul>
+            @if (group.title === 'Company' && data.contact) {
+            <div class="mt-2">
+             
+              <div class="space-y-1">
+                @if (data.contact.phone) {
+                <a target="_blank" [href]="data.contact.phone.link"
+                  class="block text-white/70 font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-white underline hover:text-blue-300 transition-colors duration-200">
+                  {{ data.contact.phone.text }}
+                </a>
+                }
+                @if (data.contact.email) {
+                <a target="_blank" [href]="data.contact.email.link"
+                  class="block text-white/70 font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-white underline hover:text-blue-300 transition-colors duration-200">
+                  {{ data.contact.email.text }}
+                </a>
+                }
+              </div>
+            </div>
+            }
           </div>
         }
       }
+      @if (getMicrosoftLicensingLink(); as licensingLink) {
+      <div class="hidden lg:block col-span-1">
+        <h3 class="text-white font-['Inter'] text-[16px] font-semibold leading-[1.5] mb-6 tracking-wide">
+          Microsoft Licensing
+        </h3>
+        <a
+          [routerLink]="resolveFooterRouterLink(licensingLink)"
+          class="flex items-center justify-between gap-3 px-4 py-3 bg-[rgba(42,126,191,0.10)] min-w-0"
+        >
+          <span class="flex items-center gap-3 min-w-0">
+            <img
+              src="/assets/icons/microsoft-footer-icon.png"
+              alt="Microsoft Licensing icon"
+              class="w-4 h-4 object-contain shrink-0"
+            />
+            <span class="block font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-[#E4EEFA] break-words">
+              {{ licensingLink.text }}
+            </span>
+          </span>
+          <img
+            src="/assets/icons/arrow-right.png"
+            alt="Arrow right"
+            class="w-5 h-5 object-contain shrink-0"
+          />
+        </a>
+      </div>
+      }
     </div>
+
+    @if (solutionGroups().length) {
+    <div class="hidden lg:block mt-10 pt-10 ">
+      <h3 class="text-white font-['Inter'] text-[16px] font-semibold leading-[1.5] mb-6 tracking-wide" style="font-family: var(--font-inter)!important;">Solutions</h3>
+      <div class="grid grid-cols-1 lg:grid-cols-6 gap-8">
+        @for (group of solutionGroups(); track group.key) {
+        <div class="col-span-1">
+          <h4 class="text-white font-['Inter'] text-[16px] font-semibold leading-[1.5] mb-4 tracking-wide" style="font-family: var(--font-inter)!important;">{{ group.title }}</h4>
+          <ul class="space-y-2">
+            @for (item of group.links; track item.name) {
+            <li>
+              <a [routerLink]="getFooterSolutionHref(group.key, item)"
+                class="text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200">
+                {{ item.name }}
+              </a>
+            </li>
+            }
+          </ul>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
       <!-- Mobile: Inner border -->
       <div class="block md:hidden border-t border-[#FFFFFF33]  my-12"></div>
     <!-- @if (data.copyright || (data.policies && data.policies.length)) {

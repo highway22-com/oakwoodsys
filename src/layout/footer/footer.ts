@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, signal, inject, input, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, signal, inject, input, effect, isDevMode } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule, NgClass } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { Footer as AppFooter } from '../../shared/footer/footer';
 
@@ -44,6 +45,14 @@ export interface FooterSection {
       text: string;
       routerLink: string;
     }>;
+    solutions?: {
+      ai?: FooterSolutionItem[];
+      dataAndAnalytics?: FooterSolutionItem[];
+      cloud?: FooterSolutionItem[];
+      modernWork?: FooterSolutionItem[];
+      security?: FooterSolutionItem[];
+      applications?: FooterSolutionItem[];
+    };
   };
   copyright: string;
   policies: Array<{
@@ -51,6 +60,20 @@ export interface FooterSection {
     link: string;
   }>;
 }
+
+interface FooterSolutionItem {
+  name: string;
+  slug?: string;
+  link?: string;
+}
+
+type FooterSolutionCategoryKey =
+  | 'cloud'
+  | 'ai'
+  | 'dataAndAnalytics'
+  | 'security'
+  | 'applications'
+  | 'modernWork';
 
 @Component({
   selector: 'app-footer',
@@ -60,6 +83,7 @@ export interface FooterSection {
 })
 export class Footer implements OnInit, OnDestroy {
   private readonly graphql = inject(GraphQLContentService);
+  private readonly http = inject(HttpClient);
 
   /** Cuando se proporciona, se usa en lugar de cargar desde CMS (para preview en edit) */
   readonly dataOverride = input<FooterSection | null>(null);
@@ -96,6 +120,24 @@ export class Footer implements OnInit, OnDestroy {
       this.loading.set(false);
       return;
     }
+
+  //   if (isDevMode()) {
+  //     this.http.get<FooterSection>('/footer.json').subscribe({
+  //       next: (data) => {
+  //         this.footerData.set(data ?? null);
+  //         this.loading.set(false);
+  //       },
+  //       error: () => {
+  //         this.loadFooterFromCms();
+  //       },
+  //     });
+  //     return;
+  //   }
+
+  //   this.loadFooterFromCms();
+  // }
+
+  // private loadFooterFromCms(): void {
     this.graphql.getCmsPageBySlug('footer', { fetchPolicy: 'network-only' }).subscribe({
       next: (data) => {
         const section = this.extractFooterSection(data);
@@ -130,6 +172,30 @@ export class Footer implements OnInit, OnDestroy {
     return link.routerLink;
   }
 
+  getFooterSolutionHref(category: FooterSolutionCategoryKey, item: FooterSolutionItem): string {
+    const rawValue = (item.link ?? item.slug ?? '').trim();
+    const normalized = rawValue.replace(/^\/+|\/+$/g, '');
+    if (!normalized) {
+      return `/solutions/${category}`;
+    }
+    const segments = normalized.split('/').filter(Boolean);
+    const linkSegment = segments[segments.length - 1] ?? normalized;
+    return `/solutions/${category}/${linkSegment}`;
+  }
+
+  solutionGroups(): Array<{ key: FooterSolutionCategoryKey; title: string; links: FooterSolutionItem[] }> {
+    const solutions = this.footerData()?.links?.solutions;
+    if (!solutions) return [];
+    return [
+      { key: 'cloud', title: 'Cloud', links: solutions.cloud ?? [] },
+      { key: 'ai', title: 'AI', links: solutions.ai ?? [] },
+      { key: 'dataAndAnalytics', title: 'Data & Analytics', links: solutions.dataAndAnalytics ?? [] },
+      { key: 'security', title: 'Security', links: solutions.security ?? [] },
+      { key: 'applications', title: 'Applications', links: solutions.applications ?? [] },
+      { key: 'modernWork', title: 'Modern Work', links: solutions.modernWork ?? [] },
+    ];
+  }
+
 
 
   /** Grupos de enlaces para iterar en el template (Services, Industries, Resources, Company). */
@@ -137,11 +203,16 @@ export class Footer implements OnInit, OnDestroy {
     const data = this.footerData();
     if (!data?.links) return [];
     return [
+      { title: 'Company', links: data.links.company ?? [] },
       { title: 'Services', links: data.links.services ?? [] },
       { title: 'Industries', links: data.links.industries ?? [] },
       { title: 'Resources', links: data.links.resources ?? [] },
-      { title: 'Company', links: data.links.company ?? [] },
     ];
+  }
+
+  getMicrosoftLicensingLink(): { text: string; routerLink: string } | null {
+    const companyLinks = this.footerData()?.links?.company ?? [];
+    return companyLinks.find((link) => link.text?.trim().toLowerCase() === 'microsoft licensing') ?? null;
   }
 
 

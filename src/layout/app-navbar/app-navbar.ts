@@ -46,8 +46,26 @@ interface Content {
   icon: string;
 }
 
+interface SolutionItem {
+  name: string;
+  slug: string;
+  link?: string;
+}
+
+interface SolutionsContent {
+  ai: SolutionItem[];
+  dataAndAnalytics: SolutionItem[];
+  cloud: SolutionItem[];
+  modernWork: SolutionItem[];
+  security: SolutionItem[];
+  applications: SolutionItem[];
+}
+
+type SolutionCategoryKey = keyof SolutionsContent;
+
 interface ContentMap {
   services: Content[];
+  solutions?: SolutionsContent;
   industries: Content[];
   resources: Content[];
 }
@@ -105,6 +123,17 @@ export class AppNavbar implements OnInit, OnDestroy {
   /** Título de la sección Featured por dropdown (Services, Industries). */
   readonly featuredTitleServices = signal('FEATURED BLOGS');
   readonly featuredTitleIndustries = signal('FEATURED CASE STUDIES');
+  readonly featuredTitleSolutions = signal('FEATURED CASE STUDIES');
+
+  readonly solutionTabs: ReadonlyArray<{ key: SolutionCategoryKey; label: string }> = [
+    { key: 'ai', label: 'AI' },
+    { key: 'cloud', label: 'Cloud' },
+    { key: 'dataAndAnalytics', label: 'Data & Analytics' },
+    { key: 'applications', label: 'Applications' },
+    { key: 'security', label: 'Security' },
+    { key: 'modernWork', label: 'Modern Work' },
+  ];
+  readonly activeSolutionCategory = signal<SolutionCategoryKey>('ai');
 
   /** Panel de búsqueda (click en ícono): abierto/cerrado. */
   readonly searchPanelOpen = signal(false);
@@ -156,6 +185,12 @@ export class AppNavbar implements OnInit, OnDestroy {
   readonly searchHasMore = computed(
     () => this.searchFilteredResults().length > this.searchVisibleCount(),
   );
+
+  readonly activeSolutionItems = computed<SolutionItem[]>(() => {
+    const solutions = this.content()?.solutions;
+    if (!solutions) return [];
+    return solutions[this.activeSolutionCategory()] ?? [];
+  });
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -421,14 +456,24 @@ export class AppNavbar implements OnInit, OnDestroy {
     // console.log('onNavMouseLeave', this.hoveredIndex());
   }
 
-  public handleMouseEnter(item: {
-    index: number | null;
-    hasDropdown: boolean;
-  }): void {
-    if (item.hasDropdown && item.index !== null) {
-      this.hoveredIndex.set(item.index);
-      if (item.index === 0) {
+  public handleMouseEnter(
+    item: { slug: string; index: number | null; hasDropdown: boolean },
+    templateIndex: number,
+  ): void {
+    if (item.hasDropdown) {
+      const dropdownIndexBySlug: Record<string, number> = {
+        services: 0,
+        solutions: 1,
+        industries: 2,
+        resources: 3,
+      };
+      const resolvedIndex = dropdownIndexBySlug[item.slug] ?? templateIndex;
+      this.hoveredIndex.set(resolvedIndex);
+      if (item.slug === 'services') {
         this.ensureFeaturedBlogsLoaded();
+      }
+      if (item.slug === 'solutions') {
+        this.activeSolutionCategory.set('ai');
       }
       return;
     }
@@ -524,6 +569,33 @@ export class AppNavbar implements OnInit, OnDestroy {
   getSearchFragment(): string | undefined {
     const q = this.searchQuery().trim();
     return q ? encodeURIComponent(q) : undefined;
+  }
+
+  setActiveSolutionCategory(key: SolutionCategoryKey): void {
+    this.activeSolutionCategory.set(key);
+  }
+
+  getSolutionHref(category: SolutionCategoryKey, item: SolutionItem): string {
+    const rawValue = (item.link ?? item.slug ?? '').trim();
+    const normalized = rawValue.replace(/^\/+/g, '').replace(/\/+$/g, '');
+
+    if (!normalized) {
+      return `/solutions/${category}`;
+    }
+
+    const segments = normalized.split('/').filter(Boolean);
+    const linkSegment = segments[segments.length - 1] ?? normalized;
+    return `/solutions/${category}/${linkSegment}`;
+  }
+
+  get featuredSolutionCaseStudy(): CaseStudy | null {
+    return this.featuredCaseStudies().length > 0
+      ? this.featuredCaseStudies()[0]
+      : null;
+  }
+
+  getFeaturedCaseStudyLink(caseStudy: CaseStudy): string {
+    return `/resources/case-studies/${caseStudy.slug}`;
   }
 
   ngOnDestroy() {
