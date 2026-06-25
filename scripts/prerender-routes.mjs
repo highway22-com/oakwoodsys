@@ -18,6 +18,21 @@ const BLOG_SLUGS_QUERY = `query GetSlugsForPrerender {
   }
 }`;
 
+// Slugs de páginas WordPress que SÍ se prerenderizan en build.
+// Vacío = ninguna se prerenderiza (todas se sirven por SSR bajo demanda).
+// Agrega aquí los slugs que quieras hornear estáticos (cada uno pesa ~MBs).
+const PRERENDER_WP_SLUGS = [
+  'ai-application-innovation-engagements',
+  'ai-application-development',
+  'ai-governance',
+  'api-development-and-integration-services',
+  'application-modernization-services',
+  'azure-arc-for-hybrid-cloud-environments',
+  'azure-backup-disaster-recovery-services',
+  'azure-cloud-security-2'
+
+];
+
 const SERVICE_SLUGS = [
   'data-ai-solutions',
   'cloud-and-infrastructure',
@@ -206,11 +221,12 @@ async function main() {
   STRUCTURED_SLUGS.forEach((s) => routes.push(`/structured-engagement/${s}`));
 
   const wpPageSlugs = await fetchWordPressPageSlugs();
-  wpPageSlugs.forEach((s) => routes.push(`/${s}`));
+  wpPageSlugs.forEach((s) => routes.push(`/${s}`)); // sitemap sigue listando todas (SEO)
   console.log(`[prerender-routes] Added ${wpPageSlugs.length} WordPress page slugs`);
 
-  writeFileSync(join(ROOT, 'wp-page-slugs.json'), JSON.stringify({ slugs: wpPageSlugs }, null, 2), 'utf8');
-  console.log(`[prerender-routes] Wrote wp-page-slugs.json (${wpPageSlugs.length} slugs)`);
+  const wpPrerenderSlugs = wpPageSlugs.filter((s) => PRERENDER_WP_SLUGS.includes(s));
+  writeFileSync(join(ROOT, 'wp-page-slugs.json'), JSON.stringify({ slugs: wpPrerenderSlugs }, null, 2), 'utf8');
+  console.log(`[prerender-routes] WP pages a prerenderizar: ${wpPrerenderSlugs.length} de ${wpPageSlugs.length}`);
 
   const eventSlugs = getSlugsFromJson('public/events-content.json', 'events', 'slug');
   // Event detail URLs are SSR-only; do not add to prerender-routes.txt (see app.routes.server.ts).
