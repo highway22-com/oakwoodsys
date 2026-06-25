@@ -1,4 +1,4 @@
-import { RenderMode, ServerRoute } from '@angular/ssr';
+import { PrerenderFallback, RenderMode, ServerRoute } from '@angular/ssr';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -75,6 +75,7 @@ export const serverRoutes: ServerRoute[] = [
   {
     path: ':wpPageSlug',
     renderMode: RenderMode.Prerender,
+    fallback: PrerenderFallback.Server,
     getPrerenderParams: async () => getWordPressPageSlugs().map((slug) => ({ wpPageSlug: slug })),
   },
   {
