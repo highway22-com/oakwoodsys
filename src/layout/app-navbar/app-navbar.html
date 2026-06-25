@@ -93,7 +93,7 @@
     @for (item of menuItems(); track item.label; let i = $index) {
     @if (item.hasDropdown) {
     <div class="border-b border-gray-100">
-      <button type="button" (click)="toggleMobileDropdown(i)"
+      <button type="button" (click)="toggleMobileDropdown(i, item.slug)"
         class="w-full flex items-center justify-between py-4 px-4 text-left text-gray-900 font-medium focus:bg-[#F6F6F6] transition-colors">
         <span>{{ item.label }}</span>
         <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200"
@@ -118,13 +118,29 @@
         }
         @if (item.slug === 'solutions' && content()?.solutions) {
         @for (tab of solutionTabs; track tab.key) {
-        <div class="pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">{{ tab.label }}</div>
-        @for (sub of (content()!.solutions?.[tab.key] ?? []); track sub.slug) {
-        <a [routerLink]="getSolutionHref(tab.key, sub)" (click)="closeMobileMenu()"
-          class="flex items-center gap-3 py-2 px-2 text-gray-600 hover:text-primary-blue">
-          <span class="text-[14px] font-medium">{{ sub.name }}</span>
-        </a>
-        }
+        <div class="mt-2 first:mt-0">
+          <button
+            type="button"
+            (click)="toggleMobileSolutionCategory(tab.key)"
+            class="mobile-solutions-tab-btn"
+            [class.is-active]="isMobileSolutionCategoryOpen(tab.key)">
+            <span class="text-[18px] font-semibold leading-[1.5]">{{ tab.label }}</span>
+            <span class="text-[26px] leading-none">{{ isMobileSolutionCategoryOpen(tab.key) ? '−' : '+' }}</span>
+          </button>
+          @if (isMobileSolutionCategoryOpen(tab.key)) {
+          <div class="px-2 py-2">
+            @for (sub of (content()!.solutions?.[tab.key] ?? []); track sub.slug) {
+            <a [routerLink]="getSolutionHref(tab.key, sub)" (click)="closeMobileMenu()"
+              class="flex items-center gap-3 py-3 px-2 text-[#454545] hover:text-primary-blue transition-colors duration-200">
+              @if (sub.icon) {
+              <img [src]="sub.icon" [alt]="sub.name" class="w-[16px] h-[16px] object-contain shrink-0" loading="lazy" />
+              }
+              <span class="text-[18px] font-medium leading-[1.5]">{{ sub.name }}</span>
+            </a>
+            }
+          </div>
+          }
+        </div>
         }
         }
         @if (item.slug === 'industries' && content()?.industries) {
@@ -188,10 +204,10 @@
   (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
   <div class="px-14 xl:px-16 py-3 solutions-menu-wrap">
     <div class="flex flex-col lg:flex-row">
-      <div class="solutions-menu-left w-full lg:w-[170px] py-3 pr-3">
+      <div class="solutions-menu-left w-full lg:w-[220px] py-3 pr-5">
         @for (tab of solutionTabs; track tab.key) {
         <button type="button" class="solutions-tab-btn" [class.is-active]="activeSolutionCategory() === tab.key"
-          (mouseenter)="setActiveSolutionCategory(tab.key)">
+          (click)="setActiveSolutionCategory(tab.key); $event.stopPropagation()">
           {{ tab.label }}
         </button>
         }
@@ -201,7 +217,12 @@
           @for (solution of activeSolutionItems(); track solution.slug) {
           <a [routerLink]="getSolutionHref(activeSolutionCategory(), solution)"
             class="solutions-item-link group text-s-900 transition-colors">
-            <span class="solutions-item-link__label">{{ solution.name }}</span>
+            <span class="solutions-item-link__content">
+              @if (solution.icon) {
+              <img [src]="solution.icon" [alt]="solution.name" class="solutions-item-link__icon" loading="lazy" />
+              }
+              <span class="solutions-item-link__label">{{ solution.name }}</span>
+            </span>
             <svg class="solutions-item-link__arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
               viewBox="0 0 17 17" fill="none" aria-hidden="true">
               <path

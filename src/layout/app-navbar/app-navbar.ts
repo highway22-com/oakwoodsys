@@ -50,6 +50,7 @@ interface SolutionItem {
   name: string;
   slug: string;
   link?: string;
+  icon?: string;
 }
 
 interface SolutionsContent {
@@ -134,6 +135,7 @@ export class AppNavbar implements OnInit, OnDestroy {
     { key: 'modernWork', label: 'Modern Work' },
   ];
   readonly activeSolutionCategory = signal<SolutionCategoryKey>('ai');
+  readonly mobileOpenSolutionCategory = signal<SolutionCategoryKey>('ai');
 
   /** Panel de búsqueda (click en ícono): abierto/cerrado. */
   readonly searchPanelOpen = signal(false);
@@ -374,21 +376,28 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
-    if (!this.isMobileMenuOpen) this.mobileExpandedIndex = null;
+    if (!this.isMobileMenuOpen) {
+      this.mobileExpandedIndex = null;
+      this.mobileOpenSolutionCategory.set('ai');
+    }
     this.updateBodyScrollLock();
   }
 
   closeMobileMenu() {
     this.isMobileMenuOpen = false;
     this.mobileExpandedIndex = null;
+    this.mobileOpenSolutionCategory.set('ai');
     this.updateBodyScrollLock();
   }
 
-  toggleMobileDropdown(index: number) {
+  toggleMobileDropdown(index: number, slug?: string) {
     const next = this.mobileExpandedIndex === index ? null : index;
     this.mobileExpandedIndex = next;
     if (next === 0) {
       this.ensureFeaturedBlogsLoaded();
+    }
+    if (next !== null && slug === 'solutions') {
+      this.mobileOpenSolutionCategory.set('ai');
     }
   }
 
@@ -573,6 +582,17 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   setActiveSolutionCategory(key: SolutionCategoryKey): void {
     this.activeSolutionCategory.set(key);
+  }
+
+  toggleMobileSolutionCategory(key: SolutionCategoryKey): void {
+    if (this.mobileOpenSolutionCategory() === key) {
+      return;
+    }
+    this.mobileOpenSolutionCategory.set(key);
+  }
+
+  isMobileSolutionCategoryOpen(key: SolutionCategoryKey): boolean {
+    return this.mobileOpenSolutionCategory() === key;
   }
 
   getSolutionHref(category: SolutionCategoryKey, item: SolutionItem): string {
