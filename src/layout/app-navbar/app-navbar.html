@@ -100,7 +100,7 @@
           [class.rotate-180]="getMobileExpandedIndex() === i"></i>
       </button>
       @if (getMobileExpandedIndex() === i) {
-      <div class="pb-4 pl-2 px-4">
+      <div class="pb-4 pl-4 px-4">
         @if (item.slug === 'services' && content()?.services) {
         @for (sub of content()!.services; track sub.id) {
         <a [routerLink]="sub.link" (click)="closeMobileMenu()" class="flex items-center gap-5 py-3 px-2 text-gray-500">
@@ -124,18 +124,18 @@
             (click)="toggleMobileSolutionCategory(tab.key)"
             class="mobile-solutions-tab-btn"
             [class.is-active]="isMobileSolutionCategoryOpen(tab.key)">
-            <span class="text-[18px] font-semibold leading-[1.5]">{{ tab.label }}</span>
-            <span class="text-[26px] leading-none">{{ isMobileSolutionCategoryOpen(tab.key) ? '−' : '+' }}</span>
+            <span class="mobile-solutions-tab-btn__label">{{ tab.label }}</span>
+            <span class="mobile-solutions-tab-btn__icon text-[26px] leading-none">{{ isMobileSolutionCategoryOpen(tab.key) ? '−' : '+' }}</span>
           </button>
           @if (isMobileSolutionCategoryOpen(tab.key)) {
           <div class="px-2 py-2">
             @for (sub of (content()!.solutions?.[tab.key] ?? []); track sub.slug) {
             <a [routerLink]="getSolutionHref(tab.key, sub)" (click)="closeMobileMenu()"
-              class="flex items-center gap-3 py-3 px-2 text-[#454545] hover:text-primary-blue transition-colors duration-200">
+              class="mobile-solutions-item-link">
               @if (sub.icon) {
               <img [src]="sub.icon" [alt]="sub.name" class="w-[16px] h-[16px] object-contain shrink-0" loading="lazy" />
               }
-              <span class="text-[18px] font-medium leading-[1.5]">{{ sub.name }}</span>
+              <span class="mobile-solutions-item-link__label">{{ sub.name }}</span>
             </a>
             }
           </div>
