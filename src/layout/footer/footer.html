@@ -15,6 +15,27 @@
           <img src="/assets/logo.svg" alt="Oakwood" class="h-8 w-auto">
         </div>
         }
+        @if (data.contact) {
+        <div class="mb-6 lg:mb-8">
+          <h3 class="mb-3" style="color: var(--Secondary-200, #D1D1D1); font-family: Inter; font-size: var(--Text-Sizes-Text-Regular, 16px); font-style: normal; font-weight: 600; line-height: 150%;">
+            {{ data.contact.heading || 'Contact' }}
+          </h3>
+          <div class="space-y-1">
+            @if (data.contact.phone) {
+            <a target="_blank" [href]="data.contact.phone.link"
+              class="block text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] underline hover:text-blue-300 transition-colors duration-200">
+              {{ data.contact.phone.text }}
+            </a>
+            }
+            @if (data.contact.email) {
+            <a target="_blank" [href]="data.contact.email.link"
+              class="block text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] underline hover:text-blue-300 transition-colors duration-200">
+              {{ data.contact.email.text }}
+            </a>
+            }
+          </div>
+        </div>
+        }
         @if (data.socialMedia && data.socialMedia.length) {
         <div class="flex items-center gap-2 lg:mt-2">
           @for (social of data.socialMedia; track social.name) {
@@ -109,7 +130,7 @@
             <ul class="space-y-2 flex flex-col">
               @for (link of group.links; track link.text) {
                 @if (link.text !== 'Whitepapers' && link.text !== 'Webinars' && link.text !== 'Microsoft Licensing') {
-                <li [class.py-4]="link.text == 'Contact Us'" [class.border-t]="link.text == 'Contact Us'" [class.border-[#FFFFFF33]]="link.text == 'Contact Us'">
+                <li >
                   <a [routerLink]="resolveFooterRouterLink(link)" class="text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200">
                     {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
                   </a>
@@ -118,27 +139,52 @@
                  
               }
             </ul>
-            @if (group.title === 'Company' && data.contact) {
-            <div class="mt-2">
-             
-              <div class="space-y-1">
-                @if (data.contact.phone) {
-                <a target="_blank" [href]="data.contact.phone.link"
-                  class="block text-white/70 font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-white underline hover:text-blue-300 transition-colors duration-200">
-                  {{ data.contact.phone.text }}
-                </a>
-                }
-                @if (data.contact.email) {
-                <a target="_blank" [href]="data.contact.email.link"
-                  class="block text-white/70 font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-white underline hover:text-blue-300 transition-colors duration-200">
-                  {{ data.contact.email.text }}
-                </a>
-                }
-              </div>
-            </div>
-            }
           </div>
         }
+      }
+      @if (mobileSolutionGroups().length) {
+      <div class="w-full lg:hidden">
+        <button
+          type="button"
+          class="w-full flex justify-between items-center py-1 focus:outline-none"
+          (click)="toggleSolutions()"
+          [attr.aria-expanded]="openSolutions() ? 'true' : 'false'"
+          aria-controls="footer-solutions-group"
+        >
+          <span class="text-white font-['Inter'] text-[18px] font-semibold leading-[1.5] tracking-wide" style="font-family: var(--font-inter)!important;">Solutions</span>
+          <svg class="w-5 h-5 text-white transition-transform duration-200" [ngClass]="{ 'rotate-180': openSolutions() }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+
+        <div *ngIf="openSolutions()" id="footer-solutions-group" class="pb-4 pt-3">
+          @for (solutionGroup of mobileSolutionGroups(); let solutionIdx = $index; track solutionGroup.key) {
+          <div class="mb-2">
+            <button
+              type="button"
+              class="w-full flex justify-between items-center py-1 focus:outline-none"
+              (click)="toggleSolutionGroup(solutionIdx)"
+              [attr.aria-expanded]="openSolutionGroupIdx() === solutionIdx ? 'true' : 'false'"
+              [attr.aria-controls]="'footer-solution-subgroup-' + solutionIdx"
+            >
+              <span class="text-white/90 font-['Inter'] text-[16px] font-semibold leading-[1.5]" style="font-family: var(--font-inter)!important;">{{ solutionGroup.title }}</span>
+              <svg class="w-4 h-4 text-white transition-transform duration-200" [ngClass]="{ 'rotate-180': openSolutionGroupIdx() === solutionIdx }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+
+            <div *ngIf="openSolutionGroupIdx() === solutionIdx" id="footer-solution-subgroup-{{ solutionIdx }}" class="pt-2 pb-3">
+              <ul class="space-y-3">
+                @for (item of solutionGroup.links; track item.name) {
+                <li>
+                  <a [routerLink]="getFooterSolutionHref(solutionGroup.key, item)"
+                    class="font-['Segoe UI'] text-[16px] font-normal leading-[1.5] text-white/70 hover:text-blue-300 transition-colors duration-200">
+                    {{ item.name }}
+                  </a>
+                </li>
+                }
+              </ul>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
       }
       @if (getMicrosoftLicensingLink(); as licensingLink) {
       <div class="hidden lg:block col-span-1">

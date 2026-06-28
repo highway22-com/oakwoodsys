@@ -91,6 +91,8 @@ export class Footer implements OnInit, OnDestroy {
   readonly footerData = signal<FooterSection | null>(null);
   readonly loading = signal(true);
   readonly openGroupIdx = signal<number | null>(null);
+  readonly openSolutions = signal(false);
+  readonly openSolutionGroupIdx = signal<number | null>(null);
   readonly isMobile = signal(false);
 
   private resizeHandler: (() => void) | null = null;
@@ -110,7 +112,11 @@ export class Footer implements OnInit, OnDestroy {
       this.isMobile.set(window.innerWidth < 1024);
       this.resizeHandler = () => {
         this.isMobile.set(window.innerWidth < 1024);
-        if (!this.isMobile()) this.openGroupIdx.set(null);
+        if (!this.isMobile()) {
+          this.openGroupIdx.set(null);
+          this.openSolutions.set(false);
+          this.openSolutionGroupIdx.set(null);
+        }
       };
       window.addEventListener('resize', this.resizeHandler);
     }
@@ -167,6 +173,20 @@ export class Footer implements OnInit, OnDestroy {
     this.openGroupIdx.set(this.openGroupIdx() === idx ? null : idx);
   }
 
+  toggleSolutions() {
+    if (!this.isMobile()) return;
+    const nextState = !this.openSolutions();
+    this.openSolutions.set(nextState);
+    if (!nextState) {
+      this.openSolutionGroupIdx.set(null);
+    }
+  }
+
+  toggleSolutionGroup(idx: number) {
+    if (!this.isMobile()) return;
+    this.openSolutionGroupIdx.set(this.openSolutionGroupIdx() === idx ? null : idx);
+  }
+
   resolveFooterRouterLink(link: { text: string; routerLink: string }): string {
     if (link.text?.trim().toLowerCase() === 'events') return '/resources/events';
     return link.routerLink;
@@ -196,6 +216,20 @@ export class Footer implements OnInit, OnDestroy {
     ];
   }
 
+  mobileSolutionGroups(): Array<{ key: FooterSolutionCategoryKey; title: string; links: FooterSolutionItem[] }> {
+    const solutions = this.footerData()?.links?.solutions;
+    if (!solutions) return [];
+    const groups: Array<{ key: FooterSolutionCategoryKey; title: string; links: FooterSolutionItem[] }> = [
+      { key: 'ai', title: 'AI', links: solutions.ai ?? [] },
+      { key: 'cloud', title: 'Cloud', links: solutions.cloud ?? [] },
+      { key: 'dataAndAnalytics', title: 'Data & Analytics', links: solutions.dataAndAnalytics ?? [] },
+      { key: 'applications', title: 'Applications', links: solutions.applications ?? [] },
+      { key: 'security', title: 'Security', links: solutions.security ?? [] },
+      { key: 'modernWork', title: 'Modern Work', links: solutions.modernWork ?? [] },
+    ];
+    return groups.filter((group) => group.links.length);
+  }
+
 
 
   /** Grupos de enlaces para iterar en el template (Services, Industries, Resources, Company). */
@@ -203,10 +237,10 @@ export class Footer implements OnInit, OnDestroy {
     const data = this.footerData();
     if (!data?.links) return [];
     return [
-      { title: 'Company', links: data.links.company ?? [] },
       { title: 'Services', links: data.links.services ?? [] },
       { title: 'Industries', links: data.links.industries ?? [] },
       { title: 'Resources', links: data.links.resources ?? [] },
+      { title: 'Company', links: data.links.company ?? [] },
     ];
   }
 
