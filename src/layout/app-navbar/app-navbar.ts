@@ -12,6 +12,7 @@ import {
   ElementRef,
   input,
   effect,
+  isDevMode,
 } from '@angular/core';
 import {
   CommonModule,
@@ -227,6 +228,11 @@ export class AppNavbar implements OnInit, OnDestroy {
   private loadNavbarContent() {
     this.loading.set(true);
     this.menuUpdatedFromBe = false;
+
+    if (isDevMode()) {
+      this.loadNavbarFromStaticFile(true);
+      return;
+    }
 
     // 1) Show static file immediately (no flash)
     this.loadNavbarFromStaticFile(false);

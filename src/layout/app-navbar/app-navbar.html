@@ -133,7 +133,7 @@
             <a [routerLink]="getSolutionHref(tab.key, sub)" (click)="closeMobileMenu()"
               class="mobile-solutions-item-link">
               @if (sub.icon) {
-              <img [src]="sub.icon" [alt]="sub.name" class="w-[16px] h-[16px] object-contain shrink-0" loading="lazy" />
+              <img [src]="sub.icon" [alt]="sub.name" class="mobile-solutions-item-link__icon w-5 h-5 object-contain shrink-0" loading="lazy" />
               }
               <span class="mobile-solutions-item-link__label">{{ sub.name }}</span>
             </a>
@@ -202,9 +202,9 @@
 @if (hoveredIndex() === 1) {
 <div class="flex flex-col nav--body" (mouseenter)="onMouseEnter(1)" (mouseleave)="onNavMouseLeave()" tabindex="0"
   (keydown.enter)="handleClickEvent()" (keydown.space)="handleClickEvent()" (click)="handleClickEvent()">
-  <div class="px-14 xl:px-16 py-3 solutions-menu-wrap">
+  <div class="lg:px-[96px] py-3 solutions-menu-wrap">
     <div class="flex flex-col lg:flex-row">
-      <div class="solutions-menu-left w-full lg:w-[220px] py-3 pr-5">
+      <div class="solutions-menu-left w-full lg:w-[252px] py-3">
         @for (tab of solutionTabs; track tab.key) {
         <button type="button" class="solutions-tab-btn" [class.is-active]="activeSolutionCategory() === tab.key"
           (click)="setActiveSolutionCategory(tab.key); $event.stopPropagation()">
@@ -212,7 +212,7 @@
         </button>
         }
       </div>
-      <div class="solutions-menu-middle flex-1 py-6 lg:px-6 xl:px-8">
+      <div class="solutions-menu-middle flex-1 py-6 lg:pl-3 lg:pr-5 xl:pl-4 xl:pr-6">
         <div class="solutions-links-grid">
           @for (solution of activeSolutionItems(); track solution.slug) {
           <a [routerLink]="getSolutionHref(activeSolutionCategory(), solution)"
@@ -223,7 +223,7 @@
               }
               <span class="solutions-item-link__label">{{ solution.name }}</span>
             </span>
-            <svg class="solutions-item-link__arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+            <svg class="solutions-item-link__arrow" xmlns="http://www.w3.org/2000/svg" width="17" height="17"
               viewBox="0 0 17 17" fill="none" aria-hidden="true">
               <path
                 d="M16.1829 9.83507e-07C16.5784 1.01808e-06 16.886 0.307618 16.886 0.703126L16.886 11.9531C16.886 12.3486 16.5784 12.6563 16.1829 12.6563C15.7874 12.6563 15.4797 12.3486 15.4797 11.9531L15.4797 2.41699L1.19751 16.6553C0.933838 16.9189 0.494385 16.9189 0.230713 16.6553C-0.0769043 16.3916 -0.0769043 15.9521 0.230713 15.6885L14.469 1.40625L4.93286 1.40625C4.53735 1.40625 4.22974 1.09863 4.22974 0.703125C4.22974 0.307617 4.53735 -3.45764e-08 4.93286 0L16.1829 9.83507e-07Z"
@@ -233,7 +233,7 @@
           }
         </div>
       </div>
-      <div class="solutions-menu-right flex-auto lg:w-[220px] xl:w-[240px] border-t border-gray-200/30 lg:border-t-0 lg:border-l">
+      <div class="solutions-menu-right flex-auto lg:w-[208px] xl:w-[224px] border-t border-gray-200/30 lg:border-t-0 lg:border-l">
         <div class="flex flex-col gap-3 px-5 py-10">
           <div class="flex gap-2 pb-4 items-center">
             <img src="/assets/feature.svg" alt="Case Studies" class="w-[35px] h-auto" />

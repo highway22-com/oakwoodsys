@@ -28,7 +28,7 @@
             </a>
             }
             @if (data.contact.email) {
-            <a target="_blank" [href]="data.contact.email.link"
+            <a [attr.href]="getFooterEmailHref(data.contact.email)"
               class="block text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] underline hover:text-blue-300 transition-colors duration-200">
               {{ data.contact.email.text }}
             </a>
