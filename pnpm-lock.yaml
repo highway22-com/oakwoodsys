@@ -42,7 +42,7 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       '@netlify/blobs':
-        specifier: ^10.1.0
+        specifier: ^10.5.0
         version: 10.7.9
       '@tailwindcss/postcss':
         specifier: ^4.1.17
