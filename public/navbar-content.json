@@ -98,88 +98,88 @@
           "name": "AI Application Development",
           "slug": "ai-application-development",
           "link": "ai-application-development",
-          "icon": "/assets/manu.svg"
+          "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/ai-icon-1.png"
         },
-        { "name": "Azure OpenAI", "slug": "azure-openai", "icon": "/assets/manu.svg" },
-        { "name": "Microsoft AI Foundry", "slug": "microsoft-ai-foundry", "icon": "/assets/manu.svg" },
-        { "name": "Microsoft Copilot", "slug": "microsoft-copilot", "icon": "/assets/manu.svg" },
-        { "name": "AI Governance", "slug": "ai-governance", "icon": "/assets/manu.svg" },
-        { "name": "Machine Learning", "slug": "machine-learning", "icon": "/assets/manu.svg" }
+        { "name": "Azure OpenAI", "slug": "azure-openai",   "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/ai-icon-2.png" },
+        { "name": "Microsoft AI Foundry", "slug": "microsoft-ai-foundry", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/ai-icon-3.png" },
+        { "name": "Microsoft Copilot", "slug": "microsoft-copilot", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/ai-icon-4.png" },
+        { "name": "AI Governance", "slug": "ai-governance", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/ai-icon-5.png" },
+        { "name": "Machine Learning", "slug": "machine-learning",        "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/ai-icon-6.png" }
       ],
       "dataAndAnalytics": [
-        { "name": "Power BI", "slug": "power-bi", "icon": "/assets/manu.svg" },
-        { "name": "Microsoft Fabric", "slug": "microsoft-fabric", "icon": "/assets/manu.svg" },
-        { "name": "Data Engineering", "slug": "data-engineering", "icon": "/assets/manu.svg" },
-        { "name": "Data Warehousing", "slug": "data-warehousing", "icon": "/assets/manu.svg" },
-        { "name": "Microsoft Purview", "slug": "microsoft-purview", "icon": "/assets/manu.svg" },
-        { "name": "Real-Time Analytics", "slug": "real-time-analytics", "icon": "/assets/manu.svg" }
+        { "name": "Power BI", "slug": "power-bi", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/data-ai-icon-1.png" },
+        { "name": "Microsoft Fabric", "slug": "microsoft-fabric", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/data-ai-icon-2.png" },
+        { "name": "Data Engineering", "slug": "data-engineering", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/data-ai-icon-3.png" },
+        { "name": "Data Warehousing", "slug": "data-warehousing", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/data-ai-icon-4.png" },
+        { "name": "Microsoft Purview", "slug": "microsoft-purview", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/data-ai-icon-5.png" },
+        { "name": "Real-Time Analytics", "slug": "real-time-analytics", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/data-ai-icon-6.png" }
       ],
       "cloud": [
         {
           "name": "Azure Migration Services",
           "slug": "azure-migration-services",
-          "icon": "/assets/manu.svg"
+          "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/cloud-icon-1.png"
         },
-        { "name": "Azure VMware Solution", "slug": "azure-vmware-solution", "icon": "/assets/manu.svg" },
+        { "name": "Azure VMware Solution", "slug": "azure-vmware-solution", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/cloud-icon-2.png" },
         {
           "name": "Backup & Disaster Recovery",
           "slug": "backup-disaster-recovery",
-          "icon": "/assets/manu.svg"
+          "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/cloud-icon-3.png"
         },
-        { "name": "Microsoft Azure", "slug": "microsoft-azure", "icon": "/assets/manu.svg" },
-        { "name": "Azure Arc", "slug": "azure-arc", "icon": "/assets/manu.svg" },
+              { "name": "Microsoft Azure", "slug": "microsoft-azure", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/cloud-icon-4.png" },
+        { "name": "Azure Arc", "slug": "azure-arc", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/cloud-icon-5.png" },
         {
           "name": "High-Performance Computing",
           "slug": "high-performance-computing",
-          "icon": "/assets/manu.svg"
+          "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/cloud-icon-6.png"
         }
       ],
       "modernWork": [
-        { "name": "Microsoft 365", "slug": "microsoft-365", "icon": "/assets/manu.svg" },
+        { "name": "Microsoft 365", "slug": "microsoft-365", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/modern-work-1.png" },
         {
           "name": "Microsoft Copilot for Work",
           "slug": "microsoft-copilot-for-work",
-          "icon": "/assets/manu.svg"
+          "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/modern-work-2.png"
         },
-        { "name": "Microsoft Teams", "slug": "microsoft-teams", "icon": "/assets/manu.svg" },
-        { "name": "SharePoint & Intranet", "slug": "sharepoint-intranet", "icon": "/assets/manu.svg" },
-        { "name": "Microsoft Intune", "slug": "microsoft-intune", "icon": "/assets/manu.svg" },
-        { "name": "Microsoft Agent 365", "slug": "microsoft-agent-365", "icon": "/assets/manu.svg" }
+        { "name": "Microsoft Teams", "slug": "microsoft-teams", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/modern-work-3.png" },
+        { "name": "SharePoint & Intranet", "slug": "sharepoint-intranet", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/modern-work-4.png" },
+        { "name": "Microsoft Intune", "slug": "microsoft-intune", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/modern-work-5.png" },
+        { "name": "Microsoft Agent 365", "slug": "microsoft-agent-365", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/modern-work-6.png" }
       ],
       "security": [
-        { "name": "Microsoft Defender", "slug": "microsoft-defender", "icon": "/assets/manu.svg" },
-        { "name": "Microsoft Sentinel", "slug": "microsoft-sentinel", "icon": "/assets/manu.svg" },
-        { "name": "Microsoft Entra ID", "slug": "microsoft-entra-id", "icon": "/assets/manu.svg" },
+        { "name": "Microsoft Defender", "slug": "microsoft-defender", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/security-1.png" },
+        { "name": "Microsoft Sentinel", "slug": "microsoft-sentinel", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/security-2.png" },
+        { "name": "Microsoft Entra ID", "slug": "microsoft-entra-id", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/security-3.png" },
         {
           "name": "Identity & Access Management",
           "slug": "identity-access-management",
-          "icon": "/assets/manu.svg"
+          "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/security-4.png"
         },
         {
           "name": "Data Security & Compliance",
           "slug": "data-security-compliance",
-          "icon": "/assets/manu.svg"
+          "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/security-5.png"
         },
-        { "name": "Azure Cloud Security", "slug": "azure-cloud-security", "icon": "/assets/manu.svg" }
+        { "name": "Azure Cloud Security", "slug": "azure-cloud-security", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/security-6.png" }
       ],
       "applications": [
-        { "name": "Power Platform", "slug": "power-platform", "icon": "/assets/manu.svg" },
+        { "name": "Power Platform", "slug": "power-platform", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/applications-1.png" },
         {
           "name": "Application Modernization",
           "slug": "application-modernization",
-          "icon": "/assets/manu.svg"
+          "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/applications-2.png"
         },
-        { "name": "Custom Applications", "slug": "custom-applications", "icon": "/assets/manu.svg" },
+        { "name": "Custom Applications", "slug": "custom-applications", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/applications-3.png" },
         {
           "name": "API & Integration Services",
           "slug": "api-integration-services",
-          "icon": "/assets/manu.svg"
+          "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/applications-4.png"
         },
-        { "name": "DevOps & CI/CD", "slug": "devops-ci-cd", "icon": "/assets/manu.svg" },
+        { "name": "DevOps & CI/CD", "slug": "devops-ci-cd", "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/applications-5.png" },
         {
           "name": "Cloud Native Applications",
           "slug": "cloud-native-applications",
-          "icon": "/assets/manu.svg"
+          "icon": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/06/applications-6.png"
         }
       ]
     },

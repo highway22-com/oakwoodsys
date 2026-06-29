@@ -192,6 +192,16 @@ export class Footer implements OnInit, OnDestroy {
     return link.routerLink;
   }
 
+  getFooterEmailHref(email: { text: string; link: string } | null | undefined): string {
+    if (!email) return 'mailto:';
+    const rawLink = (email.link ?? '').trim();
+    if (rawLink.toLowerCase().startsWith('mailto:')) {
+      return rawLink;
+    }
+    const rawAddress = (rawLink || email.text || '').trim();
+    return rawAddress ? `mailto:${rawAddress}` : 'mailto:';
+  }
+
   getFooterSolutionHref(category: FooterSolutionCategoryKey, item: FooterSolutionItem): string {
     const rawValue = (item.link ?? item.slug ?? '').trim();
     const normalized = rawValue.replace(/^\/+|\/+$/g, '');
