@@ -202,15 +202,20 @@ export class Footer implements OnInit, OnDestroy {
     return rawAddress ? `mailto:${rawAddress}` : 'mailto:';
   }
 
+  private getSolutionCategoryRouteSegment(category: FooterSolutionCategoryKey): string {
+    return category === 'dataAndAnalytics' ? 'data-analytics' : category;
+  }
+
   getFooterSolutionHref(category: FooterSolutionCategoryKey, item: FooterSolutionItem): string {
+    const categorySegment = this.getSolutionCategoryRouteSegment(category);
     const rawValue = (item.link ?? item.slug ?? '').trim();
     const normalized = rawValue.replace(/^\/+|\/+$/g, '');
     if (!normalized) {
-      return `/solutions/${category}`;
+      return `/solutions/${categorySegment}`;
     }
     const segments = normalized.split('/').filter(Boolean);
     const linkSegment = segments[segments.length - 1] ?? normalized;
-    return `/solutions/${category}/${linkSegment}`;
+    return `/solutions/${categorySegment}/${linkSegment}`;
   }
 
   solutionGroups(): Array<{ key: FooterSolutionCategoryKey; title: string; links: FooterSolutionItem[] }> {

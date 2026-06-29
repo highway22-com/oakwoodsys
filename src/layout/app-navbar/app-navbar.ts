@@ -12,7 +12,6 @@ import {
   ElementRef,
   input,
   effect,
-  isDevMode,
 } from '@angular/core';
 import {
   CommonModule,
@@ -229,36 +228,11 @@ export class AppNavbar implements OnInit, OnDestroy {
     this.loading.set(true);
     this.menuUpdatedFromBe = false;
 
-    if (isDevMode()) {
-      this.loadNavbarFromStaticFile(true);
-      return;
-    }
-
-    // 1) Show static file immediately (no flash)
-    this.loadNavbarFromStaticFile(false);
-
-    // 2) Try CMS JSON as interim update, then always fall through to GraphQL
-    const ts = Date.now();
-    this.http.get<NavbarContent>(`/api/cms/menu.json?t=${ts}`).subscribe({
-      next: (data) => {
-        if (data?.menu?.length && !this.menuUpdatedFromBe) {
-          this.menuItems.set(data.menu as NavbarContent['menu']);
-          this.content.set(
-            (data.content ?? null) as unknown as NavbarContent['content'],
-          );
-        }
-        // La barra ya es interactiva con JSON estático/CMS; GraphQL refresca en segundo plano.
-        this.loading.set(false);
-        this.loadMenuFromGraphQL();
-      },
-      error: () => {
-        this.loading.set(false);
-        this.loadMenuFromGraphQL();
-      },
-    });
+    // Always prefer WordPress/BE data first; fallback to static JSON only if BE fails.
+    this.loadMenuFromGraphQL(() => this.loadNavbarFromStaticFile(true));
   }
 
-  private loadMenuFromGraphQL() {
+  private loadMenuFromGraphQL(onFallback?: () => void) {
     this.graphql.getMenuContent().subscribe({
       next: (data) => {
         if (data?.menu) {
@@ -267,10 +241,12 @@ export class AppNavbar implements OnInit, OnDestroy {
           this.content.set(
             (data.content ?? null) as unknown as NavbarContent['content'],
           );
+          this.loading.set(false);
+          return;
         }
-        this.loading.set(false);
+        onFallback?.();
       },
-      error: () => this.loading.set(false),
+      error: () => onFallback?.(),
     });
   }
 
@@ -601,17 +577,22 @@ export class AppNavbar implements OnInit, OnDestroy {
     return this.mobileOpenSolutionCategory() === key;
   }
 
+  private getSolutionCategoryRouteSegment(category: SolutionCategoryKey): string {
+    return category === 'dataAndAnalytics' ? 'data-analytics' : category;
+  }
+
   getSolutionHref(category: SolutionCategoryKey, item: SolutionItem): string {
+    const categorySegment = this.getSolutionCategoryRouteSegment(category);
     const rawValue = (item.link ?? item.slug ?? '').trim();
     const normalized = rawValue.replace(/^\/+/g, '').replace(/\/+$/g, '');
 
     if (!normalized) {
-      return `/solutions/${category}`;
+      return `/solutions/${categorySegment}`;
     }
 
     const segments = normalized.split('/').filter(Boolean);
     const linkSegment = segments[segments.length - 1] ?? normalized;
-    return `/solutions/${category}/${linkSegment}`;
+    return `/solutions/${categorySegment}/${linkSegment}`;
   }
 
   get featuredSolutionCaseStudy(): CaseStudy | null {
