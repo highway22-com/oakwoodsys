@@ -84,6 +84,32 @@ function resolveDescription(page, slug) {
   return normalizeDescription(`WordPress page ${humanizeSlug(slug)}.`);
 }
 
+function extractOgImageFromHeadHtml(headHtml) {
+  if (!headHtml?.trim()) return '';
+  const match =
+    headHtml.match(/property=["']og:image["'][^>]*content=["']([^"']+)["']/i) ??
+    headHtml.match(/content=["']([^"']+)["'][^>]*property=["']og:image["']/i);
+  return match?.[1]?.trim() ?? '';
+}
+
+function extractFirstImageFromHtml(html) {
+  if (!html?.trim()) return '';
+  const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  const src = match?.[1]?.trim();
+  if (!src || src.startsWith('data:')) return '';
+  return src;
+}
+
+function resolveOgImage(page) {
+  const fromSeo = page?.seo?.ogImage?.trim();
+  if (fromSeo) return fromSeo;
+  const fromHead = extractOgImageFromHeadHtml(page?.headHtml ?? '');
+  if (fromHead) return fromHead;
+  const fromContent = extractFirstImageFromHtml(page?.content ?? '');
+  if (fromContent) return fromContent;
+  return DEFAULT_OG_IMAGE;
+}
+
 function patchIndexHtml(template, { title, description, canonicalUrl, image, keywords }) {
   let html = template;
 
@@ -190,7 +216,7 @@ async function main() {
         : `${PUBLIC_BASE}${canonicalPath.startsWith('/') ? '' : '/'}${canonicalPath}`;
       const title = resolveDocumentTitle(page, slug);
       const description = resolveDescription(page, slug);
-      const image = page?.seo?.ogImage?.trim() || DEFAULT_OG_IMAGE;
+      const image = resolveOgImage(page);
       const keywords = page?.seo?.keywords?.trim() || '';
 
       const html = patchIndexHtml(template, { title, description, canonicalUrl, image, keywords });

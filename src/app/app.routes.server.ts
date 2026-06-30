@@ -1,4 +1,4 @@
-import { RenderMode, ServerRoute } from '@angular/ssr';
+import { PrerenderFallback, RenderMode, ServerRoute } from '@angular/ssr';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -16,9 +16,20 @@ function getPrerenderSlugs(): { blog: string[]; caseStudy: string[] } {
   }
 }
 
+function getWordPressPageSlugs(): string[] {
+  try {
+    const path = join(process.cwd(), 'wp-page-slugs.json');
+    const raw = readFileSync(path, 'utf8');
+    const data = JSON.parse(raw);
+    return Array.isArray(data?.slugs) ? data.slugs.filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
 /**
- * Rutas dinámicas (blog, case-studies, etc.) prerenderizadas o SSR.
- * Netlify ejecuta el servidor Angular para estas rutas.
+ * Rutas dinámicas prerenderizadas o SSR en runtime (Netlify).
+ * Las páginas WordPress de un segmento (`:wpPageSlug`) se prerenderizan en build.
  */
 export const serverRoutes: ServerRoute[] = [
   {
@@ -60,6 +71,12 @@ export const serverRoutes: ServerRoute[] = [
   {
     path: 'edit/:slug',
     renderMode: RenderMode.Server,
+  },
+  {
+    path: ':wpPageSlug',
+    renderMode: RenderMode.Prerender,
+    fallback: PrerenderFallback.Server,
+    getPrerenderParams: async () => getWordPressPageSlugs().map((slug) => ({ wpPageSlug: slug })),
   },
   {
     path: '**',

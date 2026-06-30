@@ -46,8 +46,27 @@ interface Content {
   icon: string;
 }
 
+interface SolutionItem {
+  name: string;
+  slug: string;
+  link?: string;
+  icon?: string;
+}
+
+interface SolutionsContent {
+  ai: SolutionItem[];
+  dataAndAnalytics: SolutionItem[];
+  cloud: SolutionItem[];
+  modernWork: SolutionItem[];
+  security: SolutionItem[];
+  applications: SolutionItem[];
+}
+
+type SolutionCategoryKey = keyof SolutionsContent;
+
 interface ContentMap {
   services: Content[];
+  solutions?: SolutionsContent;
   industries: Content[];
   resources: Content[];
 }
@@ -105,6 +124,18 @@ export class AppNavbar implements OnInit, OnDestroy {
   /** Título de la sección Featured por dropdown (Services, Industries). */
   readonly featuredTitleServices = signal('FEATURED BLOGS');
   readonly featuredTitleIndustries = signal('FEATURED CASE STUDIES');
+  readonly featuredTitleSolutions = signal('FEATURED CASE STUDIES');
+
+  readonly solutionTabs: ReadonlyArray<{ key: SolutionCategoryKey; label: string }> = [
+    { key: 'ai', label: 'AI' },
+    { key: 'cloud', label: 'Cloud' },
+    { key: 'dataAndAnalytics', label: 'Data & Analytics' },
+    { key: 'applications', label: 'Applications' },
+    { key: 'security', label: 'Security' },
+    { key: 'modernWork', label: 'Modern Work' },
+  ];
+  readonly activeSolutionCategory = signal<SolutionCategoryKey>('ai');
+  readonly mobileOpenSolutionCategory = signal<SolutionCategoryKey>('ai');
 
   /** Panel de búsqueda (click en ícono): abierto/cerrado. */
   readonly searchPanelOpen = signal(false);
@@ -157,6 +188,12 @@ export class AppNavbar implements OnInit, OnDestroy {
     () => this.searchFilteredResults().length > this.searchVisibleCount(),
   );
 
+  readonly activeSolutionItems = computed<SolutionItem[]>(() => {
+    const solutions = this.content()?.solutions;
+    if (!solutions) return [];
+    return solutions[this.activeSolutionCategory()] ?? [];
+  });
+
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.checkScrollPosition();
@@ -191,31 +228,11 @@ export class AppNavbar implements OnInit, OnDestroy {
     this.loading.set(true);
     this.menuUpdatedFromBe = false;
 
-    // 1) Show static file immediately (no flash)
-    this.loadNavbarFromStaticFile(false);
-
-    // 2) Try CMS JSON as interim update, then always fall through to GraphQL
-    const ts = Date.now();
-    this.http.get<NavbarContent>(`/api/cms/menu.json?t=${ts}`).subscribe({
-      next: (data) => {
-        if (data?.menu?.length && !this.menuUpdatedFromBe) {
-          this.menuItems.set(data.menu as NavbarContent['menu']);
-          this.content.set(
-            (data.content ?? null) as unknown as NavbarContent['content'],
-          );
-        }
-        // La barra ya es interactiva con JSON estático/CMS; GraphQL refresca en segundo plano.
-        this.loading.set(false);
-        this.loadMenuFromGraphQL();
-      },
-      error: () => {
-        this.loading.set(false);
-        this.loadMenuFromGraphQL();
-      },
-    });
+    // Always prefer WordPress/BE data first; fallback to static JSON only if BE fails.
+    this.loadMenuFromGraphQL(() => this.loadNavbarFromStaticFile(true));
   }
 
-  private loadMenuFromGraphQL() {
+  private loadMenuFromGraphQL(onFallback?: () => void) {
     this.graphql.getMenuContent().subscribe({
       next: (data) => {
         if (data?.menu) {
@@ -224,10 +241,12 @@ export class AppNavbar implements OnInit, OnDestroy {
           this.content.set(
             (data.content ?? null) as unknown as NavbarContent['content'],
           );
+          this.loading.set(false);
+          return;
         }
-        this.loading.set(false);
+        onFallback?.();
       },
-      error: () => this.loading.set(false),
+      error: () => onFallback?.(),
     });
   }
 
@@ -339,21 +358,28 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
-    if (!this.isMobileMenuOpen) this.mobileExpandedIndex = null;
+    if (!this.isMobileMenuOpen) {
+      this.mobileExpandedIndex = null;
+      this.mobileOpenSolutionCategory.set('ai');
+    }
     this.updateBodyScrollLock();
   }
 
   closeMobileMenu() {
     this.isMobileMenuOpen = false;
     this.mobileExpandedIndex = null;
+    this.mobileOpenSolutionCategory.set('ai');
     this.updateBodyScrollLock();
   }
 
-  toggleMobileDropdown(index: number) {
+  toggleMobileDropdown(index: number, slug?: string) {
     const next = this.mobileExpandedIndex === index ? null : index;
     this.mobileExpandedIndex = next;
     if (next === 0) {
       this.ensureFeaturedBlogsLoaded();
+    }
+    if (next !== null && slug === 'solutions') {
+      this.mobileOpenSolutionCategory.set('ai');
     }
   }
 
@@ -421,14 +447,24 @@ export class AppNavbar implements OnInit, OnDestroy {
     // console.log('onNavMouseLeave', this.hoveredIndex());
   }
 
-  public handleMouseEnter(item: {
-    index: number | null;
-    hasDropdown: boolean;
-  }): void {
-    if (item.hasDropdown && item.index !== null) {
-      this.hoveredIndex.set(item.index);
-      if (item.index === 0) {
+  public handleMouseEnter(
+    item: { slug: string; index: number | null; hasDropdown: boolean },
+    templateIndex: number,
+  ): void {
+    if (item.hasDropdown) {
+      const dropdownIndexBySlug: Record<string, number> = {
+        services: 0,
+        solutions: 1,
+        industries: 2,
+        resources: 3,
+      };
+      const resolvedIndex = dropdownIndexBySlug[item.slug] ?? templateIndex;
+      this.hoveredIndex.set(resolvedIndex);
+      if (item.slug === 'services') {
         this.ensureFeaturedBlogsLoaded();
+      }
+      if (item.slug === 'solutions') {
+        this.activeSolutionCategory.set('ai');
       }
       return;
     }
@@ -524,6 +560,49 @@ export class AppNavbar implements OnInit, OnDestroy {
   getSearchFragment(): string | undefined {
     const q = this.searchQuery().trim();
     return q ? encodeURIComponent(q) : undefined;
+  }
+
+  setActiveSolutionCategory(key: SolutionCategoryKey): void {
+    this.activeSolutionCategory.set(key);
+  }
+
+  toggleMobileSolutionCategory(key: SolutionCategoryKey): void {
+    if (this.mobileOpenSolutionCategory() === key) {
+      return;
+    }
+    this.mobileOpenSolutionCategory.set(key);
+  }
+
+  isMobileSolutionCategoryOpen(key: SolutionCategoryKey): boolean {
+    return this.mobileOpenSolutionCategory() === key;
+  }
+
+  private getSolutionCategoryRouteSegment(category: SolutionCategoryKey): string {
+    return category === 'dataAndAnalytics' ? 'data-analytics' : category;
+  }
+
+  getSolutionHref(category: SolutionCategoryKey, item: SolutionItem): string {
+    const categorySegment = this.getSolutionCategoryRouteSegment(category);
+    const rawValue = (item.link ?? item.slug ?? '').trim();
+    const normalized = rawValue.replace(/^\/+/g, '').replace(/\/+$/g, '');
+
+    if (!normalized) {
+      return `/solutions/${categorySegment}`;
+    }
+
+    const segments = normalized.split('/').filter(Boolean);
+    const linkSegment = segments[segments.length - 1] ?? normalized;
+    return `/solutions/${categorySegment}/${linkSegment}`;
+  }
+
+  get featuredSolutionCaseStudy(): CaseStudy | null {
+    return this.featuredCaseStudies().length > 0
+      ? this.featuredCaseStudies()[0]
+      : null;
+  }
+
+  getFeaturedCaseStudyLink(caseStudy: CaseStudy): string {
+    return `/resources/case-studies/${caseStudy.slug}`;
   }
 
   ngOnDestroy() {

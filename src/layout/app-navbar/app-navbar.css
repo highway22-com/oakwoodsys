@@ -29,3 +29,223 @@
 .animate-slide-in-right {
   animation: slide-in-right 0.25s ease-out forwards;
 }
+
+.solutions-menu-wrap {
+  background-color: #fff;
+}
+
+.solutions-menu-left {
+  border-right: 1px solid #e5e7eb;
+  padding-right: 12px;
+}
+
+.solutions-tab-btn {
+  width: 100%;
+  text-align: left;
+  padding: 12px 20px;
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #3f3f46;
+  border-left: 4px solid transparent;
+  border-radius: 0 8px 8px 0;
+  transition: all 0.2s ease;
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.solutions-tab-btn:hover {
+  background: #EAF0F8;
+  color: #454545;
+  border-left-color: #BDE0FF;
+}
+
+.solutions-tab-btn.is-active {
+  background: #06357B;
+  color: #fff;
+  border-left-color: #2A7EBF;
+}
+
+.solutions-tab-btn.is-active:hover {
+  color: #fff;
+}
+
+.solutions-item-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  justify-self: stretch;
+  width: 100%;
+  min-width: 0;
+  gap: 12px;
+  padding: 24px 14px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #3d3d3d;
+  transition: color 0.2s ease;
+}
+
+.solutions-item-link:hover {
+  color: #2A7EBF;
+  background-color: #F2F8FD;
+}
+
+.solutions-item-link__label {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.solutions-item-link__content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-right: 16px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.solutions-item-link__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.solutions-item-link__arrow {
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  color: #3D3D3D;
+  flex-shrink: 0;
+}
+
+.solutions-item-link:hover .solutions-item-link__arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.solutions-menu-middle {
+  border-right: 1px solid #e5e7eb;
+  align-self: flex-start;
+}
+
+.solutions-links-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-items: stretch;
+  column-gap: 0;
+  row-gap: 12px;
+  grid-auto-rows: max-content;
+  align-content: start;
+}
+
+@media (min-width: 1024px) {
+  .solutions-menu-middle {
+    min-width: 760px;
+  }
+}
+
+.mobile-solutions-tab-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  text-align: left;
+  border-left: 4px solid var(--Primary-200, #C3DDF4);
+  border-radius: 0 8px 8px 0;
+  background: var(--Primary-100, #E4EEFA);
+  color: #454545;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.mobile-solutions-tab-btn:hover {
+  background: var(--Primary-100, #E4EEFA);
+  border-left-color: var(--Primary-200, #C3DDF4);
+  color: #454545;
+}
+
+.mobile-solutions-tab-btn__label {
+  color: var(--Secondary-800, #454545);
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.mobile-solutions-tab-btn:not(.is-active) .mobile-solutions-tab-btn__label {
+  color: var(--Secondary-800, #454545);
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.mobile-solutions-tab-btn.is-active {
+  background: #06357B;
+  border-left-color: #2A7EBF;
+  color: #FFFFFF;
+}
+
+.mobile-solutions-tab-btn.is-active .mobile-solutions-tab-btn__label {
+  color: var(--White, #FFF);
+}
+
+.mobile-solutions-tab-btn.is-active:hover {
+  background: #06357B;
+  border-left-color: #2A7EBF;
+  color: #FFFFFF;
+}
+
+.mobile-solutions-tab-btn__icon {
+  color: var(--Primary-500, #2A7EBF);
+  transition: color 0.2s ease;
+}
+
+.mobile-solutions-tab-btn.is-active .mobile-solutions-tab-btn__icon {
+  color: var(--Primary-200, #C3DDF4);
+}
+
+.mobile-solutions-item-link {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 8px;
+  color: var(--Secondary-800, #454545);
+  transition: color 0.2s ease;
+}
+
+.mobile-solutions-item-link:hover {
+  color: #2A7EBF;
+}
+
+.mobile-solutions-item-link__label {
+  display: flex;
+  align-items: center;
+  color: var(--Secondary-800, #454545);
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.mobile-solutions-item-link__icon {
+  display: block;
+  align-self: center;
+}

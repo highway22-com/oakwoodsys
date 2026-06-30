@@ -15,6 +15,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/menu-visual-editor.php';
+
 add_action( 'acf/init', function () {
 	if ( function_exists( 'acf_add_local_field_group' ) ) {
 		require_once __DIR__ . '/acf-cms-page.php';

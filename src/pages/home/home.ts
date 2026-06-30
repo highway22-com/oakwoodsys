@@ -36,6 +36,9 @@ const DEFAULT_TITLE =
   'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
 const DEFAULT_DESCRIPTION =
   'As a Microsoft Solutions Partner specializing in Azure Cloud services, we drive business innovation and modernization for our clients.';
+const HERO_FALLBACK_TITLE = 'Modernize Infrastructure. Strengthen Your Core.';
+const HERO_FALLBACK_DESCRIPTION =
+  'Migrate, optimize, and secure your cloud and hybrid environments with a foundation built for resilience and scale.';
 
 export function splitTwoLinerTitle(title: string): [string, string] {
   if (!title) return [title, ''];
@@ -220,32 +223,45 @@ export default class Home implements OnInit {
     return this.defaultFeaturedSlugs;
   }
 
-  /** Título del hero: desde ctas (array) o sección hero. */
-  heroTitle(): string | string[] {
-    const ctas = this.getCtas();
-    if (ctas && ctas.length > 0) return ctas.map((c) => c.title);
-    const section = this.getSection('hero');
-    const t = section?.title;
-    if (typeof t === 'string') return t || '';
-    if (Array.isArray(t))
-      return t.filter((s): s is string => typeof s === 'string');
-    if (t && typeof t === 'object' && !Array.isArray(t))
-      return [t.line1, t.line2].filter(Boolean).join(' ') || '';
-    return '';
+  /** True si el valor es null/undefined, '' o un array vacío o de solo strings vacíos. */
+  private isBlankValue(value: string | string[]): boolean {
+    if (value == null) return true;
+    if (typeof value === 'string') return value.trim() === '';
+    return value.length === 0 || value.every((s) => !s || s.trim() === '');
   }
 
-  /** Descripción del hero: desde ctas (array) o sección hero. */
+  /** Título del hero: desde ctas (array) o sección hero. Fallback si viene vacío. */
+  heroTitle(): string | string[] {
+    const ctas = this.getCtas();
+    let value: string | string[] = '';
+    if (ctas && ctas.length > 0) {
+      value = ctas.map((c) => c.title);
+    } else {
+      const t = this.getSection('hero')?.title;
+      if (typeof t === 'string') value = t || '';
+      else if (Array.isArray(t))
+        value = t.filter((s): s is string => typeof s === 'string');
+      else if (t && typeof t === 'object')
+        value = [t.line1, t.line2].filter(Boolean).join(' ') || '';
+    }
+    return this.isBlankValue(value) ? HERO_FALLBACK_TITLE : value;
+  }
+
+  /** Descripción del hero: desde ctas (array) o sección hero. Fallback si viene vacía. */
   heroDescription(): string | string[] {
     const ctas = this.getCtas();
-    if (ctas && ctas.length > 0) return ctas.map((c) => c.description);
-    const section = this.getSection('hero');
-    const t = section?.description;
-    if (typeof t === 'string') return t || '';
-    if (Array.isArray(t))
-      return t.filter((s): s is string => typeof s === 'string');
-    if (t && typeof t === 'object' && !Array.isArray(t))
-      return [t.line1, t.line2].filter(Boolean).join(' ') || '';
-    return '';
+    let value: string | string[] = '';
+    if (ctas && ctas.length > 0) {
+      value = ctas.map((c) => c.description);
+    } else {
+      const t = this.getSection('hero')?.description;
+      if (typeof t === 'string') value = t || '';
+      else if (Array.isArray(t))
+        value = t.filter((s): s is string => typeof s === 'string');
+      else if (t && typeof t === 'object')
+        value = [t.line1, t.line2].filter(Boolean).join(' ') || '';
+    }
+    return this.isBlankValue(value) ? HERO_FALLBACK_DESCRIPTION : value;
   }
 
   /** CTA principal del hero: array (uno por video) desde ctas, o único desde sección hero. */

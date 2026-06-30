@@ -9,7 +9,7 @@ import { WordPressFooterScript, WordPressInlineStyle, WordPressPageResponse, Wor
 import { AppNavbar } from '../../layout/app-navbar/app-navbar';
 import { Footer } from '../../layout/footer/footer';
 import { applyWordPressPageSeo, resolveWordPressDisplayTitle } from './wordpress-page.seo';
-import { resolveWordPressPathFromRoute } from './wordpress-page.resolver';
+import { resolveWordPressFetchPath, resolveWordPressPathFromRoute } from './wordpress-page.resolver';
 
 @Component({
   selector: 'app-wordpress-page',
@@ -82,6 +82,7 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
 
   private loadCurrentPage(useResolverData: boolean): void {
     const path = this.resolvePath();
+    const fetchPath = resolveWordPressFetchPath(path);
     if (!path || path === this.currentPath) {
       return;
     }
@@ -116,7 +117,7 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.wordpressPageService.getPage(path).subscribe({
+    this.wordpressPageService.getPage(fetchPath).subscribe({
       // In the browser, defer one macrotask so Angular renders loading=true before
       // processing a synchronous transfer-cache response. On SSR, apply synchronously
       // because Angular SSR does not await setTimeout callbacks.
