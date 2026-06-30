@@ -89,6 +89,11 @@
 /structured-engagement/azure-hpc-migration-assessment
 /structured-engagement/azure-hpc-max-poc
 /structured-engagement/azure-hpc-pro-poc
+/modern-work-engagements
+/security-engagements
+/cloud-infrastructure-engagements
+/data-analytics-engagements
+/strategy-and-advisory-engagements
 /ai-application-innovation-engagements
 /strategy-workshops-and-assessments
 /microsoft-agent-365

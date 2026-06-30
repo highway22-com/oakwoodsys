@@ -456,6 +456,31 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://oakwoodsys.com/modern-work-engagements</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/security-engagements</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/cloud-infrastructure-engagements</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/data-analytics-engagements</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/strategy-and-advisory-engagements</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://oakwoodsys.com/ai-application-innovation-engagements</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
