@@ -8,7 +8,7 @@
     </div>
     } @else if (footerData(); as data) {
  <div
-      class="flex flex-col lg:grid lg:grid-cols-[minmax(0,340px)_1fr_1fr_1fr_1fr_1fr] gap-6 mb-8 sm:mb-10 md:mb-12">
+   class="flex flex-col lg:grid lg:grid-cols-[minmax(0,340px)_1fr_1fr_1fr_1fr_1fr] gap-6 lg:gap-x-2 mb-8 sm:mb-10 md:mb-12">
       <div class="mb-6 lg:mb-0 col-span-1 flex flex-col lg:justify-start">
         @if (data.logo) {
         <div class="flex items-center gap-2 mb-8 lg:mb-10 lg:mt-0">
@@ -187,7 +187,7 @@
       </div>
       }
       @if (getMicrosoftLicensingLink(); as licensingLink) {
-      <div class="hidden lg:block col-span-1">
+      <div class="hidden lg:block col-span-1 lg:-ml-4">
         <h3 class="text-white font-['Inter'] text-[16px] font-semibold leading-[1.5] mb-6 tracking-wide">
           Microsoft Licensing
         </h3>
@@ -201,7 +201,7 @@
               alt="Microsoft Licensing icon"
               class="w-4 h-4 object-contain shrink-0"
             />
-            <span class="block font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-[#E4EEFA] break-words">
+            <span class="block font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-[#E4EEFA] whitespace-nowrap">
               {{ licensingLink.text }}
             </span>
           </span>
