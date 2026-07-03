@@ -1,4 +1,4 @@
-import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { CommonModule, DOCUMENT, ViewportScroller, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, NgZone, OnDestroy, OnInit, PLATFORM_ID, ViewEncapsulation, inject, signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -28,6 +28,7 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
   private readonly document = inject(DOCUMENT);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly zone = inject(NgZone);
+  private readonly viewportScroller = inject(ViewportScroller);
 
   // Starts false so SSR-rendered DOM matches the initial signal value, preventing
   // a hydration mismatch that would otherwise flash the loading state immediately.
@@ -385,6 +386,7 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
 
     if (!toLoad.length) {
       this.loading.set(false);
+      this.scrollToCurrentFragmentWithRetry();
       return;
     }
 
@@ -431,14 +433,20 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
     let pending = externalCount || 1;
 
     const safetyTimer = setTimeout(() => {
-      this.zone.run(() => this.loading.set(false));
+      this.zone.run(() => {
+        this.loading.set(false);
+        this.scrollToCurrentFragmentWithRetry();
+      });
     }, 8000);
 
     const settle = (): void => {
       if (--pending <= 0) {
         clearTimeout(safetyTimer);
         const win = this.document.defaultView;
-        const reveal = () => this.zone.run(() => this.loading.set(false));
+        const reveal = () => this.zone.run(() => {
+          this.loading.set(false);
+          this.scrollToCurrentFragmentWithRetry();
+        });
         win?.requestAnimationFrame ? win.requestAnimationFrame(reveal) : reveal();
       }
     };
@@ -451,6 +459,23 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
         link.addEventListener('load', settle, { once: true });
         link.addEventListener('error', settle, { once: true });
       });
+    }
+  }
+
+  private scrollToCurrentFragmentWithRetry(attempt = 0): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const hash = this.document.defaultView?.location?.hash ?? '';
+    const fragment = decodeURIComponent(hash.replace(/^#/, '').trim());
+    if (!fragment) return;
+
+    if (this.document.getElementById(fragment)) {
+      this.viewportScroller.scrollToAnchor(fragment);
+      return;
+    }
+
+    if (attempt < 10) {
+      setTimeout(() => this.scrollToCurrentFragmentWithRetry(attempt + 1), 80);
     }
   }
 

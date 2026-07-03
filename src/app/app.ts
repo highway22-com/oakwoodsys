@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { ViewportScroller } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CookieConsentBanner } from "../shared/cookie-consent-banner/cookie-consent-banner";
 
@@ -9,5 +10,10 @@ import { CookieConsentBanner } from "../shared/cookie-consent-banner/cookie-cons
   styleUrl: './app.css'
 })
 export class App {
+  private readonly viewportScroller = inject(ViewportScroller);
   protected readonly title = signal('oaw');
+
+  constructor() {
+    this.viewportScroller.setOffset([0, 120]);
+  }
 }
