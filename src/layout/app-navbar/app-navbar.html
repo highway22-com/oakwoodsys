@@ -32,23 +32,31 @@
     <!-- Desktop: menú completo -->
     <div class="flex items-center gap-6 lg:gap-8 hidden md:flex">
       @for (item of menuItems(); track item.label; let i = $index) {
-      <a [routerLink]="item.routerLink" (mouseenter)="handleMouseEnter(item, i)" [ngClass]="{
+      @if (item.hasDropdown) {
+      <button type="button" (mouseenter)="handleMouseEnter(item, i)" (click)="toggleDesktopDropdown(item, $event)" [ngClass]="{
             ' hover:text-primary-blue': !isScrolled,
             ' hover:text-blue-600': isScrolled,
-        activeLink: item.hasDropdown && hoveredIndex() === i,
+        activeLink: hoveredIndex() === i,
           }" class="transition-colors duration-200 flex items-center gap-1 group p-4" (mouseleave)="handleTopLinkMouseLeave(item)"
         [class.text-gray-900]="hasNavbarBackground" [class.text-white]="!hasNavbarBackground">
         {{ item.label }}
-        @if (item.hasDropdown === true) {
         <div>
-          @if (item.hasDropdown && hoveredIndex() === i) {
+          @if (hoveredIndex() === i) {
           <i class="fa-solid fa-chevron-up text-sm"></i>
           } @else {
           <i class="fa-solid fa-chevron-down text-sm"></i>
           }
         </div>
-        }
+      </button>
+      } @else {
+      <a [routerLink]="item.routerLink" (mouseenter)="handleMouseEnter(item, i)" [ngClass]="{
+            ' hover:text-primary-blue': !isScrolled,
+            ' hover:text-blue-600': isScrolled,
+          }" class="transition-colors duration-200 flex items-center gap-1 group p-4" (mouseleave)="handleTopLinkMouseLeave(item)"
+        [class.text-gray-900]="hasNavbarBackground" [class.text-white]="!hasNavbarBackground">
+        {{ item.label }}
       </a>
+      }
       }
     </div>
     <div class="flex items-center gap-4 lg:gap-6 hidden md:flex">

@@ -287,10 +287,12 @@ export class AppNavbar implements OnInit, OnDestroy {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    if (!target.closest('.dropdown-container')) {
+    const navbarRoot = this.document.querySelector('app-navbar');
+    if (!navbarRoot?.contains(target)) {
       this.isServicesDropdownOpen = false;
       this.isIndustriesDropdownOpen = false;
       this.isResourcesDropdownOpen = false;
+      this.hoveredIndex.set(null);
     }
   }
 
@@ -437,6 +439,52 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   public onMouseEnter(index: number): void {
     this.hoveredIndex.set(index);
+  }
+
+  private getDropdownIndex(slug: string): number | null {
+    const dropdownIndexBySlug: Record<string, number> = {
+      services: 0,
+      solutions: 1,
+      industries: 2,
+      resources: 3,
+    };
+    return dropdownIndexBySlug[slug] ?? null;
+  }
+
+  public toggleDesktopDropdown(
+    item: { slug: string; hasDropdown: boolean },
+    event: MouseEvent,
+  ): void {
+    if (!item.hasDropdown) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const dropdownIndex = this.getDropdownIndex(item.slug);
+    if (dropdownIndex === null) {
+      return;
+    }
+
+    const isOpen = this.hoveredIndex() === dropdownIndex;
+    this.hoveredIndex.set(isOpen ? null : dropdownIndex);
+
+    if (isOpen) {
+      this.closeAllDropdowns();
+      return;
+    }
+
+    this.isServicesDropdownOpen = item.slug === 'services';
+    this.isIndustriesDropdownOpen = item.slug === 'industries';
+    this.isResourcesDropdownOpen = item.slug === 'resources';
+
+    if (item.slug === 'services') {
+      this.ensureFeaturedBlogsLoaded();
+    }
+    if (item.slug === 'solutions') {
+      this.activeSolutionCategory.set('ai');
+    }
   }
 
   public onNavMouseLeave(): void {
