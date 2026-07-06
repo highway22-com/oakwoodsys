@@ -1,0 +1,231 @@
+{
+  "type": "footer",
+  "logo": {
+    "text": "OAKWOOD",
+    "icon": "svg"
+  },
+  "contact": {
+    "heading": "Contact",
+    "phone": {
+      "text": "314.824.3000",
+      "link": "tel:3148243000"
+    },
+    "email": {
+      "text": "marketing@oakwoodsys.com",
+      "link": "mailto:marketing@oakwoodsys.com"
+    }
+  },
+  "socialMedia": [
+    {
+      "name": "LinkedIn",
+      "link": "https://www.linkedin.com/company/oakwood-systems-group",
+      "icon": "linkedin"
+    },
+    {
+      "name": "X (Twitter)",
+      "link": "https://twitter.com/OakwoodInsights",
+      "icon": "twitter"
+    },
+    {
+      "name": "Facebook",
+      "link": "https://www.facebook.com/OakwoodSys/",
+      "icon": "facebook"
+    },
+    {
+      "name": "YouTube",
+      "link": "https://www.youtube.com/user/oakwoodinnovates",
+      "icon": "youtube"
+    }
+  ],
+  "links": {
+    "services": [
+      {
+        "text": "Data & Artificial Intelligence",
+        "routerLink": "/services/data-and-ai"
+      },
+      {
+        "text": "Cloud and Infrastructure",
+        "routerLink": "/services/cloud-and-infrastructure"
+      },
+      {
+        "text": "Application Innovation",
+        "routerLink": "/services/application-innovation"
+      },
+      {
+        "text": "High-Performance Computing (HPC)",
+        "routerLink": "/services/high-performance-computing"
+      },
+      {
+        "text": "Modern Work",
+        "routerLink": "/services/modern-work"
+      },
+      {
+        "text": "Managed Services",
+        "routerLink": "/services/managed-services"
+      }
+    ],
+    "industries": [
+      {
+        "text": "Manufacturing",
+        "routerLink": "/industries/manufacturing"
+      },
+      {
+        "text": "Healthcare",
+        "routerLink": "/industries/healthcare"
+      },
+      {
+        "text": "Financial Services",
+        "routerLink": "/industries/financial-services"
+      },
+      {
+        "text": "Retail",
+        "routerLink": "/industries/retail"
+      },
+      {
+        "text": "Education / Public Sector",
+        "routerLink": "/industries/education-public-sector"
+      },
+      {
+        "text": "Electronic Design Automation (EDA)",
+        "routerLink": "/industries/eda"
+      }
+    ],
+    "resources": [
+      {
+        "text": "Case Studies",
+        "routerLink": "/resources/case-studies"
+      },
+      {
+        "text": "IT Blog",
+        "routerLink": "/blog"
+      },
+      {
+        "text": "Structured Engagements",
+        "routerLink": "/resources/structured-engagements"
+      },
+    {
+        "text": "Events",
+        "routerLink": "/resources/events"
+      },
+    {
+        "text": "Technology Partners",
+        "routerLink": "technology-partners"
+      }
+    ],
+    "company": [
+      {
+        "text": "About",
+        "routerLink": "/about"
+      },
+      {
+        "text": "Careers",
+        "routerLink": "/careers"
+      },
+      {
+        "text": "Contact Us",
+        "routerLink": "/contact-us"
+      },
+    {
+        "text": "Microsoft Licensing",
+        "routerLink": "/microsoft-licensing"
+      }
+    ],   
+     "solutions": {
+      "ai": [
+        {
+          "name": "AI Application Development",
+          "slug": "ai-application-development",
+          "link": "ai-application-development"
+        },
+        { "name": "Azure OpenAI", "slug": "azure-openai" },
+        { "name": "Microsoft AI Foundry", "slug": "microsoft-ai-foundry" },
+        { "name": "Microsoft Copilot", "slug": "microsoft-copilot" },
+        { "name": "AI Governance", "slug": "ai-governance" },
+        { "name": "Machine Learning", "slug": "machine-learning" }
+      ],
+      "dataAndAnalytics": [
+        { "name": "Power BI", "slug": "power-bi" },
+        { "name": "Microsoft Fabric", "slug": "microsoft-fabric" },
+        { "name": "Data Engineering", "slug": "data-engineering" },
+        { "name": "Data Warehousing", "slug": "data-warehousing" },
+        { "name": "Microsoft Purview", "slug": "microsoft-purview" },
+        { "name": "Real-Time Analytics", "slug": "real-time-analytics" }
+      ],
+      "cloud": [
+        {
+          "name": "Azure Migration Services",
+          "slug": "azure-migration-services"
+        },
+        { "name": "Azure VMware Solution", "slug": "azure-vmware-solution" },
+        {
+          "name": "Backup & Disaster Recovery",
+          "slug": "backup-disaster-recovery"
+        },
+        { "name": "Microsoft Azure", "slug": "microsoft-azure" },
+        { "name": "Azure Arc", "slug": "azure-arc" },
+        {
+          "name": "High-Performance Computing",
+          "slug": "high-performance-computing"
+        }
+      ],
+      "modernWork": [
+        { "name": "Microsoft 365", "slug": "microsoft-365" },
+        {
+          "name": "Microsoft Copilot for Work",
+          "slug": "microsoft-copilot-for-work"
+        },
+        { "name": "Microsoft Teams", "slug": "microsoft-teams" },
+        { "name": "SharePoint & Intranet", "slug": "sharepoint-intranet" },
+        { "name": "Microsoft Intune", "slug": "microsoft-intune" },
+        { "name": "Microsoft Agent 365", "slug": "microsoft-agent-365" }
+      ],
+      "security": [
+        { "name": "Microsoft Defender", "slug": "microsoft-defender" },
+        { "name": "Microsoft Sentinel", "slug": "microsoft-sentinel" },
+        { "name": "Microsoft Entra ID", "slug": "microsoft-entra-id" },
+        {
+          "name": "Identity & Access Management",
+          "slug": "identity-access-management"
+        },
+        {
+          "name": "Data Security & Compliance",
+          "slug": "data-security-compliance"
+        },
+        { "name": "Azure Cloud Security", "slug": "azure-cloud-security" }
+      ],
+      "applications": [
+        { "name": "Power Platform", "slug": "power-platform" },
+        {
+          "name": "Application Modernization",
+          "slug": "application-modernization"
+        },
+        { "name": "Custom Applications", "slug": "custom-applications" },
+        {
+          "name": "API & Integration Services",
+          "slug": "api-integration-services"
+        },
+        { "name": "DevOps & CI/CD", "slug": "devops-ci-cd" },
+        {
+          "name": "Cloud Native Applications",
+          "slug": "cloud-native-applications"
+        }
+      ]
+    }
+  },
+  "copyright": "© 2026 Oakwood Systems Group, Inc. All Right Reserved.",
+  "policies": [
+    {
+      "text": "Privacy policy",
+      "link": "/privacy-policy"
+    },
+    {
+      "text": "Terms of service",
+      "link": "/privacy-policy"
+    },
+    {
+      "text": "Cookie settings",
+      "link": "/privacy-policy"
+    }
+  ],
+  "page": "footer"
+}

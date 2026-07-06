@@ -1,0 +1,264 @@
+/* Oakwood Menu Builder - Gutenberg-like visual editor */
+
+.ome-root {
+	--ome-border: #e0e0e0;
+	--ome-border-strong: #c3c4c7;
+	--ome-bg: #fff;
+	--ome-bg-muted: #f6f7f7;
+	--ome-text: #1e1e1e;
+	--ome-text-muted: #757575;
+	--ome-accent: #3858e9;
+	--ome-danger: #b32d2e;
+	color: var(--ome-text);
+}
+
+.ome-loading {
+	color: var(--ome-text-muted);
+	font-style: italic;
+}
+
+/* Toolbar */
+.ome-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 8px;
+	margin: 0 0 16px;
+}
+
+.ome-notice {
+	margin: 0 0 16px;
+	padding: 10px 14px;
+	border-left: 4px solid var(--ome-danger);
+	background: #fcf0f1;
+	color: var(--ome-danger);
+	border-radius: 2px;
+}
+
+/* Panels (collapsible sections) */
+.ome-panel {
+	border: 1px solid var(--ome-border-strong);
+	border-radius: 6px;
+	background: var(--ome-bg);
+	margin: 0 0 16px;
+	overflow: hidden;
+}
+
+.ome-panel__header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	padding: 12px 16px;
+	border: 0;
+	background: var(--ome-bg-muted);
+	cursor: pointer;
+	text-align: left;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--ome-text);
+}
+
+.ome-panel__header:hover {
+	background: #eef0f1;
+}
+
+.ome-panel__chevron {
+	transition: transform 0.15s ease;
+	font-size: 11px;
+	color: var(--ome-text-muted);
+}
+
+.ome-panel.is-collapsed .ome-panel__chevron {
+	transform: rotate(-90deg);
+}
+
+.ome-panel__title {
+	flex: 1 1 auto;
+}
+
+.ome-panel__count {
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--ome-text-muted);
+	background: #fff;
+	border: 1px solid var(--ome-border);
+	border-radius: 10px;
+	padding: 1px 9px;
+}
+
+.ome-panel__body {
+	padding: 16px;
+}
+
+.ome-panel.is-collapsed .ome-panel__body {
+	display: none;
+}
+
+/* Sub-panels (solutions groups) */
+.ome-subpanel {
+	border: 1px solid var(--ome-border);
+	border-radius: 6px;
+	margin: 0 0 12px;
+	overflow: hidden;
+}
+
+.ome-subpanel:last-child {
+	margin-bottom: 0;
+}
+
+.ome-subpanel__header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	padding: 10px 14px;
+	border: 0;
+	background: #fafafa;
+	cursor: pointer;
+	text-align: left;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.ome-subpanel__body {
+	padding: 14px;
+}
+
+.ome-subpanel.is-collapsed .ome-subpanel__body {
+	display: none;
+}
+
+.ome-subpanel.is-collapsed .ome-panel__chevron {
+	transform: rotate(-90deg);
+}
+
+/* Cards grid */
+.ome-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+	gap: 14px;
+	margin: 0 0 14px;
+}
+
+.ome-card {
+	border: 1px solid var(--ome-border);
+	border-radius: 6px;
+	background: var(--ome-bg);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+	display: flex;
+	flex-direction: column;
+}
+
+.ome-card__head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px;
+	border-bottom: 1px solid var(--ome-border);
+	background: var(--ome-bg-muted);
+	border-radius: 6px 6px 0 0;
+}
+
+.ome-card__title {
+	flex: 1 1 auto;
+	font-weight: 600;
+	font-size: 13px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.ome-card__tools {
+	display: flex;
+	gap: 4px;
+	flex: 0 0 auto;
+}
+
+.ome-card__body {
+	padding: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+/* Fields */
+.ome-field {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	font-size: 12px;
+}
+
+.ome-field__label {
+	font-weight: 600;
+	color: var(--ome-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+	font-size: 10px;
+}
+
+.ome-input {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+textarea.ome-input {
+	resize: vertical;
+	min-height: 44px;
+	font-family: inherit;
+}
+
+.ome-field--inline {
+	flex-direction: row;
+	align-items: center;
+	gap: 8px;
+}
+
+.ome-field--inline .ome-field__label {
+	text-transform: none;
+	letter-spacing: 0;
+	font-size: 12px;
+}
+
+/* Icon buttons */
+.ome-iconbtn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	padding: 0;
+	border: 1px solid var(--ome-border-strong);
+	border-radius: 4px;
+	background: #fff;
+	cursor: pointer;
+	font-size: 13px;
+	line-height: 1;
+	color: var(--ome-text);
+}
+
+.ome-iconbtn:hover {
+	background: var(--ome-bg-muted);
+}
+
+.ome-iconbtn:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+.ome-iconbtn--danger {
+	color: var(--ome-danger);
+	border-color: #e3b1b1;
+}
+
+.ome-iconbtn--danger:hover {
+	background: #fcf0f1;
+}
+
+/* Add button */
+.ome-add {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}

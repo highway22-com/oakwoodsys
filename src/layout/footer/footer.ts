@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, signal, inject, input, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, signal, inject, input, effect, isDevMode } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule, NgClass } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { Footer as AppFooter } from '../../shared/footer/footer';
 
@@ -44,6 +45,14 @@ export interface FooterSection {
       text: string;
       routerLink: string;
     }>;
+    solutions?: {
+      ai?: FooterSolutionItem[];
+      dataAndAnalytics?: FooterSolutionItem[];
+      cloud?: FooterSolutionItem[];
+      modernWork?: FooterSolutionItem[];
+      security?: FooterSolutionItem[];
+      applications?: FooterSolutionItem[];
+    };
   };
   copyright: string;
   policies: Array<{
@@ -51,6 +60,20 @@ export interface FooterSection {
     link: string;
   }>;
 }
+
+interface FooterSolutionItem {
+  name: string;
+  slug?: string;
+  link?: string;
+}
+
+type FooterSolutionCategoryKey =
+  | 'cloud'
+  | 'ai'
+  | 'dataAndAnalytics'
+  | 'security'
+  | 'applications'
+  | 'modernWork';
 
 @Component({
   selector: 'app-footer',
@@ -60,6 +83,7 @@ export interface FooterSection {
 })
 export class Footer implements OnInit, OnDestroy {
   private readonly graphql = inject(GraphQLContentService);
+  private readonly http = inject(HttpClient);
 
   /** Cuando se proporciona, se usa en lugar de cargar desde CMS (para preview en edit) */
   readonly dataOverride = input<FooterSection | null>(null);
@@ -67,6 +91,8 @@ export class Footer implements OnInit, OnDestroy {
   readonly footerData = signal<FooterSection | null>(null);
   readonly loading = signal(true);
   readonly openGroupIdx = signal<number | null>(null);
+  readonly openSolutions = signal(false);
+  readonly openSolutionGroupIdx = signal<number | null>(null);
   readonly isMobile = signal(false);
 
   private resizeHandler: (() => void) | null = null;
@@ -86,7 +112,11 @@ export class Footer implements OnInit, OnDestroy {
       this.isMobile.set(window.innerWidth < 1024);
       this.resizeHandler = () => {
         this.isMobile.set(window.innerWidth < 1024);
-        if (!this.isMobile()) this.openGroupIdx.set(null);
+        if (!this.isMobile()) {
+          this.openGroupIdx.set(null);
+          this.openSolutions.set(false);
+          this.openSolutionGroupIdx.set(null);
+        }
       };
       window.addEventListener('resize', this.resizeHandler);
     }
@@ -96,6 +126,24 @@ export class Footer implements OnInit, OnDestroy {
       this.loading.set(false);
       return;
     }
+
+  //   if (isDevMode()) {
+  //     this.http.get<FooterSection>('/footer.json').subscribe({
+  //       next: (data) => {
+  //         this.footerData.set(data ?? null);
+  //         this.loading.set(false);
+  //       },
+  //       error: () => {
+  //         this.loadFooterFromCms();
+  //       },
+  //     });
+  //     return;
+  //   }
+
+  //   this.loadFooterFromCms();
+  // }
+
+  // private loadFooterFromCms(): void {
     this.graphql.getCmsPageBySlug('footer', { fetchPolicy: 'network-only' }).subscribe({
       next: (data) => {
         const section = this.extractFooterSection(data);
@@ -125,9 +173,76 @@ export class Footer implements OnInit, OnDestroy {
     this.openGroupIdx.set(this.openGroupIdx() === idx ? null : idx);
   }
 
+  toggleSolutions() {
+    if (!this.isMobile()) return;
+    const nextState = !this.openSolutions();
+    this.openSolutions.set(nextState);
+    if (!nextState) {
+      this.openSolutionGroupIdx.set(null);
+    }
+  }
+
+  toggleSolutionGroup(idx: number) {
+    if (!this.isMobile()) return;
+    this.openSolutionGroupIdx.set(this.openSolutionGroupIdx() === idx ? null : idx);
+  }
+
   resolveFooterRouterLink(link: { text: string; routerLink: string }): string {
     if (link.text?.trim().toLowerCase() === 'events') return '/resources/events';
     return link.routerLink;
+  }
+
+  getFooterEmailHref(email: { text: string; link: string } | null | undefined): string {
+    if (!email) return 'mailto:';
+    const rawLink = (email.link ?? '').trim();
+    if (rawLink.toLowerCase().startsWith('mailto:')) {
+      return rawLink;
+    }
+    const rawAddress = (rawLink || email.text || '').trim();
+    return rawAddress ? `mailto:${rawAddress}` : 'mailto:';
+  }
+
+  private getSolutionCategoryRouteSegment(category: FooterSolutionCategoryKey): string {
+    return category === 'dataAndAnalytics' ? 'data-analytics' : category;
+  }
+
+  getFooterSolutionHref(category: FooterSolutionCategoryKey, item: FooterSolutionItem): string {
+    const categorySegment = this.getSolutionCategoryRouteSegment(category);
+    const rawValue = (item.link ?? item.slug ?? '').trim();
+    const normalized = rawValue.replace(/^\/+|\/+$/g, '');
+    if (!normalized) {
+      return `/solutions/${categorySegment}`;
+    }
+    const segments = normalized.split('/').filter(Boolean);
+    const linkSegment = segments[segments.length - 1] ?? normalized;
+    return `/solutions/${categorySegment}/${linkSegment}`;
+  }
+
+  solutionGroups(): Array<{ key: FooterSolutionCategoryKey; title: string; links: FooterSolutionItem[] }> {
+    const solutions = this.footerData()?.links?.solutions;
+    if (!solutions) return [];
+    return [
+      { key: 'cloud', title: 'Cloud', links: solutions.cloud ?? [] },
+      { key: 'ai', title: 'AI', links: solutions.ai ?? [] },
+      { key: 'dataAndAnalytics', title: 'Data & Analytics', links: solutions.dataAndAnalytics ?? [] },
+      { key: 'security', title: 'Security', links: solutions.security ?? [] },
+      { key: 'applications', title: 'Applications', links: solutions.applications ?? [] },
+      { key: 'modernWork', title: 'Modern Work', links: solutions.modernWork ?? [] },
+    ];
+  }
+
+  mobileSolutionGroups(): Array<{ key: FooterSolutionCategoryKey; title: string; links: FooterSolutionItem[] }> {
+    const solutions = this.footerData()?.links?.solutions;
+    if (!solutions) return [];
+    const groups: Array<{ key: FooterSolutionCategoryKey; title: string; links: FooterSolutionItem[] }> = [
+      { key: 'ai', title: 'AI', links: solutions.ai ?? [] },
+      { key: 'cloud', title: 'Cloud', links: solutions.cloud ?? [] },
+      { key: 'dataAndAnalytics', title: 'Data & Analytics', links: solutions.dataAndAnalytics ?? [] },
+      { key: 'applications', title: 'Applications', links: solutions.applications ?? [] },
+      { key: 'security', title: 'Security', links: solutions.security ?? [] },
+      { key: 'modernWork', title: 'Modern Work', links: solutions.modernWork ?? [] },
+    ];
+    return groups.filter((group) => group.links.length);
   }
 
 
@@ -142,6 +257,11 @@ export class Footer implements OnInit, OnDestroy {
       { title: 'Resources', links: data.links.resources ?? [] },
       { title: 'Company', links: data.links.company ?? [] },
     ];
+  }
+
+  getMicrosoftLicensingLink(): { text: string; routerLink: string } | null {
+    const companyLinks = this.footerData()?.links?.company ?? [];
+    return companyLinks.find((link) => link.text?.trim().toLowerCase() === 'microsoft licensing') ?? null;
   }
 
 

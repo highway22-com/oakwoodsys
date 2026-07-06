@@ -6,6 +6,22 @@ import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { WordPressPageResponse, WordPressPageService } from '../../app/services/wordpress-page.service';
 import { applyWordPressPageSeo } from './wordpress-page.seo';
 
+export function resolveWordPressFetchPath(path: string): string {
+  const normalized = path.trim().replace(/^\/+|\/+$/g, '');
+  if (!normalized) {
+    return normalized;
+  }
+
+  const segments = normalized.split('/').filter(Boolean);
+  // Keep vanity solutions URLs in the browser (e.g. /solutions/ai/ai-application-development)
+  // but resolve WordPress pages by their actual slug for backend lookup.
+  if (segments[0] === 'solutions' && segments.length >= 3) {
+    return segments[segments.length - 1] ?? normalized;
+  }
+
+  return normalized;
+}
+
 export function resolveWordPressPathFromRoute(route: ActivatedRouteSnapshot, router: Router): string {
   const paramSlug = route.paramMap.get('wpPageSlug');
   if (paramSlug) {
@@ -25,12 +41,13 @@ export const wordpressPageResolver: ResolveFn<WordPressPageResponse | null> = (r
   const seoMeta = inject(SeoMetaService);
   const router = inject(Router);
   const path = resolveWordPressPathFromRoute(route, router);
+  const fetchPath = resolveWordPressFetchPath(path);
 
-  if (!path) {
+  if (!fetchPath) {
     return of(null);
   }
 
-  return service.getPage(path).pipe(
+  return service.getPage(fetchPath).pipe(
     tap((page) => applyWordPressPageSeo(seoMeta, path, page)),
     catchError(() => of(null)),
   );
