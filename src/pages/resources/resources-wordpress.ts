@@ -547,7 +547,7 @@ export default class Resources implements OnInit {
     // Transformar connected services
     const connectedServices = (acf.connectedServices || []).map((service: any, index: number) => ({
       id: String(index + 1),
-      icon: service.serviceIcon || 'fa-circle',
+      icon: service.serviceIcon || '',
       title: service.serviceTitle || '',
       description: service.serviceDescription || '',
       link: service.serviceLink || '#',

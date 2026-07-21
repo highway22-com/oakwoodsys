@@ -92,16 +92,7 @@
                     [innerHTML]="getSafeSvgIcon(offer.svgIcon)"
                   ></div>
                 }
-              } @else {
-                <i
-                  [class]="
-                    'fa-solid fa-' +
-                    (offer.icon || 'circle-nodes') +
-                    ' ' +
-                    getIconColor(offer.borderColor)
-                  "
-                ></i>
-              }
+              } 
             </div>
             <h3 class="text-white font-['Inter'] text-[20px] lg:text-[26px] font-semibold leading-[130%] pt-10 pb-4">
               {{ offer.title }}
