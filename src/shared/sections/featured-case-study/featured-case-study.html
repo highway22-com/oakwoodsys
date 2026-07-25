@@ -207,7 +207,7 @@
               {{ section[0]?.label ?? 'Featured Case Studies' }}
             </p>
             <span
-              class="text-[#1D69AC] font-[Segoe_UI] text-[14px] font-semibold not-italic leading-[150%] inline-block tag-badge w-fit mb-3">
+              class="text-[#1D69AC] font-[var(--font-segoe)] text-[14px] font-semibold not-italic leading-[150%] inline-block tag-badge w-fit mb-3">
               {{ decodeHtmlEntities(section[0]?.primaryTag ?? section[0]?.tag ?? '') }}
             </span>
             <h2 id="featured-case-study-title"
@@ -216,7 +216,7 @@
             </h2>
 
             <div
-              class="text-[#454545] font-[Segoe_UI] text-[18px] font-normal not-italic leading-[150%] mb-16 prose prose-p:mb-2"
+              class="text-[#454545] font-[var(--font-segoe)] text-[18px] font-normal not-italic leading-[150%] mb-16 prose prose-p:mb-2"
               [innerHTML]="section[0]?.description ?? ''"></div>
             <div class="flex flex-row gap-6 items-center">
               @if (section[0]?.cta?.primary?.link) {
@@ -262,7 +262,7 @@
               {{ section[1]?.label ?? 'Featured Case Studies' }}
             </p>
             <span
-              class="text-[#1D69AC] font-[Segoe_UI] text-[14px] font-semibold not-italic leading-[150%] inline-block tag-badge w-fit mb-3">
+              class="text-[#1D69AC] font-[var(--font-segoe)] text-[14px] font-semibold not-italic leading-[150%] inline-block tag-badge w-fit mb-3">
               {{ decodeHtmlEntities(section[1]?.primaryTag ?? section[1]?.tag ?? '') }}
             </span>
             <h2 id="featured-case-study-title-2"
@@ -270,7 +270,7 @@
               {{ section[1]?.title }}
             </h2>
             <div
-              class="text-[#454545] font-[Segoe_UI] text-[18px] font-normal not-italic leading-[150%] mb-16 prose prose-p:mb-2"
+              class="text-[#454545] font-[var(--font-segoe)] text-[18px] font-normal not-italic leading-[150%] mb-16 prose prose-p:mb-2"
               [innerHTML]="section[1]?.description ?? ''"></div>
             <div class="flex flex-row gap-6 items-center">
               @if (section[1]?.cta?.primary?.link) {

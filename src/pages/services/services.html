@@ -148,7 +148,7 @@
               {{ content()?.serviceAreas?.title }}
             </h2>
             <p
-              class="font-['Segoe_UI'] text-[var(--Secondary-50,#F6F6F6)] text-[16px] lg:text-[18px] font-normal leading-[150%] lg:leading-[27px] leading-relaxed max-w-xl"
+              class="font-[var(--font-segoe)] text-[var(--Secondary-50,#F6F6F6)] text-[16px] lg:text-[18px] font-normal leading-[150%] lg:leading-[27px] leading-relaxed max-w-xl"
             >
               {{ content()?.serviceAreas?.description }}
             </p>
@@ -172,7 +172,7 @@
                 <div class="w-full pt-6 sm:pt-8 pb-2">
                   @for (badge of area.badges; track badge; let first = $first) {
                     <span
-                      class="tag-badge font-[Segoe_UI] bg-[#2A7EBF] text-white capitalize text-[14px] font-semibold leading-normal px-2 py-1"
+                      class="tag-badge font-[var(--font-segoe)] bg-[#2A7EBF] text-white capitalize text-[14px] font-semibold leading-normal px-2 py-1"
                       [class.ml-3]="!first"
                     >
                       {{ badge }}
@@ -192,7 +192,7 @@
               </p>
               @if (area.features?.length) {
                 <ul
-                  class="list-disc list-outside pl-5 text-[var(--Secondary-900,#3D3D3D)] font-['Segoe_UI'] text-[16px] font-normal leading-[150%] lg:text-[16px] lg:leading-[26px] space-y-1.5 mt-1"
+                  class="list-disc list-outside pl-5 text-[var(--Secondary-900,#3D3D3D)] font-[var(--font-segoe)] text-[16px] font-normal leading-[150%] lg:text-[16px] lg:leading-[26px] space-y-1.5 mt-1"
                 >
                   @for (feature of area.features; track feature) {
                     <li>{{ feature }}</li>
@@ -360,7 +360,7 @@
               {{ content()?.whyOakwood?.title }}
             </h1>
             <p
-              class="text-[color:var(--Secondary-800,#454545)] text-center font-['Segoe UI'] text-[18px] font-normal leading-[27px]"
+              class="text-[color:var(--Secondary-800,#454545)] text-center font-[var(--font-segoe)] text-[18px] font-normal leading-[27px]"
             >
               {{ content()?.whyOakwood?.description }}
             </p>
