@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, NgZone, ViewChild, ElementRef, AfterViewInit, OnInit, signal, ChangeDetectorRef, input, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, NgZone, ViewChild, ElementRef, AfterViewInit, OnInit, OnDestroy, signal, ChangeDetectorRef, input, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OfficeLocationsSectionComponent } from '../../shared/office-locations-section/office-locations-section.component';
 import { CTA_GRADIENTS, CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
+import { RecaptchaLoaderService } from '../../app/services/recaptcha-loader.service';
 import {
   ContactPageContentService,
   type ContactUsPageCopy,
@@ -27,7 +28,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './contact-us.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContactUs implements OnInit, AfterViewInit {
+export class ContactUs implements OnInit, AfterViewInit, OnDestroy {
   readonly ctaGradients = CTA_GRADIENTS;
   readonly licensingGradient = CTA_GRADIENTS[4];
   @ViewChild('licensingSection') licensingSection!: ElementRef<HTMLElement>;
@@ -40,6 +41,8 @@ export class ContactUs implements OnInit, AfterViewInit {
   private readonly seoMeta = inject(SeoMetaService);
   private readonly http = inject(HttpClient);
   private readonly contactContent = inject(ContactPageContentService);
+  private readonly recaptcha = inject(RecaptchaLoaderService);
+  private recaptchaObserver: IntersectionObserver | null = null;
   /** For edit mode: override content if provided */
   readonly contentOverride = input<any>(null);
   showLicensingAnimation = signal(false);
@@ -149,7 +152,7 @@ export class ContactUs implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     if (typeof window !== 'undefined' && this.recaptchaEnabled) {
-      setTimeout(() => this.initRecaptcha(), 400);
+      this.observeRecaptcha();
     }
 
     if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
@@ -221,36 +224,44 @@ export class ContactUs implements OnInit, AfterViewInit {
     }
   }
 
-  private initRecaptcha(): void {
-    if (typeof window === 'undefined' || !this.recaptchaHost?.nativeElement) return;
+  /** Defers loading/rendering reCAPTCHA until the form is actually scrolled into view. */
+  private observeRecaptcha(): void {
+    const host = this.recaptchaHost?.nativeElement;
+    const container = host?.parentElement;
+    if (!container || typeof IntersectionObserver === 'undefined') return;
 
-    const render = () => {
-      const grecaptcha = (window as any).grecaptcha;
-      if (!grecaptcha?.render || this.recaptchaWidgetId !== null) return;
+    this.recaptchaObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          this.recaptchaObserver?.disconnect();
+          this.recaptchaObserver = null;
+          this.renderRecaptcha();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+    this.recaptchaObserver.observe(container);
+  }
 
-      this.recaptchaWidgetId = grecaptcha.render(this.recaptchaHost!.nativeElement, {
-        sitekey: '6Lcp8XwsAAAAAIrdZHBdw74jtoxwPxDRZW4F-rwu',
-        callback: (token: string) => {
-          this.ngZone.run(() => {
-            this.recaptchaToken = token;
-            this.validationErrors = { ...this.validationErrors, recaptcha: false };
-            this.cdr.markForCheck();
-          });
+  private renderRecaptcha(): void {
+    const host = this.recaptchaHost?.nativeElement;
+    if (!host || this.recaptchaWidgetId !== null) return;
+
+    this.recaptcha
+      .render(host, {
+        onSuccess: (token) => {
+          this.recaptchaToken = token;
+          this.validationErrors = { ...this.validationErrors, recaptcha: false };
+          this.cdr.markForCheck();
         },
-        'expired-callback': () => {
-          this.ngZone.run(() => {
-            this.recaptchaToken = null;
-            this.cdr.markForCheck();
-          });
+        onExpired: () => {
+          this.recaptchaToken = null;
+          this.cdr.markForCheck();
         },
+      })
+      .then((widgetId) => {
+        this.recaptchaWidgetId = widgetId;
       });
-    };
-
-    render();
-    if (this.recaptchaWidgetId === null) {
-      setTimeout(render, 500);
-      setTimeout(render, 1500);
-    }
   }
 
   readonly heroTitle = "Let's move your vision forward";
@@ -343,15 +354,10 @@ export class ContactUs implements OnInit, AfterViewInit {
       recaptcha: false,
     };
     this.recaptchaToken = null;
-    if (typeof window !== 'undefined' && this.recaptchaWidgetId !== null && (window as any).grecaptcha?.reset) {
-      (window as any).grecaptcha.reset(this.recaptchaWidgetId);
-    }
+    this.recaptcha.reset(this.recaptchaWidgetId);
   }
 
-  // onRecaptchaSuccess(token: any) {
-  //   if (typeof token === 'string') {
-  //     this.recaptchaToken = token;
-  //     this.validationErrors.recaptcha = false;
-  //   }
-  // }
+  ngOnDestroy(): void {
+    this.recaptchaObserver?.disconnect();
+  }
 }

@@ -54,7 +54,8 @@
        file — preloaded here so it starts fetching immediately instead of waiting on CSS parsing. -->
   <link rel="preload" href="/assets/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin>
 
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <!-- reCAPTCHA loads on demand per-form via RecaptchaLoaderService, not globally here —
+       it was costing every page 373 KiB (246 KiB unused) for a script only three forms need. -->
   <!-- JSON-LD: Organization + WebSite para resultados enriquecidos (Google/Bing) -->
   <script type="application/ld+json">
   {

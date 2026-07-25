@@ -8,6 +8,7 @@ import {
   ElementRef,
   AfterViewInit,
   OnInit,
+  OnDestroy,
   signal,
   ChangeDetectorRef,
   DestroyRef,
@@ -18,6 +19,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin } from 'rxjs';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { SvgIcons } from '../../shared/service-icons/service-icons';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
@@ -30,6 +32,7 @@ import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
+import { RecaptchaLoaderService } from '../../app/services/recaptcha-loader.service';
 type SimpleCard = {
   icon: string;
   title: string;
@@ -82,7 +85,7 @@ type AccordionItem = {
   styleUrl: './microsoft-licensing.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class MicrosoftLicensing implements AfterViewInit, OnInit {
+export default class MicrosoftLicensing implements AfterViewInit, OnInit, OnDestroy {
   private readonly seoMeta = inject(SeoMetaService);
   readonly sanitizer = inject(DomSanitizer);
   private readonly http = inject(HttpClient);
@@ -91,6 +94,8 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
   private readonly ngZone = inject(NgZone);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly recaptcha = inject(RecaptchaLoaderService);
+  private recaptchaObserver: IntersectionObserver | null = null;
 
   @ViewChild('recaptchaHost') recaptchaHost?: ElementRef<HTMLElement>;
 
@@ -525,33 +530,25 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
   private loadRelatedLicensingBlogs(): void {
     this.relatedBlogsLoading.set(true);
 
-    this.graphql
-      .getGenContentsByTagAndCategory('microsoft-licensing', 'blog', 6)
+    // Tag query and the all-blogs fallback fire together instead of sequentially — when
+    // the tag genuinely has no matches (as of writing, 'microsoft-licensing' has none),
+    // the old code paid for two round-trips back to back before rendering anything.
+    // getBlogs() is a shared shareReplay(1) stream, so this doesn't cost extra on pages
+    // where something else already primed it.
+    forkJoin({
+      tagged: this.graphql.getGenContentsByTagAndCategory('microsoft-licensing', 'blog', 6),
+      allBlogs: this.graphql.getBlogs(),
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((nodes) => {
-        if (nodes.length > 0) {
-          this.relatedLicensingBlogs.set(
-            this.mapRelatedBlogCards(nodes).slice(0, 3),
-          );
-          this.relatedBlogsLoading.set(false);
-          this.cdr.markForCheck();
-          return;
-        }
-
-        // Fallback: derive from all blogs if the tag slug differs in WP.
-        this.graphql
-          .getBlogs()
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((allBlogs) => {
-            const filtered = allBlogs.filter((post) =>
-              this.isMicrosoftLicensingPost(post),
-            );
-            this.relatedLicensingBlogs.set(
-              this.mapRelatedBlogCards(filtered).slice(0, 3),
-            );
-            this.relatedBlogsLoading.set(false);
-            this.cdr.markForCheck();
-          });
+      .subscribe(({ tagged, allBlogs }) => {
+        const nodes = tagged.length > 0
+          ? tagged
+          : allBlogs.filter((post) => this.isMicrosoftLicensingPost(post));
+        this.relatedLicensingBlogs.set(
+          this.mapRelatedBlogCards(nodes).slice(0, 3),
+        );
+        this.relatedBlogsLoading.set(false);
+        this.cdr.markForCheck();
       });
   }
 
@@ -620,47 +617,52 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
 
   ngAfterViewInit() {
     if (typeof window !== 'undefined' && this.recaptchaEnabled) {
-      setTimeout(() => this.initRecaptcha(), 400);
+      this.observeRecaptcha();
     }
   }
 
-  private initRecaptcha(): void {
-    if (typeof window === 'undefined' || !this.recaptchaHost?.nativeElement)
-      return;
+  /** Defers loading/rendering reCAPTCHA until the form is actually scrolled into view. */
+  private observeRecaptcha(): void {
+    const host = this.recaptchaHost?.nativeElement;
+    const container = host?.parentElement;
+    if (!container || typeof IntersectionObserver === 'undefined') return;
 
-    const render = () => {
-      const grecaptcha = (window as any).grecaptcha;
-      if (!grecaptcha?.render || this.recaptchaWidgetId !== null) return;
+    this.recaptchaObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          this.recaptchaObserver?.disconnect();
+          this.recaptchaObserver = null;
+          this.renderRecaptcha();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+    this.recaptchaObserver.observe(container);
+  }
 
-      this.recaptchaWidgetId = grecaptcha.render(
-        this.recaptchaHost!.nativeElement,
-        {
-          sitekey: '6Lcp8XwsAAAAAIrdZHBdw74jtoxwPxDRZW4F-rwu',
-          callback: (token: string) => {
-            this.ngZone.run(() => {
-              this.recaptchaToken = token;
-              this.validationErrors = {
-                ...this.validationErrors,
-                recaptcha: false,
-              };
-              this.cdr.markForCheck();
-            });
-          },
-          'expired-callback': () => {
-            this.ngZone.run(() => {
-              this.recaptchaToken = null;
-              this.cdr.markForCheck();
-            });
-          },
+  private renderRecaptcha(): void {
+    const host = this.recaptchaHost?.nativeElement;
+    if (!host || this.recaptchaWidgetId !== null) return;
+
+    this.recaptcha
+      .render(host, {
+        onSuccess: (token) => {
+          this.recaptchaToken = token;
+          this.validationErrors = { ...this.validationErrors, recaptcha: false };
+          this.cdr.markForCheck();
         },
-      );
-    };
+        onExpired: () => {
+          this.recaptchaToken = null;
+          this.cdr.markForCheck();
+        },
+      })
+      .then((widgetId) => {
+        this.recaptchaWidgetId = widgetId;
+      });
+  }
 
-    render();
-    if (this.recaptchaWidgetId === null) {
-      setTimeout(render, 500);
-      setTimeout(render, 1500);
-    }
+  ngOnDestroy(): void {
+    this.recaptchaObserver?.disconnect();
   }
 
   validateEmail(email: string): boolean {
@@ -832,12 +834,6 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
       recaptcha: false,
     };
     this.recaptchaToken = null;
-    if (
-      typeof window !== 'undefined' &&
-      this.recaptchaWidgetId !== null &&
-      (window as any).grecaptcha?.reset
-    ) {
-      (window as any).grecaptcha.reset(this.recaptchaWidgetId);
-    }
+    this.recaptcha.reset(this.recaptchaWidgetId);
   }
 }
