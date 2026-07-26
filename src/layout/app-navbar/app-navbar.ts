@@ -12,6 +12,8 @@ import {
   ElementRef,
   input,
   effect,
+  NgZone,
+  DestroyRef,
 } from '@angular/core';
 import {
   CommonModule,
@@ -21,7 +23,7 @@ import {
   isPlatformBrowser,
 } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
@@ -96,11 +98,16 @@ export class AppNavbar implements OnInit, OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly graphql = inject(GraphQLContentService);
   private readonly router = inject(Router);
+  private readonly ngZone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
   private menuUpdatedFromBe = false;
+  private scrollRafId: number | null = null;
+  private structuredEngagementEl: Element | null = null;
+  private removeScrollListeners?: () => void;
 
   isMobileMenuOpen = false;
   mobileExpandedIndex: number | null = null;
-  isScrolled = false;
+  isScrolled = signal(false);
   isServicesDropdownOpen = false;
   isIndustriesDropdownOpen = false;
   isResourcesDropdownOpen = false;
@@ -196,13 +203,40 @@ export class AppNavbar implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
+      this.resolveStructuredEngagementEl();
       this.checkScrollPosition();
       // Check current route
       this.updateContactSuccessStatus();
       // Listen to route changes
       this.router.events
-        .pipe(filter((event) => event instanceof NavigationEnd))
-        .subscribe(() => this.updateContactSuccessStatus());
+        .pipe(
+          filter((event) => event instanceof NavigationEnd),
+          takeUntilDestroyed(this.destroyRef),
+        )
+        .subscribe(() => {
+          this.updateContactSuccessStatus();
+          // The navbar is a singleton that outlives navigation; app-structured-engagements
+          // lives inside route content and gets destroyed/recreated on every route change.
+          // Re-resolve it here instead of caching once, or we'd hold a detached node whose
+          // getBoundingClientRect() silently returns all zeros after the first navigation.
+          this.resolveStructuredEngagementEl();
+          this.checkScrollPosition();
+        });
+
+      // This app runs zoneless (provideZonelessChangeDetection), so raw addEventListener
+      // callbacks never trigger change detection on their own regardless of zone wrapping —
+      // only the signal writes inside checkScrollPosition() do. runOutsideAngular is kept
+      // here mainly so this stays correct if zone.js is ever reintroduced.
+      this.ngZone.runOutsideAngular(() => {
+        const onScrollOrResize = () => this.scheduleScrollCheck();
+        window.addEventListener('scroll', onScrollOrResize, { passive: true });
+        window.addEventListener('resize', onScrollOrResize, { passive: true });
+        this.removeScrollListeners = () => {
+          window.removeEventListener('scroll', onScrollOrResize);
+          window.removeEventListener('resize', onScrollOrResize);
+        };
+      });
+
       // Cargar case studies y blogs solo en el cliente (GraphQL puede no estar disponible en SSR)
       this.graphql.getCaseStudies().subscribe((list) => {
         const filtered = [...list].filter((n) =>
@@ -270,20 +304,6 @@ export class AppNavbar implements OnInit, OnDestroy {
     });
   }
 
-  @HostListener('window:scroll')
-  onWindowScroll() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.checkScrollPosition();
-    }
-  }
-
-  @HostListener('window:resize')
-  onWindowResize() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.checkScrollPosition();
-    }
-  }
-
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -300,33 +320,45 @@ export class AppNavbar implements OnInit, OnDestroy {
     this.searchPanelOpen.set(false);
   }
 
+  /** Coalesces scroll/resize events into at most one geometry read per animation frame. */
+  private scheduleScrollCheck(): void {
+    if (this.scrollRafId !== null) return;
+    this.scrollRafId = requestAnimationFrame(() => {
+      this.scrollRafId = null;
+      this.checkScrollPosition();
+    });
+  }
+
+  private resolveStructuredEngagementEl(): void {
+    this.structuredEngagementEl = this.document.querySelector(
+      'app-structured-engagements',
+    );
+  }
+
+  private computeStructuredEngagementStatus(): boolean {
+    if (!this.structuredEngagementEl) {
+      return false;
+    }
+    const rect = this.structuredEngagementEl.getBoundingClientRect();
+    const navProbeY = 110;
+    return rect.top <= navProbeY && rect.bottom >= navProbeY;
+  }
+
   private checkScrollPosition() {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
     const scrollPosition = window.scrollY || document.documentElement.scrollTop;
     const scrollThreshold = window.innerHeight; // 100vh
-    this.isScrolled = scrollPosition > scrollThreshold;
-    this.updateStructuredEngagementStatus();
+
+    // Both are signals, so .set() is a no-op notification-wise when the value
+    // is unchanged — no manual diffing needed, and it's correct under both
+    // zone-based and zoneless change detection (this app runs zoneless; a
+    // plain property write here would never reach the view).
+    this.isScrolled.set(scrollPosition > scrollThreshold);
+    this.isOnStructuredEngagement.set(this.computeStructuredEngagementStatus());
   }
 
-  private updateStructuredEngagementStatus(): void {
-    if (!isPlatformBrowser(this.platformId)) {
-      this.isOnStructuredEngagement.set(false);
-      return;
-    }
-
-    const sectionEl = document.querySelector('app-structured-engagements');
-    if (!sectionEl) {
-      this.isOnStructuredEngagement.set(false);
-      return;
-    }
-
-    const rect = sectionEl.getBoundingClientRect();
-    const navProbeY = 110;
-    const inViewAtNavbar = rect.top <= navProbeY && rect.bottom >= navProbeY;
-    this.isOnStructuredEngagement.set(inViewAtNavbar);
-  }
   private updateContactSuccessStatus(): void {
     this.isOnContactSuccess.set(
       this.router.url === '/contact-success' ||
@@ -338,7 +370,7 @@ export class AppNavbar implements OnInit, OnDestroy {
     if (this.isOnStructuredEngagement()) return false;
     const hover = this.hoveredIndex();
     return (
-      this.isScrolled ||
+      this.isScrolled() ||
       hover !== null ||
       this.searchPanelOpen() ||
       this.isOnContactSuccess() ||
@@ -351,7 +383,7 @@ export class AppNavbar implements OnInit, OnDestroy {
 
     if (this.section() === 'past_event') return true; // 👈 add this
     return (
-      this.isScrolled ||
+      this.isScrolled() ||
       this.hoveredIndex() !== null ||
       this.searchPanelOpen() ||
       this.isOnContactSuccess()
@@ -654,6 +686,9 @@ export class AppNavbar implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Cleanup if needed
+    if (this.scrollRafId !== null) {
+      cancelAnimationFrame(this.scrollRafId);
+    }
+    this.removeScrollListeners?.();
   }
 }

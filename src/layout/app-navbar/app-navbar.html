@@ -34,24 +34,28 @@
       @for (item of menuItems(); track item.label; let i = $index) {
       @if (item.hasDropdown) {
       <button type="button" (mouseenter)="handleMouseEnter(item, i)" (click)="toggleDesktopDropdown(item, $event)" [ngClass]="{
-            ' hover:text-primary-blue': !isScrolled,
-            ' hover:text-blue-600': isScrolled,
+            ' hover:text-primary-blue': !isScrolled(),
+            ' hover:text-blue-600': isScrolled(),
         activeLink: hoveredIndex() === i,
           }" class="transition-colors duration-200 flex items-center gap-1 group p-4" (mouseleave)="handleTopLinkMouseLeave(item)"
         [class.text-gray-900]="hasNavbarBackground" [class.text-white]="!hasNavbarBackground">
-        {{ item.label }}
-        <div>
+        <span class="leading-none">{{ item.label }}</span>
+        <div class="inline-flex items-center">
           @if (hoveredIndex() === i) {
-          <i class="fa-solid fa-chevron-up text-sm"></i>
+          <svg class="w-4 h-[8px]" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M11.2803 6.28033C10.9874 6.57322 10.5126 6.57322 10.2197 6.28033L5.75 1.81066L1.28033 6.28033C0.987437 6.57322 0.512563 6.57322 0.21967 6.28033C-0.0732231 5.98744 -0.073223 5.51256 0.21967 5.21967L5.21967 0.219669C5.51256 -0.0732236 5.98744 -0.0732236 6.28033 0.219669L11.2803 5.21967C11.5732 5.51256 11.5732 5.98744 11.2803 6.28033Z" fill="currentColor"/>
+          </svg>
           } @else {
-          <i class="fa-solid fa-chevron-down text-sm"></i>
+          <svg class="w-4 h-[8px]" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M0.21967 0.21967C0.512563 -0.0732233 0.987437 -0.0732233 1.28033 0.21967L5.75 4.68934L10.2197 0.21967C10.5126 -0.0732233 10.9874 -0.0732233 11.2803 0.21967C11.5732 0.512563 11.5732 0.987437 11.2803 1.28033L6.28033 6.28033C5.98744 6.57322 5.51256 6.57322 5.21967 6.28033L0.21967 1.28033C-0.0732233 0.987437 -0.0732233 0.512563 0.21967 0.21967Z" fill="currentColor"/>
+          </svg>
           }
         </div>
       </button>
       } @else {
       <a [routerLink]="item.routerLink" (mouseenter)="handleMouseEnter(item, i)" [ngClass]="{
-            ' hover:text-primary-blue': !isScrolled,
-            ' hover:text-blue-600': isScrolled,
+            ' hover:text-primary-blue': !isScrolled(),
+            ' hover:text-blue-600': isScrolled(),
           }" class="transition-colors duration-200 flex items-center gap-1 group p-4" (mouseleave)="handleTopLinkMouseLeave(item)"
         [class.text-gray-900]="hasNavbarBackground" [class.text-white]="!hasNavbarBackground">
         {{ item.label }}
@@ -104,8 +108,10 @@
       <button type="button" (click)="toggleMobileDropdown(i, item.slug)"
         class="w-full flex items-center justify-between py-4 px-4 text-left text-gray-900 font-medium focus:bg-[#F6F6F6] transition-colors">
         <span>{{ item.label }}</span>
-        <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200"
-          [class.rotate-180]="getMobileExpandedIndex() === i"></i>
+        <svg class="w-3 h-[7px] transition-transform duration-200" [class.rotate-180]="getMobileExpandedIndex() === i"
+          viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M0.21967 0.21967C0.512563 -0.0732233 0.987437 -0.0732233 1.28033 0.21967L5.75 4.68934L10.2197 0.21967C10.5126 -0.0732233 10.9874 -0.0732233 11.2803 0.21967C11.5732 0.512563 11.5732 0.987437 11.2803 1.28033L6.28033 6.28033C5.98744 6.57322 5.51256 6.57322 5.21967 6.28033L0.21967 1.28033C-0.0732233 0.987437 -0.0732233 0.512563 0.21967 0.21967Z" fill="currentColor"/>
+        </svg>
       </button>
       @if (getMobileExpandedIndex() === i) {
       <div class="pb-4 pl-4 px-4">

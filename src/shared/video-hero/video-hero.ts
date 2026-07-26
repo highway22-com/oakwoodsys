@@ -11,6 +11,11 @@ const PLACEHOLDER_VIDEO_URLS: string[] = [
   "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Home-4.mp4",
 ];
 
+/** Cuánto antes del cambio de slide se empieza a precargar el siguiente video. */
+const NEXT_VIDEO_PRIME_LEAD_MS = 3000;
+/** Intervalo del carrusel (debe coincidir con el usado en startVideoCarousel). */
+const CAROUSEL_INTERVAL_MS = 11000;
+
 @Component({
   selector: 'app-video-hero',
   imports: [CommonModule, ButtonPrimaryComponent],
@@ -20,6 +25,7 @@ const PLACEHOLDER_VIDEO_URLS: string[] = [
 })
 export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChild('videoElement', { static: false }) videoElement!: ElementRef<HTMLVideoElement>;
+  @ViewChild('nextVideoElement', { static: false }) nextVideoElement?: ElementRef<HTMLVideoElement>;
 
   @Input() loading = true;
   @Input() videoUrls: string[] = [];
@@ -55,6 +61,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
 
   private readonly platformId = inject(PLATFORM_ID);
   private videoInterval: any;
+  private nextVideoPrimeTimeout: any;
 
   /** Mientras loading o sin URLs del CMS, usar placeholders; si no, URLs de GraphQL. */
   readonly videoUrlsSignal = signal<string[]>(PLACEHOLDER_VIDEO_URLS);
@@ -185,6 +192,9 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     if (this.videoInterval) {
       clearInterval(this.videoInterval);
     }
+    if (this.nextVideoPrimeTimeout) {
+      clearTimeout(this.nextVideoPrimeTimeout);
+    }
   }
 
   private attemptAutoplay() {
@@ -226,15 +236,33 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   private startVideoCarousel() {
     if (this.videoUrlsSignal().length <= 1) return;
 
-    // Clear any existing interval
+    // Clear any existing interval/timeout
     if (this.videoInterval) {
       clearInterval(this.videoInterval);
     }
+    if (this.nextVideoPrimeTimeout) {
+      clearTimeout(this.nextVideoPrimeTimeout);
+    }
 
-    // Switch video every 10 seconds
+    // Switch video every 11 seconds
     this.videoInterval = setInterval(() => {
       this.nextVideo();
-    }, 11000);
+    }, CAROUSEL_INTERVAL_MS);
+
+    // Precargar el siguiente video justo antes de la transición, no antes.
+    this.nextVideoPrimeTimeout = setTimeout(() => {
+      this.primeNextVideo();
+    }, Math.max(0, CAROUSEL_INTERVAL_MS - NEXT_VIDEO_PRIME_LEAD_MS));
+  }
+
+  /** Asigna el src del video oculto "siguiente" solo cuando la transición es inminente. */
+  private primeNextVideo() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const nextUrl = this.nextVideoUrl();
+    const el = this.nextVideoElement?.nativeElement;
+    if (!nextUrl || !el || el.src === nextUrl) return;
+    el.src = nextUrl;
+    el.load();
   }
 
   switchToVideo(index: number) {

@@ -131,7 +131,7 @@ export class CaseStudyDetailPageComponent implements OnInit, OnDestroy {
     }));
     const connectedServices = (acf.connectedServices ?? []).map((s, i) => ({
       id: String(i + 1),
-      icon: s.serviceIcon || 'fa-circle',
+      icon: s.serviceIcon || '',
       title: s.serviceTitle || '',
       description: s.serviceDescription || '',
       link: s.serviceLink || '#',

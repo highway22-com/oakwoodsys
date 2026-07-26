@@ -46,6 +46,10 @@
                   "inline": false
                 }
               },
+              "sourceMap": {
+                "scripts": true,
+                "hidden": true
+              },
               "budgets": [
                 {
                   "type": "initial",

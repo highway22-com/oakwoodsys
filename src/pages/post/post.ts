@@ -14,6 +14,7 @@ import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { decodeHtmlEntities } from '../../app/utils/cast';
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
+import { RecaptchaLoaderService } from '../../app/services/recaptcha-loader.service';
 interface PostAuthor {
   node: {
     email: string;
@@ -116,6 +117,8 @@ export default class Post implements OnInit, OnDestroy {
   isSubmitting = false;
   recaptchaToken: string | null = null;
   private recaptchaWidgetId: number | null = null;
+  private readonly recaptcha = inject(RecaptchaLoaderService);
+  private recaptchaObserver: IntersectionObserver | null = null;
   readonly recaptchaEnabled = true;
   validationErrors = { fullName: false, email: false, company: false, message: false, recaptcha: false };
 
@@ -447,7 +450,7 @@ export default class Post implements OnInit, OnDestroy {
               if (toc.length > 0) this.activeSection.set(toc[0].id);
             });
             if (isPlatformBrowser(this.platformId) && this.recaptchaEnabled) {
-              setTimeout(() => this.initRecaptcha(), 400);
+              setTimeout(() => this.observeRecaptcha(), 400);
             }
             this.updateSeoMeta(postData, slugValue);
             const isCaseStudy = this.router.url.startsWith('/resources/case-studies');
@@ -522,6 +525,7 @@ export default class Post implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.routeSub?.unsubscribe();
+    this.recaptchaObserver?.disconnect();
     if (this.scrollListener && isPlatformBrowser(this.platformId)) {
       window.removeEventListener('scroll', this.scrollListener);
     }
@@ -674,41 +678,47 @@ export default class Post implements OnInit, OnDestroy {
     this.submitted = false;
     this.recaptchaToken = null;
     this.validationErrors = { fullName: false, email: false, company: false, message: false, recaptcha: false };
-    if (isPlatformBrowser(this.platformId) && this.recaptchaWidgetId !== null && (window as any).grecaptcha?.reset) {
-      (window as any).grecaptcha.reset(this.recaptchaWidgetId);
-    }
+    this.recaptcha.reset(this.recaptchaWidgetId);
   }
 
-  private initRecaptcha(): void {
-    if (!isPlatformBrowser(this.platformId) || !this.recaptchaHost?.nativeElement) return;
+  /** Defers loading/rendering reCAPTCHA until the form is actually scrolled into view. */
+  private observeRecaptcha(): void {
+    const host = this.recaptchaHost?.nativeElement;
+    const container = host?.parentElement;
+    if (!container || typeof IntersectionObserver === 'undefined') return;
 
-    const render = () => {
-      const grecaptcha = (window as any).grecaptcha;
-      if (!grecaptcha?.render || this.recaptchaWidgetId !== null) return;
+    this.recaptchaObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          this.recaptchaObserver?.disconnect();
+          this.recaptchaObserver = null;
+          this.renderRecaptcha();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+    this.recaptchaObserver.observe(container);
+  }
 
-      this.recaptchaWidgetId = grecaptcha.render(this.recaptchaHost!.nativeElement, {
-        sitekey: '6Lcp8XwsAAAAAIrdZHBdw74jtoxwPxDRZW4F-rwu',
-        callback: (token: string) => {
-          this.ngZone.run(() => {
-            this.recaptchaToken = token;
-            this.validationErrors = { ...this.validationErrors, recaptcha: false };
-            this.cdr.markForCheck();
-          });
+  private renderRecaptcha(): void {
+    const host = this.recaptchaHost?.nativeElement;
+    if (!host || this.recaptchaWidgetId !== null) return;
+
+    this.recaptcha
+      .render(host, {
+        onSuccess: (token) => {
+          this.recaptchaToken = token;
+          this.validationErrors = { ...this.validationErrors, recaptcha: false };
+          this.cdr.markForCheck();
         },
-        'expired-callback': () => {
-          this.ngZone.run(() => {
-            this.recaptchaToken = null;
-            this.cdr.markForCheck();
-          });
+        onExpired: () => {
+          this.recaptchaToken = null;
+          this.cdr.markForCheck();
         },
+      })
+      .then((widgetId) => {
+        this.recaptchaWidgetId = widgetId;
       });
-    };
-
-    render();
-    if (this.recaptchaWidgetId === null) {
-      setTimeout(render, 500);
-      setTimeout(render, 1500);
-    }
   }
 
   scrollToSection(sectionId: string): void {
