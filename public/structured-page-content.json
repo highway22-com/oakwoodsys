@@ -52,7 +52,7 @@
     {
       "title": "Cloud & Infrastructure",
       "description": "Modernize, secure, and optimize your cloud estate with proven migration strategies.",
-      "image": "/assets/structured-cloud-infrastructure.png",
+      "image": "/assets/structured-cloud-infrastructure.avif",
       "imageAlt": "Cloud & Infrastructure - Server room",
       "background": "gray",
       "cards": [
@@ -89,7 +89,7 @@
     {
       "title": "Application Innovation",
       "description": "Build modern, intelligent applications that drive business value and user engagement.",
-      "image": "/assets/structured-application-innovation.png",
+      "image": "/assets/structured-application-innovation.avif",
       "imageAlt": "Application Innovation - Developer with laptop",
       "background": "white",
       "cards": [
@@ -126,7 +126,7 @@
     {
       "title": "High Performance Computing (HPC)",
       "description": "Scale simulations, AI training, and complex workloads with Azure HPC infrastructure.",
-      "image": "/assets/structured-high-performance.png",
+      "image": "/assets/structured-high-performance.avif",
       "imageAlt": "High Performance Computing - Multiple screens",
       "background": "gray",
       "cards": [

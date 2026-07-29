@@ -68,7 +68,7 @@ export class OfficeLocationsSectionComponent {
       return office.image;
     }
     const name = office.name;
-    const fileName = this.officeImageByName[name] ?? 'contact-us-new-pic.png';
+    const fileName = this.officeImageByName[name] ?? 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/07/contact-us-new-pic-scaled-1.webp';
     return `assets/${fileName}`;
   }
 }

@@ -131,7 +131,7 @@ export const DEFAULT_CONTACT_US_COPY: ContactUsPageCopy = {
     loading: 'Sending...',
   },
   image: {
-    src: '/assets/contact-us-new-pic.png',
+    src: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/07/contact-us-new-pic-scaled-1.webp',
     alt: 'Data center',
   },
 };
@@ -141,7 +141,7 @@ export const DEFAULT_CONTACT_SUCCESS_COPY: ContactSuccessCopy = {
   titleLine2: "We'll be in touch soon",
   description: "We've received your message and our team will review it shortly.",
   image: {
-    src: '/assets/contact-us-new-pic.png',
+    src: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/07/contact-us-new-pic-scaled-1.webp',
     alt: '',
   },
 };

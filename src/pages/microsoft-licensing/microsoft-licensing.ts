@@ -165,7 +165,7 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit, OnDest
 
   readonly focusSection: FocusSection = {
     bgImage:
-      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/bg-our-focus.png',
+      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/07/bg-our-focus.avif',
     title: 'Microsoft Licensing has Become a Moving Target',
     description:
       'Microsoft continues to evolve how its technologies are packaged and priced. What worked a year ago may not be the right fit today.',
@@ -433,7 +433,7 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit, OnDest
     impactDescription:
       'Oakwood reviews your Microsoft 365 and Azure licensing environment to uncover cost savings, usage gaps, and optimization opportunities.',
     imageSrc:
-      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/microsoft-licensing.png',
+      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/07/microsoft-licensing.avif',
   };
 
   readonly licensingExpertChecklist: string[] = [
