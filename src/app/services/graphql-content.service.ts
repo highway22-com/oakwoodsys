@@ -74,6 +74,16 @@ export class GraphQLContentService {
   /** Observables cacheados: primera suscripción dispara la carga, las siguientes reutilizan el resultado. */
   private blogs$ = this.createBlogsStream();
   private caseStudies$ = this.createCaseStudiesStream();
+  /**
+   * Footer content changes monthly at most, but the Footer component gets torn down and
+   * rebuilt on every navigation that crosses between the Angular route tree and the
+   * WordPress route tree (they're separate top-level routes, each with their own Footer
+   * instance — see MainLayout / WordpressPageComponent). Without this, that's a fresh
+   * GraphQL round-trip on every such crossing. shareReplay(1) means only the first mount
+   * anywhere in the app ever triggers a real fetch; every later mount, in either route
+   * tree, gets the cached value instantly.
+   */
+  private footerContent$ = this.getCmsPageBySlug('footer').pipe(shareReplay(1));
 
   /** Categorías y tags de Gen Content (cargados al inicio). Acceso global. */
   readonly genContentCategories = signal<GenContentTaxonomyTerm[]>([]);
@@ -558,6 +568,12 @@ export class GraphQLContentService {
           return of(null);
         })
       );
+  }
+
+  /** Contenido del footer (slug: footer), compartido entre el sitio Angular y las páginas
+   * WordPress — ver el comentario en footerContent$ arriba para el porqué. */
+  getFooterContent(): Observable<CmsPageContent | null> {
+    return this.footerContent$;
   }
 
   /**
