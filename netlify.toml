@@ -41,7 +41,7 @@
   to = "https://oakwoodsystemsgroup.com/wp-json/custom/v1/rendered-page"
   status = 200
   force = true
-  headers = {Cache-Control = "no-store, no-cache", Pragma = "no-cache"}
+  headers = {Cache-Control = "public, max-age=60, stale-while-revalidate=300"}
 
 # CMS JSON (home.json, services.json, service-*.json)
 [[redirects]]
@@ -49,7 +49,7 @@
   to = "https://oakwoodsystemsgroup.com/wp-content/uploads/oakwood-cms/:splat"
   status = 200
   force = true
-  headers = {Cache-Control = "no-cache", Pragma = "no-cache"}
+  headers = {Cache-Control = "public, max-age=60, stale-while-revalidate=300"}
 
 # Redirección /home → / (canonical home)
 [[redirects]]

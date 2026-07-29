@@ -55,10 +55,19 @@ function isWordPressCatchAllPath(pathname: string): boolean {
   return !ANGULAR_ROUTE_PREFIXES.has(firstSegment);
 }
 
-function withNoCacheHeaders(response: Response): Response {
+/**
+ * WordPress pages were previously no-store: every visitor re-triggered the full
+ * WordPress -> GraphQL/REST -> Angular SSR chain, and no CDN could ever cache a
+ * rendered page for a second visitor. Short public cache instead — same tradeoff
+ * as /api/home-content elsewhere in this file: cache for the public, accept that a
+ * freshly published edit can take up to ~30s to reach a visitor who isn't the
+ * first hit after it goes live. If WordPress pages ever get their own "editor is
+ * previewing this" signal, bypass the cache the same way home-content does for
+ * auth.valid.
+ */
+function withWordPressPageCacheHeaders(response: Response): Response {
   const headers = new Headers(response.headers);
-  headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
-  headers.set('Pragma', 'no-cache');
+  headers.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=120');
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -751,7 +760,7 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
 
   const result = await angularAppEngine.handle(request, context)
   if (result && isWordPressCatchAllPath(pathname)) {
-    return withNoCacheHeaders(result);
+    return withWordPressPageCacheHeaders(result);
   }
   return result || new Response('Not found', { status: 404 })
 }
