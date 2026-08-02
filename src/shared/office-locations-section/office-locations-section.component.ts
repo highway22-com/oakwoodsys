@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, afterNextRender, computed, inject, input, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 export interface OfficeLocation {
@@ -24,8 +24,10 @@ export interface OfficeLocationsContent {
   styleUrl: './office-locations-section.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OfficeLocationsSectionComponent {
+export class OfficeLocationsSectionComponent implements OnDestroy {
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
+  private observer?: IntersectionObserver;
   private readonly officeImageByName: Record<string, string> = {
     'St. Louis Office': 'Louis_Office.png',
     'Kansas City Office': 'Kansas_City_Office.png',
@@ -58,6 +60,35 @@ export class OfficeLocationsSectionComponent {
   };
 
   readonly content = computed(() => this.dataOverride() ?? this.defaultContent);
+
+  // Maps load once this section nears the viewport, via IntersectionObserver rather
+  // than a scroll listener — IntersectionObserver reports asynchronously off the
+  // compositor thread instead of forcing a synchronous layout read on every scroll frame.
+  readonly sectionVisible = signal(false);
+
+  constructor() {
+    afterNextRender(() => {
+      if (typeof IntersectionObserver === 'undefined') {
+        this.sectionVisible.set(true);
+        return;
+      }
+      this.observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            this.sectionVisible.set(true);
+            this.observer?.disconnect();
+            this.observer = undefined;
+          }
+        },
+        { rootMargin: '200px 0px' }
+      );
+      this.observer.observe(this.elementRef.nativeElement);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.observer?.disconnect();
+  }
 
   getMapUrl(url: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);

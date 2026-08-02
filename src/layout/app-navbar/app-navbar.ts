@@ -28,6 +28,7 @@ import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { filter } from 'rxjs';
+import { logError } from '../../app/utils/logger';
 import type { CaseStudy, SearchResultItem } from '../../app/api/graphql';
 import { MenuList } from './menu-list/menu-list';
 
@@ -296,7 +297,7 @@ export class AppNavbar implements OnInit, OnDestroy {
         this.loading.set(false);
       },
       error: (error) => {
-        console.error('Error loading navbar content:', error);
+        logError('Error loading navbar content:', error);
         this.menuItems.set([]);
         this.content.set(null);
         if (finishLoading) this.loading.set(false);

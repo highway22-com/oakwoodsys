@@ -9,9 +9,11 @@
   >
     <div class="relative w-full aspect-video overflow-hidden">
       <img
-        [src]="effectiveImageUrl()"
+        [ngSrc]="effectiveImageUrl()"
         [alt]="imageAlt()"
-        class="w-full h-full object-cover object-top transition-transform duration-300 ease-out group-hover:scale-110"
+        fill
+        sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 25vw"
+        class="object-cover object-top transition-transform duration-300 ease-out group-hover:scale-110"
       />
       @if (!isPastEvent()) {
         <div

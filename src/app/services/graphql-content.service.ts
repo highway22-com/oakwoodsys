@@ -46,16 +46,6 @@ export class GraphQLContentService {
   private readonly transferState = inject(TransferState);
   private readonly platformId = inject(PLATFORM_ID);
 
-  /** Slugs de servicios (mismo orden que en edit-page y navbar). */
-  private readonly serviceSlugs = [
-    'data-ai-solutions',
-    'cloud-and-infrastructure',
-    'application-innovation',
-    'high-performance-computing-hpc',
-    'modern-work',
-    'managed-services',
-  ] as const;
-
   /** Slugs de industries (mismo orden que en navbar). */
   private readonly industrySlugs = [
     'healthcare',
@@ -88,89 +78,6 @@ export class GraphQLContentService {
   /** Categorías y tags de Gen Content (cargados al inicio). Acceso global. */
   readonly genContentCategories = signal<GenContentTaxonomyTerm[]>([]);
   readonly genContentTags = signal<GenContentTaxonomyTerm[]>([]);
-
-  /** Contenido CMS de home (cargado en APP_INITIALIZER). Observable para suscribirse. */
-  private readonly homePageContentSubject = new BehaviorSubject<CmsPageContent | null>(null);
-  readonly homePageContent$: Observable<CmsPageContent | null> = this.homePageContentSubject.asObservable();
-
-  /** Carga home en APP_INITIALIZER. Acceso vía homePageContent$ o homePageContentSubject.value. */
-  loadHomePageContent(): Promise<void> {
-    return firstValueFrom(this.getCmsPageBySlug('home', { fetchPolicy: 'network-only' })).then((data) => {
-      this.homePageContentSubject.next(data);
-    }).catch(() => {
-      this.homePageContentSubject.next(null);
-    });
-  }
-
-  /** Contenido CMS de services (carga diferida tras el bootstrap). Observable para suscribirse. */
-  private readonly servicesContentSubject = new BehaviorSubject<{ services: Record<string, unknown> } | null>(null);
-  readonly servicesContent$: Observable<{ services: Record<string, unknown> } | null> = this.servicesContentSubject.asObservable();
-
-  /** El CMS a veces incluye `events` dentro del JSON de services; no lo precargamos aquí. */
-  private servicesPayloadWithoutEvents(
-    services: Record<string, unknown> | null | undefined,
-  ): Record<string, unknown> | null {
-    if (!services || typeof services !== 'object') return null;
-    if (!('events' in services)) return { ...services };
-    const { events: _omit, ...rest } = services;
-    return rest;
-  }
-
-  loadServicesContent(): Promise<void> {
-    const ts = Date.now();
-    // 1) service-*.json (fuente principal; services.json eliminado)
-    return firstValueFrom(
-      forkJoin(
-        this.serviceSlugs.map((slug) =>
-          this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/service-${slug}.json?t=${ts}`, { responseType: 'json' }).pipe(
-            map((res) => res?.services ?? {}),
-            catchError(() => of({}))
-          )
-        )
-      ).pipe(
-        map((results) => {
-          const merged: Record<string, unknown> = {};
-          results.forEach((svc) => {
-            Object.assign(merged, svc);
-          });
-          const services = this.servicesPayloadWithoutEvents(merged);
-          return services && Object.keys(services).length > 0 ? { services } : null;
-        })
-      )
-    ).then((merged) => {
-      if (merged?.services) {
-        this.servicesContentSubject.next(merged);
-        return;
-      }
-      // 2) services.json (fallback si existe)
-      return firstValueFrom(
-        this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/services.json?t=${ts}`, { responseType: 'json' }).pipe(
-          map((data) => {
-            const s = data?.services ? this.servicesPayloadWithoutEvents(data.services) : null;
-            return s && Object.keys(s).length > 0 ? { services: s } : null;
-          }),
-          catchError(() => of(null))
-        )
-      ).then((data) => {
-        if (data?.services) {
-          this.servicesContentSubject.next(data);
-          return;
-        }
-        // 3) GraphQL
-        return firstValueFrom(this.getCmsPageBySlug('services', { fetchPolicy: 'network-only' }).pipe(
-          map((d) => {
-            const raw = d as { services?: Record<string, unknown> } | null;
-            const s = raw?.services ? this.servicesPayloadWithoutEvents(raw.services) : null;
-            return s && Object.keys(s).length > 0 ? { services: s } : null;
-          })
-        )).then((graphqlData) => {
-          this.servicesContentSubject.next(graphqlData);
-        });
-      });
-    }).catch(() => {
-      this.servicesContentSubject.next(null);
-    });
-  }
 
   /** Contenido CMS de industries (cargado en APP_INITIALIZER). Observable para suscribirse. */
   private readonly industriesContentSubject = new BehaviorSubject<{ industries: Record<string, unknown> } | null>(null);

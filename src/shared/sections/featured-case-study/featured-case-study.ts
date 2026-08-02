@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, HostListener, Input, OnInit, OnChanges, SimpleChanges, computed, inject, signal, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, HostListener, Input, OnInit, OnChanges, OnDestroy, SimpleChanges, computed, inject, signal, PLATFORM_ID } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { RouterLink } from '@angular/router';
@@ -9,6 +9,7 @@ import type { CaseStudy } from '../../../app/api/graphql';
 import { getPrimaryTagName, getPrimaryTagSlug } from '../../../app/api/graphql';
 import { take } from 'rxjs/operators';
 import { decodeHtmlEntities } from '../../../app/utils/cast';
+import { logError } from '../../../app/utils/logger';
 import { FeaturedCaseStudyCategory } from './featured-case-study-category';
 export { FeaturedCaseStudyCategory } from './featured-case-study-category';
 
@@ -51,7 +52,7 @@ export interface FeaturedCaseStudyView {
     ]),
   ],
 })
-export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
+export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges, OnDestroy {
   [x: string]: any;
   private readonly graphql = inject(GraphQLContentService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -80,6 +81,12 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
   /** Últimos slugs con los que se cargó; evita recargar si es la misma lista (misma referencia o mismo contenido). */
   private lastSlugKey = '';
 
+  /** Same getCaseStudies() endpoint used by the navbar/case-studies listing — just deferred
+   * until this section is actually about to be scrolled into view, via IntersectionObserver
+   * (not a scroll listener) so triggering the fetch never forces a synchronous layout read. */
+  private visibilityObserver?: IntersectionObserver;
+  private hasIntersected = false;
+
   readonly currentSection = computed(() => {
     const list = this.caseStudiesData();
     return list;
@@ -107,18 +114,50 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
   get scrollBarFillTop(): string { return `${this.scrollProgress() * 50}%`; }
 
   ngOnInit(): void {
-    this.loadCaseStudies();
+    if (!isPlatformBrowser(this.platformId)) {
+      // SSR: fetch immediately so the section is present in the server-rendered HTML.
+      this.loadCaseStudies();
+      return;
+    }
+    this.setupVisibilityObserver();
+  }
+
+  ngOnDestroy(): void {
+    this.visibilityObserver?.disconnect();
+  }
+
+  private setupVisibilityObserver(): void {
+    if (typeof IntersectionObserver === 'undefined') {
+      this.hasIntersected = true;
+      this.loadCaseStudies();
+      return;
+    }
+    this.visibilityObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          this.hasIntersected = true;
+          this.loadCaseStudies();
+          this.visibilityObserver?.disconnect();
+          this.visibilityObserver = undefined;
+        }
+      },
+      { rootMargin: '300px 0px' }
+    );
+    this.visibilityObserver.observe(this.el.nativeElement as HTMLElement);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     const slugsChange = changes['slugsFeaturedCaseStudies'];
     const categoryChange = changes['featuredCategory'];
     const tagChange = changes['primaryTagSlug'];
-    if (slugsChange && !slugsChange.firstChange) {
-      this.loadCaseStudies();
-    } else if (categoryChange && !categoryChange.firstChange) {
-      this.loadCaseStudies();
-    } else if (tagChange && !tagChange.firstChange) {
+    const inputsChanged =
+      (slugsChange && !slugsChange.firstChange) ||
+      (categoryChange && !categoryChange.firstChange) ||
+      (tagChange && !tagChange.firstChange);
+    if (!inputsChanged) return;
+    // If we haven't fetched yet (still waiting to scroll into view), the pending
+    // observer callback will pick up the latest inputs — no need to fetch now.
+    if (this.hasIntersected || !isPlatformBrowser(this.platformId)) {
       this.loadCaseStudies();
     }
   }
@@ -191,7 +230,7 @@ export class FeaturedCaseStudySectionComponent implements OnInit, OnChanges {
           this.cdr.markForCheck();
         },
         error: () => {
-          console.error('Error loading case studies');
+          logError('Error loading case studies');
           this.loading.set(false);
           this.cdr.markForCheck();
         },

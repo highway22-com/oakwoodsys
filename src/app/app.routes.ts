@@ -1,10 +1,5 @@
 import { Routes } from '@angular/router';
 
-import { Structured } from '../pages/structured/structured';
-import { StructuredOffer } from '../pages/structured-offer/structured-offer';
-import { ContactUs } from '../pages/contact-us/contact-us';
-import { ContactSuccess } from '../pages/contact-success/contact-success';
-import { Login } from '../pages/login/login';
 import { MainLayout } from '../layout/main-layout/main-layout';
 import { wordpressPageResolver } from '../pages/wordpress-page/wordpress-page.resolver';
 
@@ -86,15 +81,15 @@ export const routes: Routes = [
             },
             {
                 path: 'structured-engagement',
-                component: Structured
+                loadComponent: () => import('../pages/structured/structured').then(m => m.Structured)
             },
             {
                 path: 'resources/structured-engagements',
-                component: Structured
+                loadComponent: () => import('../pages/structured/structured').then(m => m.Structured)
             },
             {
                 path: 'structured-engagement/:slug',
-                component: StructuredOffer
+                loadComponent: () => import('../pages/structured-offer/structured-offer').then(m => m.StructuredOffer)
             },
             {
                 path: 'events',
@@ -107,15 +102,15 @@ export const routes: Routes = [
             },
             {
                 path: 'contact-us',
-                component: ContactUs
+                loadComponent: () => import('../pages/contact-us/contact-us').then(m => m.ContactUs)
             },
             {
                 path: 'contact-success',
-                component: ContactSuccess
+                loadComponent: () => import('../pages/contact-success/contact-success').then(m => m.ContactSuccess)
             },
             {
                 path: 'admin/login',
-                component: Login
+                loadComponent: () => import('../pages/login/login').then(m => m.Login)
             },
             {
                 path: 'careers',

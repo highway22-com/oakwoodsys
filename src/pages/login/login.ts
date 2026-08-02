@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { logError } from '../../app/utils/logger';
 
 @Component({
   selector: 'app-login',
@@ -57,7 +58,7 @@ export class Login {
         }
       },
       error: (error) => {
-        console.error('Login error:', error);
+        logError('Login error:', error);
         this.error.set(error.error?.message || 'Login failed. Please try again.');
         this.loading.set(false);
       }

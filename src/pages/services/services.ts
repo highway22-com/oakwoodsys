@@ -14,6 +14,7 @@ import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-s
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { TrustedBySectionComponent } from "../../shared/sections/trusted-by/trusted-by";
 import { SvgIcons } from '../../shared/service-icons/service-icons';
+import { logError } from '../../app/utils/logger';
 
 interface ServiceArea {
   icon: string;
@@ -266,7 +267,7 @@ export default class Services implements OnInit, OnDestroy {
   private loadStructuredEngagementFromStaticFile() {
     this.http.get<any>('/structured-engagement-section.json').subscribe({
       next: (data) => this.structuredEngagementSection.set(data),
-      error: (err) => console.error('Error loading structured engagement section:', err),
+      error: (err) => logError('Error loading structured engagement section:', err),
     });
   }
 

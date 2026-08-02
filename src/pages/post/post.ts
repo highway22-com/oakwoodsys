@@ -15,6 +15,7 @@ import { CtaSectionComponent } from '../../shared/cta-section/cta-section.compon
 import { decodeHtmlEntities } from '../../app/utils/cast';
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
 import { RecaptchaLoaderService } from '../../app/services/recaptcha-loader.service';
+import { logError } from '../../app/utils/logger';
 interface PostAuthor {
   node: {
     email: string;
@@ -320,6 +321,9 @@ export default class Post implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // Only blogs/case-studies listing and this page read genContentTags(), so only
+    // load it here instead of firing it globally on every route.
+    void this.graphql.loadGenContentTaxonomies();
     this.routeSub = this.route.paramMap.subscribe((params) => {
       const slugValue = params.get('slug') || this.slug() || '';
       if (!slugValue) {
@@ -480,7 +484,7 @@ export default class Post implements OnInit, OnDestroy {
           this.loading.set(false);
         },
         error: (error) => {
-          console.error('Error loading post:', error);
+          logError('Error loading post:', error);
           this.error.set(error);
           this.loading.set(false);
         },
@@ -663,7 +667,7 @@ export default class Post implements OnInit, OnDestroy {
       error: (err) => {
         this.isSubmitting = false;
         this.cdr.markForCheck();
-        console.error('Contact form error:', err);
+        logError('Contact form error:', err);
         alert('Failed to send message. Please try again later.');
       },
     });

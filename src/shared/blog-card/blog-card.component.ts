@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import type { SafeHtml } from '@angular/platform-browser';
 import { decodeHtmlEntities } from '../../app/utils/cast';
 
 @Component({
   selector: 'app-blog-card',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, NgOptimizedImage],
   templateUrl: './blog-card.component.html',
   styleUrl: './blog-card.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

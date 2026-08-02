@@ -2,6 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ButtonPrimaryComponent } from "../button-primary/button-primary.component";
+import { logError } from '../../app/utils/logger';
 
 /** URLs de video placeholder mientras carga el contenido (se sustituyen por GraphQL). */
 const PLACEHOLDER_VIDEO_URLS: string[] = [
@@ -215,13 +216,13 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
         if (error.name === 'NotAllowedError') {
           // Autoplay was prevented, will be enabled on user interaction
         } else if (error.name === 'NotSupportedError') {
-          console.error('Video format not supported');
+          logError('Video format not supported');
         } else if (error.name === 'NotReadableError') {
-          console.error('Video file cannot be read');
+          logError('Video file cannot be read');
         } else if (error.name === 'AbortError') {
-          console.error('Video playback was aborted');
+          logError('Video playback was aborted');
         } else {
-          console.error('Unknown error occurred:', error);
+          logError('Unknown error occurred:', error);
         }
       });
     }

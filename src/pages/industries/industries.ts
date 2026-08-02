@@ -119,6 +119,10 @@ export default class Industries implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // Only this page reads industriesContent$, so only load it here instead of
+    // firing it globally on every route. Populates the shared preload tier used
+    // by loadFromPreloadedOrGraphQL() for subsequent industry page navigations.
+    void this.graphql.loadIndustriesContent();
     // Subscribe to route params to handle navigation changes
     this.routeSubscription = this.route.paramMap.subscribe(params => {
       const slugParam = params.get('slug');

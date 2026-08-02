@@ -18,6 +18,7 @@ import {
   DEFAULT_OFFICE_LOCATIONS,
 } from '../../app/services/contact-page-content.service';
 import { HttpClient } from '@angular/common/http';
+import { logError } from '../../app/utils/logger';
 
 
 
@@ -331,7 +332,7 @@ export class ContactUs implements OnInit, AfterViewInit, OnDestroy {
       error: (err) => {
         this.isSubmitting = false;
         this.cdr.markForCheck();
-        console.error('Contact form error:', err);
+        logError('Contact form error:', err);
         alert(this.copy().errors.submitFailed);
       },
     });

@@ -218,7 +218,12 @@ export class ContactPageContentService {
       return this.inFlight$;
     }
 
-    this.inFlight$ = this.graphql.getCmsPageBySlug('contact-us', { fetchPolicy: 'network-only' }).pipe(
+    // Default 'cache-and-network' (not 'network-only') so the client reads the server's
+    // TransferState value on hydration instead of re-fetching — this service's own
+    // cache/inFlight$ above only dedupes calls *after* the first one; without this,
+    // that very first client-side call still re-fetches everything SSR already got,
+    // which is what was delaying the hero image's real src behind a redundant round-trip.
+    this.inFlight$ = this.graphql.getCmsPageBySlug('contact-us').pipe(
       map((data) => data as ContactPageContentResponse | null),
       switchMap((cmsData) => {
         if (cmsData) {
