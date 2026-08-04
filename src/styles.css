@@ -1,4 +1,24 @@
 /* You can add global styles to this file, and also import other style files */
+/* Oakwood Blocks WordPress plugin CSS (CTA block, accordion, achievements/comparison grid,
+   etc.) — synced at build time via `npm run sync:oak` (scripts/sync-oak-css.mjs) directly
+   from the plugin's own public assets on oakwoodsystemsgroup.com, not hand-copied, so it
+   can't silently drift from the live source.
+
+   Pre-declaring layer order here (oak-overrides before oak-vendor) matters: almost every
+   rule in the plugin CSS is !important, and per the CSS cascade layers spec, !important
+   declarations resolve in the OPPOSITE order from normal ones — the earliest-declared layer
+   wins, and unlayered !important is weakest of all (loses to any named layer). So an
+   unlayered `!important` override in post.css can't beat this plugin CSS; anything that
+   needs to override an !important plugin rule (see .oak-full below) has to live inside the
+   oak-overrides layer instead, which is why it's declared first here.
+
+   Must come before @import "tailwindcss" below: that directive gets expanded into real CSS
+   rules by the build's Tailwind plugin ahead of the final optimization pass, and any @import
+   appearing after real rules at that point is invalid per spec and gets silently dropped. */
+@layer oak-overrides, oak-vendor;
+@import url('./assets/oak/oak.css') layer(oak-vendor);
+@import url('./assets/oak/oak-accordion.css') layer(oak-vendor);
+
 /* @import "tailwindcss"; */
 @import "tailwindcss";
 
