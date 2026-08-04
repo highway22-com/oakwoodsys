@@ -43,6 +43,8 @@ export class BlogCardComponent {
   readonly readMoreText = input<string>('Read more');
   /** Muestra etiqueta y tiempo de lectura. */
   readonly showMeta = input<boolean>(true);
+  /** Marca la imagen como prioritaria (primer post, candidato a LCP) para NgOptimizedImage. */
+  readonly priority = input<boolean>(false);
 
   /** URL de imagen por defecto cuando no hay featuredImage. */
   readonly defaultImageUrl = 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80';
