@@ -56,6 +56,40 @@ function isWordPressCatchAllPath(pathname: string): boolean {
 }
 
 /**
+ * Angular-native content routes (as opposed to admin/edit/api/wp-admin/404) whose SSR
+ * output is safe to cache publicly: they render the same markup for every visitor, sourced
+ * from CMS content fetched during SSR. Without this, every single visit re-triggers the full
+ * WordPress GraphQL round-trip inside SSR before any HTML reaches the browser — that live
+ * round-trip (not JS execution or image weight) is what was driving up FCP/LCP/Speed Index on
+ * pages like /contact-us. Same tradeoff as withWordPressPageCacheHeaders above: a freshly
+ * published CMS edit can take up to ~30s to reach a visitor who isn't the first hit after it
+ * goes live.
+ */
+const ANGULAR_CACHEABLE_CONTENT_PREFIXES = new Set([
+  'blog',
+  'services',
+  'resources',
+  'industries',
+  'structured-engagement',
+  'about',
+  'contact-us',
+  'contact-success',
+  'careers',
+  'privacy-policy',
+  'technology-partners',
+  'microsoft-licensing',
+  'home',
+  'events',
+]);
+
+function isAngularCacheableContentPath(pathname: string): boolean {
+  const normalized = pathname.replace(/^\/+|\/+$/g, '');
+  if (!normalized) return true; // '/' — home
+  const firstSegment = normalized.split('/')[0];
+  return ANGULAR_CACHEABLE_CONTENT_PREFIXES.has(firstSegment);
+}
+
+/**
  * WordPress pages were previously no-store: every visitor re-triggered the full
  * WordPress -> GraphQL/REST -> Angular SSR chain, and no CDN could ever cache a
  * rendered page for a second visitor. Short public cache instead — same tradeoff
@@ -759,7 +793,7 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
   }
 
   const result = await angularAppEngine.handle(request, context)
-  if (result && isWordPressCatchAllPath(pathname)) {
+  if (result && (isWordPressCatchAllPath(pathname) || isAngularCacheableContentPath(pathname))) {
     return withWordPressPageCacheHeaders(result);
   }
   return result || new Response('Not found', { status: 404 })
