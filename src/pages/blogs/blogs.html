@@ -136,7 +136,7 @@
                     <!-- Other Posts Grid (2 columns) -->
                     @if (filteredDisplayedNodes().length ) {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                        @for (post of filteredDisplayedNodes(); track post.id) {
+                        @for (post of filteredDisplayedNodes(); track post.id; let index = $index) {
                         <app-blog-card [slug]="post.slug" [linkBase]="detailPathBase()"
                             [imageUrl]="post.featuredImage?.node?.sourceUrl ?? ''"
                             [imageAlt]="post.featuredImage?.node?.altText ?? post.title ?? 'Blog post'"
@@ -146,7 +146,7 @@
                             [authorDisplayName]="(post.authorPerson || post.author?.node) ? authorDisplayName(post) : null"
                             [authorPicture]="post.authorPerson?.picture ?? null"
                             [authorInitial]="(post.authorPerson?.name || post.authorPerson?.firstName || post.author?.node?.firstName || 'A').charAt(0)"
-                            [date]="post.date ?? ''" />
+                            [date]="post.date ?? ''" [priority]="index < 2" />
                         }
                     </div>
                     }

@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import type { SafeHtml } from '@angular/platform-browser';
 import { decodeHtmlEntities } from '../../app/utils/cast';
 
 @Component({
   selector: 'app-blog-card',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, NgOptimizedImage],
   templateUrl: './blog-card.component.html',
   styleUrl: './blog-card.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,6 +43,8 @@ export class BlogCardComponent {
   readonly readMoreText = input<string>('Read more');
   /** Muestra etiqueta y tiempo de lectura. */
   readonly showMeta = input<boolean>(true);
+  /** Marca la imagen como prioritaria (primer post, candidato a LCP) para NgOptimizedImage. */
+  readonly priority = input<boolean>(false);
 
   /** URL de imagen por defecto cuando no hay featuredImage. */
   readonly defaultImageUrl = 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80';

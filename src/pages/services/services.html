@@ -47,6 +47,7 @@
             [alt]="content()!.title + ' - Oakwood Systems service background'"
             class="absolute inset-0 w-full h-full object-cover"
             loading="eager"
+            fetchpriority="high"
           />
         }
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
@@ -92,13 +93,18 @@
   <!-- Main Description Section -->
   @if (content()?.mainDescription) {
     <section
-      class="w-full bg-cover bg-center py-12 sm:py-16 md:py-20 lg:py-24 mb-10 lg:mb-20"
+      class="relative w-full py-12 sm:py-16 md:py-20 lg:py-24 mb-10 lg:mb-20 overflow-hidden"
       aria-labelledby="main-description"
-      style="
-        background-image: url(&quot;/assets/bg-service-top-section.png&quot;);
-      "
     >
-      <div class="px-0">
+      <img
+        src="/assets/bg-service-top-section.avif"
+        alt=""
+        aria-hidden="true"
+        class="absolute inset-0 w-full h-full object-cover"
+        loading="eager"
+        fetchpriority="high"
+      />
+      <div class="relative z-10 px-0">
         <div class="max-w-7xl mx-auto">
           <p
             class="text-[#242424] text-center font-['Inter'] px-1 sm:px-2  text-[22px] lg:text-[24px] font-normal leading-[130%] md:leading-[150%] lg:leading-[150%]"

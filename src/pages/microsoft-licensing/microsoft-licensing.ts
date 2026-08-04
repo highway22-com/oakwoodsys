@@ -20,9 +20,11 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { SvgIcons } from '../../shared/service-icons/service-icons';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
+import { logError } from '../../app/utils/logger';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import {
   getPrimaryTagName,
@@ -165,7 +167,7 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit, OnDest
 
   readonly focusSection: FocusSection = {
     bgImage:
-      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/bg-our-focus.png',
+      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/07/bg-our-focus.avif',
     title: 'Microsoft Licensing has Become a Moving Target',
     description:
       'Microsoft continues to evolve how its technologies are packaged and priced. What worked a year ago may not be the right fit today.',
@@ -433,7 +435,7 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit, OnDest
     impactDescription:
       'Oakwood reviews your Microsoft 365 and Azure licensing environment to uncover cost savings, usage gaps, and optimization opportunities.',
     imageSrc:
-      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/microsoft-licensing.png',
+      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/07/microsoft-licensing.avif',
   };
 
   readonly licensingExpertChecklist: string[] = [
@@ -537,18 +539,28 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit, OnDest
     // where something else already primed it.
     forkJoin({
       tagged: this.graphql.getGenContentsByTagAndCategory('microsoft-licensing', 'blog', 6),
-      allBlogs: this.graphql.getBlogs(),
+      // getBlogs() is a watchQuery().valueChanges stream — it never completes on its own
+      // (stays open for cache updates), so forkJoin would wait on it forever without take(1).
+      allBlogs: this.graphql.getBlogs().pipe(take(1)),
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(({ tagged, allBlogs }) => {
-        const nodes = tagged.length > 0
-          ? tagged
-          : allBlogs.filter((post) => this.isMicrosoftLicensingPost(post));
-        this.relatedLicensingBlogs.set(
-          this.mapRelatedBlogCards(nodes).slice(0, 3),
-        );
-        this.relatedBlogsLoading.set(false);
-        this.cdr.markForCheck();
+      .subscribe({
+        next: ({ tagged, allBlogs }) => {
+          const nodes = tagged.length > 0
+            ? tagged
+            : allBlogs.filter((post) => this.isMicrosoftLicensingPost(post));
+          this.relatedLicensingBlogs.set(
+            this.mapRelatedBlogCards(nodes).slice(0, 3),
+          );
+          this.relatedBlogsLoading.set(false);
+          this.cdr.markForCheck();
+        },
+        // Both sources already fall back to [] internally, but this is a last-resort
+        // guard so this section can never get stuck on its loading skeleton forever.
+        error: () => {
+          this.relatedBlogsLoading.set(false);
+          this.cdr.markForCheck();
+        },
       });
   }
 
@@ -807,7 +819,7 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit, OnDest
       error: (err) => {
         this.isSubmitting = false;
         this.cdr.markForCheck();
-        console.error('Licensing form error:', err);
+        logError('Licensing form error:', err);
         alert('An error occurred. Please try again later.');
       },
     });

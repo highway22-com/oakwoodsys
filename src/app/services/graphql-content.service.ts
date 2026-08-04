@@ -2,7 +2,7 @@ import { inject, Injectable, makeStateKey, PLATFORM_ID, signal, TransferState } 
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of, from } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, catchError, tap, filter, switchMap, take, shareReplay } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import {
@@ -37,6 +37,14 @@ import { combineLatest, forkJoin } from 'rxjs';
 
 const CMS_PAGE_STATE_KEY = (slug: string) => makeStateKey<CmsPageContent | null>(`cms-page-${slug}`);
 
+interface GenContentsPaginatedResult {
+  nodes: GenContentListNode[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}
+
+const GEN_CONTENTS_PAGINATED_STATE_KEY = (categoryId: string, first: number, after: string | null) =>
+  makeStateKey<GenContentsPaginatedResult>(`gen-contents-paginated-${categoryId}-${first}-${after ?? 'null'}`);
+
 @Injectable({
   providedIn: 'root',
 })
@@ -45,16 +53,6 @@ export class GraphQLContentService {
   private readonly http = inject(HttpClient);
   private readonly transferState = inject(TransferState);
   private readonly platformId = inject(PLATFORM_ID);
-
-  /** Slugs de servicios (mismo orden que en edit-page y navbar). */
-  private readonly serviceSlugs = [
-    'data-ai-solutions',
-    'cloud-and-infrastructure',
-    'application-innovation',
-    'high-performance-computing-hpc',
-    'modern-work',
-    'managed-services',
-  ] as const;
 
   /** Slugs de industries (mismo orden que en navbar). */
   private readonly industrySlugs = [
@@ -74,93 +72,20 @@ export class GraphQLContentService {
   /** Observables cacheados: primera suscripción dispara la carga, las siguientes reutilizan el resultado. */
   private blogs$ = this.createBlogsStream();
   private caseStudies$ = this.createCaseStudiesStream();
+  /**
+   * Footer content changes monthly at most, but the Footer component gets torn down and
+   * rebuilt on every navigation that crosses between the Angular route tree and the
+   * WordPress route tree (they're separate top-level routes, each with their own Footer
+   * instance — see MainLayout / WordpressPageComponent). Without this, that's a fresh
+   * GraphQL round-trip on every such crossing. shareReplay(1) means only the first mount
+   * anywhere in the app ever triggers a real fetch; every later mount, in either route
+   * tree, gets the cached value instantly.
+   */
+  private footerContent$ = this.getCmsPageBySlug('footer').pipe(shareReplay(1));
 
   /** Categorías y tags de Gen Content (cargados al inicio). Acceso global. */
   readonly genContentCategories = signal<GenContentTaxonomyTerm[]>([]);
   readonly genContentTags = signal<GenContentTaxonomyTerm[]>([]);
-
-  /** Contenido CMS de home (cargado en APP_INITIALIZER). Observable para suscribirse. */
-  private readonly homePageContentSubject = new BehaviorSubject<CmsPageContent | null>(null);
-  readonly homePageContent$: Observable<CmsPageContent | null> = this.homePageContentSubject.asObservable();
-
-  /** Carga home en APP_INITIALIZER. Acceso vía homePageContent$ o homePageContentSubject.value. */
-  loadHomePageContent(): Promise<void> {
-    return firstValueFrom(this.getCmsPageBySlug('home', { fetchPolicy: 'network-only' })).then((data) => {
-      this.homePageContentSubject.next(data);
-    }).catch(() => {
-      this.homePageContentSubject.next(null);
-    });
-  }
-
-  /** Contenido CMS de services (carga diferida tras el bootstrap). Observable para suscribirse. */
-  private readonly servicesContentSubject = new BehaviorSubject<{ services: Record<string, unknown> } | null>(null);
-  readonly servicesContent$: Observable<{ services: Record<string, unknown> } | null> = this.servicesContentSubject.asObservable();
-
-  /** El CMS a veces incluye `events` dentro del JSON de services; no lo precargamos aquí. */
-  private servicesPayloadWithoutEvents(
-    services: Record<string, unknown> | null | undefined,
-  ): Record<string, unknown> | null {
-    if (!services || typeof services !== 'object') return null;
-    if (!('events' in services)) return { ...services };
-    const { events: _omit, ...rest } = services;
-    return rest;
-  }
-
-  loadServicesContent(): Promise<void> {
-    const ts = Date.now();
-    // 1) service-*.json (fuente principal; services.json eliminado)
-    return firstValueFrom(
-      forkJoin(
-        this.serviceSlugs.map((slug) =>
-          this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/service-${slug}.json?t=${ts}`, { responseType: 'json' }).pipe(
-            map((res) => res?.services ?? {}),
-            catchError(() => of({}))
-          )
-        )
-      ).pipe(
-        map((results) => {
-          const merged: Record<string, unknown> = {};
-          results.forEach((svc) => {
-            Object.assign(merged, svc);
-          });
-          const services = this.servicesPayloadWithoutEvents(merged);
-          return services && Object.keys(services).length > 0 ? { services } : null;
-        })
-      )
-    ).then((merged) => {
-      if (merged?.services) {
-        this.servicesContentSubject.next(merged);
-        return;
-      }
-      // 2) services.json (fallback si existe)
-      return firstValueFrom(
-        this.http.get<{ services?: Record<string, unknown> }>(`/api/cms/services.json?t=${ts}`, { responseType: 'json' }).pipe(
-          map((data) => {
-            const s = data?.services ? this.servicesPayloadWithoutEvents(data.services) : null;
-            return s && Object.keys(s).length > 0 ? { services: s } : null;
-          }),
-          catchError(() => of(null))
-        )
-      ).then((data) => {
-        if (data?.services) {
-          this.servicesContentSubject.next(data);
-          return;
-        }
-        // 3) GraphQL
-        return firstValueFrom(this.getCmsPageBySlug('services', { fetchPolicy: 'network-only' }).pipe(
-          map((d) => {
-            const raw = d as { services?: Record<string, unknown> } | null;
-            const s = raw?.services ? this.servicesPayloadWithoutEvents(raw.services) : null;
-            return s && Object.keys(s).length > 0 ? { services: s } : null;
-          })
-        )).then((graphqlData) => {
-          this.servicesContentSubject.next(graphqlData);
-        });
-      });
-    }).catch(() => {
-      this.servicesContentSubject.next(null);
-    });
-  }
 
   /** Contenido CMS de industries (cargado en APP_INITIALIZER). Observable para suscribirse. */
   private readonly industriesContentSubject = new BehaviorSubject<{ industries: Record<string, unknown> } | null>(null);
@@ -225,14 +150,30 @@ export class GraphQLContentService {
       });
   }
 
+  /**
+   * Lista paginada de Gen Content por categoría (blog o case-study). Usada por /blog y
+   * /resources/case-studies (misma componente, distinto categoryId).
+   * En servidor (SSR): hace la petición GraphQL y guarda el resultado en TransferState.
+   * En cliente (hidratación): reutiliza los datos del TransferState y no vuelve a llamar a GraphQL
+   * — sin esto, 'cache-and-network' no ayuda en la primera carga porque el cache de Apollo
+   * arranca vacío en el cliente (no se transfiere entre SSR y CSR), así que "cache-and-network"
+   * terminaba disparando una petición de red real de todas formas en cada hidratación.
+   */
   getGenContentsPaginated(
     categoryId: 'blog' | 'case-study',
     first: number,
     after: string | null
-  ): Observable<{
-    nodes: GenContentListNode[];
-    pageInfo: { hasNextPage: boolean; endCursor: string | null };
-  }> {
+  ): Observable<GenContentsPaginatedResult> {
+    const stateKey = GEN_CONTENTS_PAGINATED_STATE_KEY(categoryId, first, after);
+
+    if (isPlatformBrowser(this.platformId)) {
+      const cached = this.transferState.get(stateKey, null);
+      if (cached !== null) {
+        this.transferState.remove(stateKey);
+        return of(cached);
+      }
+    }
+
     return this.apollo
       .watchQuery<GenContentsByCategoryPaginatedResponse>({
         query: GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED,
@@ -253,6 +194,11 @@ export class GraphQLContentService {
               endCursor: pageInfo.endCursor ?? null,
             },
           };
+        }),
+        tap((parsed) => {
+          if (!isPlatformBrowser(this.platformId)) {
+            this.transferState.set(stateKey, parsed);
+          }
         }),
         catchError(() =>
           of({ nodes: [], pageInfo: { hasNextPage: false, endCursor: null } })
@@ -505,7 +451,8 @@ export class GraphQLContentService {
    * En servidor (SSR): hace la petición GraphQL y guarda el resultado en TransferState.
    * En cliente (hidratación): reutiliza los datos del TransferState y no vuelve a llamar a GraphQL.
    * @param slug - Slug de la página (home, services, industries, etc.)
-   * @param options.fetchPolicy - 'network-only' para siempre obtener datos frescos (services, industries agregados)
+   * @param options.fetchPolicy - 'network-only' para siempre obtener datos frescos, saltándose el
+   * TransferState (usado por algunos callers directos, ver home.ts, privacyAndPolicy.ts, edit-page.ts).
    */
   getCmsPageBySlug(
     slug: string,
@@ -560,11 +507,17 @@ export class GraphQLContentService {
       );
   }
 
+  /** Contenido del footer (slug: footer), compartido entre el sitio Angular y las páginas
+   * WordPress — ver el comentario en footerContent$ arriba para el porqué. */
+  getFooterContent(): Observable<CmsPageContent | null> {
+    return this.footerContent$;
+  }
+
   /**
    * Contenido de industries desde CMS (slug: industries). Misma estructura que industries-content.json.
    */
   getIndustriesContent(): Observable<{ industries: Record<string, unknown> } | null> {
-    return this.getCmsPageBySlug('industries', { fetchPolicy: 'network-only' }).pipe(
+    return this.getCmsPageBySlug('industries').pipe(
       map((data) => data as { industries: Record<string, unknown> } | null)
     );
   }
@@ -575,7 +528,7 @@ export class GraphQLContentService {
    */
   getIndustryByCMSSlug(slug: string): Observable<{ industries: Record<string, unknown> } | null> {
     const cmsSlug = `industries-${slug}`;
-    return this.getCmsPageBySlug(cmsSlug, { fetchPolicy: 'network-only' }).pipe(
+    return this.getCmsPageBySlug(cmsSlug).pipe(
       map((data) => {
         if (data && typeof data === 'object' && 'slug' in data) {
           // If data is already the industry content, wrap it
@@ -589,38 +542,12 @@ export class GraphQLContentService {
 
   /**
    * Contenido de services desde CMS (slug: services). Misma estructura que services-content.json.
-   * Usa query directo (no watchQuery) + no-cache para evitar cualquier caché.
+   * Default cache-and-network: en cliente reutiliza el TransferState de SSR en vez de
+   * volver a pedirlo (antes usaba no-cache + headers no-cache, forzando doble fetch siempre).
    */
   getServicesContent(): Observable<{ services: Record<string, unknown> } | null> {
-    this.loading.set(true);
-    this.errors.set(null);
-    return from(
-      this.apollo.query<CmsPageResponse>({
-        query: GET_CMS_PAGE,
-        variables: { slug: 'services' },
-        fetchPolicy: 'no-cache',
-        context: {
-          fetchOptions: {
-            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' },
-          },
-        },
-      })
-    ).pipe(
-      map((result) => {
-        const raw = result.data?.cmsPage?.content ?? null;
-        this.loading.set(false);
-        if (raw == null) return null;
-        try {
-          return JSON.parse(raw) as { services: Record<string, unknown> };
-        } catch {
-          return null;
-        }
-      }),
-      catchError((error) => {
-        this.errors.set(error);
-        this.loading.set(false);
-        return of(null);
-      })
+    return this.getCmsPageBySlug('services').pipe(
+      map((data) => data as { services: Record<string, unknown> } | null)
     );
   }
 
@@ -637,7 +564,7 @@ export class GraphQLContentService {
    * Contenido de resources desde CMS (slug: resources). Misma estructura que resources-content.json.
    */
   getResourcesContent(): Observable<Record<string, unknown> | null> {
-    return this.getCmsPageBySlug('resources', { fetchPolicy: 'network-only' }).pipe(
+    return this.getCmsPageBySlug('resources').pipe(
       map((data) => data as Record<string, unknown> | null)
     );
   }
@@ -646,7 +573,7 @@ export class GraphQLContentService {
    * Contenido de structured-engagements desde CMS (slug: structured-engagements). Misma estructura que structured-engagement-section.json.
    */
   getStructuredEngagementsContent(): Observable<Record<string, unknown> | null> {
-    return this.getCmsPageBySlug('structured-engagements', { fetchPolicy: 'network-only' }).pipe(
+    return this.getCmsPageBySlug('structured-engagements').pipe(
       map((data) => data as Record<string, unknown> | null)
     );
   }
@@ -655,7 +582,7 @@ export class GraphQLContentService {
    * Contenido de la página Structured (slug: structured-engagement-page).
    */
   getStructuredEngagementPageContent(): Observable<Record<string, unknown> | null> {
-    return this.getCmsPageBySlug('structured-engagement-page', { fetchPolicy: 'network-only' }).pipe(
+    return this.getCmsPageBySlug('structured-engagement-page').pipe(
       map((data) => data as Record<string, unknown> | null)
     );
   }
@@ -664,7 +591,7 @@ export class GraphQLContentService {
    * Contenido de la página Structured Offer (slug: structured-engagement-offer-page).
    */
   getStructuredEngagementOfferPageContent(): Observable<Record<string, unknown> | null> {
-    return this.getCmsPageBySlug('structured-engagement-offer-page', { fetchPolicy: 'network-only' }).pipe(
+    return this.getCmsPageBySlug('structured-engagement-offer-page').pipe(
       map((data) => data as Record<string, unknown> | null)
     );
   }
@@ -673,7 +600,7 @@ export class GraphQLContentService {
    * Contenido de about desde CMS (slug: about). Misma estructura que about-content.json.
    */
   getAboutContent(): Observable<Record<string, unknown> | null> {
-    return this.getCmsPageBySlug('about', { fetchPolicy: 'network-only' }).pipe(
+    return this.getCmsPageBySlug('about').pipe(
       map((data) => data as Record<string, unknown> | null)
     );
   }

@@ -42,7 +42,7 @@
         class="featured-case-study__text-fade relative w-full min-h-[50vh] lg:min-h-[60vh] overflow-hidden bg-slate-100 order-2 lg:order-1"
         [style.opacity]="textFadeOpacity()">
         <img [src]="item.image?.url ?? ''" [alt]="item.image?.alt ?? (item.title + ' - Featured case study image')"
-          class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+          class="absolute inset-0 w-full h-full object-cover" loading="eager" fetchpriority="high" />
       </div>
 
       <!-- Right: content -->

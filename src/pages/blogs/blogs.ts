@@ -28,6 +28,7 @@ import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { decodeHtmlEntities } from '../../app/utils/cast';
 import { ActivatedRoute } from '@angular/router';
+import { logError } from '../../app/utils/logger';
 
 interface PostAuthor {
   node: {
@@ -325,6 +326,9 @@ export default class Blogs implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.isTabletOrMobile.set(window.innerWidth < this.MOBILE_BREAKPOINT);
     }
+    // Only this page (and post detail) reads genContentTags(), so only load it here
+    // instead of firing it globally on every route.
+    void this.graphql.loadGenContentTaxonomies();
     this.preselectFilterFromQueryParams();
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       this.preselectFilterFromQueryParams();
@@ -367,6 +371,7 @@ export default class Blogs implements OnInit {
           this.error.set(null);
         },
         error: (err) => {
+          logError(`Error loading ${categoryId === 'blog' ? 'blog posts' : 'case studies'}:`, err);
           this.loading.set(false);
           this.error.set(err);
         },
