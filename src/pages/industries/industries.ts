@@ -14,6 +14,7 @@ import { FeaturedCaseStudyCategory } from "../../shared/sections/featured-case-s
 import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { SvgIcons } from '../../shared/industries-icons/industries-icons';
+import { logError } from '../../app/utils/logger';
 interface IndustryChallengeCard {
   id: string;
   image: string;
@@ -207,7 +208,10 @@ export default class Industries implements OnInit, OnDestroy {
           this.loadFromPreloadedOrGraphQL();
         }
       },
-      error: () => this.loadFromPreloadedOrGraphQL(),
+      error: (error) => {
+        logError('Error loading industry:', error);
+        this.loadFromPreloadedOrGraphQL();
+      },
     });
   }
 
@@ -233,7 +237,10 @@ export default class Industries implements OnInit, OnDestroy {
             this.loadFromStaticFile();
           }
         },
-        error: () => this.loadFromStaticFile(),
+        error: (error) => {
+          logError('Error loading industries content:', error);
+          this.loadFromStaticFile();
+        },
       });
     });
   }
@@ -278,7 +285,8 @@ export default class Industries implements OnInit, OnDestroy {
     // 4) Load from local static JSON as final fallback
     this.http.get<IndustriesContent>('/industries-content.json').subscribe({
       next: (data) => this.applyIndustriesContent(data),
-      error: () => {
+      error: (error) => {
+        logError('Error loading industry content from static file:', error);
         this.error.set('Failed to load industry content');
         this.loading.set(false);
       },
