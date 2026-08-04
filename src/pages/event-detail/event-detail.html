@@ -61,7 +61,8 @@
   @if (!isPastEvent()) {
   <section class="relative w-full min-h-[76vh] flex items-center">
     @if (e.heroImage) {
-    <img [src]="e.heroImage" [alt]="e.title" class="absolute inset-0 w-full h-full object-cover object-[60%_40%]" />
+    <img [src]="e.heroImage" [alt]="e.title" class="absolute inset-0 w-full h-full object-cover object-[60%_40%]"
+      loading="eager" fetchpriority="high" />
     <div class="absolute inset-0 pointer-events-none"
       style="background: linear-gradient(234deg, rgba(0, 0, 0, 0.00) 2.32%, #000 94.42%);"></div>
     }

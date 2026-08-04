@@ -6,7 +6,7 @@
     class="relative w-full min-h-[82vh] bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 flex items-center">
     @if (p.featuredImage?.node?.sourceUrl) {
     <img [src]="p.featuredImage!.node!.sourceUrl" [alt]="p.featuredImage!.node!.altText || p.title"
-      class="absolute inset-0 w-full h-full object-cover" />
+      class="absolute inset-0 w-full h-full object-cover" loading="eager" fetchpriority="high" />
     }
     <div class="absolute inset-0 bg-slate-900/70"></div>
 

@@ -12,6 +12,16 @@ const PLACEHOLDER_VIDEO_URLS: string[] = [
   "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/02/Home-4.mp4",
 ];
 
+/**
+ * Poster de respaldo cuando no hay uno del CMS (hoy: siempre, WordPress no expone imagen
+ * por video). LCP para <video> se mide contra el poster, no el primer frame real — sin
+ * poster, el navegador espera a que lleguen datos reales del video para poder pintar algo,
+ * lo cual es mucho más lento. Este SVG va embebido (data URI), así que pinta al instante,
+ * sin petición de red adicional. Degradado a juego con .video-hero__gradient.
+ */
+const DEFAULT_POSTER =
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSI5IiB2aWV3Qm94PSIwIDAgMTYgOSI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjEiIHgyPSIxIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzA1MDcwZCIvPjxzdG9wIG9mZnNldD0iNTUlIiBzdG9wLWNvbG9yPSIjMGEyNjQ3Ii8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMGQ1M2EyIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjkiIGZpbGw9InVybCgjZykiLz48L3N2Zz4K';
+
 /** Cuánto antes del cambio de slide se empieza a precargar el siguiente video. */
 const NEXT_VIDEO_PRIME_LEAD_MS = 3000;
 /** Intervalo del carrusel (debe coincidir con el usado en startVideoCarousel). */
@@ -33,6 +43,8 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   @Input() overlayImageUrl: string | null = null;
   /** Imagen de portada mientras carga el primer video (ej. thumbnail desde WordPress). */
   @Input() poster: string | null = null;
+  /** Fallback cuando no hay poster del CMS — ver comentario en DEFAULT_POSTER arriba. */
+  readonly defaultPoster = DEFAULT_POSTER;
   /** Título único o uno por video (cambia con el índice del video actual). */
   @Input() title: string | string[] = '';
   /** Descripción única o una por video (cambia con el índice del video actual). */
@@ -159,9 +171,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
       return;
     }
 
-    if (isPlatformBrowser(this.platformId)) {
-      document.addEventListener('click', () => this.enableAutoplay(), { once: true });
-    }
+    document.addEventListener('click', () => this.enableAutoplay(), { once: true });
 
     // URLs: placeholders si loading o sin videoUrls; si no, los del input
     const usePlaceholders = this.loading || !this.videoUrls || this.videoUrls.length === 0;
@@ -171,22 +181,22 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     this.descriptionSecondarySignal.set(this.descriptionSecondary);
     this.ctaPrimarySignal.set(this.ctaPrimary);
 
-    setTimeout(() => {
-      if (this.videoElement && this.videoUrlsSignal().length > 0) {
-        // Load the initial video
-        const initialUrl = this.currentVideoUrl();
-        if (initialUrl) {
-          this.loadVideo(initialUrl);
-        }
-        this.videoElement.nativeElement.addEventListener('loadedmetadata', () => {
-          this.attemptAutoplay();
-          this.startVideoCarousel();
-        });
-        this.videoElement.nativeElement.addEventListener('ended', () => {
-          this.nextVideo();
-        });
+    // videoElement is already resolved here (that's what AfterViewInit guarantees), so there's
+    // nothing to wait on — an artificial delay here only pushes back when the browser starts
+    // fetching this video, which is usually the page's LCP resource.
+    if (this.videoElement && this.videoUrlsSignal().length > 0) {
+      const initialUrl = this.currentVideoUrl();
+      if (initialUrl) {
+        this.loadVideo(initialUrl);
       }
-    }, 100);
+      this.videoElement.nativeElement.addEventListener('loadedmetadata', () => {
+        this.attemptAutoplay();
+        this.startVideoCarousel();
+      });
+      this.videoElement.nativeElement.addEventListener('ended', () => {
+        this.nextVideo();
+      });
+    }
   }
 
   ngOnDestroy() {

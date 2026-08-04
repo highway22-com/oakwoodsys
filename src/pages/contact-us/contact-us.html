@@ -191,6 +191,8 @@
             [src]="copy().image.src"
             [alt]="copy().image.alt"
             class="w-full h-full object-cover"
+            loading="eager"
+            fetchpriority="high"
           />
      <!-- Bottom overlay with stats (uses img + div together) -->
         <div class="absolute inset-x-0 bottom-0 pointer-events-none">
