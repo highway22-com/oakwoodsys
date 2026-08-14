@@ -55,7 +55,7 @@ export default class PrivacyAndPolicy implements OnInit {
 
     // Otherwise, fetch from BE (cms slug: privacy-policy), fallback to static JSON.
     this.graphql
-      .getCmsPageBySlug('privacy-policy', { fetchPolicy: 'network-only' })
+      .getCmsPageBySlug('privacy-policy', { fetchPolicy: 'cache-and-network' })
       .pipe(take(1))
       .subscribe({
         next: (data) => {

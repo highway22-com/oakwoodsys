@@ -94,14 +94,14 @@ function isAngularCacheableContentPath(pathname: string): boolean {
  * WordPress -> GraphQL/REST -> Angular SSR chain, and no CDN could ever cache a
  * rendered page for a second visitor. Short public cache instead — same tradeoff
  * as /api/home-content elsewhere in this file: cache for the public, accept that a
- * freshly published edit can take up to ~30s to reach a visitor who isn't the
+ * freshly published edit can take up to ~60s to reach a visitor who isn't the
  * first hit after it goes live. If WordPress pages ever get their own "editor is
  * previewing this" signal, bypass the cache the same way home-content does for
  * auth.valid.
  */
 function withWordPressPageCacheHeaders(response: Response): Response {
   const headers = new Headers(response.headers);
-  headers.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=120');
+  headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=600');
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -400,6 +400,19 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
       const response = await fetch(cmsUrl, { signal: controller.signal });
       clearTimeout(timeoutId);
       if (!response.ok) {
+        // If the CMS upload file isn't found, return an empty JSON object with 200
+        // to avoid noisy "Failed to load resource: 404" console errors in the
+        // browser while the client-side code treats missing content as an empty
+        // fallback. Preserve other non-404 statuses so callers can detect real
+        // errors.
+        if (response.status === 404) {
+          return Response.json({}, {
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+            },
+          });
+        }
         return new Response(null, { status: response.status });
       }
       const data = await response.json().catch(() => null);

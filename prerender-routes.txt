@@ -1,6 +1,8 @@
 /
 /blog
 /resources/case-studies
+/blog/should-we-move-our-vmware-environment-to-azure-vmware-solution
+/blog/microsoft-fabric-vs-snowflake
 /blog/your-ai-strategy-is-only-as-strong-as-your-data-foundation
 /blog/microsoft-build-2026
 /blog/microsoft-defender-for-cloud
@@ -89,6 +91,8 @@
 /structured-engagement/azure-hpc-migration-assessment
 /structured-engagement/azure-hpc-max-poc
 /structured-engagement/azure-hpc-pro-poc
+/oakwood-for-microsoft
+/testing-anchor-padding
 /modern-work-engagements
 /security-engagements
 /cloud-infrastructure-engagements
