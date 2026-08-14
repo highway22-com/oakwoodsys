@@ -21,6 +21,8 @@ const FILES = [
   { url: `${PLUGIN_BASE}/blocks/accordion-item/style.css?ver=${OAK_VER}`, out: 'src/assets/oak/oak-accordion.css' },
 ];
 
+// Preserve plugin CSS as-is (do not strip remote font @import statements).
+
 async function syncFile(url, outRelPath) {
   const res = await fetch(url);
   if (!res.ok) {

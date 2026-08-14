@@ -8,6 +8,11 @@ import {
   PLATFORM_ID,
   signal,
   computed,
+  ViewChild,
+  ViewContainerRef,
+  EnvironmentInjector,
+  AfterViewInit,
+  createEnvironmentInjector,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -32,16 +37,18 @@ import AboutUs, { type AboutContent } from '../about-us/about-us';
 import { ContactUs } from '../contact-us/contact-us';
 import PrivacyAndPolicy from '../privacyAndPolicy/privacyAndPolicy';
 import type { CmsPageContent } from '../../app/api/graphql';
-import { EditorComponent } from 'ngx-monaco-editor-v2';
 
 @Component({
   selector: 'app-edit-page',
-  imports: [CommonModule, RouterLink, FormsModule, Footer, AppNavbar, Industries, Services, StructuredEngagementsSectionComponent, Structured, StructuredOffer, Home, AboutUs, ContactUs, PrivacyAndPolicy, EditorComponent],
+  imports: [CommonModule, RouterLink, FormsModule, Footer, AppNavbar, Industries, Services, StructuredEngagementsSectionComponent, Structured, StructuredOffer, Home, AboutUs, ContactUs, PrivacyAndPolicy],
   templateUrl: './edit-page.html',
   styleUrl: './edit-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class EditPage implements OnInit {
+  @ViewChild('editorHost', { read: ViewContainerRef, static: false }) editorHost?: ViewContainerRef;
+  private readonly parentEnvInjector = inject(EnvironmentInjector);
+  private editorLoaded = false;
   readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -75,11 +82,42 @@ export default class EditPage implements OnInit {
 
   togglePanel() {
     this.panelVisible.set(!this.panelVisible());
+    if (this.panelVisible() && !this.editorLoaded) {
+      void this.loadEditor();
+    }
   }
 
   startPanelResize(event: MouseEvent) {
     event.preventDefault();
     this.isResizingPanel = true;
+  }
+
+  private async loadEditor() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (this.editorLoaded) return;
+    if (!this.editorHost) return;
+
+    try {
+      const m = await import('ngx-monaco-editor-v2');
+      const EditorComp = m.EditorComponent;
+      const envProviders = m.provideMonacoEditor({ baseUrl: './assets/monaco/min/vs', defaultOptions: { scrollBeyondLastLine: false } });
+      const childInjector = createEnvironmentInjector([envProviders], this.parentEnvInjector);
+      const compRef = this.editorHost.createComponent(EditorComp, { environmentInjector: childInjector });
+      // Set initial inputs and bind change event if available
+      try {
+        (compRef.instance as any).options = this.monacoEditorOptions;
+        (compRef.instance as any).ngModel = this.jsonContentStr();
+        const em = (compRef.instance as any).ngModelChange;
+        if (em && typeof em.subscribe === 'function') {
+          em.subscribe((v: string) => this.onJsonChange(v));
+        }
+      } catch {
+        // best-effort; ignore if API differs
+      }
+      this.editorLoaded = true;
+    } catch (err) {
+      console.error('Failed to load Monaco editor:', err);
+    }
   }
 
   @HostListener('document:keydown', ['$event'])

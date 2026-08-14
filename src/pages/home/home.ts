@@ -1,4 +1,4 @@
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import {
   ChangeDetectionStrategy,
@@ -13,7 +13,7 @@ import {
   effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule, isPlatformBrowser, NgClass } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
@@ -30,7 +30,6 @@ import { StructuredEngagementsSectionComponent } from '../../shared/sections/str
 import { LatestInsightsSectionComponent } from '../../shared/sections/latest-insights/latest-insights';
 import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
 import { ScrollAnimationComponent } from '../../shared/scroll-animation-component/scroll-animation.component';
-import { SvgIcons } from '../../shared/service-icons/service-icons';
 import type { SafeHtml } from '@angular/platform-browser';
 const DEFAULT_TITLE =
   'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
@@ -63,8 +62,6 @@ export function splitTwoLinerTitle(title: string): [string, string] {
   selector: 'app-home',
   imports: [
     CommonModule,
-    NgClass,
-    RouterLink,
     VideoHero,
     ScrollAnimationComponent,
     FeaturedCaseStudySectionComponent,
@@ -91,7 +88,7 @@ export default class Home implements OnInit {
   navigateTo(link: string | undefined) {
     if (!link) return;
     if (link.startsWith('http')) {
-      window.open(link, '_blank');
+      window.open(link, '_blank', 'noopener,noreferrer');
     } else {
       this.router.navigateByUrl(link);
     }
@@ -132,7 +129,7 @@ export default class Home implements OnInit {
     }
 
     // Siempre buscamos datos frescos desde GraphQL (network-only evita la caché de Apollo).
-    this.graphql.getCmsPageBySlug('home', { fetchPolicy: 'network-only' })
+    this.graphql.getCmsPageBySlug('home', { fetchPolicy: 'cache-and-network' })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
@@ -262,6 +259,13 @@ export default class Home implements OnInit {
         value = [t.line1, t.line2].filter(Boolean).join(' ') || '';
     }
     return this.isBlankValue(value) ? HERO_FALLBACK_DESCRIPTION : value;
+  }
+
+  /** URL del poster del hero para mejorar la detección de LCP en HTML. */
+  heroPoster(): string {
+    const heroSection = this.getSection('hero');
+    const heroImage = heroSection?.image && typeof heroSection.image === 'object' ? heroSection.image.url : undefined;
+    return heroImage || '/assets/events/bg-events.jpg';
   }
 
   /** CTA principal del hero: array (uno por video) desde ctas, o único desde sección hero. */

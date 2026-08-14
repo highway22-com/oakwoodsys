@@ -1,7 +1,7 @@
 
 <!-- Hero siempre visible: placeholders mientras loading, luego título/descripción/videoUrls de GraphQL -->
 <app-video-hero [loading]="false" [videoUrls]="videoUrls()" [title]="heroTitle()" [description]="heroDescription()"
-  [ctaPrimary]="heroCtaPrimary()" [ctaSecondary]="heroCtaSecondary()" />
+  [poster]="heroPoster()" [ctaPrimary]="heroCtaPrimary()" [ctaSecondary]="heroCtaSecondary()" />
 
 @if (!loading() && content()) {
 <!-- Structured Data for SEO -->
@@ -42,7 +42,7 @@
           (click)="navigateTo(service.link)">
          <div class="pb-16 shrink-0">
             <div class="size-15 lg:size-22 flex items-center justify-center bg-p-30 rounded-lg">
-              <img [src]="service.icon" [alt]="service.title" class="size-8 lg:size-10" />
+              <img [src]="service.icon" [alt]="service.title" class="size-8 lg:size-10" loading="lazy" />
             </div>
           </div>
           <h3

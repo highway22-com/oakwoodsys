@@ -41,15 +41,14 @@
           },
           "configurations": {
             "production": {
+              "optimization": true,
               "optimization": {
                 "fonts": {
                   "inline": false
                 }
               },
-              "sourceMap": {
-                "scripts": true,
-                "hidden": true
-              },
+              "extractLicenses": true,
+              "sourceMap": false,
               "budgets": [
                 {
                   "type": "initial",

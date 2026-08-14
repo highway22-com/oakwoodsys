@@ -2,7 +2,6 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessC
 import { isPlatformBrowser } from '@angular/common';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideMonacoEditor } from 'ngx-monaco-editor-v2';
 
 import { routes } from './app.routes';
 import { CMS_BASE_URL } from './config/cms.config';
@@ -21,7 +20,6 @@ const GRAPHQL_URI_SERVER = isDevMode()
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideMonacoEditor({ baseUrl: './assets/monaco/min/vs', defaultOptions: { scrollBeyondLastLine: false } }),
     provideBrowserGlobalErrorListeners(),
     provideAnimations(),
     provideZonelessChangeDetection(),
