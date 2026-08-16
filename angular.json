@@ -39,6 +39,7 @@
           },
           "configurations": {
             "production": {
+              "optimization": true,
               "optimization": {
                 "scripts": true,
                 "styles": true,

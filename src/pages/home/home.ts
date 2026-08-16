@@ -276,7 +276,6 @@ export default class Home implements OnInit {
   }
 
 
-
   /** CTA principal del hero: array (uno por video) desde ctas, o único desde sección hero. */
   heroCtaPrimary():
     | { text: string; link: string; backgroundColor?: string }
