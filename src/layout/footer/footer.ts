@@ -144,7 +144,7 @@ export class Footer implements OnInit, OnDestroy {
   // }
 
   // private loadFooterFromCms(): void {
-    this.graphql.getCmsPageBySlug('footer', { fetchPolicy: 'network-only' }).subscribe({
+    this.graphql.getFooterContent().subscribe({
       next: (data) => {
         const section = this.extractFooterSection(data);
         if (section) {

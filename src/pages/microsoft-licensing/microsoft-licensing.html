@@ -8,7 +8,7 @@
   descriptionClass="mb-3 w-full max-w-xl md:max-w-2xl lg:max-w-3xl break-words text-[16px] md:text-[20px]"
   [descriptionStyle]="{
     color: 'var(--White, #FFF)',
-    fontFamily: 'Segoe UI',
+    fontFamily: 'var(--font-segoe)',
     fontStyle: 'normal',
     fontWeight: '700',
     lineHeight: '150%',
@@ -16,7 +16,7 @@
   descriptionSecondaryClass="pb-6 w-full max-w-xl md:max-w-2xl lg:max-w-3xl break-words text-[16px] md:text-[20px]"
   [descriptionSecondaryStyle]="{
     color: 'rgba(255, 255, 255, 0.8)',
-    fontFamily: 'Segoe UI',
+    fontFamily: 'var(--font-segoe)',
     fontStyle: 'normal',
     fontWeight: '400',
     lineHeight: '150%',
@@ -38,6 +38,7 @@
         [alt]="focusSection.title"
         class="absolute inset-0 w-full h-full object-cover"
         loading="eager"
+        fetchpriority="high"
       />
     </div>
 
@@ -85,6 +86,10 @@
                   [src]="card.image"
                   [alt]="card.title"
                   class="w-full h-full object-contain"
+                  loading="lazy"
+                  decoding="async"
+                  width="40"
+                  height="40"
                 />
               </div>
             </div>
@@ -127,7 +132,7 @@
         What Is a Microsoft Cloud Solution Provider (CSP)?
       </h2>
       <p
-        class="text-[#454545] font-['Segoe_UI'] text-[16px] leading-[150%] max-w-9xl mx-auto lg:text-[#454545] lg:text-[18px] lg:text-center"
+        class="text-[#454545] font-[var(--font-segoe)] text-[16px] leading-[150%] max-w-9xl mx-auto lg:text-[#454545] lg:text-[18px] lg:text-center"
       >
         Oakwood delivers Microsoft licensing through the Cloud Solution Provider
         model. This approach shifts licensing from a transactional purchase to
@@ -204,6 +209,10 @@
               [src]="step.icon"
               [alt]="step.title"
               class="w-10 h-10 lg:w-12 lg:h-12 object-contain"
+              loading="lazy"
+              decoding="async"
+              width="40"
+              height="40"
             />
           </div>
 
@@ -237,6 +246,10 @@
               [src]="item.icon"
               [alt]="item.title"
               class="w-full h-full object-contain"
+              loading="lazy"
+              decoding="async"
+              width="40"
+              height="40"
             />
           </div>
           <div class="pl-4">
@@ -274,7 +287,7 @@
         Why Organizations Choose Oakwood for Microsoft Licensing
       </h2>
       <p
-        class="text-[#454545] text-[16px] leading-[150%] max-w-4xl mx-auto lg:text-[#454545] lg:text-center lg:font-['Segoe_UI'] lg:text-[18px] lg:font-normal lg:leading-[150%]"
+        class="text-[#454545] text-[16px] leading-[150%] max-w-4xl mx-auto lg:text-[#454545] lg:text-center lg:font-[var(--font-segoe)] lg:text-[18px] lg:font-normal lg:leading-[150%]"
       >
         Most providers focus on selling licenses. Oakwood focuses on making sure
         those licenses are working for you.
@@ -314,6 +327,9 @@
           alt="Oakwood team reviewing Microsoft licensing strategy"
           class="absolute inset-0 w-full h-full object-cover"
           loading="lazy"
+          decoding="async"
+          width="1200"
+          height="800"
         />
       </div>
     </div>
@@ -345,7 +361,7 @@
             What Microsoft Licensing Services Include
           </h2>
           <p
-            class="text-white text-[16px] sm:text-[16px] leading-[150%] max-w-xl lg:text-[#F6F6F6] lg:font-['Segoe_UI'] lg:text-[18px] lg:font-normal lg:leading-[150%]"
+            class="text-white text-[16px] sm:text-[16px] leading-[150%] max-w-xl lg:text-[#F6F6F6] lg:font-[var(--font-segoe)] lg:text-[18px] lg:font-normal lg:leading-[150%]"
           >
             Oakwood delivers a full set of services around Microsoft licensing,
             from strategy through ongoing management.
@@ -412,7 +428,7 @@
       What Better Licensing Actually Looks Like
     </h2>
     <p
-      class="text-white font-['Segoe_UI'] font-normal text-[16px] sm:text-[26.67px] lg:text-[18px] leading-[22px] sm:leading-[37.33px] lg:leading-[150%] tracking-normal text-center max-w-5xl mx-auto mb-20"
+      class="text-white font-[var(--font-segoe)] font-normal text-[16px] sm:text-[26.67px] lg:text-[18px] leading-[22px] sm:leading-[37.33px] lg:leading-[150%] tracking-normal text-center max-w-5xl mx-auto mb-20"
     >
       When Microsoft licensing is managed correctly, the impact is immediate and
       measurable.
@@ -470,7 +486,7 @@
         {{ managedServicesConnection.title }}
       </h2>
       <p
-        class="text-[#454545] font-['Segoe_UI'] text-[16px] leading-[150%] max-w-9xl mx-auto lg:text-[#454545] lg:text-[18px] lg:text-center"
+        class="text-[#454545] font-[var(--font-segoe)] text-[16px] leading-[150%] max-w-9xl mx-auto lg:text-[#454545] lg:text-[18px] lg:text-center"
       >
         {{ managedServicesConnection.description }}
       </p>
@@ -545,6 +561,10 @@
               [src]="step.icon"
               [alt]="step.title"
               class="w-10 h-10 lg:w-12 lg:h-12 object-contain"
+              loading="lazy"
+              decoding="async"
+              width="40"
+              height="40"
             />
           </div>
 
@@ -620,7 +640,7 @@
         {{ selfDiagnosis.title }}
       </h2>
       <p
-        class="text-[#454545] font-['Segoe_UI'] text-[16px] lg:text-[18px] font-normal leading-[150%] text-center max-w-5xl mx-auto"
+        class="text-[#454545] font-[var(--font-segoe)] text-[16px] lg:text-[18px] font-normal leading-[150%] text-center max-w-5xl mx-auto"
       >
         {{ selfDiagnosis.description }}
       </p>
@@ -683,7 +703,7 @@
           {{ licensingExpert.title }}
         </h2>
         <p
-          class="text-[#454545] font-['Segoe_UI'] text-[16px] lg:text-[18px] font-normal leading-[150%] mb-12"
+          class="text-[#454545] font-[var(--font-segoe)] text-[16px] lg:text-[18px] font-normal leading-[150%] mb-12"
         >
           {{ licensingExpert.description }}
         </p>
@@ -768,7 +788,7 @@
             Request Your Licensing Review
           </h2>
           <p
-            class="text-[#3D3D3D] text-[16px] sm:text-[18px] leading-[150%] lg:text-[#3D3D3D] lg:font-['Segoe_UI'] lg:text-[18px] lg:font-normal lg:leading-[150%]"
+            class="text-[#3D3D3D] text-[16px] sm:text-[18px] leading-[150%] lg:text-[#3D3D3D] lg:font-[var(--font-segoe)] lg:text-[18px] lg:font-normal lg:leading-[150%]"
           >
        Tell us more about your Microsoft environment and licensing goals. Our team will help identify opportunities to optimize cost, simplify management, and plan ahead.
           </p>
@@ -783,7 +803,7 @@
               class="w-7 h-7 object-contain"
             />
             <p
-              class="text-[#3D3D3D] text-[14px] leading-[150%] lg:text-[#3D3D3D] lg:font-['Segoe_UI'] lg:text-[16px] lg:font-normal lg:leading-[150%]"
+              class="text-[#3D3D3D] text-[14px] leading-[150%] lg:text-[#3D3D3D] lg:font-[var(--font-segoe)] lg:text-[16px] lg:font-normal lg:leading-[150%]"
             >
               Unbiased insights from licensing experts
             </p>
@@ -795,7 +815,7 @@
               class="w-7 h-7 object-contain"
             />
             <p
-              class="text-[#3D3D3D] text-[14px] leading-[150%] lg:text-[#3D3D3D] lg:font-['Segoe_UI'] lg:text-[16px] lg:font-normal lg:leading-[150%]"
+              class="text-[#3D3D3D] text-[14px] leading-[150%] lg:text-[#3D3D3D] lg:font-[var(--font-segoe)] lg:text-[16px] lg:font-normal lg:leading-[150%]"
             >
               Identify savings and reduce waste
             </p>
@@ -807,7 +827,7 @@
               class="w-7 h-7 object-contain"
             />
             <p
-              class="text-[#3D3D3D] text-[14px] leading-[150%] lg:text-[#3D3D3D] lg:font-['Segoe_UI'] lg:text-[16px] lg:font-normal lg:leading-[150%]"
+              class="text-[#3D3D3D] text-[14px] leading-[150%] lg:text-[#3D3D3D] lg:font-[var(--font-segoe)] lg:text-[16px] lg:font-normal lg:leading-[150%]"
             >
               Align licensing with your business goals
             </p>
@@ -1284,7 +1304,7 @@
       <!-- Answer -->
           @if (selectedAccordionItem === item) {
             <div
-              class="px-5 sm:px-6 pb-5 text-[16px] sm:text-[15px] lg:text-[18px] leading-[160%] lg:leading-[24px] text-[#3D3D3D] font-['Segoe_UI'] font-normal"
+              class="px-5 sm:px-6 pb-5 text-[16px] sm:text-[15px] lg:text-[18px] leading-[160%] lg:leading-[24px] text-[#3D3D3D] font-[var(--font-segoe)] font-normal"
             >
               <p class="pt-4">{{ item.description }}</p>
             </div>

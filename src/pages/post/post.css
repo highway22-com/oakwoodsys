@@ -1,15 +1,34 @@
 /* Blog Content Styles */
-.blog-content {
+.html-content {
   max-width: none;
   scroll-margin-top: 100px;
 }
 
-.blog-content h2,
-.blog-content h3 {
+/* Oakwood Blocks plugin components use .oak-full for "full-bleed" sections — width: 100vw +
+   margin-left: calc(50% - 50vw), a breakout technique that only works when the block's
+   container is horizontally centered in the viewport (a plain single-column WP page). Here,
+   post content sits in a grid next to the sticky table-of-contents sidebar, so the container
+   isn't centered — that negative margin shoves the block left, clipping it under the sidebar
+   (seen on the "achievements"/comparison-grid component; will affect any other oak component
+   using .oak-full the same way). Neutralized to "fill the actual container" instead of "break
+   out to the viewport edge". Needs the oak-overrides layer (declared before oak-vendor in
+   styles.css) because the plugin's rule is !important — an unlayered override can't win
+   against a layered !important no matter how it's written. */
+@layer oak-overrides {
+  .html-content .oak-full {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+.html-content h2,
+.html-content h3 {
   scroll-margin-top: 100px;
 }
 
-.blog-content p {
+.html-content p {
   color: rgb(55 65 81);
   line-height: 1.75;
   margin-bottom: 1.5rem;
@@ -17,12 +36,12 @@
 }
 
 @media (min-width: 640px) {
-  .blog-content p {
+  .html-content p {
     font-size: 1.125rem;
   }
 }
 
-.blog-content h1 {
+.html-content h1 {
   font-size: 1.875rem;
   font-weight: 700;
   color: rgb(17 24 39);
@@ -32,18 +51,18 @@
 }
 
 @media (min-width: 640px) {
-  .blog-content h1 {
+  .html-content h1 {
     font-size: 2.25rem;
   }
 }
 
 @media (min-width: 768px) {
-  .blog-content h1 {
+  .html-content h1 {
     font-size: 3rem;
   }
 }
 
-.blog-content h2 {
+.html-content h2 {
   font-size: 1.5rem;
   font-weight: 700;
   color: rgb(17 24 39);
@@ -53,18 +72,18 @@
 }
 
 @media (min-width: 640px) {
-  .blog-content h2 {
+  .html-content h2 {
     font-size: 1.875rem;
   }
 }
 
 @media (min-width: 768px) {
-  .blog-content h2 {
+  .html-content h2 {
     font-size: 2.25rem;
   }
 }
 
-.blog-content h3 {
+.html-content h3 {
   font-size: 1.25rem;
   font-weight: 700;
   color: rgb(17 24 39);
@@ -74,18 +93,18 @@
 }
 
 @media (min-width: 640px) {
-  .blog-content h3 {
+  .html-content h3 {
     font-size: 1.5rem;
   }
 }
 
 @media (min-width: 768px) {
-  .blog-content h3 {
+  .html-content h3 {
     font-size: 1.875rem;
   }
 }
 
-.blog-content h4 {
+.html-content h4 {
   font-size: 1.125rem;
   font-weight: 700;
   color: rgb(17 24 39);
@@ -95,77 +114,77 @@
 }
 
 @media (min-width: 640px) {
-  .blog-content h4 {
+  .html-content h4 {
     font-size: 1.25rem;
   }
 }
 
 @media (min-width: 768px) {
-  .blog-content h4 {
+  .html-content h4 {
     font-size: 1.5rem;
   }
 }
 
-.blog-content a {
+.html-content a {
   color: rgb(37 99 235);
   text-decoration: none;
   transition: color 0.2s;
 }
 
-.blog-content a:hover {
+.html-content a:hover {
   text-decoration: underline;
 }
 
-.blog-content strong {
+.html-content strong {
   font-weight: 700;
   color: rgb(17 24 39);
 }
 
-.blog-content em {
+.html-content em {
   font-style: italic;
   color: rgb(55 65 81);
 }
 
-.blog-content ul,
-.blog-content ol {
+.html-content ul,
+.html-content ol {
   margin-bottom: 1.5rem;
   margin-left: 1.5rem;
 }
 
-.blog-content ul {
+.html-content ul {
   list-style-type: disc;
 }
 
-.blog-content ol {
+.html-content ol {
   list-style-type: decimal;
 }
 
-.blog-content li {
+.html-content li {
   margin-bottom: 0.5rem;
   color: rgb(55 65 81);
   line-height: 1.75;
 }
 
 /* WordPress specific list styles */
-.blog-content .wp-block-list {
+.html-content .wp-block-list {
   margin-bottom: 1.5rem;
   margin-left: 1.5rem;
   list-style-type: disc;
 }
 
-.blog-content .wp-block-list li {
+.html-content .wp-block-list li {
   margin-bottom: 0.75rem;
   color: rgb(55 65 81);
   line-height: 1.75;
 }
 
-.blog-content figure {
+.html-content figure {
   margin: 2rem 0;
   margin-left: 0;
   margin-right: 0;
 }
 
-.blog-content img {
+.html-content img {
   width: 100%;
   height: auto;
   border-radius: 0.5rem;
@@ -174,12 +193,12 @@
   display: block;
 }
 
-.blog-content figure img {
+.html-content figure img {
   width: 100%;
   height: auto;
 }
 
-.blog-content blockquote {
+.html-content blockquote {
   border-left: 4px solid rgb(37 99 235);
   padding-left: 1.5rem;
   padding-top: 1rem;
@@ -192,7 +211,7 @@
   border-bottom-right-radius: 0.5rem;
 }
 
-.blog-content code {
+.html-content code {
   background-color: rgb(243 244 246);
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
@@ -201,7 +220,7 @@
   color: rgb(31 41 55);
 }
 
-.blog-content pre {
+.html-content pre {
   background-color: rgb(17 24 39);
   color: rgb(243 244 246);
   padding: 1rem;
@@ -210,24 +229,24 @@
   margin: 1.5rem 0;
 }
 
-.blog-content pre code {
+.html-content pre code {
   background-color: transparent;
   padding: 0;
   color: rgb(243 244 246);
 }
 
 /* WordPress specific classes */
-.blog-content .wp-block-image {
+.html-content .wp-block-image {
   margin: 2rem 0;
   margin-left: 0;
   margin-right: 0;
 }
 
-.blog-content .wp-block-image.size-large {
+.html-content .wp-block-image.size-large {
   margin: 2.5rem 0;
 }
 
-.blog-content .wp-block-image img {
+.html-content .wp-block-image img {
   width: 100%;
   height: auto;
   border-radius: 0.5rem;
@@ -236,56 +255,169 @@
   display: block;
 }
 
-.blog-content .wp-block-image img[srcset] {
+.html-content .wp-block-image img[srcset] {
   width: 100%;
   height: auto;
 }
 
-.blog-content .wp-block-heading {
+.html-content .wp-block-heading {
   font-weight: 700;
   color: rgb(17 24 39);
 }
 
 /* Ensure images with srcset are responsive */
-.blog-content img[srcset] {
+.html-content img[srcset] {
   width: 100%;
   height: auto;
   max-width: 100%;
 }
 
 /* Ensure images don't overflow */
-.blog-content figure,
-.blog-content .wp-block-image {
+.html-content figure,
+.html-content .wp-block-image {
   max-width: 100%;
   overflow: hidden;
 }
 
 /* Handle empty paragraphs and spacing */
-.blog-content p:empty {
+.html-content p:empty {
   display: none;
 }
 
 /* Better spacing for consecutive elements */
-.blog-content p+p {
+.html-content p+p {
   margin-top: 1rem;
 }
 
-.blog-content p+ul,
-.blog-content p+ol {
+.html-content p+ul,
+.html-content p+ol {
   margin-top: 1rem;
 }
 
-.blog-content ul+p,
-.blog-content ol+p {
+.html-content ul+p,
+.html-content ol+p {
   margin-top: 1rem;
 }
 
-.blog-content figure+p {
+.html-content figure+p {
   margin-top: 1.5rem;
 }
 
-.blog-content p+figure {
+.html-content p+figure {
   margin-top: 1.5rem;
+}
+
+/* WordPress columns block (wp-block-columns / wp-block-column) — this app doesn't load
+   WordPress's own block-library CSS, only the raw block HTML, so the flex layout has to be
+   recreated here. Values below are taken from WordPress core's actual
+   /wp-includes/css/dist/block-library/style.min.css (fetched from the live site), not
+   guessed — same breakpoint (782px) and nowrap-above/wrap-below behavior as core. Columns
+   carry their own inline flex-basis percentages from the editor. */
+.html-content .wp-block-columns {
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 1.75em;
+}
+
+.html-content .wp-block-column {
+  flex-grow: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+@media (min-width: 782px) {
+  .html-content .wp-block-columns {
+    flex-wrap: nowrap;
+  }
+}
+
+@media (max-width: 781px) {
+  .html-content .wp-block-column {
+    flex-basis: 100% !important;
+  }
+}
+
+/* Accordion block (wp-block-group.oak-accordion, native <details>/<summary>) is styled by
+   the Oakwood Blocks plugin's own CSS, synced into the oak-vendor layer — see the @import
+   in styles.css and scripts/sync-oak-css.mjs. Nothing to do here. */
+
+/* WordPress table block — structure (overflow-x, border-collapse, thead/tfoot borders,
+   .5em cell padding) matches core's block-library CSS; colors adapted to this app's palette
+   since core relies on unstyled currentColor borders. */
+.html-content .wp-block-table {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.html-content table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.html-content thead {
+  border-bottom: 3px solid rgb(209 213 219);
+}
+
+.html-content tfoot {
+  border-top: 3px solid rgb(209 213 219);
+}
+
+.html-content th,
+.html-content td {
+  padding: 0.5em;
+  border: 1px solid rgb(229 231 235);
+  text-align: left;
+  color: rgb(55 65 81);
+}
+
+.html-content th {
+  font-weight: 700;
+  color: rgb(17 24 39);
+  background-color: rgb(249 250 251);
+}
+
+/* WordPress alignment/layout helper classes used across custom blocks */
+.html-content .has-text-align-center {
+  text-align: center;
+}
+
+/* Custom "CTA" block (wp-block-group.oak-cta-wrap/oak-cta-inner) is styled by the Oakwood
+   Blocks plugin's own CSS, synced into the oak-vendor layer — see the @import in styles.css
+   and scripts/sync-oak-css.mjs. Nothing to do here.
+   Known gap: the source file doesn't scale this block down for mobile (120px/144px padding,
+   64px heading), and its rules are !important inside a layer, which beats any non-important
+   override from an unlayered stylesheet regardless of media query — so we can't cheaply patch
+   that from here. Only worth fixing upstream in the plugin if it turns out to matter. */
+
+/* WordPress core "Buttons" block — fallback for button blocks used outside the CTA block
+   above (which has its own layered, !important, always-wins styling for its button). */
+.html-content .wp-block-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.html-content .wp-block-button__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-p-700, #0D53A2);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 16px 32px;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.html-content .wp-block-button__link:hover {
+  opacity: 0.9;
+  text-decoration: none;
 }
 
 /* Post contact form */

@@ -6,7 +6,7 @@
   <div
     class="absolute inset-0 structured-engagements__bg-image"
     style="
-      background-image: url(&quot;/assets/structured-engagement-bg.jpg&quot;);
+      background-image: url(&quot;/assets/structured-engagement-bg.avif&quot;);
     "
   ></div>
   <div class="absolute inset-0 structured-engagements__bg-top-dark"></div>
@@ -92,22 +92,13 @@
                     [innerHTML]="getSafeSvgIcon(offer.svgIcon)"
                   ></div>
                 }
-              } @else {
-                <i
-                  [class]="
-                    'fa-solid fa-' +
-                    (offer.icon || 'circle-nodes') +
-                    ' ' +
-                    getIconColor(offer.borderColor)
-                  "
-                ></i>
-              }
+              } 
             </div>
             <h3 class="text-white font-['Inter'] text-[20px] lg:text-[26px] font-semibold leading-[130%] pt-10 pb-4">
               {{ offer.title }}
             </h3>
             <p
-              class="text-[var(--Secondary-25,#FBFBFB)] font-['Segoe_UI'] text-[14px] lg:text-[16px] font-normal leading-[140%] mb-3 font-segoe pb-2"
+              class="text-[var(--Secondary-25,#FBFBFB)] font-[var(--font-segoe)] text-[14px] lg:text-[16px] font-normal leading-[140%] mb-3 font-segoe pb-2"
               style="line-height: 140%"
             >
               {{ offer.description }}

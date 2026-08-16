@@ -8,6 +8,7 @@ import {
   ElementRef,
   AfterViewInit,
   OnInit,
+  OnDestroy,
   signal,
   ChangeDetectorRef,
   DestroyRef,
@@ -18,9 +19,14 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { VideoHero } from '../../shared/video-hero/video-hero';
-import { SvgIcons } from '../../shared/service-icons/service-icons';
+// Lazy-load shared service icons to keep this page's initial bundle small.
+
+
 import { SeoMetaService } from '../../app/services/seo-meta.service';
+import { logError } from '../../app/utils/logger';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import {
   getPrimaryTagName,
@@ -30,6 +36,7 @@ import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
 import { BlogCardComponent } from '../../shared/blog-card/blog-card.component';
+import { RecaptchaLoaderService } from '../../app/services/recaptcha-loader.service';
 type SimpleCard = {
   icon: string;
   title: string;
@@ -82,7 +89,7 @@ type AccordionItem = {
   styleUrl: './microsoft-licensing.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class MicrosoftLicensing implements AfterViewInit, OnInit {
+export default class MicrosoftLicensing implements AfterViewInit, OnInit, OnDestroy {
   private readonly seoMeta = inject(SeoMetaService);
   readonly sanitizer = inject(DomSanitizer);
   private readonly http = inject(HttpClient);
@@ -91,6 +98,8 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
   private readonly ngZone = inject(NgZone);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly recaptcha = inject(RecaptchaLoaderService);
+  private recaptchaObserver: IntersectionObserver | null = null;
 
   @ViewChild('recaptchaHost') recaptchaHost?: ElementRef<HTMLElement>;
 
@@ -135,7 +144,19 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
     environmentDetails: false,
     recaptcha: false,
   };
+  private _svgIcons: Record<string, string> | undefined = undefined;
 
+  private async loadSvgIcons(): Promise<Record<string, string>> {
+    if (this._svgIcons !== undefined) return this._svgIcons as Record<string, string>;
+    try {
+      const m = await import('../../shared/service-icons/service-icons');
+      this._svgIcons = (m && (m as any).SvgIcons) || {};
+      return this._svgIcons as Record<string, string>;
+    } catch (e) {
+      this._svgIcons = {};
+      return this._svgIcons as Record<string, string>;
+    }
+  }
   readonly hero = {
     videoUrls: [
       'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Microsoft_Licensing.mp4',
@@ -160,7 +181,7 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
 
   readonly focusSection: FocusSection = {
     bgImage:
-      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/bg-our-focus.png',
+      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/07/bg-our-focus.avif',
     title: 'Microsoft Licensing has Become a Moving Target',
     description:
       'Microsoft continues to evolve how its technologies are packaged and priced. What worked a year ago may not be the right fit today.',
@@ -428,7 +449,7 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
     impactDescription:
       'Oakwood reviews your Microsoft 365 and Azure licensing environment to uncover cost savings, usage gaps, and optimization opportunities.',
     imageSrc:
-      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/microsoft-licensing.png',
+      'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/07/microsoft-licensing.avif',
   };
 
   readonly licensingExpertChecklist: string[] = [
@@ -525,33 +546,35 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
   private loadRelatedLicensingBlogs(): void {
     this.relatedBlogsLoading.set(true);
 
-    this.graphql
-      .getGenContentsByTagAndCategory('microsoft-licensing', 'blog', 6)
+    // Tag query and the all-blogs fallback fire together instead of sequentially — when
+    // the tag genuinely has no matches (as of writing, 'microsoft-licensing' has none),
+    // the old code paid for two round-trips back to back before rendering anything.
+    // getBlogs() is a shared shareReplay(1) stream, so this doesn't cost extra on pages
+    // where something else already primed it.
+    forkJoin({
+      tagged: this.graphql.getGenContentsByTagAndCategory('microsoft-licensing', 'blog', 6),
+      // getBlogs() is a watchQuery().valueChanges stream — it never completes on its own
+      // (stays open for cache updates), so forkJoin would wait on it forever without take(1).
+      allBlogs: this.graphql.getBlogs().pipe(take(1)),
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((nodes) => {
-        if (nodes.length > 0) {
+      .subscribe({
+        next: ({ tagged, allBlogs }) => {
+          const nodes = tagged.length > 0
+            ? tagged
+            : allBlogs.filter((post) => this.isMicrosoftLicensingPost(post));
           this.relatedLicensingBlogs.set(
             this.mapRelatedBlogCards(nodes).slice(0, 3),
           );
           this.relatedBlogsLoading.set(false);
           this.cdr.markForCheck();
-          return;
-        }
-
-        // Fallback: derive from all blogs if the tag slug differs in WP.
-        this.graphql
-          .getBlogs()
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((allBlogs) => {
-            const filtered = allBlogs.filter((post) =>
-              this.isMicrosoftLicensingPost(post),
-            );
-            this.relatedLicensingBlogs.set(
-              this.mapRelatedBlogCards(filtered).slice(0, 3),
-            );
-            this.relatedBlogsLoading.set(false);
-            this.cdr.markForCheck();
-          });
+        },
+        // Both sources already fall back to [] internally, but this is a last-resort
+        // guard so this section can never get stuck on its loading skeleton forever.
+        error: () => {
+          this.relatedBlogsLoading.set(false);
+          this.cdr.markForCheck();
+        },
       });
   }
 
@@ -600,12 +623,12 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
   }
 
   getIconSvg(iconKey: string) {
-    const svg = SvgIcons[iconKey] || '';
+    const svg = (this._svgIcons && this._svgIcons[iconKey]) || '';
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   }
 
   getIconImageSrc(iconKey: string): string {
-    const svg = SvgIcons[iconKey] || '';
+    const svg = (this._svgIcons && this._svgIcons[iconKey]) || '';
     if (!svg) return '';
     return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
   }
@@ -620,47 +643,54 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
 
   ngAfterViewInit() {
     if (typeof window !== 'undefined' && this.recaptchaEnabled) {
-      setTimeout(() => this.initRecaptcha(), 400);
+      this.observeRecaptcha();
     }
+    // eager client-side preload of icons for this page
+    void this.loadSvgIcons();
   }
 
-  private initRecaptcha(): void {
-    if (typeof window === 'undefined' || !this.recaptchaHost?.nativeElement)
-      return;
+  /** Defers loading/rendering reCAPTCHA until the form is actually scrolled into view. */
+  private observeRecaptcha(): void {
+    const host = this.recaptchaHost?.nativeElement;
+    const container = host?.parentElement;
+    if (!container || typeof IntersectionObserver === 'undefined') return;
 
-    const render = () => {
-      const grecaptcha = (window as any).grecaptcha;
-      if (!grecaptcha?.render || this.recaptchaWidgetId !== null) return;
+    this.recaptchaObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          this.recaptchaObserver?.disconnect();
+          this.recaptchaObserver = null;
+          this.renderRecaptcha();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+    this.recaptchaObserver.observe(container);
+  }
 
-      this.recaptchaWidgetId = grecaptcha.render(
-        this.recaptchaHost!.nativeElement,
-        {
-          sitekey: '6Lcp8XwsAAAAAIrdZHBdw74jtoxwPxDRZW4F-rwu',
-          callback: (token: string) => {
-            this.ngZone.run(() => {
-              this.recaptchaToken = token;
-              this.validationErrors = {
-                ...this.validationErrors,
-                recaptcha: false,
-              };
-              this.cdr.markForCheck();
-            });
-          },
-          'expired-callback': () => {
-            this.ngZone.run(() => {
-              this.recaptchaToken = null;
-              this.cdr.markForCheck();
-            });
-          },
+  private renderRecaptcha(): void {
+    const host = this.recaptchaHost?.nativeElement;
+    if (!host || this.recaptchaWidgetId !== null) return;
+
+    this.recaptcha
+      .render(host, {
+        onSuccess: (token) => {
+          this.recaptchaToken = token;
+          this.validationErrors = { ...this.validationErrors, recaptcha: false };
+          this.cdr.markForCheck();
         },
-      );
-    };
+        onExpired: () => {
+          this.recaptchaToken = null;
+          this.cdr.markForCheck();
+        },
+      })
+      .then((widgetId) => {
+        this.recaptchaWidgetId = widgetId;
+      });
+  }
 
-    render();
-    if (this.recaptchaWidgetId === null) {
-      setTimeout(render, 500);
-      setTimeout(render, 1500);
-    }
+  ngOnDestroy(): void {
+    this.recaptchaObserver?.disconnect();
   }
 
   validateEmail(email: string): boolean {
@@ -805,7 +835,7 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
       error: (err) => {
         this.isSubmitting = false;
         this.cdr.markForCheck();
-        console.error('Licensing form error:', err);
+        logError('Licensing form error:', err);
         alert('An error occurred. Please try again later.');
       },
     });
@@ -832,12 +862,6 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit {
       recaptcha: false,
     };
     this.recaptchaToken = null;
-    if (
-      typeof window !== 'undefined' &&
-      this.recaptchaWidgetId !== null &&
-      (window as any).grecaptcha?.reset
-    ) {
-      (window as any).grecaptcha.reset(this.recaptchaWidgetId);
-    }
+    this.recaptcha.reset(this.recaptchaWidgetId);
   }
 }

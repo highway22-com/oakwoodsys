@@ -54,14 +54,10 @@
       [loading]="false"
       [hvh70]="true"
       [videoUrls]="c.hero.heroVideoUrls || []"
-      [overlayImageUrl]="
-        hasUpcomingEvents() ? null : '/assets/events/bg-events.jpg'
-      "
-      [poster]="c.hero.heroImage || ''"
+      [overlayImageUrl]="hasUpcomingEvents() ? null : '/assets/events/bg-events.jpg'"
+      [poster]="c.hero.heroImage || '/assets/events/bg-events.jpg'"
       [title]="hasUpcomingEvents() ? c.hero.title : c.noEventsMessage.title"
-      [description]="
-        hasUpcomingEvents() ? c.hero.description : c.noEventsMessage.description
-      "
+      [description]="hasUpcomingEvents() ? c.hero.description : c.noEventsMessage.description"
       [centerContent]="!hasUpcomingEvents()"
       [showIndicators]="false"
     >
@@ -399,7 +395,7 @@
             {{ c.upcomingEventsSection.title }}
           </h2>
           <p
-            class="font-['Segoe_UI'] font-normal text-[18px] leading-[150%] text-[#454545] text-center max-w-5xl mx-auto"
+            class="font-[var(--font-segoe)] font-normal text-[18px] leading-[150%] text-[#454545] text-center max-w-5xl mx-auto"
           >
             {{ c.upcomingEventsSection.description }}
           </p>
@@ -458,7 +454,7 @@
             {{ c.pastEventsSection.title }}
           </h2>
           <p
-            class="font-['Segoe_UI'] font-normal text-[18px] leading-[150%] text-[#454545] text-center max-w-5xl mx-auto"
+            class="font-[var(--font-segoe)] font-normal text-[18px] leading-[150%] text-[#454545] text-center max-w-5xl mx-auto"
           >
             {{ c.pastEventsSection.description }}
           </p>

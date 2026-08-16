@@ -13,7 +13,9 @@ import { FeaturedCaseStudySectionComponent } from '../../shared/sections/feature
 import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-study/featured-case-study-category';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { TrustedBySectionComponent } from "../../shared/sections/trusted-by/trusted-by";
-import { SvgIcons } from '../../shared/service-icons/service-icons';
+// Lazy-load `SvgIcons` to avoid bundling large inline SVG payloads eagerly.
+
+import { logError } from '../../app/utils/logger';
 
 interface ServiceArea {
   icon: string;
@@ -179,6 +181,7 @@ export default class Services implements OnInit, OnDestroy {
   readonly error = signal<string | null>(null);
   readonly structuredData = signal<any>(null);
   readonly structuredEngagementSection = signal<any>(null);
+  /** Structured engagements ("How we get started") shows on every service except modern-work and managed-services. */
   readonly showStructuredEngagements = signal(true);
 
   constructor() {
@@ -194,8 +197,22 @@ export default class Services implements OnInit, OnDestroy {
     });
   }
 
+  private _svgIcons: Record<string, string> | undefined = undefined;
+
+  private async loadSvgIcons(): Promise<Record<string, string>> {
+    if (this._svgIcons !== undefined) return this._svgIcons as Record<string, string>;
+    try {
+      const m = await import('../../shared/service-icons/service-icons');
+      this._svgIcons = (m && (m as any).SvgIcons) || {};
+      return this._svgIcons as Record<string, string>;
+    } catch (e) {
+      this._svgIcons = {};
+      return this._svgIcons as Record<string, string>;
+    }
+  }
+
   getIconSvg(iconKey: string) {
-    const svg = SvgIcons[iconKey] || '';
+    const svg = (this._svgIcons && this._svgIcons[iconKey]) || '';
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   }
 
@@ -224,15 +241,11 @@ export default class Services implements OnInit, OnDestroy {
     this.routeSubscription = this.route.paramMap.subscribe(params => {
       const slugParam = params.get('slug');
       this.slug.set(slugParam);
-      // Hide structured engagements for specific slugs
-      if (slugParam === 'modern-work' || slugParam === 'managed-services') {
-        this.showStructuredEngagements.set(false);
-      } else {
-        this.showStructuredEngagements.set(true);
-      }
-      // Set activeTab on every navigation if structuredEngagementSection is loaded
+      // Excluded for modern-work and managed-services; shown for every other service.
+      const showStructured = slugParam !== 'modern-work' && slugParam !== 'managed-services';
+      this.showStructuredEngagements.set(showStructured);
       const section = this.structuredEngagementSection();
-      if (section) {
+      if (section && showStructured) {
         if (slugParam === 'data-ai-solutions') {
           section.activeTab = 'Data and AI';
         } else if (slugParam === 'cloud-and-infrastructure') {
@@ -249,6 +262,10 @@ export default class Services implements OnInit, OnDestroy {
       }
       this.loadContent();
     });
+
+    if (isPlatformBrowser(this.platformId)) {
+      void this.loadSvgIcons();
+    }
   }
 
   /** Meta desde slug (prerender/SSR cuando el contenido aún no carga). */
@@ -266,7 +283,7 @@ export default class Services implements OnInit, OnDestroy {
   private loadStructuredEngagementFromStaticFile() {
     this.http.get<any>('/structured-engagement-section.json').subscribe({
       next: (data) => this.structuredEngagementSection.set(data),
-      error: (err) => console.error('Error loading structured engagement section:', err),
+      error: (err) => logError('Error loading structured engagement section:', err),
     });
   }
 

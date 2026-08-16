@@ -5,6 +5,10 @@
   overflow-x: clip;
 }
 
+#wp-content-root [id] {
+  scroll-margin-top: 400px;
+}
+
 app-footer {
   display: block;
   margin-top: 1rem;

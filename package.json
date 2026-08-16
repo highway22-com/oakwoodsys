@@ -4,7 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "node scripts/prerender-routes.mjs && NODE_OPTIONS=--max-old-space-size=8192 ng build",
+    "sync:oak": "node scripts/sync-oak-css.mjs",
+    "build": "node scripts/sync-oak-css.mjs && node scripts/prerender-routes.mjs && NODE_OPTIONS=--max-old-space-size=8192 ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:oaw": "node dist/oaw/server/server.mjs",

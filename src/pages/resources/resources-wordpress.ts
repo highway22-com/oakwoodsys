@@ -21,6 +21,7 @@ import { CtaSectionComponent } from "../../shared/cta-section/cta-section.compon
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { decodeHtmlEntities } from '../../app/utils/cast';
+import { logError } from '../../app/utils/logger';
 
 /** Contenido de la página Resources (resources-content.json). */
 export interface ResourcesPageContent {
@@ -450,7 +451,7 @@ export default class Resources implements OnInit {
   }
 
   private handleCaseStudiesError(error: unknown) {
-    console.error('Error loading case studies:', error);
+    logError('Error loading case studies:', error);
     this.error.set(error);
     this.loading.set(false);
   }
@@ -484,7 +485,7 @@ export default class Resources implements OnInit {
           this.loading.set(false);
         },
         error: (error) => {
-          console.error('Error loading case study:', error);
+          logError('Error loading case study:', error);
           this.error.set(error);
           this.loading.set(false);
         },
@@ -547,7 +548,7 @@ export default class Resources implements OnInit {
     // Transformar connected services
     const connectedServices = (acf.connectedServices || []).map((service: any, index: number) => ({
       id: String(index + 1),
-      icon: service.serviceIcon || 'fa-circle',
+      icon: service.serviceIcon || '',
       title: service.serviceTitle || '',
       description: service.serviceDescription || '',
       link: service.serviceLink || '#',

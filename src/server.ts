@@ -55,10 +55,53 @@ function isWordPressCatchAllPath(pathname: string): boolean {
   return !ANGULAR_ROUTE_PREFIXES.has(firstSegment);
 }
 
-function withNoCacheHeaders(response: Response): Response {
+/**
+ * Angular-native content routes (as opposed to admin/edit/api/wp-admin/404) whose SSR
+ * output is safe to cache publicly: they render the same markup for every visitor, sourced
+ * from CMS content fetched during SSR. Without this, every single visit re-triggers the full
+ * WordPress GraphQL round-trip inside SSR before any HTML reaches the browser — that live
+ * round-trip (not JS execution or image weight) is what was driving up FCP/LCP/Speed Index on
+ * pages like /contact-us. Same tradeoff as withWordPressPageCacheHeaders above: a freshly
+ * published CMS edit can take up to ~30s to reach a visitor who isn't the first hit after it
+ * goes live.
+ */
+const ANGULAR_CACHEABLE_CONTENT_PREFIXES = new Set([
+  'blog',
+  'services',
+  'resources',
+  'industries',
+  'structured-engagement',
+  'about',
+  'contact-us',
+  'contact-success',
+  'careers',
+  'privacy-policy',
+  'technology-partners',
+  'microsoft-licensing',
+  'home',
+  'events',
+]);
+
+function isAngularCacheableContentPath(pathname: string): boolean {
+  const normalized = pathname.replace(/^\/+|\/+$/g, '');
+  if (!normalized) return true; // '/' — home
+  const firstSegment = normalized.split('/')[0];
+  return ANGULAR_CACHEABLE_CONTENT_PREFIXES.has(firstSegment);
+}
+
+/**
+ * WordPress pages were previously no-store: every visitor re-triggered the full
+ * WordPress -> GraphQL/REST -> Angular SSR chain, and no CDN could ever cache a
+ * rendered page for a second visitor. Short public cache instead — same tradeoff
+ * as /api/home-content elsewhere in this file: cache for the public, accept that a
+ * freshly published edit can take up to ~60s to reach a visitor who isn't the
+ * first hit after it goes live. If WordPress pages ever get their own "editor is
+ * previewing this" signal, bypass the cache the same way home-content does for
+ * auth.valid.
+ */
+function withWordPressPageCacheHeaders(response: Response): Response {
   const headers = new Headers(response.headers);
-  headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
-  headers.set('Pragma', 'no-cache');
+  headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=600');
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -357,6 +400,19 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
       const response = await fetch(cmsUrl, { signal: controller.signal });
       clearTimeout(timeoutId);
       if (!response.ok) {
+        // If the CMS upload file isn't found, return an empty JSON object with 200
+        // to avoid noisy "Failed to load resource: 404" console errors in the
+        // browser while the client-side code treats missing content as an empty
+        // fallback. Preserve other non-404 statuses so callers can detect real
+        // errors.
+        if (response.status === 404) {
+          return Response.json({}, {
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+            },
+          });
+        }
         return new Response(null, { status: response.status });
       }
       const data = await response.json().catch(() => null);
@@ -750,8 +806,8 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
   }
 
   const result = await angularAppEngine.handle(request, context)
-  if (result && isWordPressCatchAllPath(pathname)) {
-    return withNoCacheHeaders(result);
+  if (result && (isWordPressCatchAllPath(pathname) || isAngularCacheableContentPath(pathname))) {
+    return withWordPressPageCacheHeaders(result);
   }
   return result || new Response('Not found', { status: 404 })
 }

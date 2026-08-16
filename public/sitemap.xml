@@ -16,6 +16,16 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://oakwoodsys.com/blog/should-we-move-our-vmware-environment-to-azure-vmware-solution</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/blog/microsoft-fabric-vs-snowflake</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://oakwoodsys.com/blog/your-ai-strategy-is-only-as-strong-as-your-data-foundation</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -452,6 +462,41 @@
   </url>
   <url>
     <loc>https://oakwoodsys.com/structured-engagement/azure-hpc-pro-poc</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/oakwood-for-microsoft</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/testing-anchor-padding</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/modern-work-engagements</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/security-engagements</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/cloud-infrastructure-engagements</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/data-analytics-engagements</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://oakwoodsys.com/strategy-and-advisory-engagements</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

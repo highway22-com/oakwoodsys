@@ -20,8 +20,10 @@
                         <span class="text-white/70">{{ item.label }}</span>
                         }
                     </li>
-                    @if ($index < breadcrumbs.length - 1) { <li class="text-white/50" aria-hidden="true"><i
-                            class="fa-solid fa-chevron-right text-sm"></i></li>
+                    @if ($index < breadcrumbs.length - 1) { <li class="text-white/50 inline-flex items-center" aria-hidden="true"><svg
+                            class="w-2 h-3" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.83594 5.60547C7.19141 5.93359 7.19141 6.50781 6.83594 6.83594L1.58594 12.0859C1.25781 12.4414 0.683594 12.4414 0.355469 12.0859C0 11.7578 0 11.1836 0.355469 10.8555L4.97656 6.20703L0.355469 1.58594C0 1.25781 0 0.683594 0.355469 0.355469C0.683594 0 1.25781 0 1.58594 0.355469L6.83594 5.60547Z" fill="currentColor"/>
+                        </svg></li>
                         }
                         }
                 </ol>

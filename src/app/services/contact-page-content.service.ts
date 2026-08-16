@@ -131,7 +131,7 @@ export const DEFAULT_CONTACT_US_COPY: ContactUsPageCopy = {
     loading: 'Sending...',
   },
   image: {
-    src: '/assets/contact-us-new-pic.png',
+    src: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/07/contact-us-new-pic-scaled-1.webp',
     alt: 'Data center',
   },
 };
@@ -141,7 +141,7 @@ export const DEFAULT_CONTACT_SUCCESS_COPY: ContactSuccessCopy = {
   titleLine2: "We'll be in touch soon",
   description: "We've received your message and our team will review it shortly.",
   image: {
-    src: '/assets/contact-us-new-pic.png',
+    src: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/07/contact-us-new-pic-scaled-1.webp',
     alt: '',
   },
 };
@@ -218,7 +218,12 @@ export class ContactPageContentService {
       return this.inFlight$;
     }
 
-    this.inFlight$ = this.graphql.getCmsPageBySlug('contact-us', { fetchPolicy: 'network-only' }).pipe(
+    // Default 'cache-and-network' (not 'network-only') so the client reads the server's
+    // TransferState value on hydration instead of re-fetching — this service's own
+    // cache/inFlight$ above only dedupes calls *after* the first one; without this,
+    // that very first client-side call still re-fetches everything SSR already got,
+    // which is what was delaying the hero image's real src behind a redundant round-trip.
+    this.inFlight$ = this.graphql.getCmsPageBySlug('contact-us').pipe(
       map((data) => data as ContactPageContentResponse | null),
       switchMap((cmsData) => {
         if (cmsData) {

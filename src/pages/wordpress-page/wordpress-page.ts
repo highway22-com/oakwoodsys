@@ -1,4 +1,4 @@
-import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { CommonModule, DOCUMENT, ViewportScroller, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, NgZone, OnDestroy, OnInit, PLATFORM_ID, ViewEncapsulation, inject, signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -28,6 +28,7 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
   private readonly document = inject(DOCUMENT);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly zone = inject(NgZone);
+  private readonly viewportScroller = inject(ViewportScroller);
 
   // Starts false so SSR-rendered DOM matches the initial signal value, preventing
   // a hydration mismatch that would otherwise flash the loading state immediately.
@@ -87,23 +88,42 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // On the very first browser render after SSR hydration, the content is already
+    // in the DOM and styles are already in <head>. On every other navigation (SPA
+    // nav, direct load without SSR) show loading normally.
+    const skipLoading = isPlatformBrowser(this.platformId) && this.ssrRenderedPath === path;
+    this.ssrRenderedPath = null; // consume — only skip once
     this.currentPath = path;
+
+    if (skipLoading && useResolverData) {
+      const resolvedPage = this.route.snapshot.data['wpPage'] as WordPressPageResponse | null | undefined;
+      if (resolvedPage) {
+        // Applied synchronously — same tick as ngOnInit, before Angular's first
+        // post-hydration change-detection pass — so pageHtml/loading resolve to the
+        // same truthy state SSR already rendered. Going through runWhenReady() here
+        // (which defers via setTimeout) would let that first CD pass observe
+        // loading=false/pageHtml=null, flash the loading spinner in over the SSR
+        // content, then swap back a moment later — that flash-and-recover was the
+        // actual mechanism behind this page's huge CLS, not just the stylesheet
+        // rebuild on its own.
+        this.error.set(null);
+        this.applyPageResponse(path, resolvedPage, { skipDomRebuild: true });
+        return;
+      }
+      if (resolvedPage === null) {
+        this.runWhenReady(() => this.handlePageLoadError(path, 404));
+        return;
+      }
+      // resolvedPage undefined (shouldn't happen — this route always configures the
+      // resolver): fall through to the normal path below as a safety net.
+    }
+
     this.cleanupInjectedAssets();
     this.notFound.set(false);
     this.error.set(null);
-
-    // On the very first browser render after SSR hydration, the content is already
-    // in the DOM and styles are already in <head>. Skip the loading flash in that case.
-    // On every other navigation (SPA nav, direct load without SSR) show loading normally.
-    const skipLoading = isPlatformBrowser(this.platformId) && this.ssrRenderedPath === path;
-    this.ssrRenderedPath = null; // consume — only skip once
-    if (!skipLoading) {
-      // Clear stale content so loader remains visible until new content arrives.
-      this.pageHtml.set(null);
-    }
-    if (!skipLoading) {
-      this.loading.set(true);
-    }
+    // Clear stale content so loader remains visible until new content arrives.
+    this.pageHtml.set(null);
+    this.loading.set(true);
 
     if (useResolverData) {
       const resolvedPage = this.route.snapshot.data['wpPage'] as WordPressPageResponse | null | undefined;
@@ -160,7 +180,11 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
     return resolveWordPressPathFromRoute(this.route.snapshot, this.router);
   }
 
-  private applyPageResponse(path: string, page: WordPressPageResponse): void {
+  private applyPageResponse(
+    path: string,
+    page: WordPressPageResponse,
+    options: { skipDomRebuild?: boolean } = {},
+  ): void {
     this.notFound.set(false);
 
     this.pageTitle.set(resolveWordPressDisplayTitle(path, page));
@@ -175,6 +199,24 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
 
     if (isPlatformBrowser(this.platformId)) {
       this.applyBodyClasses(page.bodyClasses ?? []);
+
+      if (options.skipDomRebuild) {
+        // SSR already rendered this exact path and injected its own scoped
+        // <style>/<link> elements into <head>. Re-running injectStylesheetsAndReveal()
+        // here would tear those down and rebuild them a beat after first paint — that
+        // rebuild is what was producing the large post-paint layout shift. Just run
+        // the scripts SSR never runs (script injection only happens in this browser
+        // branch); the SSR-tagged elements are swept up generically by
+        // cleanupInjectedAssets()'s selector pass the next time the user actually
+        // navigates away, no identity-tracking needed here.
+        this.schedulePageScripts(path, [
+          ...this.extractScriptsFromHtml(page.headHtml ?? ''),
+          ...this.extractScriptsFromHtml(page.content ?? ''),
+          ...(page.footerScripts ?? []),
+        ]);
+        return;
+      }
+
       this.injectInlineStyles(page.inlineStyles ?? []);
       // Inject stylesheets and reveal content only after they have loaded,
       // preventing a flash of unstyled content.
@@ -385,6 +427,7 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
 
     if (!toLoad.length) {
       this.loading.set(false);
+      this.scrollToCurrentFragmentWithRetry();
       return;
     }
 
@@ -431,14 +474,20 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
     let pending = externalCount || 1;
 
     const safetyTimer = setTimeout(() => {
-      this.zone.run(() => this.loading.set(false));
+      this.zone.run(() => {
+        this.loading.set(false);
+        this.scrollToCurrentFragmentWithRetry();
+      });
     }, 8000);
 
     const settle = (): void => {
       if (--pending <= 0) {
         clearTimeout(safetyTimer);
         const win = this.document.defaultView;
-        const reveal = () => this.zone.run(() => this.loading.set(false));
+        const reveal = () => this.zone.run(() => {
+          this.loading.set(false);
+          this.scrollToCurrentFragmentWithRetry();
+        });
         win?.requestAnimationFrame ? win.requestAnimationFrame(reveal) : reveal();
       }
     };
@@ -451,6 +500,23 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
         link.addEventListener('load', settle, { once: true });
         link.addEventListener('error', settle, { once: true });
       });
+    }
+  }
+
+  private scrollToCurrentFragmentWithRetry(attempt = 0): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const hash = this.document.defaultView?.location?.hash ?? '';
+    const fragment = decodeURIComponent(hash.replace(/^#/, '').trim());
+    if (!fragment) return;
+
+    if (this.document.getElementById(fragment)) {
+      this.viewportScroller.scrollToAnchor(fragment);
+      return;
+    }
+
+    if (attempt < 10) {
+      setTimeout(() => this.scrollToCurrentFragmentWithRetry(attempt + 1), 80);
     }
   }
 

@@ -1,5 +1,5 @@
 
-import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal, input, PLATFORM_ID, NgZone, computed, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal, input, PLATFORM_ID, NgZone, computed, ViewChild, ElementRef, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -14,6 +14,8 @@ import { readingTimeMinutes } from '../../app/utils/reading-time.util';
 import { CtaSectionComponent } from '../../shared/cta-section/cta-section.component';
 import { decodeHtmlEntities } from '../../app/utils/cast';
 import { ButtonPrimaryComponent } from "../../shared/button-primary/button-primary.component";
+import { RecaptchaLoaderService } from '../../app/services/recaptcha-loader.service';
+import { logError } from '../../app/utils/logger';
 interface PostAuthor {
   node: {
     email: string;
@@ -84,6 +86,12 @@ export interface PostDetail {
   templateUrl: './post.html',
   styleUrl: './post.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  // post.css styles WordPress content injected via [innerHTML] (.html-content ...) — those
+  // nodes never get Angular's _ngcontent scoping attribute since they bypass the renderer,
+  // so Emulated encapsulation's rewritten selectors can never match them. Every rule in
+  // post.css is already scoped under app-specific classes (.html-content, .post-contact-form),
+  // so disabling encapsulation here doesn't risk leaking styles into other components.
+  encapsulation: ViewEncapsulation.None,
 })
 export default class Post implements OnInit, OnDestroy {
   slug = input<string>('');
@@ -116,6 +124,8 @@ export default class Post implements OnInit, OnDestroy {
   isSubmitting = false;
   recaptchaToken: string | null = null;
   private recaptchaWidgetId: number | null = null;
+  private readonly recaptcha = inject(RecaptchaLoaderService);
+  private recaptchaObserver: IntersectionObserver | null = null;
   readonly recaptchaEnabled = true;
   validationErrors = { fullName: false, email: false, company: false, message: false, recaptcha: false };
 
@@ -317,6 +327,9 @@ export default class Post implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // Only blogs/case-studies listing and this page read genContentTags(), so only
+    // load it here instead of firing it globally on every route.
+    void this.graphql.loadGenContentTaxonomies();
     this.routeSub = this.route.paramMap.subscribe((params) => {
       const slugValue = params.get('slug') || this.slug() || '';
       if (!slugValue) {
@@ -447,7 +460,7 @@ export default class Post implements OnInit, OnDestroy {
               if (toc.length > 0) this.activeSection.set(toc[0].id);
             });
             if (isPlatformBrowser(this.platformId) && this.recaptchaEnabled) {
-              setTimeout(() => this.initRecaptcha(), 400);
+              setTimeout(() => this.observeRecaptcha(), 400);
             }
             this.updateSeoMeta(postData, slugValue);
             const isCaseStudy = this.router.url.startsWith('/resources/case-studies');
@@ -477,7 +490,7 @@ export default class Post implements OnInit, OnDestroy {
           this.loading.set(false);
         },
         error: (error) => {
-          console.error('Error loading post:', error);
+          logError('Error loading post:', error);
           this.error.set(error);
           this.loading.set(false);
         },
@@ -522,6 +535,7 @@ export default class Post implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.routeSub?.unsubscribe();
+    this.recaptchaObserver?.disconnect();
     if (this.scrollListener && isPlatformBrowser(this.platformId)) {
       window.removeEventListener('scroll', this.scrollListener);
     }
@@ -532,9 +546,12 @@ export default class Post implements OnInit, OnDestroy {
    * Así el TOC está listo de inmediato y no depende del DOM.
    */
   private extractTocAndInjectIds(html: string): { content: string; toc: { id: string; text: string }[] } {
+    const excludedRanges = this.findTocExcludedRanges(html);
     const toc: { id: string; text: string }[] = [];
     let index = 0;
-    const content = html.replace(/<(h[23])([^>]*)>([\s\S]*?)<\/\1>/gi, (match, tag: string, attrs: string, inner: string) => {
+    const content = html.replace(/<(h[23])([^>]*)>([\s\S]*?)<\/\1>/gi, (match, tag: string, attrs: string, inner: string, offset: number) => {
+      const isDecorative = excludedRanges.some(([start, end]) => offset >= start && offset < end);
+      if (isDecorative) return match;
       const text = inner.replace(/<[^>]+>/g, '').trim();
       const id = `section-${index}`;
       index++;
@@ -544,6 +561,39 @@ export default class Post implements OnInit, OnDestroy {
       return `<${tag}${newAttrs}>${inner}</${tag}>`;
     });
     return { content, toc };
+  }
+
+  /** Wrapper classes whose h2/h3 are decorative per-card titles ("Microsoft Fabric",
+   * "Snowflake", ... repeated once per card), not real article sections — e.g. the Oakwood
+   * Blocks "achievements"/comparison-grid component reuses <h3> per item. Extend this list
+   * whenever a new WordPress/Oakwood Blocks component does the same thing and pollutes the
+   * table of contents. */
+  private static readonly TOC_EXCLUDED_WRAPPER_CLASSES = ['oak-achievement-item'];
+
+  /** Finds the [start, end) character ranges of <div> elements whose class attribute matches
+   * TOC_EXCLUDED_WRAPPER_CLASSES, by tracking <div> open/close depth — not a full HTML parser,
+   * just enough to find the matching closing tag for these specific wrapper divs (which may
+   * contain arbitrarily nested divs of their own, e.g. the check-circle icon wrapper). */
+  private findTocExcludedRanges(html: string): Array<[number, number]> {
+    const ranges: Array<[number, number]> = [];
+    const stack: Array<{ isExcludedRoot: boolean; rootStart: number }> = [];
+    const tagRe = /<div\b([^>]*)>|<\/div\s*>/gi;
+    let match: RegExpExecArray | null;
+    while ((match = tagRe.exec(html))) {
+      const isClosingTag = match[0].charAt(1) === '/';
+      if (!isClosingTag) {
+        const classAttr = /class="([^"]*)"/i.exec(match[1] ?? '')?.[1] ?? '';
+        const classes = classAttr.split(/\s+/);
+        const isExcludedRoot = Post.TOC_EXCLUDED_WRAPPER_CLASSES.some((c) => classes.includes(c));
+        stack.push({ isExcludedRoot, rootStart: match.index });
+      } else {
+        const frame = stack.pop();
+        if (frame?.isExcludedRoot) {
+          ranges.push([frame.rootStart, match.index + match[0].length]);
+        }
+      }
+    }
+    return ranges;
   }
 
   private setupScrollListener(): void {
@@ -659,7 +709,7 @@ export default class Post implements OnInit, OnDestroy {
       error: (err) => {
         this.isSubmitting = false;
         this.cdr.markForCheck();
-        console.error('Contact form error:', err);
+        logError('Contact form error:', err);
         alert('Failed to send message. Please try again later.');
       },
     });
@@ -674,41 +724,47 @@ export default class Post implements OnInit, OnDestroy {
     this.submitted = false;
     this.recaptchaToken = null;
     this.validationErrors = { fullName: false, email: false, company: false, message: false, recaptcha: false };
-    if (isPlatformBrowser(this.platformId) && this.recaptchaWidgetId !== null && (window as any).grecaptcha?.reset) {
-      (window as any).grecaptcha.reset(this.recaptchaWidgetId);
-    }
+    this.recaptcha.reset(this.recaptchaWidgetId);
   }
 
-  private initRecaptcha(): void {
-    if (!isPlatformBrowser(this.platformId) || !this.recaptchaHost?.nativeElement) return;
+  /** Defers loading/rendering reCAPTCHA until the form is actually scrolled into view. */
+  private observeRecaptcha(): void {
+    const host = this.recaptchaHost?.nativeElement;
+    const container = host?.parentElement;
+    if (!container || typeof IntersectionObserver === 'undefined') return;
 
-    const render = () => {
-      const grecaptcha = (window as any).grecaptcha;
-      if (!grecaptcha?.render || this.recaptchaWidgetId !== null) return;
+    this.recaptchaObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          this.recaptchaObserver?.disconnect();
+          this.recaptchaObserver = null;
+          this.renderRecaptcha();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+    this.recaptchaObserver.observe(container);
+  }
 
-      this.recaptchaWidgetId = grecaptcha.render(this.recaptchaHost!.nativeElement, {
-        sitekey: '6Lcp8XwsAAAAAIrdZHBdw74jtoxwPxDRZW4F-rwu',
-        callback: (token: string) => {
-          this.ngZone.run(() => {
-            this.recaptchaToken = token;
-            this.validationErrors = { ...this.validationErrors, recaptcha: false };
-            this.cdr.markForCheck();
-          });
+  private renderRecaptcha(): void {
+    const host = this.recaptchaHost?.nativeElement;
+    if (!host || this.recaptchaWidgetId !== null) return;
+
+    this.recaptcha
+      .render(host, {
+        onSuccess: (token) => {
+          this.recaptchaToken = token;
+          this.validationErrors = { ...this.validationErrors, recaptcha: false };
+          this.cdr.markForCheck();
         },
-        'expired-callback': () => {
-          this.ngZone.run(() => {
-            this.recaptchaToken = null;
-            this.cdr.markForCheck();
-          });
+        onExpired: () => {
+          this.recaptchaToken = null;
+          this.cdr.markForCheck();
         },
+      })
+      .then((widgetId) => {
+        this.recaptchaWidgetId = widgetId;
       });
-    };
-
-    render();
-    if (this.recaptchaWidgetId === null) {
-      setTimeout(render, 500);
-      setTimeout(render, 1500);
-    }
   }
 
   scrollToSection(sectionId: string): void {

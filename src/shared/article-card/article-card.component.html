@@ -1,8 +1,10 @@
 <div class="bg-white/50 overflow-hidden h-full flex flex-col">
   <div class="relative h-[53%] overflow-hidden p-6">
-    <img [src]="article().image?.url ?? ''"
+    @if (article().image?.url; as imageUrl) {
+    <img [ngSrc]="imageUrl"
       [alt]="article().image?.alt ?? (article().title ? article().title + ' - Oakwood case study' : 'Oakwood case study image')"
-      class="aspect-6/5 object-cover" loading="lazy" width="400" height="333" />
+      class="aspect-6/5 object-cover" width="400" height="333" />
+    }
   </div>
   <div class="py-5 px-5 flex flex-col grow">
     <div class="flex items-center mb-5">
@@ -26,7 +28,9 @@
     @if (article().link) {
     <a [href]="article().link"
       class="text-base text-gray-800 hover:text-p-500 transition-colors duration-200 inline-flex items-center mt-auto">
-      {{ article().linkText ?? 'Read more' }} <span class="ml-3"><i class="fa-solid fa-chevron-right"></i></span>
+      {{ article().linkText ?? 'Read more' }} <span class="ml-3 inline-flex items-center"><svg class="w-2 h-3" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.83594 5.60547C7.19141 5.93359 7.19141 6.50781 6.83594 6.83594L1.58594 12.0859C1.25781 12.4414 0.683594 12.4414 0.355469 12.0859C0 11.7578 0 11.1836 0.355469 10.8555L4.97656 6.20703L0.355469 1.58594C0 1.25781 0 0.683594 0.355469 0.355469C0.683594 0 1.25781 0 1.58594 0.355469L6.83594 5.60547Z" fill="currentColor"/>
+        </svg></span>
     </a>
     }
   </div>

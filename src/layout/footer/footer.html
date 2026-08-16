@@ -22,14 +22,14 @@
           </h3>
           <div class="space-y-1">
             @if (data.contact.phone) {
-            <a target="_blank" [href]="data.contact.phone.link"
-              class="block text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] underline hover:text-blue-300 transition-colors duration-200">
+            <a target="_blank" rel="noopener noreferrer" [href]="data.contact.phone.link"
+              class="block text-white/70 font-[var(--font-segoe)] text-base font-normal leading-[1.5] underline hover:text-blue-300 transition-colors duration-200">
               {{ data.contact.phone.text }}
             </a>
             }
             @if (data.contact.email) {
             <a [attr.href]="getFooterEmailHref(data.contact.email)"
-              class="block text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] underline hover:text-blue-300 transition-colors duration-200">
+              class="block text-white/70 font-[var(--font-segoe)] text-base font-normal leading-[1.5] underline hover:text-blue-300 transition-colors duration-200">
               {{ data.contact.email.text }}
             </a>
             }
@@ -39,7 +39,7 @@
         @if (data.socialMedia && data.socialMedia.length) {
         <div class="flex items-center gap-2 lg:mt-2">
           @for (social of data.socialMedia; track social.name) {
-          <a target="_blank" [href]="social.link" [attr.aria-label]="social.name"
+          <a target="_blank" rel="noopener noreferrer" [href]="social.link" [attr.aria-label]="social.name"
             class="w-8 h-8 sm:w-10 sm:h-10  rounded flex items-center justify-center  transition-colors duration-200 ">
             @if (social.icon === 'linkedin') {
             <svg class="w-6 h-6 sm:w-5 sm:h-5 text-white" fill="#8FC2EA" viewBox="0 0 24 24">
@@ -85,7 +85,7 @@
                 @for (link of group.links; track link.text) {
                   @if (link.text !== 'Whitepapers' && link.text !== 'Webinars' && link.text !== 'Microsoft Licensing') {
                   <li>
-                    <a [routerLink]="resolveFooterRouterLink(link)" class="font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-white/70  hover:text-blue-300 transition-colors duration-200">
+                    <a [routerLink]="resolveFooterRouterLink(link)" class="font-[var(--font-segoe)] text-[18px] font-normal leading-[1.5] text-white/70  hover:text-blue-300 transition-colors duration-200">
                       {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
                     </a>
                   </li>
@@ -108,7 +108,7 @@
                         alt="Microsoft Licensing icon"
                         class="w-4 h-4 object-contain shrink-0"
                       />
-                      <span class="block font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-[#E4EEFA] break-words">
+                      <span class="block font-[var(--font-segoe)] text-[18px] font-normal leading-[1.5] text-[#E4EEFA] break-words">
                         {{ link.text }}
                       </span>
                     </span>
@@ -131,7 +131,7 @@
               @for (link of group.links; track link.text) {
                 @if (link.text !== 'Whitepapers' && link.text !== 'Webinars' && link.text !== 'Microsoft Licensing') {
                 <li >
-                  <a [routerLink]="resolveFooterRouterLink(link)" class="text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200">
+                  <a [routerLink]="resolveFooterRouterLink(link)" class="text-white/70 font-[var(--font-segoe)] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200">
                     {{ link.text === 'Data & Artificial Intelligence' ? 'Data & AI Solutions' : link.text }}
                   </a>
                 </li>
@@ -174,7 +174,7 @@
                 @for (item of solutionGroup.links; track item.name) {
                 <li>
                   <a [routerLink]="getFooterSolutionHref(solutionGroup.key, item)"
-                    class="font-['Segoe UI'] text-[16px] font-normal leading-[1.5] text-white/70 hover:text-blue-300 transition-colors duration-200">
+                    class="font-[var(--font-segoe)] text-[16px] font-normal leading-[1.5] text-white/70 hover:text-blue-300 transition-colors duration-200">
                     {{ item.name }}
                   </a>
                 </li>
@@ -201,7 +201,7 @@
               alt="Microsoft Licensing icon"
               class="w-4 h-4 object-contain shrink-0"
             />
-            <span class="block font-['Segoe UI'] text-[18px] font-normal leading-[1.5] text-[#E4EEFA] whitespace-nowrap">
+            <span class="block font-[var(--font-segoe)] text-[18px] font-normal leading-[1.5] text-[#E4EEFA] whitespace-nowrap">
               {{ licensingLink.text }}
             </span>
           </span>
@@ -226,7 +226,7 @@
             @for (item of group.links; track item.name) {
             <li>
               <a [routerLink]="getFooterSolutionHref(group.key, item)"
-                class="text-white/70 font-['Segoe UI'] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200">
+                class="text-white/70 font-[var(--font-segoe)] text-base font-normal leading-[1.5] hover:text-blue-300 transition-colors duration-200">
                 {{ item.name }}
               </a>
             </li>

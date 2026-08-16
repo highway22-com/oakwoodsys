@@ -85,7 +85,9 @@
                   "
             class="pt-4 font-sans font-semibold text-base leading-none tracking-normal text-[#454545] hover:text-p-500  transition-colors duration-200 inline-flex items-center gap-1 font-segoe justify-center">
             {{ section[0].cta?.secondary?.text ?? "" }}
-            <i class="fa-solid fa-chevron-right text-xs pl-2" aria-hidden="true"></i>
+            <svg class="w-2 h-3 ml-2" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M6.83594 5.60547C7.19141 5.93359 7.19141 6.50781 6.83594 6.83594L1.58594 12.0859C1.25781 12.4414 0.683594 12.4414 0.355469 12.0859C0 11.7578 0 11.1836 0.355469 10.8555L4.97656 6.20703L0.355469 1.58594C0 1.25781 0 0.683594 0.355469 0.355469C0.683594 0 1.25781 0 1.58594 0.355469L6.83594 5.60547Z" fill="currentColor"/>
+            </svg>
           </a>
           }
         </div>
@@ -143,7 +145,9 @@
                   "
             class="pt-4 font-sans font-semibold text-base leading-none tracking-normal text-[#454545] hover:text-p-500  transition-colors duration-200 inline-flex items-center gap-1 font-segoe justify-center">
             {{ section[1].cta?.secondary?.text ?? "" }}
-            <i class="fa-solid fa-chevron-right text-xs pl-2" aria-hidden="true"></i>
+            <svg class="w-2 h-3 ml-2" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M6.83594 5.60547C7.19141 5.93359 7.19141 6.50781 6.83594 6.83594L1.58594 12.0859C1.25781 12.4414 0.683594 12.4414 0.355469 12.0859C0 11.7578 0 11.1836 0.355469 10.8555L4.97656 6.20703L0.355469 1.58594C0 1.25781 0 0.683594 0.355469 0.355469C0.683594 0 1.25781 0 1.58594 0.355469L6.83594 5.60547Z" fill="currentColor"/>
+            </svg>
           </a>
           }
         </div>
@@ -203,7 +207,7 @@
               {{ section[0]?.label ?? 'Featured Case Studies' }}
             </p>
             <span
-              class="text-[#1D69AC] font-[Segoe_UI] text-[14px] font-semibold not-italic leading-[150%] inline-block tag-badge w-fit mb-3">
+              class="text-[#1D69AC] font-[var(--font-segoe)] text-[14px] font-semibold not-italic leading-[150%] inline-block tag-badge w-fit mb-3">
               {{ decodeHtmlEntities(section[0]?.primaryTag ?? section[0]?.tag ?? '') }}
             </span>
             <h2 id="featured-case-study-title"
@@ -212,7 +216,7 @@
             </h2>
 
             <div
-              class="text-[#454545] font-[Segoe_UI] text-[18px] font-normal not-italic leading-[150%] mb-16 prose prose-p:mb-2"
+              class="text-[#454545] font-[var(--font-segoe)] text-[18px] font-normal not-italic leading-[150%] mb-16 prose prose-p:mb-2"
               [innerHTML]="section[0]?.description ?? ''"></div>
             <div class="flex flex-row gap-6 items-center">
               @if (section[0]?.cta?.primary?.link) {
@@ -241,7 +245,9 @@
                 [queryParams]="section[0].primaryTagSlug ? { primaryTag: section[0].primaryTagSlug } : {}"
                 class="text-base text-gray-700 hover:text-p-500 transition-colors duration-200 inline-flex items-center gap-1 font-segoe">
                 {{ section[0].cta!.secondary!.text ?? '' }}
-                <i class="fa-solid fa-chevron-right text-sm pl-2" aria-hidden="true"></i>
+                <svg class="w-2 h-3 ml-2" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M6.83594 5.60547C7.19141 5.93359 7.19141 6.50781 6.83594 6.83594L1.58594 12.0859C1.25781 12.4414 0.683594 12.4414 0.355469 12.0859C0 11.7578 0 11.1836 0.355469 10.8555L4.97656 6.20703L0.355469 1.58594C0 1.25781 0 0.683594 0.355469 0.355469C0.683594 0 1.25781 0 1.58594 0.355469L6.83594 5.60547Z" fill="currentColor"/>
+                </svg>
               </a>
               }
             </div>
@@ -256,7 +262,7 @@
               {{ section[1]?.label ?? 'Featured Case Studies' }}
             </p>
             <span
-              class="text-[#1D69AC] font-[Segoe_UI] text-[14px] font-semibold not-italic leading-[150%] inline-block tag-badge w-fit mb-3">
+              class="text-[#1D69AC] font-[var(--font-segoe)] text-[14px] font-semibold not-italic leading-[150%] inline-block tag-badge w-fit mb-3">
               {{ decodeHtmlEntities(section[1]?.primaryTag ?? section[1]?.tag ?? '') }}
             </span>
             <h2 id="featured-case-study-title-2"
@@ -264,7 +270,7 @@
               {{ section[1]?.title }}
             </h2>
             <div
-              class="text-[#454545] font-[Segoe_UI] text-[18px] font-normal not-italic leading-[150%] mb-16 prose prose-p:mb-2"
+              class="text-[#454545] font-[var(--font-segoe)] text-[18px] font-normal not-italic leading-[150%] mb-16 prose prose-p:mb-2"
               [innerHTML]="section[1]?.description ?? ''"></div>
             <div class="flex flex-row gap-6 items-center">
               @if (section[1]?.cta?.primary?.link) {
@@ -293,7 +299,9 @@
                 [queryParams]="section[1].primaryTagSlug ? { primaryTag: section[1].primaryTagSlug } : {}"
                 class="text-base text-gray-700 hover:text-p-500 transition-colors duration-200 inline-flex items-center gap-1 font-segoe">
                 {{ section[1].cta!.secondary!.text ?? '' }}
-                <i class="fa-solid fa-chevron-right text-sm pl-2" aria-hidden="true"></i>
+                <svg class="w-2 h-3 ml-2" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M6.83594 5.60547C7.19141 5.93359 7.19141 6.50781 6.83594 6.83594L1.58594 12.0859C1.25781 12.4414 0.683594 12.4414 0.355469 12.0859C0 11.7578 0 11.1836 0.355469 10.8555L4.97656 6.20703L0.355469 1.58594C0 1.25781 0 0.683594 0.355469 0.355469C0.683594 0 1.25781 0 1.58594 0.355469L6.83594 5.60547Z" fill="currentColor"/>
+                </svg>
               </a>
               }
             </div>

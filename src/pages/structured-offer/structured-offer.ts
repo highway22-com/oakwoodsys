@@ -181,7 +181,7 @@ const DEFAULT_CTA_SECTION = {
 const DEFAULT_FEATURED_CASE_STUDY_SLUGS = ['data-ai-solutions'];
 
 const DEFAULT_WHAT_IS_INCLUDED_IMAGE: StructuredOfferImage = {
-  src: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Placeholder-Image.png',
+  src: 'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/07/Placeholder-Image.avif',
   alt: 'Structured engagement offer visual',
   caption: '',
 };

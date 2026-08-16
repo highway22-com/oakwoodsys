@@ -26,6 +26,7 @@ import {
   trigger,
 } from '@angular/animations';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { ButtonPrimaryComponent } from '../../button-primary/button-primary.component';
 
 export type OfferBorderColor = 'blue' | 'orange' | 'green' | 'purple';
@@ -347,6 +348,7 @@ export class StructuredEngagementsSectionComponent
 
   private readonly platformId = inject(PLATFORM_ID);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly router = inject(Router);
   private viewReady = false;
   private userSelectedTab = false; // Track if user manually selected a tab
   private tabSwitchTimeout?: ReturnType<typeof setTimeout>;
@@ -599,7 +601,11 @@ export class StructuredEngagementsSectionComponent
     if (!link || !isPlatformBrowser(this.platformId)) {
       return;
     }
-    window.location.assign(link);
+    if (/^https?:\/\//i.test(link)) {
+      window.location.assign(link);
+      return;
+    }
+    this.router.navigateByUrl(link);
   }
 
   /** Título para mostrar (string o line1 + line2). */

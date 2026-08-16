@@ -21,9 +21,10 @@
             @for (office of content().offices; track office.name) {
             <article class="contact-office-card       overflow-hidden shadow-md border border-gray-100">
                 <div class="contact-office-header relative overflow-hidden">
-                    <img [src]="getOfficeImage(office)" alt="{{ office.name }}" class="w-full h-[380px] sm:h-[360px] md:h-[380px] lg:h-[420px] inset-0
-              bg-[linear-gradient(218deg,rgba(62,97,162,0)_28.65%,rgba(62,97,162,0.63)_78.59%)]
-              opacity-40 object-cover" />
+                      <img [src]="getOfficeImage(office)" alt="{{ office.name }}" class="w-full h-[380px] sm:h-[360px] md:h-[380px] lg:h-[420px] inset-0
+                  bg-[linear-gradient(218deg,rgba(62,97,162,0)_28.65%,rgba(62,97,162,0.63)_78.59%)]
+                  opacity-40 object-cover"
+                        loading="lazy" decoding="async" width="1200" height="420" />
 
                     <div class="absolute inset-0 opacity-40"
                         style="background: linear-gradient(to bottom, #3E61A200, #3E61A2E5); backdrop-filter: blur(5.599999904632568px); -webkit-backdrop-filter: blur(5.599999904632568px);">
@@ -88,10 +89,22 @@
                     </div>
                 </div>
                 <div class="bg-white p-0" style="position: relative;">
-                    <iframe [src]="getMapUrl(office.mapEmbedUrl)" width="100%" height="340"
-                        style="border:0; position: relative; z-index: 1;" allowfullscreen="" loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade" title="{{ office.name }} map">
-                    </iframe>
+                    @if (sectionVisible()) {
+                        <iframe [src]="getMapUrl(office.mapEmbedUrl)" width="100%" height="340"
+                            style="border:0; position: relative; z-index: 1;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade" title="{{ office.name }} map">
+                        </iframe>
+                    } @else {
+                        <div class="w-full h-[340px] flex flex-col items-center justify-center gap-2 bg-[#EEF3FA]"
+                            style="position: relative; z-index: 1;" aria-hidden="true">
+                            <svg width="28" height="28" viewBox="0 0 18 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12.75 9C12.75 11.1094 11.0625 12.75 9 12.75C6.89062 12.75 5.25 11.1094 5.25 9C5.25 6.9375 6.89062 5.25 9 5.25C11.0625 5.25 12.75 6.9375 12.75 9ZM9 7.5C8.15625 7.5 7.5 8.20312 7.5 9C7.5 9.84375 8.15625 10.5 9 10.5C9.79688 10.5 10.5 9.84375 10.5 9C10.5 8.20312 9.79688 7.5 9 7.5ZM18 9C18 13.125 12.5156 20.3906 10.0781 23.4375C9.51562 24.1406 8.4375 24.1406 7.875 23.4375C5.4375 20.3906 0 13.125 0 9C0 4.03125 3.98438 0 9 0C13.9688 0 18 4.03125 18 9ZM9 2.25C5.25 2.25 2.25 5.29688 2.25 9C2.25 9.60938 2.4375 10.5 2.95312 11.7188C3.42188 12.8438 4.125 14.1562 4.92188 15.4688C6.28125 17.625 7.82812 19.6875 9 21.1875C10.125 19.6875 11.6719 17.625 13.0312 15.4688C13.8281 14.1562 14.5312 12.8438 15 11.7188C15.5156 10.5 15.75 9.60938 15.75 9C15.75 5.29688 12.7031 2.25 9 2.25Z"
+                                    fill="#0D53A2" />
+                            </svg>
+                            <span class="text-[#0D53A2] text-[14px] font-semibold">Map loading…</span>
+                        </div>
+                    }
 
                     <div style="position:absolute; left:0; top:0; z-index: 10; pointer-events:auto;">
                         <div
@@ -109,7 +122,8 @@
                                             href="https://www.google.com/maps/dir/?api=1&destination={{ office.address }}"
                                             style="color:#0D53A2; text-decoration:none; font-size:12px; font-weight:600; display:flex; flex-direction:column; align-items:center; gap:2px; white-space:nowrap;">
                                             <img src="/assets/map-direction-icon.jpg" alt="Directions"
-                                                style="width:28px; height:28px; object-fit:contain; display:flex; align-items:center; justify-content:center;" />
+                                                style="width:28px; height:28px; object-fit:contain; display:flex; align-items:center; justify-content:center;"
+                                                loading="lazy" decoding="async" width="28" height="28" />
                                             Directions
                                         </a>
                                     </div>

@@ -1,10 +1,43 @@
 /* You can add global styles to this file, and also import other style files */
+/* Oakwood Blocks WordPress plugin CSS (CTA block, accordion, achievements/comparison grid,
+   etc.) — synced at build time via `npm run sync:oak` (scripts/sync-oak-css.mjs) directly
+   from the plugin's own public assets on oakwoodsystemsgroup.com, not hand-copied, so it
+   can't silently drift from the live source.
+
+   Pre-declaring layer order here (oak-overrides before oak-vendor) matters: almost every
+   rule in the plugin CSS is !important, and per the CSS cascade layers spec, !important
+   declarations resolve in the OPPOSITE order from normal ones — the earliest-declared layer
+   wins, and unlayered !important is weakest of all (loses to any named layer). So an
+   unlayered `!important` override in post.css can't beat this plugin CSS; anything that
+   needs to override an !important plugin rule (see .oak-full below) has to live inside the
+   oak-overrides layer instead, which is why it's declared first here.
+
+   Must come before @import "tailwindcss" below: that directive gets expanded into real CSS
+   rules by the build's Tailwind plugin ahead of the final optimization pass, and any @import
+   appearing after real rules at that point is invalid per spec and gets silently dropped. */
+@layer oak-overrides, oak-vendor;
+@import url('./assets/oak/oak.css') layer(oak-vendor);
+@import url('./assets/oak/oak-accordion.css') layer(oak-vendor);
+
 /* @import "tailwindcss"; */
 @import "tailwindcss";
 
 /* Font families
-   Inter: se carga en index.html desde Google Fonts (link correcto).
-   Segoe UI: se carga en index.html desde CDN (fonts.cdnfonts.com) para macOS/Linux; en Windows viene con el SO. */
+   Inter: self-hosted from src/assets/fonts (weights 300-700, latin subset, single variable-font
+   file) — was loaded from Google Fonts on every page for all 9 weights (100-900, all scripts).
+   Segoe UI: not self-hosted — it's a Microsoft-licensed font, not freely redistributable like
+   Inter. On Windows it's already a system font, so it resolves with zero network request; the
+   --font-segoe fallback chain below covers non-Windows. Previously loaded from fonts.cdnfonts.com,
+   a third-party CDN of uncertain licensing for this exact font — removed rather than self-hosted. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/assets/fonts/inter-latin-var.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* Design tokens — synced with shared/design-tokens.json (Figma Oakwood Website 2026) */
 :root {
     --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;

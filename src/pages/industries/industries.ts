@@ -13,7 +13,8 @@ import { FeaturedCaseStudySectionComponent } from "../../shared/sections/feature
 import { FeaturedCaseStudyCategory } from "../../shared/sections/featured-case-study/featured-case-study-category";
 import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
-import { SvgIcons } from '../../shared/industries-icons/industries-icons';
+// Lazy-load industry SVG icons to avoid increasing initial bundle size.
+import { logError } from '../../app/utils/logger';
 interface IndustryChallengeCard {
   id: string;
   image: string;
@@ -118,7 +119,28 @@ export default class Industries implements OnInit, OnDestroy {
     });
   }
 
+  private _svgIcons: Record<string, string> | undefined = undefined;
+
+  private async loadSvgIcons(): Promise<Record<string, string>> {
+    if (this._svgIcons !== undefined) return this._svgIcons as Record<string, string>;
+    try {
+      const m = await import('../../shared/industries-icons/industries-icons');
+      this._svgIcons = (m && (m as any).SvgIcons) || {};
+      return this._svgIcons as Record<string, string>;
+    } catch (e) {
+      this._svgIcons = {};
+      return this._svgIcons as Record<string, string>;
+    }
+  }
+
   ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      void this.loadSvgIcons();
+    }
+    // Only this page reads industriesContent$, so only load it here instead of
+    // firing it globally on every route. Populates the shared preload tier used
+    // by loadFromPreloadedOrGraphQL() for subsequent industry page navigations.
+    void this.graphql.loadIndustriesContent();
     // Subscribe to route params to handle navigation changes
     this.routeSubscription = this.route.paramMap.subscribe(params => {
       const slugParam = params.get('slug');
@@ -156,9 +178,9 @@ export default class Industries implements OnInit, OnDestroy {
   }
 
   getIconSvg(iconKey: string) {
-      const svg = SvgIcons[iconKey] || '';
-      return this.sanitizer.bypassSecurityTrustHtml(svg);
-    }
+    const svg = (this._svgIcons && this._svgIcons[iconKey]) || '';
+    return this.sanitizer.bypassSecurityTrustHtml(svg);
+  }
 
   isImageIcon(icon: string): boolean {
     if (!icon) return false;
@@ -203,7 +225,10 @@ export default class Industries implements OnInit, OnDestroy {
           this.loadFromPreloadedOrGraphQL();
         }
       },
-      error: () => this.loadFromPreloadedOrGraphQL(),
+      error: (error) => {
+        logError('Error loading industry:', error);
+        this.loadFromPreloadedOrGraphQL();
+      },
     });
   }
 
@@ -229,7 +254,10 @@ export default class Industries implements OnInit, OnDestroy {
             this.loadFromStaticFile();
           }
         },
-        error: () => this.loadFromStaticFile(),
+        error: (error) => {
+          logError('Error loading industries content:', error);
+          this.loadFromStaticFile();
+        },
       });
     });
   }
@@ -274,7 +302,8 @@ export default class Industries implements OnInit, OnDestroy {
     // 4) Load from local static JSON as final fallback
     this.http.get<IndustriesContent>('/industries-content.json').subscribe({
       next: (data) => this.applyIndustriesContent(data),
-      error: () => {
+      error: (error) => {
+        logError('Error loading industry content from static file:', error);
         this.error.set('Failed to load industry content');
         this.loading.set(false);
       },

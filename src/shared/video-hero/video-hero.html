@@ -5,13 +5,23 @@
   }">
   <!-- Background Video -->
   <div class="absolute inset-0 z-0">
-    <video class="absolute inset-0 w-full h-full object-cover" autoplay muted playsinline preload="auto" #videoElement
-      [src]="currentVideoUrl()" [attr.poster]="poster || null" [attr.loop]="videoUrlsSignal().length <= 1 ? '' : null">
+    @if (poster || defaultPoster) {
+    <img
+      [src]="poster || defaultPoster"
+      alt=""
+      aria-hidden="true"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover"
+    />
+    }
+    <video class="absolute inset-0 w-full h-full object-cover" autoplay muted playsinline preload="metadata" fetchpriority="high" #videoElement
+      [src]="currentVideoUrl()" [attr.poster]="poster || defaultPoster" [attr.loop]="videoUrlsSignal().length <= 1 ? '' : null">
       Your browser does not support the video tag.
     </video>
-    <!-- Precarga del siguiente video (WordPress) para transición sin espera -->
+    <!-- Precarga del siguiente video justo antes de la transición (no en el primer render) -->
     @if (nextVideoUrl()) {
-    <video class="hidden" preload="auto" [src]="nextVideoUrl()" aria-hidden="true"></video>
+    <video class="hidden" preload="none" #nextVideoElement aria-hidden="true"></video>
     }
       @if (overlayImageUrl) {
       <div class="absolute inset-0 z-[1] bg-center bg-cover bg-no-repeat pointer-events-none opacity-60"
@@ -107,11 +117,11 @@
             }
             }
             <p
-              class="font-['Segoe UI'] font-normal text-[14px] sm:text-[16px] leading-[120%] tracking-[0.01em] text-[#E7E7E7] break-words">
+              class="font-[var(--font-segoe)] font-normal text-[14px] sm:text-[16px] leading-[120%] tracking-[0.01em] text-[#E7E7E7] break-words">
               {{ item.offer }}</p>
           </div>
           <p
-            class="font-['Segoe UI'] font-semibold text-base sm:text-lg md:text-xl lg:text-2xl leading-[130%] tracking-[0em] align-middle text-[#F6F6F6] mt-2 break-words [overflow-wrap:anywhere]">
+            class="font-[var(--font-segoe)] font-semibold text-base sm:text-lg md:text-xl lg:text-2xl leading-[130%] tracking-[0em] align-middle text-[#F6F6F6] mt-2 break-words [overflow-wrap:anywhere]">
             {{ item.offervalue }}</p>
         </div>
         }
