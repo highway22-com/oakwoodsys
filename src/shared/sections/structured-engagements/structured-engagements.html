@@ -5,6 +5,7 @@
   <div class="absolute inset-0 structured-engagements__bg-base"></div>
   <div
     class="absolute inset-0 structured-engagements__bg-image"
+        loading="lazy"
     style="
       background-image: url(&quot;/assets/structured-engagement-bg.avif&quot;);
     "
@@ -90,6 +91,7 @@
                   <div
                     class="structured-engagements__svg-icon w-auto h-7"
                     [innerHTML]="getSafeSvgIcon(offer.svgIcon)"
+                    loading="lazy"
                   ></div>
                 }
               } 

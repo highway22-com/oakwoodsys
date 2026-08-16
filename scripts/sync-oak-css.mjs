@@ -21,14 +21,18 @@ const FILES = [
   { url: `${PLUGIN_BASE}/blocks/accordion-item/style.css?ver=${OAK_VER}`, out: 'src/assets/oak/oak-accordion.css' },
 ];
 
-// Preserve plugin CSS as-is (do not strip remote font @import statements).
+// The plugin's CSS pulls Inter from Google Fonts via @import — but the app already
+// self-hosts Inter (index.html preloads inter-latin-var.woff2 and defines its own
+// @font-face), so this would just add a second, render-blocking, cross-origin font
+// fetch of the same family. Strip it so the synced copy doesn't reintroduce it.
+const GOOGLE_FONTS_IMPORT_RE = /@import\s+url\(["']?https:\/\/fonts\.googleapis\.com\/[^)]*\)\s*;?\s*\n?/g;
 
 async function syncFile(url, outRelPath) {
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`${url} responded ${res.status} ${res.statusText} — the plugin path may have moved.`);
   }
-  const css = await res.text();
+  const css = (await res.text()).replace(GOOGLE_FONTS_IMPORT_RE, '');
   const outPath = join(ROOT, outRelPath);
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, css, 'utf8');
