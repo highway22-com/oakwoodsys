@@ -22,7 +22,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { VideoHero } from '../../shared/video-hero/video-hero';
-import { SvgIcons } from '../../shared/service-icons/service-icons';
+// Lazy-load shared service icons to keep this page's initial bundle small.
+
+
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { logError } from '../../app/utils/logger';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
@@ -142,7 +144,19 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit, OnDest
     environmentDetails: false,
     recaptcha: false,
   };
+  private _svgIcons: Record<string, string> | undefined = undefined;
 
+  private async loadSvgIcons(): Promise<Record<string, string>> {
+    if (this._svgIcons !== undefined) return this._svgIcons as Record<string, string>;
+    try {
+      const m = await import('../../shared/service-icons/service-icons');
+      this._svgIcons = (m && (m as any).SvgIcons) || {};
+      return this._svgIcons as Record<string, string>;
+    } catch (e) {
+      this._svgIcons = {};
+      return this._svgIcons as Record<string, string>;
+    }
+  }
   readonly hero = {
     videoUrls: [
       'https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Microsoft_Licensing.mp4',
@@ -609,12 +623,12 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit, OnDest
   }
 
   getIconSvg(iconKey: string) {
-    const svg = SvgIcons[iconKey] || '';
+    const svg = (this._svgIcons && this._svgIcons[iconKey]) || '';
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   }
 
   getIconImageSrc(iconKey: string): string {
-    const svg = SvgIcons[iconKey] || '';
+    const svg = (this._svgIcons && this._svgIcons[iconKey]) || '';
     if (!svg) return '';
     return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
   }
@@ -631,6 +645,8 @@ export default class MicrosoftLicensing implements AfterViewInit, OnInit, OnDest
     if (typeof window !== 'undefined' && this.recaptchaEnabled) {
       this.observeRecaptcha();
     }
+    // eager client-side preload of icons for this page
+    void this.loadSvgIcons();
   }
 
   /** Defers loading/rendering reCAPTCHA until the form is actually scrolled into view. */

@@ -191,8 +191,10 @@
             [src]="copy().image.src"
             [alt]="copy().image.alt"
             class="w-full h-full object-cover"
-            loading="eager"
-            fetchpriority="high"
+            loading="lazy"
+            decoding="async"
+            width="1200"
+            height="800"
           />
      <!-- Bottom overlay with stats (uses img + div together) -->
         <div class="absolute inset-x-0 bottom-0 pointer-events-none">
@@ -204,6 +206,9 @@
                   alt=""
                   class="w-[28px] h-[16px] object-contain"
                   loading="lazy"
+                  decoding="async"
+                  width="28"
+                  height="16"
                 />
 
 
@@ -219,6 +224,9 @@
                   alt=""
                   class="w-[24px] h-[22px] object-contain"
                   loading="lazy"
+                  decoding="async"
+                  width="24"
+                  height="22"
                 />
 
                 <div class="min-w-0">
@@ -233,6 +241,9 @@
                   alt=""
                   class="w-[24px] h-[24px] object-contain"
                   loading="lazy"
+                  decoding="async"
+                  width="24"
+                  height="24"
                 />
 
                 <div class="min-w-0">

@@ -1,4 +1,4 @@
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import {
   ChangeDetectionStrategy,
@@ -13,7 +13,7 @@ import {
   effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule, isPlatformBrowser, NgClass } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { VideoHero } from '../../shared/video-hero/video-hero';
 import { FeaturedCaseStudySectionComponent } from '../../shared/sections/featured-case-study/featured-case-study';
@@ -30,7 +30,6 @@ import { StructuredEngagementsSectionComponent } from '../../shared/sections/str
 import { LatestInsightsSectionComponent } from '../../shared/sections/latest-insights/latest-insights';
 import { ButtonPrimaryComponent } from '../../shared/button-primary/button-primary.component';
 import { ScrollAnimationComponent } from '../../shared/scroll-animation-component/scroll-animation.component';
-import { SvgIcons } from '../../shared/service-icons/service-icons';
 import type { SafeHtml } from '@angular/platform-browser';
 const DEFAULT_TITLE =
   'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
@@ -63,8 +62,6 @@ export function splitTwoLinerTitle(title: string): [string, string] {
   selector: 'app-home',
   imports: [
     CommonModule,
-    NgClass,
-    RouterLink,
     VideoHero,
     ScrollAnimationComponent,
     FeaturedCaseStudySectionComponent,
@@ -91,7 +88,7 @@ export default class Home implements OnInit {
   navigateTo(link: string | undefined) {
     if (!link) return;
     if (link.startsWith('http')) {
-      window.open(link, '_blank');
+      window.open(link, '_blank', 'noopener,noreferrer');
     } else {
       this.router.navigateByUrl(link);
     }
@@ -112,8 +109,7 @@ export default class Home implements OnInit {
   readonly posts = signal<any>(null);
   readonly error = signal<any>(null);
   readonly structuredData = signal<any>(null);
-  scrollAnimationVisible = signal(false);
-  scrollAnimationReverse = signal(false);
+
 
   constructor() {
     effect(() => {
@@ -132,7 +128,7 @@ export default class Home implements OnInit {
     }
 
     // Siempre buscamos datos frescos desde GraphQL (network-only evita la caché de Apollo).
-    this.graphql.getCmsPageBySlug('home', { fetchPolicy: 'network-only' })
+    this.graphql.getCmsPageBySlug('home', { fetchPolicy: 'cache-and-network' })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
@@ -147,9 +143,8 @@ export default class Home implements OnInit {
         },
       });
     this.lastScrollVisible = false;
-    if (isPlatformBrowser(this.platformId)) {
-      window.addEventListener('scroll', this.handleScrollAnimation.bind(this));
-      setTimeout(() => this.handleScrollAnimation(), 100);
+        if (isPlatformBrowser(this.platformId)) {
+      void this.loadSvgIcons();
     }
   }
 
@@ -181,9 +176,25 @@ export default class Home implements OnInit {
   getSection(type: string) {
     return this.content()?.sections.find((s) => s.type === type);
   }
-  getSafeSvgIcon(svg?: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(svg ?? '');
+    private _svgIcons: Record<string, string> | undefined = undefined;
+
+  private async loadSvgIcons(): Promise<Record<string, string>> {
+    if (this._svgIcons !== undefined) return this._svgIcons as Record<string, string>;
+    try {
+      const m = await import('../../shared/service-icons/service-icons');
+      this._svgIcons = (m && (m as any).SvgIcons) || {};
+      return this._svgIcons as Record<string, string>;
+    } catch (e) {
+      this._svgIcons = {};
+      return this._svgIcons as Record<string, string>;
+    }
   }
+
+  getSafeSvgIcon(iconKey: string) : SafeHtml{
+    const svg = (this._svgIcons && this._svgIcons[iconKey]) || '';
+    return this.sanitizer.bypassSecurityTrustHtml(svg);
+  }
+
 
   /** ctas desde root o desde hero section (CMS puede guardarlos en uno u otro). */
   private getCtas(): HeroCtaItem[] | undefined {
@@ -263,6 +274,8 @@ export default class Home implements OnInit {
     }
     return this.isBlankValue(value) ? HERO_FALLBACK_DESCRIPTION : value;
   }
+
+
 
   /** CTA principal del hero: array (uno por video) desde ctas, o único desde sección hero. */
   heroCtaPrimary():
@@ -417,17 +430,4 @@ export default class Home implements OnInit {
     return data ? JSON.stringify(data) : '';
   }
 
-  handleScrollAnimation() {
-    if (!isPlatformBrowser(this.platformId)) return;
-    const el = document.querySelector('.scroll-animation-section');
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const windowHeight =
-      window.innerHeight || document.documentElement.clientHeight;
-    const visible =
-      rect.top < windowHeight * 0.7 && rect.bottom > windowHeight * 0.3;
-    this.scrollAnimationReverse.set(this.lastScrollVisible && !visible);
-    this.scrollAnimationVisible.set(visible);
-    this.lastScrollVisible = visible;
-  }
 }

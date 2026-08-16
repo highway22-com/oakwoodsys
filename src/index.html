@@ -41,13 +41,11 @@
   <meta name="twitter:image" content="https://oakwoodsys.com/assets/og-image.png">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
-  <!-- Precarga conexión a WordPress (vídeos / medios) -->
-  <link rel="preconnect" href="https://oakwoodsys.com" crossorigin>
-  <!-- Precarga conexión al host real de medios (videos de hero, imágenes CMS) -->
+  <!-- Precarga conexión al host real de medios (videos de hero, imágenes CMS) — LCP-critical, único preconnect -->
   <link rel="preconnect" href="https://oakwoodsystemsgroup.com" crossorigin>
-  <!-- Preconnect para scripts de analytics (mejora rendimiento) -->
-  <link rel="preconnect" href="https://www.googletagmanager.com">
-  <link rel="preconnect" href="https://cxppusa1rdrect01sa02cdn-endpoint.azureedge.net">
+  <!-- DNS-prefetch (solo resolución DNS, sin handshake TCP/TLS) para orígenes no críticos para LCP -->
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+  <link rel="dns-prefetch" href="https://cxppusa1rdrect01sa02cdn-endpoint.azureedge.net">
   <link rel="dns-prefetch" href="https://lftracker.leadfeeder.com">
   <link rel="dns-prefetch" href="https://www.chatbase.co">
   <!-- Inter: self-hosted (src/styles.css has the @font-face), weights 300-700 in one variable-font
@@ -110,69 +108,144 @@
   <app-root></app-root>
 
   <!-- Scripts de analytics al final del body (no bloquean el render inicial) -->
-  <!-- Dynamics CRM / MSCI Analytics -->
-  <script defer>
-    (function (a, t, i) { var e = "MSCI"; var s = "Analytics"; var o = e + "queue"; a[o] = a[o] || []; var r = a[e] || function (n) { var t = {}; t[s] = {}; function e(e) { while (e.length) { var r = e.pop(); t[s][r] = function (e) { return function () { a[o].push([e, n, arguments]) } }(r) } } var r = "track"; var i = "set"; e([r + "Event", r + "View", r + "Action", i + "Config", i + "Property", i + "User", "initialize", "teardown"]); return t }(i.name); var n = i.name; if (!a[e]) { a[n] = r[s]; a[o].push(["new", n]); setTimeout(function () { var e = "script"; var r = t.createElement(e); r.async = 1; r.src = i.src; var n = t.getElementsByTagName(e)[0]; n.parentNode.insertBefore(r, n) }, 1) } else { a[n] = new r[s] } if (i.user) { a[n].setUser(i.user) } if (i.props) { for (var c in i.props) { a[n].setProperty(c, i.props[c]) } } a[n].initialize(i.cfg) })(window, document, {
 
-      src: "https://cxppusa1rdrect01sa02cdn-endpoint.azureedge.net/webtracking/WebTracking/WebTracking.bundle.js",
-      name: "MSCI",
-      cfg: {
-
-        ingestionKey: "b7c5b587e395472faf28b43e0b682353-c2d07b76-033f-44c8-8497-cfcd5b514221-7180",
-        endpointUrl: "https://mobile.events.data.microsoft.com/OneCollector/1.0/",
-        autoCapture: {
-          view: true,
-          click: true
-        },
-        orgInfo: {
-          orgId: "5180c070-ea87-4f4a-808d-7842ba4018ed",
-          orgTenantId: "03ee698d-8c8e-417b-94d6-02d6ca438416",
-          orgGeo: "USA"
+  <!-- bfcache fix: MSCI's WebTracking.bundle.js attaches an 'unload' listener, which
+       disqualifies the page from back/forward cache (Chrome DevTools flagged this as
+       UnloadHandlerExistsInMainFrame). The bundle doesn't honor disablePageUnloadEvents
+       (tried, no effect — likely a thin custom wrapper, not the full AppInsights SDK
+       config surface), so this intercepts at the browser API level instead: any
+       'unload' listener registered anywhere on the page after this point is silently
+       redirected to 'pagehide', which fires at the same moment but doesn't block
+       bfcache. Must stay ABOVE the MSCI loader below so it's active before MSCI
+       registers its listener. Verify via DevTools > Application > Back/forward cache > Test.
+       NOTE: this block was missing from the last production deploy — confirm it's live
+       after this file ships, since the bfcache failure will still reproduce without it. -->
+  <script>
+    (function () {
+      var originalAddEventListener = window.addEventListener.bind(window);
+      window.addEventListener = function (type, listener, options) {
+        if (type === 'unload') {
+          return originalAddEventListener('pagehide', listener, options);
         }
-      }
-    });
+        return originalAddEventListener(type, listener, options);
+      };
+    })();
+  </script>
+
+  <!-- Dynamics CRM / MSCI Analytics — setup deferred via requestIdleCallback so it doesn't
+       compete with main-thread work during initial load (confirmed a real cost via
+       Performance trace profiling). timeout: 5000 gives it a generous but bounded window
+       since this is CRM data, not marketing analytics — falls back to load+3s delay for
+       Safari, which doesn't support requestIdleCallback. -->
+  <script>
+    function loadAzureWebTracking() {
+      (function (a, t, i) { var e = "MSCI"; var s = "Analytics"; var o = e + "queue"; a[o] = a[o] || []; var r = a[e] || function (n) { var t = {}; t[s] = {}; function e(e) { while (e.length) { var r = e.pop(); t[s][r] = function (e) { return function () { a[o].push([e, n, arguments]) } }(r) } } var r = "track"; var i = "set"; e([r + "Event", r + "View", r + "Action", i + "Config", i + "Property", i + "User", "initialize", "teardown"]); return t }(i.name); var n = i.name; if (!a[e]) { a[n] = r[s]; a[o].push(["new", n]); setTimeout(function () { var e = "script"; var r = t.createElement(e); r.async = 1; r.src = i.src; var n = t.getElementsByTagName(e)[0]; n.parentNode.insertBefore(r, n) }, 1); } else { try { a[n] = new r[s]; } catch (err) { a[n] = r[s]; } } if (i.user) { a[n].setUser(i.user); } if (i.props) { for (var c in i.props) { a[n].setProperty(c, i.props[c]); } } a[n].initialize(i.cfg) })(window, document, {
+        src: "https://cxppusa1rdrect01sa02cdn-endpoint.azureedge.net/webtracking/WebTracking/WebTracking.bundle.js",
+        name: "MSCI",
+        cfg: {
+          ingestionKey: "b7c5b587e395472faf28b43e0b682353-c2d07b76-033f-44c8-8497-cfcd5b514221-7180",
+          endpointUrl: "https://mobile.events.data.microsoft.com/OneCollector/1.0/",
+          autoCapture: {
+            view: true,
+            click: true
+          },
+          orgInfo: {
+            orgId: "5180c070-ea87-4f4a-808d-7842ba4018ed",
+            orgTenantId: "03ee698d-8c8e-417b-94d6-02d6ca438416",
+            orgGeo: "USA"
+          }
+          // Note: disablePageUnloadEvents was tried here but this bundle doesn't honor it —
+          // see the addEventListener shim above instead, which fixes the same issue at the
+          // browser API level.
+        }
+      });
+    }
+
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadAzureWebTracking, { timeout: 5000 });
+    } else {
+      window.addEventListener('load', function () {
+        setTimeout(loadAzureWebTracking, 3000);
+      });
+    }
   </script>
 
   <!-- GA4 (G-0BS8T310YP) and Google Ads (AW-967209685) are both configured as tags inside
        GTM-W9WNGS above, so they load once through GTM instead of being duplicated here. -->
 
-  <!-- Dealfront / Leadfeeder -->
+  <!-- Dealfront / Leadfeeder — loaded via requestIdleCallback so it doesn't compete with
+       main-thread work during initial page load (was flagged in the third-party script
+       audit as a TBT contributor). timeout: 2000 forces it to fire within 2s even if the
+       main thread never goes idle, so there's a hard upper bound rather than an open-ended
+       wait. Falls back to setTimeout for Safari, which doesn't support requestIdleCallback.
+       NOTE: this block was missing from the last production deploy — Leadfeeder tracking
+       was likely not firing on production until this ships. -->
   <script>
-    (function (ss, ex) { window.ldfdr = window.ldfdr || function () { (ldfdr._q = ldfdr._q || []).push([].slice.call(arguments)); }; (function (d, s) { fs = d.getElementsByTagName(s)[0]; function ce(src) { var cs = d.createElement(s); cs.src = src; cs.async = 1; fs.parentNode.insertBefore(cs, fs); }; ce('https://sc.lfeeder.com/lftracker_v1_' + ss + (ex ? '_' + ex : '') + '.js'); })(document, 'script'); })('ywVkO4XWJLw7Z6Bj');
+    (function () {
+      function loadLeadfeeder() {
+        (function (ss, ex) { window.ldfdr = window.ldfdr || function () { (ldfdr._q = ldfdr._q || []).push([].slice.call(arguments)); }; (function (d, s) { fs = d.getElementsByTagName(s)[0]; function ce(src) { var cs = d.createElement(s); cs.src = src; cs.async = 1; fs.parentNode.insertBefore(cs, fs); }; ce('https://sc.lfeeder.com/lftracker_v1_' + ss + (ex ? '_' + ex : '') + '.js'); })(document, 'script'); })('ywVkO4XWJLw7Z6Bj');
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadLeadfeeder, { timeout: 2000 });
+      } else {
+        setTimeout(loadLeadfeeder, 2000);
+      }
+    })();
   </script>
 
-
-
-  <!-- Chatbase (carga diferida tras load del documento) -->
-  <script id="chatbot-script-js-after" defer>
+  <!-- Chatbase — idle-load OR first user interaction, whichever comes first, so the widget
+       is ready quickly for an engaged visitor without costing anything on initial load. -->
+  <script id="chatbot-script-js-after">
     (function () {
-      if (!window.chatbase || window.chatbase("getState") !== "initialized") {
-        window.chatbase = (...arguments) => {
-          if (!window.chatbase.q) {
-            window.chatbase.q = []
-          }
-          window.chatbase.q.push(arguments)
-        };
-        window.chatbase = new Proxy(window.chatbase, {
-          get(target, prop) {
-            if (prop === "q") {
-              return target.q
+      function initChatbase() {
+        if (window.chatbase && window.chatbase("getState") === "initialized") {
+          return;
+        }
+        if (!window.chatbase || window.chatbase("getState") !== "initialized") {
+          window.chatbase = (...arguments) => {
+            if (!window.chatbase.q) {
+              window.chatbase.q = [];
             }
-            return (...args) => target(prop, ...args)
-          }
-        })
-      }
-      const onLoad = function () {
+            window.chatbase.q.push(arguments);
+          };
+          window.chatbase = new Proxy(window.chatbase, {
+            get(target, prop) {
+              if (prop === "q") {
+                return target.q;
+              }
+              return (...args) => target(prop, ...args);
+            }
+          });
+        }
         const script = document.createElement("script");
         script.src = "https://www.chatbase.co/embed.min.js";
         script.id = "bW_eN1G3MHM4DA7uy64Ln";
         script.domain = "www.chatbase.co";
-        document.body.appendChild(script)
-      };
+        script.async = true;
+        document.body.appendChild(script);
+      }
+
+      function scheduleLoad() {
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(initChatbase, { timeout: 3000 });
+        } else {
+          setTimeout(initChatbase, 3000);
+        }
+      }
+
+      function onFirstInteraction() {
+        initChatbase();
+        window.removeEventListener("pointerdown", onFirstInteraction);
+        window.removeEventListener("keydown", onFirstInteraction);
+      }
+
+      window.addEventListener("pointerdown", onFirstInteraction, { once: true, passive: true });
+      window.addEventListener("keydown", onFirstInteraction, { once: true, passive: true });
+
       if (document.readyState === "complete") {
-        onLoad()
+        scheduleLoad();
       } else {
-        window.addEventListener("load", onLoad)
+        window.addEventListener("load", scheduleLoad, { once: true });
       }
     })();
   </script>

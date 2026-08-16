@@ -33,6 +33,14 @@ function getWordPressPageSlugs(): string[] {
  */
 export const serverRoutes: ServerRoute[] = [
   {
+    path: '',
+    renderMode: RenderMode.Server,
+  },
+  {
+    path: 'home',
+    renderMode: RenderMode.Server,
+  },
+  {
     path: 'blog/:slug',
     renderMode: RenderMode.Prerender,
     getPrerenderParams: async () => getPrerenderSlugs().blog.map((slug) => ({ slug })),

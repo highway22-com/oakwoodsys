@@ -13,7 +13,8 @@ import { FeaturedCaseStudySectionComponent } from '../../shared/sections/feature
 import { FeaturedCaseStudyCategory } from '../../shared/sections/featured-case-study/featured-case-study-category';
 import { CtaSectionComponent } from "../../shared/cta-section/cta-section.component";
 import { TrustedBySectionComponent } from "../../shared/sections/trusted-by/trusted-by";
-import { SvgIcons } from '../../shared/service-icons/service-icons';
+// Lazy-load `SvgIcons` to avoid bundling large inline SVG payloads eagerly.
+
 import { logError } from '../../app/utils/logger';
 
 interface ServiceArea {
@@ -196,8 +197,22 @@ export default class Services implements OnInit, OnDestroy {
     });
   }
 
+  private _svgIcons: Record<string, string> | undefined = undefined;
+
+  private async loadSvgIcons(): Promise<Record<string, string>> {
+    if (this._svgIcons !== undefined) return this._svgIcons as Record<string, string>;
+    try {
+      const m = await import('../../shared/service-icons/service-icons');
+      this._svgIcons = (m && (m as any).SvgIcons) || {};
+      return this._svgIcons as Record<string, string>;
+    } catch (e) {
+      this._svgIcons = {};
+      return this._svgIcons as Record<string, string>;
+    }
+  }
+
   getIconSvg(iconKey: string) {
-    const svg = SvgIcons[iconKey] || '';
+    const svg = (this._svgIcons && this._svgIcons[iconKey]) || '';
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   }
 
@@ -247,6 +262,10 @@ export default class Services implements OnInit, OnDestroy {
       }
       this.loadContent();
     });
+
+    if (isPlatformBrowser(this.platformId)) {
+      void this.loadSvgIcons();
+    }
   }
 
   /** Meta desde slug (prerender/SSR cuando el contenido aún no carga). */

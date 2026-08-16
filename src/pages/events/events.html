@@ -54,14 +54,10 @@
       [loading]="false"
       [hvh70]="true"
       [videoUrls]="c.hero.heroVideoUrls || []"
-      [overlayImageUrl]="
-        hasUpcomingEvents() ? null : '/assets/events/bg-events.jpg'
-      "
-      [poster]="c.hero.heroImage || ''"
+      [overlayImageUrl]="hasUpcomingEvents() ? null : '/assets/events/bg-events.jpg'"
+      [poster]="c.hero.heroImage || '/assets/events/bg-events.jpg'"
       [title]="hasUpcomingEvents() ? c.hero.title : c.noEventsMessage.title"
-      [description]="
-        hasUpcomingEvents() ? c.hero.description : c.noEventsMessage.description
-      "
+      [description]="hasUpcomingEvents() ? c.hero.description : c.noEventsMessage.description"
       [centerContent]="!hasUpcomingEvents()"
       [showIndicators]="false"
     >
