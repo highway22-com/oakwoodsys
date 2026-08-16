@@ -2,6 +2,32 @@
 <html lang="en">
 
 <head>
+  <!-- Consent Mode: default every tracking storage type to denied before GTM loads, so
+       Google's own tags (ads/analytics) never fire pre-consent. Restores a prior "accept"
+       from localStorage so returning consenting visitors aren't re-blocked every load.
+       Non-Google tags (e.g. Bing UET, Clarity) only honor this if they're separately marked
+       "requires consent" inside the GTM container itself. -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      analytics_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      wait_for_update: 500
+    });
+    try {
+      if (localStorage.getItem('oakwood-cookie-consent') === 'true') {
+        gtag('consent', 'update', {
+          ad_storage: 'granted',
+          analytics_storage: 'granted',
+          ad_user_data: 'granted',
+          ad_personalization: 'granted'
+        });
+      }
+    } catch (e) {}
+  </script>
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
