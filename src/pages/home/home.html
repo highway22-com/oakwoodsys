@@ -1,7 +1,7 @@
 
 <!-- Hero siempre visible: placeholders mientras loading, luego título/descripción/videoUrls de GraphQL -->
 <app-video-hero [loading]="false" [videoUrls]="videoUrls()" [title]="heroTitle()" [description]="heroDescription()"
-  [poster]="heroPoster()" [ctaPrimary]="heroCtaPrimary()" [ctaSecondary]="heroCtaSecondary()" />
+   [ctaPrimary]="heroCtaPrimary()" [ctaSecondary]="heroCtaSecondary()" />
 
 @if (!loading() && content()) {
 <!-- Structured Data for SEO -->
