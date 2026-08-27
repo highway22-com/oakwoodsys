@@ -203,11 +203,15 @@ export class AppNavbar implements OnInit, OnDestroy {
   });
 
   ngOnInit() {
+    // Reads only this.router.url (available identically on server and client), so this must
+    // run unconditionally — routes like /contact-us and /privacy-policy need the solid navbar
+    // in the very first SSR-rendered HTML, or hydration flips it a moment after paint, which
+    // both flashes and risks a hydration mismatch on the logo's structural @if.
+    this.updateContactSuccessStatus();
+
     if (isPlatformBrowser(this.platformId)) {
       this.resolveStructuredEngagementEl();
       this.checkScrollPosition();
-      // Check current route
-      this.updateContactSuccessStatus();
       // Listen to route changes
       this.router.events
         .pipe(
@@ -363,11 +367,16 @@ export class AppNavbar implements OnInit, OnDestroy {
   private updateContactSuccessStatus(): void {
     this.isOnContactSuccess.set(
       this.router.url === '/contact-success' ||
-        this.router.url === '/contact-us',
+        this.router.url === '/contact-us' ||
+        this.router.url === '/privacy-policy',
     );
   }
 
-  get isNavbarDark(): boolean {
+  /** computed() (not a plain getter) so hydration sees a stable, memoized value instead of
+   *  re-deriving it ad-hoc on every read — a plain getter driving the logo's structural @if
+   *  could disagree with itself between the server-serialized value and the client's first
+   *  evaluation, which is what was crashing hydration on this page. */
+  readonly isNavbarDark = computed((): boolean => {
     if (this.isOnStructuredEngagement()) return false;
     const hover = this.hoveredIndex();
     return (
@@ -376,20 +385,20 @@ export class AppNavbar implements OnInit, OnDestroy {
       this.searchPanelOpen() ||
       this.isOnContactSuccess() ||
       this.section() === 'past_event'
-    ); // 👈 add this
-  }
+    );
+  });
 
-  get hasNavbarBackground(): boolean {
+  readonly hasNavbarBackground = computed((): boolean => {
     if (this.isOnStructuredEngagement()) return false;
 
-    if (this.section() === 'past_event') return true; // 👈 add this
+    if (this.section() === 'past_event') return true;
     return (
       this.isScrolled() ||
       this.hoveredIndex() !== null ||
       this.searchPanelOpen() ||
       this.isOnContactSuccess()
     );
-  }
+  });
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
