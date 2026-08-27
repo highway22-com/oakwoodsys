@@ -433,7 +433,7 @@ function oakwood_page_builder_title_with_site_name( $title ) {
  * SEO meta for headless Angular pages (Yoast SEO → REST `seo` object).
  *
  * @param int $post_id Post ID.
- * @return array{title:string,description:string,ogImage:string,keywords:string,slug:string,canonicalPath:string}
+ * @return array{title:string,description:string,ogImage:string,keywords:string,slug:string,canonicalPath:string,noindex:bool}
  */
 function oakwood_page_builder_get_seo_meta( $post_id ) {
 	$post_id = (int) $post_id;
@@ -447,6 +447,7 @@ function oakwood_page_builder_get_seo_meta( $post_id ) {
 			'keywords'      => '',
 			'slug'          => '',
 			'canonicalPath' => '/',
+			'noindex'       => false,
 		);
 	}
 
@@ -524,6 +525,13 @@ function oakwood_page_builder_get_seo_meta( $post_id ) {
 
 	$slug = $post->post_name;
 
+	// Per-page Yoast "Allow search engines to show this content in search results?" toggle
+	// (Advanced tab). '1' = explicitly set to "No". Deliberately ignores the sitewide
+	// "discourage search engines" setting (Settings → Reading) — that's about this WP
+	// backend's own domain, not a signal that should noindex pages on the public site.
+	$noindex_meta = trim( (string) get_post_meta( $post_id, '_yoast_wpseo_meta-robots-noindex', true ) );
+	$noindex      = ( $noindex_meta === '1' );
+
 	return array(
 		'title'         => $title,
 		'description'   => $description,
@@ -531,6 +539,7 @@ function oakwood_page_builder_get_seo_meta( $post_id ) {
 		'keywords'      => $keywords,
 		'slug'          => $slug,
 		'canonicalPath' => oakwood_page_builder_seo_canonical_path( $canonical, $post_id ),
+		'noindex'       => $noindex,
 	);
 }
 

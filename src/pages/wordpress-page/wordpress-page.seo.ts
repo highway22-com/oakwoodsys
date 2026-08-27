@@ -101,6 +101,7 @@ export function buildWordPressSeoConfig(path: string, page: WordPressPageRespons
     canonicalPath: seo?.canonicalPath?.trim() || `/${path}`,
     image: resolveWordPressOgImage(page),
     keywords: seo?.keywords?.trim() || undefined,
+    noindex: seo?.noindex === true,
   };
 }
 
