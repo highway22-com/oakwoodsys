@@ -254,7 +254,8 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
         } else if (error.name === 'NotReadableError') {
           logError('Video file cannot be read');
         } else if (error.name === 'AbortError') {
-          logError('Video playback was aborted');
+          // Expected: play() got interrupted by our own load()/pause() (video-switch on
+          // carousel rotation, or the mobile deferred-autoplay timing), not a real failure.
         } else {
           logError('Unknown error occurred:', error);
         }
