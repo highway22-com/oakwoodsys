@@ -50,6 +50,8 @@ export class ContactUs implements OnInit, AfterViewInit, OnDestroy {
   showContactImageAnimation = signal(false);
   showFormAnimation = signal(false);
   readonly copy = signal<ContactUsPageCopy>(DEFAULT_CONTACT_US_COPY);
+  /** Toggles the contact photo's skeleton off once it actually finishes downloading. */
+  readonly contactImageLoaded = signal(false);
   readonly stats = signal<ContactStat[]>(DEFAULT_CONTACT_STATS);
   readonly licensingCtaCopy = signal<ContactCta>(DEFAULT_LICENSING_CTA);
   readonly officeLocations = signal<OfficeLocationsContent>(DEFAULT_OFFICE_LOCATIONS);
@@ -119,6 +121,7 @@ export class ContactUs implements OnInit, AfterViewInit, OnDestroy {
 
         if (!data) return;
         if (data.contactUs) {
+          this.contactImageLoaded.set(false);
           this.copy.set(data.contactUs as ContactUsPageCopy);
         }
         if (data.shared?.stats?.length) {

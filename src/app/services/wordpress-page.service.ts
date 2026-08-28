@@ -1,9 +1,10 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { inject, Injectable, makeStateKey, PLATFORM_ID, TransferState } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, tap } from 'rxjs';
+import { catchError, Observable, of, tap, throwError } from 'rxjs';
 
 import { CMS_BASE_URL } from '../config/cms.config';
+import { logError } from '../utils/logger';
 
 export interface WordPressPageStylesheet {
   href: string;
@@ -38,6 +39,8 @@ export interface WordPressPageSeo {
   keywords?: string;
   slug?: string;
   canonicalPath?: string;
+  /** Per-page Yoast "Allow search engines to show this content in search results?" → No. */
+  noindex?: boolean;
 }
 
 export interface WordPressPageResponse {
@@ -87,6 +90,13 @@ export class WordPressPageService {
         if (isPlatformServer(this.platformId)) {
           this.transferState.set(stateKey, page);
         }
+      }),
+      catchError((error) => {
+        // Was previously swallowed silently by the resolver's own catchError, with zero
+        // trace anywhere — logging here, at the actual fetch, captures the URL and real
+        // cause (timeout, non-2xx, network error) instead of just "page came back null".
+        logError(`[wordpress-page] Failed to fetch "${normalizedPath}" from ${url}:`, error);
+        return throwError(() => error);
       }),
     );
   }

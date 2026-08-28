@@ -8,6 +8,7 @@ import { CMS_BASE_URL } from './config/cms.config';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { apiNoCacheInterceptor } from './interceptors/api-no-cache.interceptor';
+import { cmsThrottleInterceptor } from './interceptors/cms-throttle.interceptor';
 import { provideApollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache } from '@apollo/client';
@@ -27,7 +28,7 @@ export const appConfig: ApplicationConfig = {
       routes,
       withComponentInputBinding(),
       withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' })
-    ), provideClientHydration(withEventReplay()), provideHttpClient(withFetch(), withInterceptors([apiNoCacheInterceptor])), provideApollo(() => {
+    ), provideClientHydration(withEventReplay()), provideHttpClient(withFetch(), withInterceptors([apiNoCacheInterceptor, cmsThrottleInterceptor])), provideApollo(() => {
       const httpLink = inject(HttpLink);
       const platformId = inject(PLATFORM_ID);
       const isBrowser = isPlatformBrowser(platformId);

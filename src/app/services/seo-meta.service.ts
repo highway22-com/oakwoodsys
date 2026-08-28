@@ -26,6 +26,9 @@ export interface SeoMetaConfig {
   ogType?: 'website' | 'article';
   /** Keywords (opcional, usa default si no se pasa) */
   keywords?: string;
+  /** true → emits <meta name="robots" content="noindex, nofollow">, overriding index.html's
+   *  default "index, follow". Per-page opt-out (e.g. partner-only pages), not a sitewide flag. */
+  noindex?: boolean;
 }
 
 const DEFAULT_TITLE = 'Microsoft Solutions Partner | Azure Consulting | St. Louis, MO';
@@ -108,6 +111,14 @@ export class SeoMetaService {
     // Meta básicos
     this.metaService.updateTag({ name: 'description', content: description });
     this.metaService.updateTag({ name: 'keywords', content: keywords });
+
+    // Robots: most pages should stay at index.html's default ("index, follow"), so an
+    // explicit reset is needed here too — otherwise a noindex page followed by a client-side
+    // navigation to a normal page would leave the tag stuck on noindex.
+    this.metaService.updateTag({
+      name: 'robots',
+      content: config.noindex ? 'noindex, nofollow' : 'index, follow',
+    });
 
     // Open Graph
     this.metaService.updateTag({ property: 'og:locale', content: 'en_US' });

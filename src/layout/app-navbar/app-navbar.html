@@ -1,11 +1,11 @@
 <nav class="w-full px-4 sm:px-6 md:px-8 lg:px-1 py-4 transition-all duration-300"
   [ngClass]="previewMode() ? 'relative' : 'fixed top-0 left-0 right-0 z-50'"
-  [class.navbar--gradient]="!hasNavbarBackground && section() !== 'upcoming_event' " [class.bg-white]="hasNavbarBackground"
-[class.shadow-md]="hasNavbarBackground && section() !== 'past_event'">
+  [class.navbar--gradient]="!hasNavbarBackground() && section() !== 'upcoming_event' " [class.bg-white]="hasNavbarBackground()"
+[class.shadow-md]="hasNavbarBackground() && section() !== 'past_event'">
   <div class="px-4 sm:px-6 md:px-8 lg:px-20 mx-auto flex items-center justify-between">
     <!-- Logo (siempre visible) -->
     <a [routerLink]="'/'" class="flex items-center gap-2 sm:gap-3">
-      @if (isNavbarDark) {
+      @if (isNavbarDark()) {
       <img src="/assets/logo_dark.svg" alt="Oakwood" class="h-8 md:h-[32px] lg:h-[32px] w-auto" style="opacity: 1" />
       } @else {
       <img src="/assets/logo.svg" alt="Oakwood" class="h-8 md:h-[32px]lg:h-[32px] w-auto" style="opacity: 1" />
@@ -15,8 +15,8 @@
     <!-- Mobile/Tablet: solo botón hamburger que abre panel -->
     <button type="button" class="p-2 -mr-2 block md:hidden" (click)="toggleMobileMenu()"
       [attr.aria-expanded]="isMobileMenuOpen" aria-label="Abrir menú" [ngClass]="{
-        'text-white': !hasNavbarBackground,
-        'text-gray-900': hasNavbarBackground,
+        'text-white': !hasNavbarBackground(),
+        'text-gray-900': hasNavbarBackground(),
       }">
       @if (isMobileMenuOpen) {
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,7 +38,7 @@
             ' hover:text-blue-600': isScrolled(),
         activeLink: hoveredIndex() === i,
           }" class="transition-colors duration-200 flex items-center gap-1 group p-4" (mouseleave)="handleTopLinkMouseLeave(item)"
-        [class.text-gray-900]="hasNavbarBackground" [class.text-white]="!hasNavbarBackground">
+        [class.text-gray-900]="hasNavbarBackground()" [class.text-white]="!hasNavbarBackground()">
         <span class="leading-none">{{ item.label }}</span>
         <div class="inline-flex items-center">
           @if (hoveredIndex() === i) {
@@ -57,7 +57,7 @@
             ' hover:text-primary-blue': !isScrolled(),
             ' hover:text-blue-600': isScrolled(),
           }" class="transition-colors duration-200 flex items-center gap-1 group p-4" (mouseleave)="handleTopLinkMouseLeave(item)"
-        [class.text-gray-900]="hasNavbarBackground" [class.text-white]="!hasNavbarBackground">
+        [class.text-gray-900]="hasNavbarBackground()" [class.text-white]="!hasNavbarBackground()">
         {{ item.label }}
       </a>
       }
@@ -65,8 +65,8 @@
     </div>
     <div class="flex items-center gap-4 lg:gap-6 hidden md:flex">
       <button type="button" class="search-panel-trigger" (click)="toggleSearchPanel()" [ngClass]="{
-          'text-white hover:text-primary-blue': !isNavbarDark,
-          'text-gray-900 hover:text-p-600': isNavbarDark,
+          'text-white hover:text-primary-blue': !isNavbarDark(),
+          'text-gray-900 hover:text-p-600': isNavbarDark(),
         }" class="transition-colors duration-200" aria-label="Search" [attr.aria-expanded]="searchPanelOpen()">
         <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

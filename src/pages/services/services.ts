@@ -181,6 +181,9 @@ export default class Services implements OnInit, OnDestroy {
   readonly error = signal<string | null>(null);
   readonly structuredData = signal<any>(null);
   readonly structuredEngagementSection = signal<any>(null);
+  /** Toggles the "Why Oakwood" image skeleton off once the (often large, CMS-hosted) photo
+   *  actually finishes downloading, instead of leaving a blank gap while it loads. */
+  readonly whyOakwoodImageLoaded = signal(false);
   /** Structured engagements ("How we get started") shows on every service except modern-work and managed-services. */
   readonly showStructuredEngagements = signal(true);
 
@@ -387,6 +390,10 @@ export default class Services implements OnInit, OnDestroy {
   }
 
   private loadContent() {
+    // New service page — its "Why Oakwood" photo hasn't loaded yet, so re-show the skeleton
+    // instead of leaving the previous service's now-stale image visible.
+    this.whyOakwoodImageLoaded.set(false);
+
     if (this.contentOverride()) {
       this.loading.set(false);
       return;
