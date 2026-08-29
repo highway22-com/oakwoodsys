@@ -112,3 +112,25 @@ export function applyWordPressPageSeo(
 ): void {
   seoMeta.updateMeta(buildWordPressSeoConfig(path, page));
 }
+
+/**
+ * SEO for when the CMS fetch itself failed (network error, timeout, 429, WP 5xx) — not a
+ * real 404. Without this, the resolver's error path left whatever SEO tags index.html shipped
+ * with (site-wide defaults) in the rendered HTML, so a transient CMS hiccup made Google see
+ * this route's canonical/title/og as a duplicate of the homepage. noindex:true keeps a flaky
+ * fetch from getting a broken/empty render indexed at all, and the real canonicalPath (instead
+ * of falling back to "/") stops it from reading as a homepage duplicate to any crawler that
+ * doesn't honor robots.
+ */
+export function buildWordPressSeoFallbackConfig(path: string): SeoMetaConfig {
+  return {
+    title: `${humanizeWordPressPath(path)} | Oakwood Systems`,
+    description: 'WordPress page content.',
+    canonicalPath: `/${path}`,
+    noindex: true,
+  };
+}
+
+export function applyWordPressPageSeoFallback(seoMeta: SeoMetaService, path: string): void {
+  seoMeta.updateMeta(buildWordPressSeoFallbackConfig(path));
+}

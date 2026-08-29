@@ -5,7 +5,7 @@ import { catchError, of, tap } from 'rxjs';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { WordPressPageResponse, WordPressPageService } from '../../app/services/wordpress-page.service';
 import { logError } from '../../app/utils/logger';
-import { applyWordPressPageSeo } from './wordpress-page.seo';
+import { applyWordPressPageSeo, applyWordPressPageSeoFallback } from './wordpress-page.seo';
 
 export function resolveWordPressFetchPath(path: string): string {
   const normalized = path.trim().replace(/^\/+|\/+$/g, '');
@@ -52,6 +52,7 @@ export const wordpressPageResolver: ResolveFn<WordPressPageResponse | null> = (r
     tap((page) => applyWordPressPageSeo(seoMeta, path, page)),
     catchError((error) => {
       logError(`[wordpress-page] Resolver falling back to null for route "${path}" (fetched as "${fetchPath}"):`, error);
+      applyWordPressPageSeoFallback(seoMeta, path);
       return of(null);
     }),
   );
