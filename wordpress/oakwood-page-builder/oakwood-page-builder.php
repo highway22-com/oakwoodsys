@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Oakwood Page With Styles API
  * Description: Custom REST endpoint to return rendered page content with styles and scripts.
- * Version: 1.4.2
+ * Version: 1.4.3
  * Author: Oakwood
  */
 
@@ -1208,6 +1208,11 @@ return $assets;
 // Main REST callback
 // ---------------------------------------------------------------------------
 
+function oakwood_cms_request_is_lite( WP_REST_Request $request ) {
+	$lite = $request->get_param( 'lite' );
+	return $lite === true || $lite === 1 || $lite === '1' || $lite === 'true';
+}
+
 function oakwood_cms_rendered_page_response(WP_REST_Request $request) {
 global $post, $wp_query;
 
@@ -1278,6 +1283,55 @@ $the_posts_filter = static function ($posts) use ($page) {
 return empty($posts) ? array($page) : $posts;
 };
 add_filter('the_posts', $the_posts_filter, 999);
+
+$is_lite = oakwood_cms_request_is_lite( $request );
+
+if ( $is_lite ) {
+	$content_html = oakwood_cms_render_builder_content( $page );
+	$content_html = oakwood_cms_wrap_block_content_for_headless( $content_html, $page );
+	$seo          = oakwood_page_builder_get_seo_meta( (int) $page->ID );
+	$title        = get_the_title( $page );
+	$excerpt      = has_excerpt( $page ) ? get_the_excerpt( $page ) : '';
+	$permalink    = get_permalink( $page );
+
+	remove_filter( 'the_posts', $the_posts_filter, 999 );
+	remove_filter( 'wp_using_themes', '__return_true' );
+	wp_reset_postdata();
+
+	$post                         = $previous_post;
+	$wp_query->post               = $previous_query_post;
+	$wp_query->queried_object     = $previous_queried_object;
+	$wp_query->queried_object_id  = $previous_queried_object_id;
+	$wp_query->is_singular        = $previous_is_singular;
+	$wp_query->is_page            = $previous_is_page;
+	$wp_query->is_single          = $previous_is_single;
+	$wp_query->is_404             = $previous_is_404;
+
+	if ( $admin_bar_filter_added ) {
+		remove_filter( 'show_admin_bar', '__return_false' );
+	}
+
+	return rest_ensure_response(
+		oakwood_page_builder_normalize_rendered_payload(
+			array(
+				'path'          => $request_path,
+				'slug'          => $page->post_name,
+				'postType'      => $page->post_type,
+				'title'         => $title,
+				'excerpt'       => $excerpt,
+				'content'       => $content_html,
+				'permalink'     => $permalink,
+				'bodyClasses'   => array(),
+				'stylesheets'   => array(),
+				'inlineStyles'  => array(),
+				'footerScripts' => array(),
+				'headHtml'      => '',
+				'footerHtml'    => '',
+				'seo'           => $seo,
+			)
+		)
+	);
+}
 
 // ---- Enqueue Elementor builder assets ----
 // For Elementor pages: calls enqueue_styles/enqueue_scripts on the Elementor
@@ -1571,18 +1625,23 @@ return array_unique($result);
 // ---------------------------------------------------------------------------
 
 function oakwood_cms_register_rendered_page_routes() {
-$route_args = array(
-'methods'             => 'GET',
-'callback'            => 'oakwood_cms_rendered_page_response',
-'permission_callback' => '__return_true',
-'args'                => array(
-'path' => array(
-'type'              => 'string',
-'required'          => true,
-'sanitize_callback' => 'sanitize_text_field',
-),
-),
-);
+	$route_args = array(
+		'methods'             => 'GET',
+		'callback'            => 'oakwood_cms_rendered_page_response',
+		'permission_callback' => '__return_true',
+		'args'                => array(
+			'path' => array(
+				'type'              => 'string',
+				'required'          => true,
+				'sanitize_callback' => 'sanitize_text_field',
+			),
+			'lite' => array(
+				'type'    => 'boolean',
+				'required' => false,
+				'default' => false,
+			),
+		),
+	);
 
 register_rest_route('custom/v1',  '/rendered-page', $route_args);
 register_rest_route('oakwood/v1', '/rendered-page', $route_args);

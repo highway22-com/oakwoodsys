@@ -22,6 +22,12 @@ const angularAppEngine = new AngularAppEngine({
     '*.netlify.app',
     'localhost',
   ],
+  // Without this, any x-forwarded-* header Angular doesn't already trust by default (Netlify's
+  // edge always sets x-forwarded-for) makes it deopt every request to serving the static
+  // client-side-only shell instead of actually running SSR — silently, with no error. Netlify's
+  // edge is the only entry point to this app in production, so trusting its forwarded headers
+  // here is safe.
+  trustProxyHeaders: true,
 });
 
 /** Paths served by the WordPress catch-all route (app.routes.ts `**`). */

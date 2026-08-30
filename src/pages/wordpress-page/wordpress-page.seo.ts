@@ -89,8 +89,25 @@ export function resolveWordPressSeoDocumentTitle(path: string, page: WordPressPa
   return `${humanizeWordPressPath(path)} | Oakwood Systems`;
 }
 
+/**
+ * Vanity solutions URLs (e.g. /solutions/ai/ai-application-development) are kept in the
+ * browser by resolveWordPressFetchPath, which looks the WordPress page up by its own flat
+ * slug (ai-application-development) for the backend fetch. WordPress/Yoast has no idea the
+ * vanity routing layer exists, so its own canonical always points at that flat slug — which
+ * made every /solutions/* page declare itself a duplicate of a different, un-promoted URL.
+ * For these paths the vanity URL actually being served is the real canonical, regardless of
+ * what WordPress thinks its own canonical is.
+ */
+function isSolutionsVanityPath(path: string): boolean {
+  const segments = path.split('/').filter(Boolean);
+  return segments[0] === 'solutions' && segments.length >= 3;
+}
+
 export function buildWordPressSeoConfig(path: string, page: WordPressPageResponse): SeoMetaConfig {
   const seo = page.seo;
+  const canonicalPath = isSolutionsVanityPath(path)
+    ? `/${path}`
+    : seo?.canonicalPath?.trim() || `/${path}`;
   return {
     title: resolveWordPressSeoDocumentTitle(path, page),
     description:
@@ -98,7 +115,7 @@ export function buildWordPressSeoConfig(path: string, page: WordPressPageRespons
       page.excerpt?.trim() ||
       resolveWordPressDisplayTitle(path, page) ||
       'WordPress page content.',
-    canonicalPath: seo?.canonicalPath?.trim() || `/${path}`,
+    canonicalPath,
     image: resolveWordPressOgImage(page),
     keywords: seo?.keywords?.trim() || undefined,
     noindex: seo?.noindex === true,
@@ -111,4 +128,26 @@ export function applyWordPressPageSeo(
   page: WordPressPageResponse,
 ): void {
   seoMeta.updateMeta(buildWordPressSeoConfig(path, page));
+}
+
+/**
+ * SEO for when the CMS fetch itself failed (network error, timeout, 429, WP 5xx) — not a
+ * real 404. Without this, the resolver's error path left whatever SEO tags index.html shipped
+ * with (site-wide defaults) in the rendered HTML, so a transient CMS hiccup made Google see
+ * this route's canonical/title/og as a duplicate of the homepage. noindex:true keeps a flaky
+ * fetch from getting a broken/empty render indexed at all, and the real canonicalPath (instead
+ * of falling back to "/") stops it from reading as a homepage duplicate to any crawler that
+ * doesn't honor robots.
+ */
+export function buildWordPressSeoFallbackConfig(path: string): SeoMetaConfig {
+  return {
+    title: `${humanizeWordPressPath(path)} | Oakwood Systems`,
+    description: 'WordPress page content.',
+    canonicalPath: `/${path}`,
+    noindex: true,
+  };
+}
+
+export function applyWordPressPageSeoFallback(seoMeta: SeoMetaService, path: string): void {
+  seoMeta.updateMeta(buildWordPressSeoFallbackConfig(path));
 }
