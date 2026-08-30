@@ -113,8 +113,7 @@ export default class AboutUs implements OnInit {
     });
   }
 
-  scrollAnimationVisible = signal(false);
-  scrollAnimationReverse = signal(false);
+ 
 
   setSelectedItem(item: any) {
     this.selectedHowWeWorkItem = item;
@@ -178,10 +177,7 @@ export default class AboutUs implements OnInit {
     }
 
     this.lastScrollVisible = false;
-    if (isPlatformBrowser(this.platformId)) {
-      window.addEventListener('scroll', this.handleScrollAnimation.bind(this));
-      setTimeout(() => this.handleScrollAnimation(), 100);
-    }
+
   }
 
   lastScrollVisible = false;
@@ -217,15 +213,5 @@ export default class AboutUs implements OnInit {
     );
   }
 
-  handleScrollAnimation() {
-    if (!isPlatformBrowser(this.platformId)) return;
-    const el = document.querySelector('.scroll-animation-section');
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-    const visible = rect.top < windowHeight * 0.7 && rect.bottom > windowHeight * 0.3;
-    this.scrollAnimationReverse.set(this.lastScrollVisible && !visible);
-    this.scrollAnimationVisible.set(visible);
-    this.lastScrollVisible = visible;
-  }
+
 }

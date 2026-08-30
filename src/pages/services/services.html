@@ -378,14 +378,19 @@
             <div
               class="relative w-full h-full min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] overflow-hidden"
             >
+              @if (!whyOakwoodImageLoaded()) {
+                <div class="absolute inset-0 w-full h-full bg-gray-200 animate-pulse" aria-hidden="true"></div>
+              }
               <img
                 [src]="content()?.whyOakwood?.imageSrc"
                 [alt]="
                   (content()?.whyOakwood?.title || 'Why Oakwood') +
                   ' - Team collaboration image'
                 "
-                class="absolute inset-0 w-full h-full object-cover"
+                class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+                [class.opacity-0]="!whyOakwoodImageLoaded()"
                 loading="lazy"
+                (load)="whyOakwoodImageLoaded.set(true)"
               />
             </div>
 

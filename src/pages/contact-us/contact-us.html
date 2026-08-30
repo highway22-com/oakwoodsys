@@ -187,14 +187,19 @@
       <!-- RIGHT SIDE (IMAGE) -->
       <div class="relative min-h-[340px] h-64 sm:min-h-96 lg:h-auto overflow-visible flex items-center justify-center">
         <div class="relative w-full h-full flex items-center justify-center">
+          @if (!contactImageLoaded()) {
+            <div class="absolute inset-0 w-full h-full bg-gray-200 animate-pulse" aria-hidden="true"></div>
+          }
           <img
             [src]="copy().image.src"
             [alt]="copy().image.alt"
-            class="w-full h-full object-cover"
+            class="w-full h-full object-cover transition-opacity duration-300"
+            [class.opacity-0]="!contactImageLoaded()"
             loading="lazy"
             decoding="async"
             width="1200"
             height="800"
+            (load)="contactImageLoaded.set(true)"
           />
      <!-- Bottom overlay with stats (uses img + div together) -->
         <div class="absolute inset-x-0 bottom-0 pointer-events-none">

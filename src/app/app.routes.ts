@@ -2,6 +2,11 @@ import { Routes } from '@angular/router';
 
 import { MainLayout } from '../layout/main-layout/main-layout';
 import { wordpressPageResolver } from '../pages/wordpress-page/wordpress-page.resolver';
+import { industriesSeoResolver } from '../pages/industries/industries.resolver';
+import { servicesSeoResolver } from '../pages/services/services.resolver';
+import { postSeoResolver } from '../pages/post/post.resolver';
+import { eventDetailSeoResolver } from '../pages/event-detail/event-detail.resolver';
+import { structuredOfferSeoResolver } from '../pages/structured-offer/structured-offer.resolver';
 
 export const routes: Routes = [
     {
@@ -31,7 +36,9 @@ export const routes: Routes = [
             },
             {
                 path: 'blog/:slug',
-                loadComponent: () => import('../pages/post/post')
+                loadComponent: () => import('../pages/post/post'),
+                resolve: { seo: postSeoResolver },
+                data: { isCaseStudy: false }
             },
             {
                 path: 'blog',
@@ -41,7 +48,8 @@ export const routes: Routes = [
             },
             {
                 path: 'services/:slug',
-                loadComponent: () => import('../pages/services/services')
+                loadComponent: () => import('../pages/services/services'),
+                resolve: { seo: servicesSeoResolver }
             },
             {
                 path: 'services',
@@ -50,7 +58,9 @@ export const routes: Routes = [
             },
             {
                 path: 'resources/case-studies/:slug',
-                loadComponent: () => import('../pages/post/post')
+                loadComponent: () => import('../pages/post/post'),
+                resolve: { seo: postSeoResolver },
+                data: { isCaseStudy: true }
             },
             {
                 path: 'resources/case-studies',
@@ -60,7 +70,8 @@ export const routes: Routes = [
             },
             {
                 path: 'resources/events/:slug',
-                loadComponent: () => import('../pages/event-detail/event-detail')
+                loadComponent: () => import('../pages/event-detail/event-detail'),
+                resolve: { seo: eventDetailSeoResolver }
             },
             {
                 path: 'resources/events',
@@ -72,7 +83,8 @@ export const routes: Routes = [
             },
             {
                 path: 'industries/:slug',
-                loadComponent: () => import('../pages/industries/industries')
+                loadComponent: () => import('../pages/industries/industries'),
+                resolve: { seo: industriesSeoResolver }
             },
             {
                 path: 'industries',
@@ -89,7 +101,8 @@ export const routes: Routes = [
             },
             {
                 path: 'structured-engagement/:slug',
-                loadComponent: () => import('../pages/structured-offer/structured-offer').then(m => m.StructuredOffer)
+                loadComponent: () => import('../pages/structured-offer/structured-offer').then(m => m.StructuredOffer),
+                resolve: { seo: structuredOfferSeoResolver }
             },
             {
                 path: 'events',

@@ -26,9 +26,7 @@
                 "output": "/assets/monaco/"
               }
             ],
-            "styles": [
-              "src/styles.css"
-            ],
+            "styles": ["src/styles.css"],
             "server": "src/main.server.ts",
             "prerender": {
               "discoverRoutes": true,
@@ -43,6 +41,8 @@
             "production": {
               "optimization": true,
               "optimization": {
+                "scripts": true,
+                "styles": true,
                 "fonts": {
                   "inline": false
                 }
@@ -99,9 +99,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.css"
-            ]
+            "styles": ["src/styles.css"]
           }
         }
       }

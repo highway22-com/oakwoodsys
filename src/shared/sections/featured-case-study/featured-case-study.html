@@ -1,6 +1,22 @@
 <!-- Mobile Card Layout: Only visible on mobile -->
 <div class="sm:hidden flex justify-center w-full ">
-  @if (currentSection(); as section) {
+  @if (loading()) {
+  <div class="bg-white w-full max-w-[370px] mx-auto p-0 flex flex-col animate-pulse" aria-hidden="true">
+    <div class="flex items-center justify-between px-4 pt-4 pb-2">
+      <div class="h-4 w-32 bg-gray-200 rounded"></div>
+      <div class="h-4 w-10 bg-gray-100 rounded"></div>
+    </div>
+    <div class="w-full h-[240px] bg-gray-200"></div>
+    <div class="pt-6 px-4 pb-4">
+      <div class="h-5 w-24 bg-gray-100 rounded mb-3"></div>
+      <div class="h-7 w-full bg-gray-200 rounded mb-2"></div>
+      <div class="h-7 w-3/4 bg-gray-200 rounded mb-4"></div>
+      <div class="h-4 w-full bg-gray-100 rounded mb-2"></div>
+      <div class="h-4 w-5/6 bg-gray-100 rounded mb-6"></div>
+      <div class="h-12 w-full bg-gray-200 rounded"></div>
+    </div>
+  </div>
+  } @else if (currentSection(); as section) {
   <div class="bg-white w-full max-w-[370px] mx-auto p-0 flex flex-col">
     <!-- Navigation at top -->
     <div class="flex items-center justify-between px-4 pt-4 pb-2">
@@ -159,7 +175,26 @@
 </div>
 <!-- Desktop: scroll-driven sticky section -->
 <div class="hidden sm:block">
-  @if (currentSection(); as section) {
+  @if (loading()) {
+  <div class="grid grid-cols-[1fr_8px_1fr] animate-pulse" style="min-height: 75vh;" aria-hidden="true">
+    <div class="pl-20 pr-16 py-8">
+      <div class="w-full h-full bg-gray-200" style="min-height: 500px;"></div>
+    </div>
+    <div class="relative flex justify-center py-10" style="min-height: 75vh;">
+      <div class="relative w-[3px] h-full bg-gray-100"></div>
+    </div>
+    <div class="flex flex-col justify-center py-10 px-20">
+      <div class="h-5 w-40 bg-gray-100 rounded mb-10"></div>
+      <div class="h-4 w-28 bg-gray-100 rounded mb-3"></div>
+      <div class="h-12 w-full bg-gray-200 rounded mb-2"></div>
+      <div class="h-12 w-2/3 bg-gray-200 rounded mb-8"></div>
+      <div class="h-4 w-full bg-gray-100 rounded mb-2"></div>
+      <div class="h-4 w-full bg-gray-100 rounded mb-2"></div>
+      <div class="h-4 w-1/2 bg-gray-100 rounded mb-10"></div>
+      <div class="h-12 w-40 bg-gray-200 rounded"></div>
+    </div>
+  </div>
+  } @else if (currentSection(); as section) {
   <!-- Outer wrapper: 150svh gives scroll distance for 2 items -->
   <div class="fcs-desktop-scroll-wrapper" style="height: 150svh;">
     <!-- Sticky inner: locked to viewport -->

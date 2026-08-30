@@ -73,6 +73,7 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
   @Input() showIndicators = true;
 
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly mobileBreakpoint = 768;
   private videoInterval: any;
   private nextVideoPrimeTimeout: any;
 
@@ -190,7 +191,15 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
         this.loadVideo(initialUrl);
       }
       this.videoElement.nativeElement.addEventListener('loadedmetadata', () => {
-        this.attemptAutoplay();
+        // On mobile, autoplay decode/composite work competes with the critical rendering
+        // path and shows up as heavy "Unattributable" main-thread cost — the poster (img +
+        // video's own [poster]) already covers the frame, so deferring play() past first
+        // paint costs nothing visually.
+        if (this.isMobileViewport()) {
+          this.deferAutoplay();
+        } else {
+          this.attemptAutoplay();
+        }
         this.startVideoCarousel();
       });
       this.videoElement.nativeElement.addEventListener('ended', () => {
@@ -205,6 +214,21 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
     }
     if (this.nextVideoPrimeTimeout) {
       clearTimeout(this.nextVideoPrimeTimeout);
+    }
+  }
+
+  private isMobileViewport(): boolean {
+    return isPlatformBrowser(this.platformId) && window.innerWidth < this.mobileBreakpoint;
+  }
+
+  /** Pushes the first play() past first paint so decode/composite work doesn't compete
+   *  with the critical rendering path on mobile. */
+  private deferAutoplay() {
+    const start = () => this.attemptAutoplay();
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(start, { timeout: 2000 });
+    } else {
+      setTimeout(start, 300);
     }
   }
 
@@ -230,7 +254,8 @@ export class VideoHero implements AfterViewInit, OnDestroy, OnChanges {
         } else if (error.name === 'NotReadableError') {
           logError('Video file cannot be read');
         } else if (error.name === 'AbortError') {
-          logError('Video playback was aborted');
+          // Expected: play() got interrupted by our own load()/pause() (video-switch on
+          // carousel rotation, or the mobile deferred-autoplay timing), not a real failure.
         } else {
           logError('Unknown error occurred:', error);
         }

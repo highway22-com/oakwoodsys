@@ -677,7 +677,6 @@ export default class EventDetail implements OnInit, OnDestroy {
         try {
           const parsed = JSON.parse(raw) as EventsContent;
           if (parsed?.events && typeof parsed.events === 'object') {
-            console.log(parsed?.events, 'rawrawrawrawrawrawrawrawraw');
             return of(parsed);
           }
         } catch {

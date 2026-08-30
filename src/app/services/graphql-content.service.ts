@@ -5,6 +5,7 @@ import { Apollo } from 'apollo-angular';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, catchError, tap, filter, switchMap, take, shareReplay } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
+import { logError } from '../utils/logger';
 import {
   GET_GEN_CONTENTS_BY_CATEGORY,
   GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED,
@@ -36,6 +37,30 @@ import {
 import { combineLatest, forkJoin } from 'rxjs';
 
 const CMS_PAGE_STATE_KEY = (slug: string) => makeStateKey<CmsPageContent | null>(`cms-page-${slug}`);
+
+/**
+ * Module-scope (not a class field) so it's shared across every GraphQLContentService
+ * instance in this process — Angular bootstraps a fresh app/injector per prerendered route
+ * and per live SSR request, so a class-field shareReplay() only dedupes within one route's
+ * render. Content like footer/menu is identical on every single page, so without this,
+ * a full prerender pass refetches it from scratch for every one of the ~150 routes being
+ * built — the single largest source of redundant load on the rate-limited CMS backend.
+ * TTL keeps a warm, reused Netlify function from serving indefinitely stale content on
+ * live traffic; matches this codebase's existing max-age=60 edge-cache convention.
+ */
+const PROCESS_CACHE_TTL_MS = 60_000;
+const processCache = new Map<string, { expiresAt: number; observable: Observable<unknown> }>();
+
+function cachedForProcess<T>(key: string, factory: () => Observable<T>): Observable<T> {
+  const now = Date.now();
+  const existing = processCache.get(key);
+  if (existing && existing.expiresAt > now) {
+    return existing.observable as Observable<T>;
+  }
+  const shared = factory().pipe(shareReplay(1));
+  processCache.set(key, { expiresAt: now + PROCESS_CACHE_TTL_MS, observable: shared });
+  return shared;
+}
 
 interface GenContentsPaginatedResult {
   nodes: GenContentListNode[];
@@ -81,7 +106,7 @@ export class GraphQLContentService {
    * anywhere in the app ever triggers a real fetch; every later mount, in either route
    * tree, gets the cached value instantly.
    */
-  private footerContent$ = this.getCmsPageBySlug('footer').pipe(shareReplay(1));
+  private footerContent$ = cachedForProcess('cms-page:footer', () => this.getCmsPageBySlug('footer'));
 
   /** Categorías y tags de Gen Content (cargados al inicio). Acceso global. */
   readonly genContentCategories = signal<GenContentTaxonomyTerm[]>([]);
@@ -500,6 +525,10 @@ export class GraphQLContentService {
           }
         }),
         catchError((error) => {
+          // Was silently swallowed before — every consumer of this method (home, footer,
+          // menu, services, industries, privacy-policy) would just render as if there were
+          // no CMS content, with zero trace of why in production logs.
+          logError(`[graphql-content] getCmsPageBySlug("${normalizedSlug}") failed:`, error);
           this.errors.set(error);
           this.loading.set(false);
           return of(null);
@@ -555,7 +584,9 @@ export class GraphQLContentService {
    * Contenido del menú/navbar desde CMS (slug: menu). Misma estructura que navbar-content.json.
    */
   getMenuContent(): Observable<{ menu: unknown[]; content?: Record<string, unknown> } | null> {
-    return this.getCmsPageBySlug('menu', { fetchPolicy: 'cache-and-network' }).pipe(
+    return cachedForProcess('cms-page:menu', () =>
+      this.getCmsPageBySlug('menu', { fetchPolicy: 'cache-and-network' }),
+    ).pipe(
       map((data) => data as { menu: unknown[]; content?: Record<string, unknown> } | null),
     );
   }

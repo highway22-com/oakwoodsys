@@ -2,6 +2,59 @@
 <html lang="en">
 
 <head>
+  <!-- Self-heal from stale-deploy asset failures: right after a new deploy, a browser (or
+       edge cache) can still be holding this document referencing the PREVIOUS deploy's
+       content-hashed main-*.js / styles-*.css — files the new deploy has already removed.
+       The server then answers with its SSR HTML fallback instead of the missing file, which
+       the browser rejects for MIME-type mismatch ("text/html" where a script/stylesheet was
+       expected), breaking the whole app. One automatic reload fetches the current index.html
+       (pointing at the current hashes) and fixes it transparently. Capped at one attempt per
+       tab session so a genuinely broken asset doesn't reload-loop forever. -->
+  <script>
+    (function () {
+      var RELOAD_FLAG = 'oakwood-asset-reload-attempted';
+      window.addEventListener('error', function (event) {
+        var target = event.target;
+        if (!target || (target.tagName !== 'SCRIPT' && target.tagName !== 'LINK')) return;
+        var url = target.src || target.href || '';
+        if (!/\/(main|chunk|styles|polyfills)-[A-Za-z0-9]+\.(js|css)(\?|$)/.test(url)) return;
+        try {
+          if (sessionStorage.getItem(RELOAD_FLAG) === '1') return;
+          sessionStorage.setItem(RELOAD_FLAG, '1');
+        } catch (e) {}
+        location.reload();
+      }, true); // capture phase — resource load errors don't bubble
+      window.addEventListener('load', function () {
+        try { sessionStorage.removeItem(RELOAD_FLAG); } catch (e) {}
+      });
+    })();
+  </script>
+  <!-- Consent Mode: default every tracking storage type to denied before GTM loads, so
+       Google's own tags (ads/analytics) never fire pre-consent. Restores a prior "accept"
+       from localStorage so returning consenting visitors aren't re-blocked every load.
+       Non-Google tags (e.g. Bing UET, Clarity) only honor this if they're separately marked
+       "requires consent" inside the GTM container itself. -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      analytics_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      wait_for_update: 500
+    });
+    try {
+      if (localStorage.getItem('oakwood-cookie-consent') === 'true') {
+        gtag('consent', 'update', {
+          ad_storage: 'granted',
+          analytics_storage: 'granted',
+          ad_user_data: 'granted',
+          ad_personalization: 'granted'
+        });
+      }
+    } catch (e) {}
+  </script>
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -46,6 +99,7 @@
   <!-- DNS-prefetch (solo resolución DNS, sin handshake TCP/TLS) para orígenes no críticos para LCP -->
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
   <link rel="dns-prefetch" href="https://cxppusa1rdrect01sa02cdn-endpoint.azureedge.net">
+  <link rel="dns-prefetch" href="https://lftracker.leadfeeder.com">
   <link rel="dns-prefetch" href="https://www.chatbase.co">
   <!-- Inter: self-hosted (src/styles.css has the @font-face), weights 300-700 in one variable-font
        file — preloaded here so it starts fetching immediately instead of waiting on CSS parsing. -->
@@ -107,17 +161,36 @@
   <app-root></app-root>
 
   <!-- Scripts de analytics al final del body (no bloquean el render inicial) -->
-  <!-- GA4 (G-0BS8T310YP) and Google Ads (AW-967209685) are both configured as tags inside
-       GTM-W9WNGS above, so they load once through GTM instead of being duplicated here. -->
 
+  <!-- bfcache fix: MSCI's WebTracking.bundle.js attaches an 'unload' listener, which
+       disqualifies the page from back/forward cache (Chrome DevTools flagged this as
+       UnloadHandlerExistsInMainFrame). The bundle doesn't honor disablePageUnloadEvents
+       (tried, no effect — likely a thin custom wrapper, not the full AppInsights SDK
+       config surface), so this intercepts at the browser API level instead: any
+       'unload' listener registered anywhere on the page after this point is silently
+       redirected to 'pagehide', which fires at the same moment but doesn't block
+       bfcache. Must stay ABOVE the MSCI loader below so it's active before MSCI
+       registers its listener. Verify via DevTools > Application > Back/forward cache > Test.
+       NOTE: this block was missing from the last production deploy — confirm it's live
+       after this file ships, since the bfcache failure will still reproduce without it. -->
   <script>
-    function loadNonCriticalScript(src, async = true) {
-      const script = document.createElement('script');
-      script.src = src;
-      if (async) script.async = true;
-      document.body.appendChild(script);
-    }
+    (function () {
+      var originalAddEventListener = window.addEventListener.bind(window);
+      window.addEventListener = function (type, listener, options) {
+        if (type === 'unload') {
+          return originalAddEventListener('pagehide', listener, options);
+        }
+        return originalAddEventListener(type, listener, options);
+      };
+    })();
+  </script>
 
+  <!-- Dynamics CRM / MSCI Analytics — setup deferred via requestIdleCallback so it doesn't
+       compete with main-thread work during initial load (confirmed a real cost via
+       Performance trace profiling). timeout: 5000 gives it a generous but bounded window
+       since this is CRM data, not marketing analytics — falls back to load+3s delay for
+       Safari, which doesn't support requestIdleCallback. -->
+  <script>
     function loadAzureWebTracking() {
       (function (a, t, i) { var e = "MSCI"; var s = "Analytics"; var o = e + "queue"; a[o] = a[o] || []; var r = a[e] || function (n) { var t = {}; t[s] = {}; function e(e) { while (e.length) { var r = e.pop(); t[s][r] = function (e) { return function () { a[o].push([e, n, arguments]) } }(r) } } var r = "track"; var i = "set"; e([r + "Event", r + "View", r + "Action", i + "Config", i + "Property", i + "User", "initialize", "teardown"]); return t }(i.name); var n = i.name; if (!a[e]) { a[n] = r[s]; a[o].push(["new", n]); setTimeout(function () { var e = "script"; var r = t.createElement(e); r.async = 1; r.src = i.src; var n = t.getElementsByTagName(e)[0]; n.parentNode.insertBefore(r, n) }, 1); } else { try { a[n] = new r[s]; } catch (err) { a[n] = r[s]; } } if (i.user) { a[n].setUser(i.user); } if (i.props) { for (var c in i.props) { a[n].setProperty(c, i.props[c]); } } a[n].initialize(i.cfg) })(window, document, {
         src: "https://cxppusa1rdrect01sa02cdn-endpoint.azureedge.net/webtracking/WebTracking/WebTracking.bundle.js",
@@ -134,25 +207,47 @@
             orgTenantId: "03ee698d-8c8e-417b-94d6-02d6ca438416",
             orgGeo: "USA"
           }
+          // Note: disablePageUnloadEvents was tried here but this bundle doesn't honor it —
+          // see the addEventListener shim above instead, which fixes the same issue at the
+          // browser API level.
         }
       });
     }
 
-    function loadTrackingScripts() {
-      loadAzureWebTracking();
-    }
-
     if ('requestIdleCallback' in window) {
-      requestIdleCallback(loadTrackingScripts, { timeout: 5000 });
+      requestIdleCallback(loadAzureWebTracking, { timeout: 5000 });
     } else {
       window.addEventListener('load', function () {
-        setTimeout(loadTrackingScripts, 3000);
+        setTimeout(loadAzureWebTracking, 3000);
       });
     }
   </script>
 
+  <!-- GA4 (G-0BS8T310YP) and Google Ads (AW-967209685) are both configured as tags inside
+       GTM-W9WNGS above, so they load once through GTM instead of being duplicated here. -->
 
-  <!-- Chatbase (idle-load or on first interaction) -->
+  <!-- Dealfront / Leadfeeder — loaded via requestIdleCallback so it doesn't compete with
+       main-thread work during initial page load (was flagged in the third-party script
+       audit as a TBT contributor). timeout: 2000 forces it to fire within 2s even if the
+       main thread never goes idle, so there's a hard upper bound rather than an open-ended
+       wait. Falls back to setTimeout for Safari, which doesn't support requestIdleCallback.
+       NOTE: this block was missing from the last production deploy — Leadfeeder tracking
+       was likely not firing on production until this ships. -->
+  <script>
+    (function () {
+      function loadLeadfeeder() {
+        (function (ss, ex) { window.ldfdr = window.ldfdr || function () { (ldfdr._q = ldfdr._q || []).push([].slice.call(arguments)); }; (function (d, s) { fs = d.getElementsByTagName(s)[0]; function ce(src) { var cs = d.createElement(s); cs.src = src; cs.async = 1; fs.parentNode.insertBefore(cs, fs); }; ce('https://sc.lfeeder.com/lftracker_v1_' + ss + (ex ? '_' + ex : '') + '.js'); })(document, 'script'); })('ywVkO4XWJLw7Z6Bj');
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadLeadfeeder, { timeout: 2000 });
+      } else {
+        setTimeout(loadLeadfeeder, 2000);
+      }
+    })();
+  </script>
+
+  <!-- Chatbase — idle-load OR first user interaction, whichever comes first, so the widget
+       is ready quickly for an engaged visitor without costing anything on initial load. -->
   <script id="chatbot-script-js-after">
     (function () {
       function initChatbase() {
