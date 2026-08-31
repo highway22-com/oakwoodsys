@@ -486,16 +486,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://oakwoodsys.com/oakwood-for-microsoft</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/testing-anchor-padding</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://oakwoodsys.com/modern-work-engagements</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -532,51 +522,6 @@
   </url>
   <url>
     <loc>https://oakwoodsys.com/collaboration-and-productivity</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/solutions-template-one-2</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/solutions-template-one</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/testingtemplate</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/27244-2</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/theme-test</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/testing-standalone-pages</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/tim-testing-may-2026</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/cors-api-page</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://oakwoodsys.com/home-2</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

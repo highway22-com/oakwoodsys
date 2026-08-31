@@ -214,6 +214,40 @@ const CASE_STUDY_SLUGS_FALLBACK = [
   'enterprise-reporting-and-data-roadmap-development',
 ];
 
+/**
+ * WordPress pages marked noindex in Yoast ("Allow search engines to show this content in
+ * search results?" -> No) shouldn't be submitted to Google via the sitemap — listing a
+ * noindexed URL is a contradictory signal search engines explicitly warn against. The
+ * pages endpoint used above doesn't expose this per-page Yoast flag, so it's fetched here
+ * via the same rendered-page endpoint the app itself uses (see oakwood_page_builder_get_seo_meta
+ * in the WP plugin), with limited concurrency to avoid tripping the CMS's rate limit (see
+ * cms-throttle.interceptor.ts for the same concern on the app side).
+ */
+async function fetchNoindexedSlugs(slugs, concurrency = 5) {
+  const noindexed = new Set();
+  let cursor = 0;
+
+  async function worker() {
+    while (cursor < slugs.length) {
+      const slug = slugs[cursor++];
+      try {
+        const url = `${WP_BASE_URL}/wp-json/oakwood/v1/rendered-page?path=${encodeURIComponent(slug)}&lite=true`;
+        const res = await fetch(url);
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data?.seo?.noindex === true) {
+          noindexed.add(slug);
+        }
+      } catch (e) {
+        console.warn(`[prerender-routes] noindex check failed for "${slug}":`, e.message);
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(concurrency, slugs.length) }, worker));
+  return noindexed;
+}
+
 async function fetchWordPressPageSlugs() {
   const slugs = [];
   let page = 1;
@@ -260,8 +294,14 @@ async function main() {
   STRUCTURED_SLUGS.forEach((s) => routes.push(`/structured-engagement/${s}`));
 
   const wpPageSlugs = await fetchWordPressPageSlugs();
-  wpPageSlugs.forEach((s) => routes.push(`/${s}`)); // sitemap sigue listando todas (SEO)
+  // Every WP page slug still goes into routes/prerender-routes.txt so the flat URL stays
+  // servable via SSR fallback even when noindexed — noindex is a "don't index me" signal,
+  // not "don't serve me". Only the sitemap step below excludes noindexed slugs.
+  wpPageSlugs.forEach((s) => routes.push(`/${s}`));
   console.log(`[prerender-routes] Added ${wpPageSlugs.length} WordPress page slugs`);
+
+  const noindexedSlugs = await fetchNoindexedSlugs(wpPageSlugs);
+  console.log(`[prerender-routes] ${noindexedSlugs.size} WordPress page(s) marked noindex — excluded from sitemap`);
 
   const wpPrerenderSlugs = wpPageSlugs.filter((s) => PRERENDER_WP_SLUGS.includes(s));
   writeFileSync(join(ROOT, 'wp-page-slugs.json'), JSON.stringify({ slugs: wpPrerenderSlugs }, null, 2), 'utf8');
@@ -303,9 +343,13 @@ async function main() {
     const bare = route.replace(/^\/+/, '');
     return !bare.includes('/') && solutionsFlatSlugs.has(bare);
   };
-  const sitemapRoutes = routes.filter((r) => !isFlatSolutionDuplicate(r));
+  const isNoindexedWpPage = (route) => {
+    const bare = route.replace(/^\/+/, '');
+    return !bare.includes('/') && noindexedSlugs.has(bare);
+  };
+  const sitemapRoutes = routes.filter((r) => !isFlatSolutionDuplicate(r) && !isNoindexedWpPage(r));
   console.log(
-    `[prerender-routes] Solutions vanity URLs: ${solutionsPaths.length} added, ${routes.length - sitemapRoutes.length} flat duplicates dropped from sitemap`,
+    `[prerender-routes] Solutions vanity URLs: ${solutionsPaths.length} added, ${routes.length - sitemapRoutes.length} flat duplicates/noindexed pages dropped from sitemap`,
   );
 
   const allPaths = [...new Set([...sitemapRoutes, ...staticPages, ...eventPaths, ...solutionsPaths])];
