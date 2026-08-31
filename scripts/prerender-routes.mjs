@@ -95,6 +95,45 @@ function getSlugsFromJson(filePath, key, slugKey = 'slug') {
   }
 }
 
+/**
+ * Vanity /solutions/{category}/{slug} URLs from navbar-content.json — mirrors
+ * getSolutionCategoryRouteSegment / getSolutionHref in app-navbar.ts so the sitemap
+ * lists the same URL the mega-menu actually links to (the real canonical per
+ * isSolutionsVanityPath in wordpress-page.seo.ts), not WordPress's flat slug.
+ * Returns the vanity paths plus the flat slugs they cover, so those flat WP page
+ * duplicates can be left out of the sitemap.
+ */
+function buildSolutionsPaths() {
+  try {
+    const fullPath = join(ROOT, 'public', 'navbar-content.json');
+    if (!existsSync(fullPath)) return { paths: [], flatSlugs: new Set() };
+    const data = JSON.parse(readFileSync(fullPath, 'utf8'));
+    const solutions = data?.content?.solutions;
+    if (!solutions || typeof solutions !== 'object') return { paths: [], flatSlugs: new Set() };
+
+    const paths = [];
+    const flatSlugs = new Set();
+
+    for (const [category, items] of Object.entries(solutions)) {
+      if (!Array.isArray(items)) continue;
+      const categorySegment = category === 'dataAndAnalytics' ? 'data-analytics' : category;
+      for (const item of items) {
+        const raw = (item?.link ?? item?.slug ?? '').trim();
+        const normalized = raw.replace(/^\/+|\/+$/g, '');
+        if (!normalized) continue;
+        const segments = normalized.split('/').filter(Boolean);
+        const linkSegment = segments[segments.length - 1] ?? normalized;
+        paths.push(`/solutions/${categorySegment}/${linkSegment}`);
+        flatSlugs.add(linkSegment);
+      }
+    }
+    return { paths, flatSlugs };
+  } catch (e) {
+    console.warn('[prerender-routes] navbar-content.json read failed:', e.message);
+    return { paths: [], flatSlugs: new Set() };
+  }
+}
+
 const BLOG_SLUGS_FALLBACK = [
   'oakwood-systems-group-achieves-microsoft-advanced-specialization-for-ai-applications-on-azure',
   'oakwood-recognized-by-microsoft-for-excellence-in-support-services',
@@ -255,7 +294,21 @@ async function main() {
     '/privacy-policy',
   ];
   const eventPaths = eventSlugs.map((s) => `/resources/events/${s}`);
-  const allPaths = [...new Set([...routes, ...staticPages, ...eventPaths])];
+
+  const { paths: solutionsPaths, flatSlugs: solutionsFlatSlugs } = buildSolutionsPaths();
+  // Drop the flat WP slug from the sitemap when a /solutions/... vanity URL covers the
+  // same page — that vanity URL is the real canonical (see isSolutionsVanityPath), so
+  // listing both would submit duplicate content to Google.
+  const isFlatSolutionDuplicate = (route) => {
+    const bare = route.replace(/^\/+/, '');
+    return !bare.includes('/') && solutionsFlatSlugs.has(bare);
+  };
+  const sitemapRoutes = routes.filter((r) => !isFlatSolutionDuplicate(r));
+  console.log(
+    `[prerender-routes] Solutions vanity URLs: ${solutionsPaths.length} added, ${routes.length - sitemapRoutes.length} flat duplicates dropped from sitemap`,
+  );
+
+  const allPaths = [...new Set([...sitemapRoutes, ...staticPages, ...eventPaths, ...solutionsPaths])];
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${allPaths
