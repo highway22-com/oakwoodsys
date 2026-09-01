@@ -5,6 +5,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { filter, Subscription } from 'rxjs';
 import { SeoMetaService } from '../../app/services/seo-meta.service';
 import { CMS_BASE_URL } from '../../app/config/cms.config';
+import { SolutionsVanityService } from '../../app/services/solutions-vanity.service';
 import { WordPressFooterScript, WordPressInlineStyle, WordPressPageResponse, WordPressPageService, WordPressPageStylesheet } from '../../app/services/wordpress-page.service';
 import { AppNavbar } from '../../layout/app-navbar/app-navbar';
 import { Footer } from '../../layout/footer/footer';
@@ -23,6 +24,7 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly wordpressPageService = inject(WordPressPageService);
+  private readonly solutionsVanity = inject(SolutionsVanityService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seoMeta = inject(SeoMetaService);
   private readonly document = inject(DOCUMENT);
@@ -195,7 +197,9 @@ export default class WordpressPageComponent implements OnInit, OnDestroy {
     );
     this.pageHtml.set(this.sanitizer.bypassSecurityTrustHtml(normalizedContent));
 
-    applyWordPressPageSeo(this.seoMeta, path, page);
+    this.solutionsVanity.getVanityPath(page.slug).subscribe((vanityPath) => {
+      applyWordPressPageSeo(this.seoMeta, path, page, vanityPath);
+    });
 
     if (isPlatformBrowser(this.platformId)) {
       this.applyBodyClasses(page.bodyClasses ?? []);

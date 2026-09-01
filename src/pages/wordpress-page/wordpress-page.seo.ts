@@ -97,17 +97,27 @@ export function resolveWordPressSeoDocumentTitle(path: string, page: WordPressPa
  * made every /solutions/* page declare itself a duplicate of a different, un-promoted URL.
  * For these paths the vanity URL actually being served is the real canonical, regardless of
  * what WordPress thinks its own canonical is.
+ *
+ * The other half of this: the flat slug itself (e.g. /ai-application-development) is also a
+ * live, indexable route on its own, and without help it self-canonicalizes too — so Google
+ * sees two URLs each claiming to be the real one. buildWordPressSeoConfig's
+ * solutionsVanityPath param (from SolutionsVanityService) closes that gap by pointing the
+ * flat URL's canonical at its vanity counterpart when one exists.
  */
 function isSolutionsVanityPath(path: string): boolean {
   const segments = path.split('/').filter(Boolean);
   return segments[0] === 'solutions' && segments.length >= 3;
 }
 
-export function buildWordPressSeoConfig(path: string, page: WordPressPageResponse): SeoMetaConfig {
+export function buildWordPressSeoConfig(
+  path: string,
+  page: WordPressPageResponse,
+  solutionsVanityPath?: string,
+): SeoMetaConfig {
   const seo = page.seo;
   const canonicalPath = isSolutionsVanityPath(path)
     ? `/${path}`
-    : seo?.canonicalPath?.trim() || `/${path}`;
+    : solutionsVanityPath || seo?.canonicalPath?.trim() || `/${path}`;
   return {
     title: resolveWordPressSeoDocumentTitle(path, page),
     description:
@@ -126,8 +136,9 @@ export function applyWordPressPageSeo(
   seoMeta: SeoMetaService,
   path: string,
   page: WordPressPageResponse,
+  solutionsVanityPath?: string,
 ): void {
-  seoMeta.updateMeta(buildWordPressSeoConfig(path, page));
+  seoMeta.updateMeta(buildWordPressSeoConfig(path, page, solutionsVanityPath));
 }
 
 /**

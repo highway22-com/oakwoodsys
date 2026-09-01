@@ -95,6 +95,45 @@ function getSlugsFromJson(filePath, key, slugKey = 'slug') {
   }
 }
 
+/**
+ * Vanity /solutions/{category}/{slug} URLs from navbar-content.json — mirrors
+ * getSolutionCategoryRouteSegment / getSolutionHref in app-navbar.ts so the sitemap
+ * lists the same URL the mega-menu actually links to (the real canonical per
+ * isSolutionsVanityPath in wordpress-page.seo.ts), not WordPress's flat slug.
+ * Returns the vanity paths plus the flat slugs they cover, so those flat WP page
+ * duplicates can be left out of the sitemap.
+ */
+function buildSolutionsPaths() {
+  try {
+    const fullPath = join(ROOT, 'public', 'navbar-content.json');
+    if (!existsSync(fullPath)) return { paths: [], flatSlugs: new Set() };
+    const data = JSON.parse(readFileSync(fullPath, 'utf8'));
+    const solutions = data?.content?.solutions;
+    if (!solutions || typeof solutions !== 'object') return { paths: [], flatSlugs: new Set() };
+
+    const paths = [];
+    const flatSlugs = new Set();
+
+    for (const [category, items] of Object.entries(solutions)) {
+      if (!Array.isArray(items)) continue;
+      const categorySegment = category === 'dataAndAnalytics' ? 'data-analytics' : category;
+      for (const item of items) {
+        const raw = (item?.link ?? item?.slug ?? '').trim();
+        const normalized = raw.replace(/^\/+|\/+$/g, '');
+        if (!normalized) continue;
+        const segments = normalized.split('/').filter(Boolean);
+        const linkSegment = segments[segments.length - 1] ?? normalized;
+        paths.push(`/solutions/${categorySegment}/${linkSegment}`);
+        flatSlugs.add(linkSegment);
+      }
+    }
+    return { paths, flatSlugs };
+  } catch (e) {
+    console.warn('[prerender-routes] navbar-content.json read failed:', e.message);
+    return { paths: [], flatSlugs: new Set() };
+  }
+}
+
 const BLOG_SLUGS_FALLBACK = [
   'oakwood-systems-group-achieves-microsoft-advanced-specialization-for-ai-applications-on-azure',
   'oakwood-recognized-by-microsoft-for-excellence-in-support-services',
@@ -175,6 +214,40 @@ const CASE_STUDY_SLUGS_FALLBACK = [
   'enterprise-reporting-and-data-roadmap-development',
 ];
 
+/**
+ * WordPress pages marked noindex in Yoast ("Allow search engines to show this content in
+ * search results?" -> No) shouldn't be submitted to Google via the sitemap — listing a
+ * noindexed URL is a contradictory signal search engines explicitly warn against. The
+ * pages endpoint used above doesn't expose this per-page Yoast flag, so it's fetched here
+ * via the same rendered-page endpoint the app itself uses (see oakwood_page_builder_get_seo_meta
+ * in the WP plugin), with limited concurrency to avoid tripping the CMS's rate limit (see
+ * cms-throttle.interceptor.ts for the same concern on the app side).
+ */
+async function fetchNoindexedSlugs(slugs, concurrency = 5) {
+  const noindexed = new Set();
+  let cursor = 0;
+
+  async function worker() {
+    while (cursor < slugs.length) {
+      const slug = slugs[cursor++];
+      try {
+        const url = `${WP_BASE_URL}/wp-json/oakwood/v1/rendered-page?path=${encodeURIComponent(slug)}&lite=true`;
+        const res = await fetch(url);
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data?.seo?.noindex === true) {
+          noindexed.add(slug);
+        }
+      } catch (e) {
+        console.warn(`[prerender-routes] noindex check failed for "${slug}":`, e.message);
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(concurrency, slugs.length) }, worker));
+  return noindexed;
+}
+
 async function fetchWordPressPageSlugs() {
   const slugs = [];
   let page = 1;
@@ -221,8 +294,14 @@ async function main() {
   STRUCTURED_SLUGS.forEach((s) => routes.push(`/structured-engagement/${s}`));
 
   const wpPageSlugs = await fetchWordPressPageSlugs();
-  wpPageSlugs.forEach((s) => routes.push(`/${s}`)); // sitemap sigue listando todas (SEO)
+  // Every WP page slug still goes into routes/prerender-routes.txt so the flat URL stays
+  // servable via SSR fallback even when noindexed — noindex is a "don't index me" signal,
+  // not "don't serve me". Only the sitemap step below excludes noindexed slugs.
+  wpPageSlugs.forEach((s) => routes.push(`/${s}`));
   console.log(`[prerender-routes] Added ${wpPageSlugs.length} WordPress page slugs`);
+
+  const noindexedSlugs = await fetchNoindexedSlugs(wpPageSlugs);
+  console.log(`[prerender-routes] ${noindexedSlugs.size} WordPress page(s) marked noindex — excluded from sitemap`);
 
   const wpPrerenderSlugs = wpPageSlugs.filter((s) => PRERENDER_WP_SLUGS.includes(s));
   writeFileSync(join(ROOT, 'wp-page-slugs.json'), JSON.stringify({ slugs: wpPrerenderSlugs }, null, 2), 'utf8');
@@ -255,7 +334,25 @@ async function main() {
     '/privacy-policy',
   ];
   const eventPaths = eventSlugs.map((s) => `/resources/events/${s}`);
-  const allPaths = [...new Set([...routes, ...staticPages, ...eventPaths])];
+
+  const { paths: solutionsPaths, flatSlugs: solutionsFlatSlugs } = buildSolutionsPaths();
+  // Drop the flat WP slug from the sitemap when a /solutions/... vanity URL covers the
+  // same page — that vanity URL is the real canonical (see isSolutionsVanityPath), so
+  // listing both would submit duplicate content to Google.
+  const isFlatSolutionDuplicate = (route) => {
+    const bare = route.replace(/^\/+/, '');
+    return !bare.includes('/') && solutionsFlatSlugs.has(bare);
+  };
+  const isNoindexedWpPage = (route) => {
+    const bare = route.replace(/^\/+/, '');
+    return !bare.includes('/') && noindexedSlugs.has(bare);
+  };
+  const sitemapRoutes = routes.filter((r) => !isFlatSolutionDuplicate(r) && !isNoindexedWpPage(r));
+  console.log(
+    `[prerender-routes] Solutions vanity URLs: ${solutionsPaths.length} added, ${routes.length - sitemapRoutes.length} flat duplicates/noindexed pages dropped from sitemap`,
+  );
+
+  const allPaths = [...new Set([...sitemapRoutes, ...staticPages, ...eventPaths, ...solutionsPaths])];
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${allPaths

@@ -1,8 +1,9 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn, Router } from '@angular/router';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 
 import { SeoMetaService } from '../../app/services/seo-meta.service';
+import { SolutionsVanityService } from '../../app/services/solutions-vanity.service';
 import { WordPressPageResponse, WordPressPageService } from '../../app/services/wordpress-page.service';
 import { logError } from '../../app/utils/logger';
 import { applyWordPressPageSeo, applyWordPressPageSeoFallback } from './wordpress-page.seo';
@@ -41,6 +42,7 @@ export const wordpressPageResolver: ResolveFn<WordPressPageResponse | null> = (r
   const service = inject(WordPressPageService);
   const seoMeta = inject(SeoMetaService);
   const router = inject(Router);
+  const solutionsVanity = inject(SolutionsVanityService);
   const path = resolveWordPressPathFromRoute(route, router);
   const fetchPath = resolveWordPressFetchPath(path);
 
@@ -49,7 +51,12 @@ export const wordpressPageResolver: ResolveFn<WordPressPageResponse | null> = (r
   }
 
   return service.getPage(fetchPath).pipe(
-    tap((page) => applyWordPressPageSeo(seoMeta, path, page)),
+    switchMap((page) =>
+      solutionsVanity.getVanityPath(page.slug).pipe(
+        tap((vanityPath) => applyWordPressPageSeo(seoMeta, path, page, vanityPath)),
+        map(() => page),
+      ),
+    ),
     catchError((error) => {
       logError(`[wordpress-page] Resolver falling back to null for route "${path}" (fetched as "${fetchPath}"):`, error);
       applyWordPressPageSeoFallback(seoMeta, path);
