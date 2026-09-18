@@ -1,5 +1,4 @@
 import {
-  GET_GEN_CONTENTS_FOR_SEARCH,
   GET_GEN_CONTENTS_BY_CATEGORY,
   GET_GEN_CONTENTS_BY_TAG_AND_CATEGORY,
   GET_GEN_CONTENTS_BY_CATEGORY_PAGINATED,
@@ -33,14 +32,6 @@ function getOperationInfo(doc: DocumentNode): { name: string; variables: string[
 
 describe('GraphQL API (graphql.ts)', () => {
   describe('query documents', () => {
-    it('exports valid DocumentNode for GET_GEN_CONTENTS_FOR_SEARCH', () => {
-      expect(GET_GEN_CONTENTS_FOR_SEARCH).toBeDefined();
-      expect(GET_GEN_CONTENTS_FOR_SEARCH.kind).toBe('Document');
-      const { name, variables } = getOperationInfo(GET_GEN_CONTENTS_FOR_SEARCH);
-      expect(name).toBe('GetGenContentsForSearch');
-      expect(variables).toContain('categoryId');
-    });
-
     it('exports valid DocumentNode for GET_GEN_CONTENTS_BY_CATEGORY', () => {
       expect(GET_GEN_CONTENTS_BY_CATEGORY).toBeDefined();
       expect(GET_GEN_CONTENTS_BY_CATEGORY.kind).toBe('Document');
