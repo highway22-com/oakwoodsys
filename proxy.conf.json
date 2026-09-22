@@ -39,6 +39,14 @@
       "^/api/eventbrite": "/wp-json/oakwood/v1/eventbrite"
     }
   },
+  "/api/search": {
+    "target": "https://oakwoodsystemsgroup.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/search": "/wp-json/oakwood/v1/search"
+    }
+  },
   "/api/wordpress-page": {
     "target": "https://oakwoodsystemsgroup.com",
     "secure": true,

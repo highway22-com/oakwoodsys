@@ -37,6 +37,13 @@
   force = true
 
 [[redirects]]
+  from = "/api/search"
+  to = "https://oakwoodsystemsgroup.com/wp-json/oakwood/v1/search"
+  status = 200
+  force = true
+  headers = {Cache-Control = "no-store, no-cache", Pragma = "no-cache"}
+
+[[redirects]]
   from = "/api/wordpress-page"
   to = "https://oakwoodsystemsgroup.com/wp-json/custom/v1/rendered-page"
   status = 200

@@ -25,11 +25,12 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
-import { map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
-import { filter } from 'rxjs';
+import { SiteSearchService, type SearchResultItem } from '../../app/services/site-search.service';
+import { EMPTY, filter, Subject } from 'rxjs';
 import { logError } from '../../app/utils/logger';
-import type { CaseStudy, SearchResultItem } from '../../app/api/graphql';
+import type { CaseStudy } from '../../app/api/graphql';
 import { MenuList } from './menu-list/menu-list';
 
 interface Menu {
@@ -98,6 +99,7 @@ export class AppNavbar implements OnInit, OnDestroy {
   private readonly document = inject(DOCUMENT);
   private readonly http = inject(HttpClient);
   private readonly graphql = inject(GraphQLContentService);
+  private readonly siteSearch = inject(SiteSearchService);
   private readonly router = inject(Router);
   private readonly ngZone = inject(NgZone);
   private readonly destroyRef = inject(DestroyRef);
@@ -149,14 +151,16 @@ export class AppNavbar implements OnInit, OnDestroy {
   readonly searchPanelOpen = signal(false);
   /** Texto del input de búsqueda (máx 100 caracteres). */
   readonly searchQuery = signal('');
-  /** Lista completa de items buscables (blogs + case studies), cargada al abrir el panel. */
-  readonly allSearchable = signal<SearchResultItem[]>([]);
-  /** Cantidad de resultados visibles para lazy load (incrementa al hacer scroll). */
-  readonly searchVisibleCount = signal(15);
+  readonly searchResults = signal<SearchResultItem[]>([]);
+  readonly searchHasMore = signal(false);
   readonly searchLoading = signal(false);
   readonly SEARCH_PAGE_SIZE = 15;
   readonly SEARCH_MAX_LENGTH = 100;
+  readonly SEARCH_MIN_LENGTH = 2;
   searchInputRef = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+  private searchPage = 1;
+  private loadingMoreSearch = false;
+  private readonly searchQuery$ = new Subject<string>();
 
   private route = inject(ActivatedRoute);
 
@@ -173,28 +177,41 @@ export class AppNavbar implements OnInit, OnDestroy {
         this.loading.set(false);
       }
     });
+
+    this.searchQuery$
+      .pipe(
+        debounceTime(300),
+        map((q) => q.trim()),
+        distinctUntilChanged(),
+        tap(() => {
+          this.searchPage = 1;
+          this.searchHasMore.set(false);
+        }),
+        switchMap((q) => {
+          if (q.length < this.SEARCH_MIN_LENGTH) {
+            this.searchResults.set([]);
+            this.searchLoading.set(false);
+            return EMPTY;
+          }
+          this.searchLoading.set(true);
+          return this.siteSearch.search(q, 1, this.SEARCH_PAGE_SIZE);
+        }),
+        takeUntilDestroyed(),
+      )
+      .subscribe({
+        next: (res) => {
+          if (!this.searchPanelOpen()) {
+            this.searchLoading.set(false);
+            return;
+          }
+          this.searchResults.set(res.items ?? []);
+          this.searchHasMore.set(!!res.hasMore);
+          this.searchPage = res.page ?? 1;
+          this.searchLoading.set(false);
+        },
+        error: () => this.searchLoading.set(false),
+      });
   }
-
-  /** Resultados filtrados por searchQuery (título o snippet). */
-  readonly searchFilteredResults = computed(() => {
-    const q = this.searchQuery().toLowerCase().trim();
-    const all = this.allSearchable();
-    if (!q) return all;
-    return all.filter(
-      (item) =>
-        item.title.toLowerCase().includes(q) ||
-        item.snippet.toLowerCase().includes(q),
-    );
-  });
-
-  /** Resultados que se muestran en la lista (lazy: solo los primeros searchVisibleCount). */
-  readonly searchResultsToShow = computed(() =>
-    this.searchFilteredResults().slice(0, this.searchVisibleCount()),
-  );
-
-  readonly searchHasMore = computed(
-    () => this.searchFilteredResults().length > this.searchVisibleCount(),
-  );
 
   readonly activeSolutionItems = computed<SolutionItem[]>(() => {
     const solutions = this.content()?.solutions;
@@ -605,45 +622,72 @@ export class AppNavbar implements OnInit, OnDestroy {
     this.searchPanelOpen.set(next);
     if (next) {
       this.hoveredIndex.set(null);
-      this.loadSearchableContent();
       setTimeout(() => this.searchInputRef()?.nativeElement?.focus(), 120);
     } else {
-      this.searchQuery.set('');
-      this.searchVisibleCount.set(this.SEARCH_PAGE_SIZE);
+      this.resetSearchPanel();
     }
-  }
-
-  private loadSearchableContent(): void {
-    if (this.allSearchable().length > 0) return;
-    this.searchLoading.set(true);
-    this.graphql.getSearchableContent().subscribe({
-      next: (list) => {
-        this.allSearchable.set(list);
-        this.searchLoading.set(false);
-      },
-      error: () => this.searchLoading.set(false),
-    });
   }
 
   closeSearchPanel(): void {
     this.searchPanelOpen.set(false);
+    this.resetSearchPanel();
+  }
+
+  private resetSearchPanel(): void {
     this.searchQuery.set('');
-    this.searchVisibleCount.set(this.SEARCH_PAGE_SIZE);
+    this.searchQuery$.next('');
+    this.searchResults.set([]);
+    this.searchHasMore.set(false);
+    this.searchPage = 1;
+    this.searchLoading.set(false);
+    this.loadingMoreSearch = false;
   }
 
   onSearchInput(value: string): void {
     this.searchQuery.set(value.slice(0, this.SEARCH_MAX_LENGTH));
-    this.searchVisibleCount.set(this.SEARCH_PAGE_SIZE);
+    this.searchQuery$.next(this.searchQuery());
   }
 
   onSearchScroll(event: Event): void {
     const el = event.target as HTMLElement;
     if (
       el.scrollHeight - el.scrollTop <= el.clientHeight + 80 &&
-      this.searchHasMore()
+      this.searchHasMore() &&
+      !this.searchLoading() &&
+      !this.loadingMoreSearch
     ) {
-      this.searchVisibleCount.update((n) => n + this.SEARCH_PAGE_SIZE);
+      this.loadMoreSearchResults();
     }
+  }
+
+  private loadMoreSearchResults(): void {
+    const q = this.searchQuery().trim();
+    if (q.length < this.SEARCH_MIN_LENGTH || this.loadingMoreSearch || !this.searchHasMore()) {
+      return;
+    }
+    this.loadingMoreSearch = true;
+    const nextPage = this.searchPage + 1;
+    this.siteSearch.search(q, nextPage, this.SEARCH_PAGE_SIZE).subscribe({
+      next: (res) => {
+        if (!this.searchPanelOpen() || this.searchQuery().trim() !== q) {
+          this.loadingMoreSearch = false;
+          return;
+        }
+        this.searchResults.update((items) => [...items, ...(res.items ?? [])]);
+        this.searchHasMore.set(!!res.hasMore);
+        this.searchPage = res.page ?? nextPage;
+        this.loadingMoreSearch = false;
+      },
+      error: () => {
+        this.loadingMoreSearch = false;
+      },
+    });
+  }
+
+  getSearchResultLabel(item: SearchResultItem): string {
+    if (item.type === 'blog') return 'Blog';
+    if (item.type === 'case-study') return 'Case Study';
+    return item.link.startsWith('/solutions/') ? 'Solution' : 'Page';
   }
 
   /** Fragment (hash) con el texto buscado para que la página destino pueda hacer scroll a la posición. */

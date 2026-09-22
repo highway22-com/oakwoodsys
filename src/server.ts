@@ -619,6 +619,37 @@ export async function netlifyAppEngineHandler(request: Request): Promise<Respons
     }
   }
 
+  if (pathname === '/api/search') {
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Content-Type': 'application/json'
+    };
+    if (request.method === 'OPTIONS') {
+      return new Response('', { status: 200, headers: corsHeaders });
+    }
+    if (request.method !== 'GET') {
+      return Response.json({ error: 'Method not allowed' }, { status: 405, headers: corsHeaders });
+    }
+    try {
+      const incoming = new URL(request.url);
+      const searchUrl = new URL(`${CMS_BASE_URL}/wp-json/oakwood/v1/search`);
+      incoming.searchParams.forEach((value, key) => {
+        searchUrl.searchParams.set(key, value);
+      });
+      const response = await fetch(searchUrl);
+      const data = await response.json().catch(() => ({ items: [], page: 1, perPage: 15, total: 0, hasMore: false }));
+      return Response.json(data, { status: response.status, headers: corsHeaders });
+    } catch (error: any) {
+      console.error('[search] Proxy error:', error);
+      return Response.json(
+        { items: [], page: 1, perPage: 15, total: 0, hasMore: false },
+        { status: 200, headers: corsHeaders }
+      );
+    }
+  }
+
   // API endpoint for home-content proxy (bypasses CORS)
   if (pathname === '/api/home-content') {
     // CORS headers for all responses
