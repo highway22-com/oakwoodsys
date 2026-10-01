@@ -24,7 +24,7 @@
         "npm:@angular/router@^20.3.25",
         "npm:@angular/ssr@^20.3.25",
         "npm:@apollo/client@^4.0.1",
-        "npm:@netlify/angular-runtime@^3.0.1",
+        "npm:@netlify/angular-runtime@^4.0.0",
         "npm:@netlify/blobs@^10.5.0",
         "npm:@tailwindcss/postcss@^4.1.17",
         "npm:@types/express@^5.0.1",

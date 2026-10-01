@@ -110,7 +110,6 @@
 /27283-2
 /27285-2
 /oakwood-for-microsoft
-/testing-anchor-padding
 /modern-work-engagements
 /security-engagements
 /cloud-infrastructure-engagements

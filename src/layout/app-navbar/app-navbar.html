@@ -319,7 +319,7 @@
           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
       <input #searchInput type="text" [value]="searchQuery()" (input)="onSearchInput($any($event.target).value)"
-        [maxLength]="SEARCH_MAX_LENGTH" placeholder="Search"
+        (keydown.enter)="onSearchSubmit()" [maxLength]="SEARCH_MAX_LENGTH" placeholder="Search"
         class="flex-1 min-w-0 text-gray-900 placeholder-gray-400 bg-transparent border-0 focus:ring-0 focus:outline-none text-base" />
       <span class="text-xs text-gray-400 shrink-0">{{ searchQuery().length }}/{{ SEARCH_MAX_LENGTH }}</span>
     </div>
@@ -335,9 +335,9 @@
       </p>
       } @else {
       <ul class="space-y-3 pb-4">
-        @for (item of searchResults(); track item.id) {
+        @for (item of searchResults(); track item.id; let i = $index) {
         <li>
-          <a [routerLink]="item.link" [fragment]="getSearchFragment()" (click)="closeSearchPanel()"
+          <a [routerLink]="item.link" [fragment]="getSearchFragment()" (click)="onSearchResultClick(item, i)"
             class="flex gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
             
             <div class="min-w-0 flex-1">

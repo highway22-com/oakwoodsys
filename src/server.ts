@@ -1,6 +1,6 @@
 import { AngularAppEngine, createRequestHandler } from '@angular/ssr';
 import { CMS_BASE_URL } from './app/config/cms.config';
-import { getContext } from '@netlify/angular-runtime/context.mjs'
+import { getContext } from '@netlify/angular-runtime/app-engine.js'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
 

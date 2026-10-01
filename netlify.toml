@@ -3,7 +3,8 @@
   publish = "dist/oaw/browser"
 
 [build.environment]
-  NODE_VERSION = "20"
+  # @netlify/angular-runtime@4 requires Node ^22.22.0 || ^24.13.1 || >=26
+  NODE_VERSION = "24"
   NODE_OPTIONS = "--max-old-space-size=8192"
 
 [[plugins]]

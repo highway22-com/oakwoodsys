@@ -28,6 +28,7 @@ import { ActivatedRoute } from '@angular/router';
 import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
 import { GraphQLContentService } from '../../app/services/graphql-content.service';
 import { SiteSearchService, type SearchResultItem } from '../../app/services/site-search.service';
+import { AnalyticsService } from '../../app/services/analytics.service';
 import { EMPTY, filter, Subject } from 'rxjs';
 import { logError } from '../../app/utils/logger';
 import type { CaseStudy } from '../../app/api/graphql';
@@ -100,6 +101,7 @@ export class AppNavbar implements OnInit, OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly graphql = inject(GraphQLContentService);
   private readonly siteSearch = inject(SiteSearchService);
+  private readonly analytics = inject(AnalyticsService);
   private readonly router = inject(Router);
   private readonly ngZone = inject(NgZone);
   private readonly destroyRef = inject(DestroyRef);
@@ -160,6 +162,8 @@ export class AppNavbar implements OnInit, OnDestroy {
   searchInputRef = viewChild<ElementRef<HTMLInputElement>>('searchInput');
   private searchPage = 1;
   private loadingMoreSearch = false;
+  /** Último término enviado a analytics, para no registrar el mismo término dos veces. */
+  private lastTrackedSearch = '';
   private readonly searchQuery$ = new Subject<string>();
 
   private route = inject(ActivatedRoute);
@@ -339,6 +343,7 @@ export class AppNavbar implements OnInit, OnDestroy {
   }
 
   sleepMoveout() {
+    this.commitSearchTracking();
     this.searchPanelOpen.set(false);
   }
 
@@ -624,16 +629,48 @@ export class AppNavbar implements OnInit, OnDestroy {
       this.hoveredIndex.set(null);
       setTimeout(() => this.searchInputRef()?.nativeElement?.focus(), 120);
     } else {
+      this.commitSearchTracking();
       this.resetSearchPanel();
     }
   }
 
   closeSearchPanel(): void {
+    this.commitSearchTracking();
     this.searchPanelOpen.set(false);
     this.resetSearchPanel();
   }
 
+  /** Solo se registra el término final (Enter, clic en resultado o cierre), no cada pulsación. */
+  private commitSearchTracking(): void {
+    const term = this.searchQuery().trim();
+    if (term.length < this.SEARCH_MIN_LENGTH || term === this.lastTrackedSearch) {
+      return;
+    }
+    this.lastTrackedSearch = term;
+    this.analytics.track('search', {
+      search_term: term,
+      search_results_count: this.searchResults().length,
+      search_location: 'navbar',
+    });
+  }
+
+  onSearchSubmit(): void {
+    this.commitSearchTracking();
+  }
+
+  onSearchResultClick(item: SearchResultItem, position: number): void {
+    this.commitSearchTracking();
+    this.analytics.track('search_result_click', {
+      search_term: this.searchQuery().trim(),
+      result_type: item.type,
+      result_url: item.link,
+      result_position: position + 1,
+    });
+    this.closeSearchPanel();
+  }
+
   private resetSearchPanel(): void {
+    this.lastTrackedSearch = '';
     this.searchQuery.set('');
     this.searchQuery$.next('');
     this.searchResults.set([]);
