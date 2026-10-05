@@ -196,14 +196,16 @@
           </article>
         }
       </div>
-      <!-- DESKTOP ONLY: row 1 = 3, row 2 = 4 -->
+      <!-- DESKTOP ONLY: two rows of 4 -->
       <div class="hidden lg:flex flex-col items-center gap-16 xl:gap-24 w-full">
-        <!-- First row: first 3 -->
+        <!-- First row: first 4 -->
         <div
-          class="flex flex-row justify-center gap-8 xl:gap-12 w-full max-w-7xl"
+          class="flex flex-row justify-center gap-8 xl:gap-12 w-full max-w-8xl"
         >
-          @for (member of c.teamMembers.slice(0, 3); track member.name) {
-            <article class="flex flex-col items-center gap-6 xl:gap-8 min-w-0">
+          @for (member of c.teamMembers.slice(0, 4); track member.name) {
+            <article
+              class="flex flex-col items-center gap-6 xl:gap-8 w-[220px] xl:w-[280px] 2xl:w-[320px] min-w-0"
+            >
               <ng-container *ngIf="member.image; else placeholder1">
                 <img
                   class="w-[220px] h-[220px] xl:w-[280px] xl:h-[280px] 2xl:w-[320px] 2xl:h-[320px] object-cover"
@@ -259,7 +261,7 @@
         <div
           class="flex flex-row justify-center gap-8 xl:gap-12 w-full max-w-8xl"
         >
-          @for (member of c.teamMembers.slice(3, 7); track member.name) {
+          @for (member of c.teamMembers.slice(4, 8); track member.name) {
             <article
               class="flex flex-col items-center gap-6 xl:gap-8 w-[220px] xl:w-[280px] 2xl:w-[320px] min-w-0"
             >
@@ -315,24 +317,24 @@
           }
         </div>
         <!-- Additional rows for remaining members, if any -->
-        @if (c.teamMembers.length > 7) {
+        @if (c.teamMembers.length > 8) {
           <div
             class="flex flex-row flex-wrap justify-center gap-8 xl:gap-10 w-full max-w-8xl"
           >
-            @for (member of c.teamMembers.slice(7); track member.name) {
+            @for (member of c.teamMembers.slice(8); track member.name) {
               <article
                 class="flex flex-col items-center gap-6 xl:gap-8 w-[220px] xl:w-[280px] 2xl:w-[320px]"
               >
                 <ng-container *ngIf="member.image; else placeholder3">
                   <img
-                    class="w-[220px] h-[220px] xl:w-[280px] xl:h-[280px] 2xl:w-[320px] 2xl:h-[320px] rounded-full object-cover"
+                    class="w-[220px] h-[220px] xl:w-[280px] xl:h-[280px] 2xl:w-[320px] 2xl:h-[320px] object-cover"
                     [src]="member.image"
                     [alt]="member.name"
                   />
                 </ng-container>
                 <ng-template #placeholder3>
                   <div
-                    class="w-[220px] h-[220px] xl:w-[280px] xl:h-[280px] 2xl:w-[320px] 2xl:h-[320px] rounded-full bg-gray-200 flex items-center justify-center text-4xl text-gray-500"
+                    class="w-[220px] h-[220px] xl:w-[280px] xl:h-[280px] 2xl:w-[320px] 2xl:h-[320px] bg-gray-200 flex items-center justify-center text-4xl text-gray-500"
                   >
                     {{ member.name.charAt(0) }}
                   </div>
@@ -347,7 +349,7 @@
                       {{ member.name }}
                     </h3>
                     <p
-                      class="font-segoe font-normal text-s-900 text-[18px] xl:text-[22px] 2xl:text-[24px] text-center leading-[140%]"
+                      class="text-center font-segoe font-normal text-[18px] xl:text-[22px] 2xl:text-[24px] leading-[140%] text-[#3D3D3D]"
                     >
                       {{ member.title }}
                     </p>

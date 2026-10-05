@@ -75,7 +75,7 @@
       },
       {
         "name": "BJC HealthCare",
-        "logo": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/bjc-healthcare.png",
+        "logo": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/bjc-healthcare-logo-1.png",
         "alt": "BJC HealthCare"
       }
     ]
@@ -91,37 +91,50 @@
     {
       "name": "Charles Windsor",
       "title": "CEO",
-      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/charles.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/charles.png",
+      "linkedIn":"https://www.linkedin.com/in/charles-windsor-603585/?lipi=urn%3Ali%3Apage%3Ad_flagship3_feed%3ba%2frRqouMQMKplEhMHTqwxg%3D%3D"
     },
     {
       "name": "Jeff Reddin",
       "title": "VP, Sales",
-      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/jeff.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/jeff.png",
+      "linkedIn":"https://www.linkedin.com/in/jeffreddin/?lipi=urn%3Ali%3Apage%3Ad_flagship3_feed%3ba%2frRqouMQMKplEhMHTqwxg%3D%3D"
     },
     {
       "name": "Tonja Hilton",
       "title": "VP Finance, Administration ",
-      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/tonja.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/tonja.png",
+      "linkedIn":"https://www.linkedin.com/in/tonja-begeman-hilton-1007856/?lipi=urn%3Ali%3Apage%3Ad_flagship3_feed%3ba%2frRqouMQMKplEhMHTqwxg%3D%3D"
     },
     {
       "name": "Michael Caylor",
       "title": "Sr. Director, Cloud & Managed Services",
-      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/michael.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/michael.png",
+      "linkedIn":"https://www.linkedin.com/in/michael-caylor-b8052797/?lipi=urn%3Ali%3Apage%3Ad_flagship3_feed%3ba%2frRqouMQMKplEhMHTqwxg%3D%3D"
     },
     {
       "name": "Steve Goodman",
       "title": "Sr. Director, of Managed Services",
-      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/steve.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/steve.png",
+      "linkedIn":"https://www.linkedin.com/in/goodmansteve/?lipi=urn%3Ali%3Apage%3Ad_flagship3_feed%3ba%2frRqouMQMKplEhMHTqwxg%3D%3D"
     },
     {
       "name": "John Trease",
       "title": "Director of App Innovation & AI",
-      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/john.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/john.png",
+      "linkedIn":"https://www.linkedin.com/in/john-trease-43aa9b4/?lipi=urn%3Ali%3Apage%3Ad_flagship3_feed%3ba%2frRqouMQMKplEhMHTqwxg%3D%3D"
+    },
+    {
+      "name": "Brandon Fischer",
+      "title": "VP Data Analytics & AI",
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/10/brandon-fischer.png",
+      "linkedIn": "https://www.linkedin.com/in/brandonrfischer/"
     },
     {
       "name": "Tim Haaksma",
       "title": "Director of Marketing",
-      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/tim.png"
+      "image": "https://oakwoodsystemsgroup.com/wp-content/uploads/2026/03/tim.png",
+      "linkedIn":"https://www.linkedin.com/in/timhaaksma/?lipi=urn%3Ali%3Apage%3Ad_flagship3_feed%3ba%2frRqouMQMKplEhMHTqwxg%3D%3D"
     }
   ],
   "deliverBannerTitle": "Deliver technology solutions with integrity, collaboration, and a relentless focus on real business outcomes.",
