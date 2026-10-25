@@ -105,7 +105,10 @@ export class GraphQLContentService {
    * tree, gets the cached value instantly.
    */
   private footerContent$ = cachedForProcess('cms-page:footer', () => this.getCmsPageBySlug('footer'));
-
+private structuredOfferPageContent$ = cachedForProcess(
+    'cms-page:structured-engagement-offer-page',
+    () => this.getCmsPageBySlug('structured-engagement-offer-page'),
+  );
   /** Categorías y tags de Gen Content (cargados al inicio). Acceso global. */
   readonly genContentCategories = signal<GenContentTaxonomyTerm[]>([]);
   readonly genContentTags = signal<GenContentTaxonomyTerm[]>([]);
@@ -619,8 +622,8 @@ export class GraphQLContentService {
   /**
    * Contenido de la página Structured Offer (slug: structured-engagement-offer-page).
    */
-  getStructuredEngagementOfferPageContent(): Observable<Record<string, unknown> | null> {
-    return this.getCmsPageBySlug('structured-engagement-offer-page').pipe(
+ getStructuredEngagementOfferPageContent(): Observable<Record<string, unknown> | null> {
+    return this.structuredOfferPageContent$.pipe(
       map((data) => data as Record<string, unknown> | null)
     );
   }

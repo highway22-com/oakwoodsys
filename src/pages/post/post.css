@@ -41,6 +41,9 @@
   }
 }
 
+.html-content > :first-child {
+  margin-top: 0;
+}
 .html-content h1 {
   font-size: 1.875rem;
   font-weight: 700;
@@ -66,7 +69,7 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: rgb(17 24 39);
-  margin-top: 3rem;
+  margin-top: 2rem;
   margin-bottom: 1.5rem;
   line-height: 1.25;
 }
