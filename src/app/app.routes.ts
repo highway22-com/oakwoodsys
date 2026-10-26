@@ -92,10 +92,6 @@ export const routes: Routes = [
                 pathMatch: 'full'
             },
             {
-                path: 'structured-engagement',
-                loadComponent: () => import('../pages/structured/structured').then(m => m.Structured)
-            },
-            {
                 path: 'resources/structured-engagements',
                 loadComponent: () => import('../pages/structured/structured').then(m => m.Structured)
             },
