@@ -1,10 +1,10 @@
 <app-video-hero
   [loading]="false"
   [hvh70]="true"
-  [videoUrls]="hero.videoUrls"
-  [title]="hero.title"
-  [description]="hero.description"
-  [descriptionSecondary]="hero.descriptionSecondary"
+  [videoUrls]="content.hero.videoUrls"
+  [title]="content.hero.title"
+  [description]="content.hero.description"
+  [descriptionSecondary]="content.hero.descriptionSecondary"
   descriptionClass="mb-3 w-full max-w-xl md:max-w-2xl lg:max-w-3xl break-words text-[16px] md:text-[20px]"
   [descriptionStyle]="{
     color: 'var(--White, #FFF)',
@@ -21,8 +21,8 @@
     fontWeight: '400',
     lineHeight: '150%',
   }"
-  [ctaPrimary]="hero.ctaPrimary"
-  [ctaSecondary]="hero.ctaSecondary"
+  [ctaPrimary]="content.hero.ctaPrimary"
+  [ctaSecondary]="content.hero.ctaSecondary"
   [showIndicators]="false"
 ></app-video-hero>
 
@@ -34,8 +34,8 @@
   >
     <div class="absolute inset-0 z-0">
       <img
-        [src]="focusSection.bgImage"
-        [alt]="focusSection.title"
+        [src]="content.focusSection.bgImage"
+        [alt]="content.focusSection.title"
         class="absolute inset-0 w-full h-full object-cover"
         loading="eager"
         fetchpriority="high"
@@ -50,15 +50,15 @@
           id="ml-hero-title"
           class="max-w-3xl font-['Inter'] text-[var(--White,#FFF)] text-[32px] lg:text-[50px] font-normal leading-[120%] lg:leading-[120%] tracking-[-0.32px] lg:tracking-[-0.5px] mb-6 sm:mb-12"
         >
-          {{ focusSection.title }}
+          {{ content.focusSection.title }}
         </h2>
         <p
           class="font-['Inter'] text-[var(--White,#FFF)] text-[16px] lg:text-[18px] font-medium leading-[150%] lg:leading-[27px]"
         >
-          {{ focusSection.description }}
-          @if (focusSection.description2) {
+          {{ content.focusSection.description }}
+          @if (content.focusSection.description2) {
             <br />
-            <br /><br />{{ focusSection.description2 }}
+            <br /><br />{{ content.focusSection.description2 }}
           }
         </p>
       </div>
@@ -70,7 +70,7 @@
     <div class="w-full px-4 sm:px-6 md:px-6 lg:px-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full gap-4">
         @for (
-          card of focusSection.focusCards;
+          card of content.focusSection.focusCards;
           track card.title;
           let last = $last
         ) {
@@ -99,9 +99,6 @@
               {{ card.title }}
             </h3>
             <p
-              class="text-[#3D3D3D] text-[18px] font-normal leading-[150%]"
-            ></p>
-            <p
               class="text-[#3D3D3D] text-[16px] font-normal leading-[150%] lg:text-[#3D3D3D] lg:font-['Inter'] lg:text-[18px] lg:leading-[150%]"
             >
               {{ card.summary }}
@@ -123,25 +120,23 @@
       <p
         class="text-[#2A7EBF] font-['Inter'] text-[14px] font-semibold uppercase tracking-[0.08em] mb-2 lg:text-[#2A7EBF] lg:text-[18px] lg:leading-[150%]"
       >
-        Cloud Solution Provider
+        {{ content.csp.tagline }}
       </p>
       <h2
         id="csp-title"
         class="text-[#121212] font-['Inter'] text-[32px] sm:text-[32px] lg:text-[#000] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] lg:text-center mb-3"
       >
-        What Is a Microsoft Cloud Solution Provider (CSP)?
+        {{ content.csp.title }}
       </h2>
       <p
         class="text-[#454545] font-[var(--font-segoe)] text-[16px] leading-[150%] max-w-9xl mx-auto lg:text-[#454545] lg:text-[18px] lg:text-center"
       >
-        Oakwood delivers Microsoft licensing through the Cloud Solution Provider
-        model. This approach shifts licensing from a transactional purchase to
-        an ongoing, service-led relationship.
+        {{ content.csp.description }}
       </p>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-10">
       @for (
-        step of cspSteps;
+        step of content.csp.steps;
         track step.title;
         let first = $first;
         let last = $last
@@ -236,7 +231,7 @@
     <div
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border border-[#D1D1D1] mt-20"
     >
-      @for (item of cspBenefits; track item.title; let last = $last) {
+      @for (item of content.csp.benefits; track item.title; let last = $last) {
         <article
           class="px-5 py-6 border-b lg:border-b-0 border-[#D1D1D1] flex align-items-center"
           [class.lg:border-r]="!last"
@@ -278,25 +273,24 @@
       <p
         class="text-[#2A7EBF] text-[14px] font-semibold uppercase tracking-[0.08em] mb-2 lg:text-[#2A7EBF] lg:font-['Inter'] lg:text-[18px] lg:leading-[150%]"
       >
-        Why Oakwood
+        {{ content.whyOakwood.tagline }}
       </p>
       <h2
         id="why-oakwood-title"
         class="text-[#121212] w-full text-[32px] sm:text-[40px] lg:text-[#000] lg:font-['Inter'] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] lg:text-center mb-3"
       >
-        Why Organizations Choose Oakwood for Microsoft Licensing
+        {{ content.whyOakwood.title }}
       </h2>
       <p
         class="text-[#454545] text-[16px] leading-[150%] max-w-4xl mx-auto lg:text-[#454545] lg:text-center lg:font-[var(--font-segoe)] lg:text-[18px] lg:font-normal lg:leading-[150%]"
       >
-        Most providers focus on selling licenses. Oakwood focuses on making sure
-        those licenses are working for you.
+        {{ content.whyOakwood.description }}
       </p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-        @for (feature of whyOakwoodFeatures; track feature.title) {
+        @for (feature of content.whyOakwood.features; track feature.title) {
           <article class="bg-white rounded-lg p-6 sm:p-7 min-h-[220px]">
             <div class="w-8 h-8 mb-4">
               <img
@@ -323,8 +317,8 @@
         class="relative min-h-[420px] lg:min-h-[100%] overflow-hidden rounded-lg"
       >
         <img
-          src="https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/image-76.png"
-          alt="Oakwood team reviewing Microsoft licensing strategy"
+          [src]="content.whyOakwood.image.src"
+          [alt]="content.whyOakwood.image.alt"
           class="absolute inset-0 w-full h-full object-cover"
           loading="lazy"
           decoding="async"
@@ -347,8 +341,8 @@
         class="relative min-h-[420px] lg:min-h-[760px] overflow-hidden rounded-lg lg:sticky lg:top-28"
       >
         <img
-          src="https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Section-Title.png"
-          alt="What Microsoft Licensing Services Include"
+          [src]="content.serviceAreas.image.src"
+          [alt]="content.serviceAreas.image.alt"
           class="absolute inset-0 w-full h-full object-cover"
           loading="lazy"
         />
@@ -358,19 +352,18 @@
             id="licensing-service-areas-title"
             class="text-white text-[32px] sm:text-[32px] lg:font-['Inter'] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] mb-3"
           >
-            What Microsoft Licensing Services Include
+            {{ content.serviceAreas.title }}
           </h2>
           <p
             class="text-white text-[16px] sm:text-[16px] leading-[150%] max-w-xl lg:text-[#F6F6F6] lg:font-[var(--font-segoe)] lg:text-[18px] lg:font-normal lg:leading-[150%]"
           >
-            Oakwood delivers a full set of services around Microsoft licensing,
-            from strategy through ongoing management.
+            {{ content.serviceAreas.description }}
           </p>
         </div>
       </div>
 
       <div class="flex flex-col gap-4 sm:gap-5">
-        @for (card of serviceAreaCards; track card.title) {
+        @for (card of content.serviceAreas.cards; track card.title) {
           <article class="bg-white border border-[#D1D1D1] p-5 sm:p-7">
             <div class="w-9 h-9 lg:w-10 lg:h-10 mb-6">
               <img
@@ -405,8 +398,8 @@
   [style.backgroundColor]="'#001258'"
 >
   <img
-    src="/assets/bg-image-microsoft-licensing.png"
-    alt="Outcomes background"
+    [src]="content.outcomes.backgroundImage.src"
+    [alt]="content.outcomes.backgroundImage.alt"
     class="absolute inset-0 w-full h-full object-cover object-top md:object-center pointer-events-none"
     style="mix-blend-mode: plus-lighter; z-index: 0"
     loading="lazy"
@@ -419,25 +412,24 @@
       class="text-[#53A2DD] font-inter text-[14px] lg:text-[#8FC2EA] lg:text-[18px] font-semibold leading-[150%] uppercase mb-4 mt-2"
       style="letter-spacing: 0.08em"
     >
-      Outcomes
+      {{ content.outcomes.tagline }}
     </p>
     <h2
       id="outcomes-title"
       class="text-white font-inter font-normal text-[32px] sm:text-[50px] lg:text-[50px] leading-[1.2] sm:leading-[1.1] lg:leading-[110%] tracking-normal text-center max-w-[1400px] mx-auto mb-2"
     >
-      What Better Licensing Actually Looks Like
+      {{ content.outcomes.title }}
     </h2>
     <p
       class="text-white font-[var(--font-segoe)] font-normal text-[16px] sm:text-[26.67px] lg:text-[18px] leading-[22px] sm:leading-[37.33px] lg:leading-[150%] tracking-normal text-center max-w-5xl mx-auto mb-20"
     >
-      When Microsoft licensing is managed correctly, the impact is immediate and
-      measurable.
+      {{ content.outcomes.description }}
     </p>
 
     <div
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-4 text-left w-full max-w-[1420px]"
     >
-      @for (item of outcomes; track item) {
+      @for (item of content.outcomes.items; track item) {
         <div class="px-3 flex items-center gap-3 lg:block">
           <div
             class="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-[#2C8B50] mb-0 lg:mb-3 flex items-center justify-center flex-shrink-0"
@@ -477,24 +469,24 @@
       <p
         class="text-[#2A7EBF] font-['Inter'] text-[14px] font-semibold uppercase tracking-[0.08em] mb-2 lg:text-[#2A7EBF] lg:text-[18px] lg:leading-[150%]"
       >
-        {{ managedServicesConnection.tagline }}
+        {{ content.managedServices.tagline }}
       </p>
       <h2
         id="managed-services-connection-title"
         class="text-[#121212] font-['Inter'] text-[32px] sm:text-[32px] lg:text-[#000] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] lg:text-center mb-3"
       >
-        {{ managedServicesConnection.title }}
+        {{ content.managedServices.title }}
       </h2>
       <p
         class="text-[#454545] font-[var(--font-segoe)] text-[16px] leading-[150%] max-w-9xl mx-auto lg:text-[#454545] lg:text-[18px] lg:text-center"
       >
-        {{ managedServicesConnection.description }}
+        {{ content.managedServices.description }}
       </p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-10">
       @for (
-        step of managedServiceSteps;
+        step of content.managedServices.steps;
         track step.title;
         let first = $first;
         let last = $last
@@ -589,7 +581,7 @@
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border border-[#D1D1D1] mt-20"
     >
       @for (
-        item of managedServiceBenefits;
+        item of content.managedServices.benefits;
         track item.title;
         let last = $last
       ) {
@@ -621,6 +613,7 @@
     </div>
   </div>
 </section>
+
 <!-- Self-diagnosis section -->
 <section
   class="w-full bg-[#EAF1F8] py-14 sm:py-16 lg:py-20"
@@ -631,23 +624,23 @@
       <p
         class="text-[#2A7EBF] font-['Inter'] text-[14px] font-semibold leading-[150%] uppercase mb-2 lg:text-[#2A7EBF] lg:text-[18px] lg:font-semibold lg:leading-[150%] lg:uppercase"
       >
-        {{ selfDiagnosis.tagline }}
+        {{ content.selfDiagnosis.tagline }}
       </p>
       <h2
         id="self-diagnosis-title"
         class="text-[#121212] font-['Inter'] text-[32px] sm:text-[32px] lg:text-[50px] font-normal leading-[112%] lg:leading-[110%] lg:text-[#000] lg:text-center mb-3"
       >
-        {{ selfDiagnosis.title }}
+        {{ content.selfDiagnosis.title }}
       </h2>
       <p
         class="text-[#454545] font-[var(--font-segoe)] text-[16px] lg:text-[18px] font-normal leading-[150%] text-center max-w-5xl mx-auto"
       >
-        {{ selfDiagnosis.description }}
+        {{ content.selfDiagnosis.description }}
       </p>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-      @for (card of selfDiagnosisCards; track card.title) {
+      @for (card of content.selfDiagnosis.cards; track card.title) {
         <article
           class="bg-white/90 border border-[#DFE5EA] rounded-md p-6 min-h-[200px]"
         >
@@ -683,8 +676,8 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-stretch">
       <div class="relative min-h-[420px] rounded-lg overflow-hidden">
         <img
-          [src]="licensingExpert.imageSrc"
-          alt="Microsoft licensing consultation"
+          [src]="content.licensingExpert.imageSrc"
+          [alt]="content.licensingExpert.imageAlt"
           class="absolute inset-0 w-full h-full object-cover"
           loading="lazy"
         />
@@ -694,38 +687,38 @@
         <p
           class="text-[#2A7EBF] font-['Inter'] text-[14px] lg:text-[18px] font-semibold leading-[150%] uppercase tracking-[0.08em] mb-2"
         >
-          {{ licensingExpert.tagline }}
+          {{ content.licensingExpert.tagline }}
         </p>
         <h2
           id="licensing-review-title"
           class="text-[#121212] font-['Inter'] text-[36px] sm:text-[36px] lg:text-[58px] font-normal leading-[112%] lg:leading-[130%] lg:tracking-[-1.16px] lg:text-[#000] mb-4"
         >
-          {{ licensingExpert.title }}
+          {{ content.licensingExpert.title }}
         </h2>
         <p
           class="text-[#454545] font-[var(--font-segoe)] text-[16px] lg:text-[18px] font-normal leading-[150%] mb-12"
         >
-          {{ licensingExpert.description }}
+          {{ content.licensingExpert.description }}
         </p>
 
         <h3
           class="text-[#1E5FA8] font-['Inter'] text-[28px] font-semibold leading-[130%] lg:text-[#0D53A2] lg:text-[32px] mb-3"
         >
-          {{ licensingExpert.impactTitle }}
+          {{ content.licensingExpert.impactTitle }}
         </h3>
         <p
           class="text-[#242424] font-['Inter'] text-[24px] font-semibold leading-[140%] lg:text-[#242424] lg:text-[24px] lg:leading-[150%] mb-3"
         >
-          {{ licensingExpert.impactHeadline }}
+          {{ content.licensingExpert.impactHeadline }}
         </p>
         <p
           class="text-[#454545] font-['Inter'] text-[16px] leading-[150%] lg:text-[#242424] lg:text-[20px] lg:font-normal mb-5"
         >
-          {{ licensingExpert.impactDescription }}
+          {{ content.licensingExpert.impactDescription }}
         </p>
 
         <ul class="space-y-2">
-          @for (item of licensingExpertChecklist; track item) {
+          @for (item of content.licensingExpert.checklist; track item) {
             <li
               class="flex items-start gap-3 text-[#242424] text-[16px] leading-[150%]"
             >
@@ -756,7 +749,6 @@
 </section>
 
 <!-- Request Your Licensing Review Form Section -->
-
 <section
   class="w-full bg-[#F2F8FD] py-14 sm:py-16 lg:py-[100px]"
   aria-labelledby="licensing-form-title"
@@ -773,8 +765,8 @@
           class="w-[140px] h-[140px] rounded-xl flex items-center justify-center flex-shrink-0"
         >
           <img
-            src="https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/8e3c1e6e903f8a42bf37dd17817d6c25-1.png"
-            alt="Licensing review icon"
+            [src]="content.licensingForm.icon.src"
+            [alt]="content.licensingForm.icon.alt"
             class="w-30 h-30 object-contain"
           />
         </div>
@@ -785,53 +777,33 @@
             id="licensing-form-title"
             class="text-[#000000] font-['Inter'] text-[36px] sm:text-[58px] font-normal leading-[120%] mb-3 lg:text-[#000] lg:font-['Inter'] lg:text-[58px] lg:font-normal lg:leading-[130%] lg:tracking-[-1.16px]"
           >
-            Request Your Licensing Review
+            {{ content.licensingForm.title }}
           </h2>
           <p
             class="text-[#3D3D3D] text-[16px] sm:text-[18px] leading-[150%] lg:text-[#3D3D3D] lg:font-[var(--font-segoe)] lg:text-[18px] lg:font-normal lg:leading-[150%]"
           >
-       Tell us more about your Microsoft environment and licensing goals. Our team will help identify opportunities to optimize cost, simplify management, and plan ahead.
+            {{ content.licensingForm.description }}
           </p>
         </div>
 
         <!-- Benefit cards -->
         <div class="grid grid-cols-3 gap-3">
-          <div class="bg-white border border-[#D1D1D1] p-5 flex flex-col gap-3">
-            <img
-              src="https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Icon-Symbol-15-1.png"
-              alt="Benefit icon"
-              class="w-7 h-7 object-contain"
-            />
-            <p
-              class="text-[#3D3D3D] text-[14px] leading-[150%] lg:text-[#3D3D3D] lg:font-[var(--font-segoe)] lg:text-[16px] lg:font-normal lg:leading-[150%]"
+          @for (benefit of content.licensingForm.benefits; track benefit.text) {
+            <div
+              class="bg-white border border-[#D1D1D1] p-5 flex flex-col gap-3"
             >
-              Unbiased insights from licensing experts
-            </p>
-          </div>
-          <div class="bg-white border border-[#D1D1D1] p-5 flex flex-col gap-3">
-            <img
-              src="https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Icon-Symbol-16-1.png"
-              alt="Benefit icon"
-              class="w-7 h-7 object-contain"
-            />
-            <p
-              class="text-[#3D3D3D] text-[14px] leading-[150%] lg:text-[#3D3D3D] lg:font-[var(--font-segoe)] lg:text-[16px] lg:font-normal lg:leading-[150%]"
-            >
-              Identify savings and reduce waste
-            </p>
-          </div>
-          <div class="bg-white border border-[#D1D1D1] p-5 flex flex-col gap-3">
-            <img
-              src="https://oakwoodsystemsgroup.com/wp-content/uploads/2026/05/Icon-Symbol-17.png"
-              alt="Benefit icon"
-              class="w-7 h-7 object-contain"
-            />
-            <p
-              class="text-[#3D3D3D] text-[14px] leading-[150%] lg:text-[#3D3D3D] lg:font-[var(--font-segoe)] lg:text-[16px] lg:font-normal lg:leading-[150%]"
-            >
-              Align licensing with your business goals
-            </p>
-          </div>
+              <img
+                [src]="benefit.icon"
+                [alt]="benefit.alt"
+                class="w-7 h-7 object-contain"
+              />
+              <p
+                class="text-[#3D3D3D] text-[14px] leading-[150%] lg:text-[#3D3D3D] lg:font-[var(--font-segoe)] lg:text-[16px] lg:font-normal lg:leading-[150%]"
+              >
+                {{ benefit.text }}
+              </p>
+            </div>
+          }
         </div>
       </div>
 
@@ -839,14 +811,14 @@
       <form (ngSubmit)="onLicensingReviewSubmit()" class="flex flex-col gap-4">
         <!-- Full Name -->
         <div class="flex flex-col gap-2">
-          <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]"
-            >Your full name</label
-          >
+          <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]">{{
+            content.licensingForm.fields.fullName.label
+          }}</label>
           <input
             type="text"
             [(ngModel)]="licensingFormModel.fullName"
             name="fullName"
-            placeholder="Enter your full name"
+            [placeholder]="content.licensingForm.fields.fullName.placeholder"
             [class]="
               'border rounded-md px-4 py-3 text-sm bg-white outline-none transition-all placeholder:text-[#6D6D6D] ' +
               (submitted && validationErrors.fullName
@@ -855,21 +827,23 @@
             "
           />
           @if (submitted && validationErrors.fullName) {
-            <span class="text-xs text-[#D32F2F]">Full name is required</span>
+            <span class="text-xs text-[#D32F2F]">{{
+              content.licensingForm.fields.fullName.error
+            }}</span>
           }
         </div>
 
         <!-- Email + Company -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]"
-              >Work email address</label
-            >
+            <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]">{{
+              content.licensingForm.fields.email.label
+            }}</label>
             <input
               type="email"
               [(ngModel)]="licensingFormModel.email"
               name="email"
-              placeholder="Enter your work email"
+              [placeholder]="content.licensingForm.fields.email.placeholder"
               [class]="
                 'border rounded-md px-4 py-3 text-sm bg-white outline-none transition-all placeholder:text-[#6D6D6D] ' +
                 (submitted && validationErrors.email
@@ -878,20 +852,20 @@
               "
             />
             @if (submitted && validationErrors.email) {
-              <span class="text-xs text-[#D32F2F]"
-                >Valid email is required</span
-              >
+              <span class="text-xs text-[#D32F2F]">{{
+                content.licensingForm.fields.email.error
+              }}</span>
             }
           </div>
           <div class="flex flex-col gap-2">
-            <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]"
-              >Company name</label
-            >
+            <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]">{{
+              content.licensingForm.fields.company.label
+            }}</label>
             <input
               type="text"
               [(ngModel)]="licensingFormModel.company"
               name="company"
-              placeholder="Enter your company name"
+              [placeholder]="content.licensingForm.fields.company.placeholder"
               [class]="
                 'border rounded-md px-4 py-3 text-sm bg-white outline-none transition-all placeholder:text-[#6D6D6D] ' +
                 (submitted && validationErrors.company
@@ -900,9 +874,9 @@
               "
             />
             @if (submitted && validationErrors.company) {
-              <span class="text-xs text-[#D32F2F]"
-                >Company name is required</span
-              >
+              <span class="text-xs text-[#D32F2F]">{{
+                content.licensingForm.fields.company.error
+              }}</span>
             }
           </div>
         </div>
@@ -910,9 +884,9 @@
         <!-- Users + Area of Interest -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]"
-              >Number of Users</label
-            >
+            <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]">{{
+              content.licensingForm.fields.numberOfUsers.label
+            }}</label>
             <div class="ml-users-dropdown">
               <button
                 type="button"
@@ -923,7 +897,7 @@
                 "
                 [attr.aria-expanded]="usersDropdownOpen"
                 aria-haspopup="listbox"
-                aria-label="Number of users"
+                [attr.aria-label]="content.licensingForm.fields.numberOfUsers.ariaLabel"
               >
                 <span>{{ selectedUsersLabel }}</span>
                 <svg
@@ -946,9 +920,9 @@
                 <div
                   class="ml-users-dropdown-panel"
                   role="listbox"
-                  aria-label="Number of users options"
+                  [attr.aria-label]="content.licensingForm.fields.numberOfUsers.listAriaLabel"
                 >
-                  @for (option of numberOfUsersOptions; track option.value) {
+                  @for (option of content.licensingForm.fields.numberOfUsers.options; track option.value) {
                     <button
                       type="button"
                       role="option"
@@ -968,15 +942,15 @@
               }
             </div>
             @if (submitted && validationErrors.numberOfUsers) {
-              <span class="text-xs text-[#D32F2F]"
-                >Please select number of users</span
-              >
+              <span class="text-xs text-[#D32F2F]">{{
+                content.licensingForm.fields.numberOfUsers.error
+              }}</span>
             }
           </div>
           <div class="flex flex-col gap-2">
-            <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]"
-              >Primary Area of Interest</label
-            >
+            <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]">{{
+              content.licensingForm.fields.primaryAreaOfInterest.label
+            }}</label>
             <div class="ml-interest-dropdown">
               <button
                 type="button"
@@ -987,7 +961,7 @@
                 "
                 [attr.aria-expanded]="interestDropdownOpen"
                 aria-haspopup="listbox"
-                aria-label="Primary area of interest"
+                [attr.aria-label]="content.licensingForm.fields.primaryAreaOfInterest.ariaLabel"
               >
                 <span>{{ selectedInterestLabel }}</span>
                 <svg
@@ -1010,9 +984,9 @@
                 <div
                   class="ml-users-dropdown-panel"
                   role="listbox"
-                  aria-label="Primary area of interest options"
+                  [attr.aria-label]="content.licensingForm.fields.primaryAreaOfInterest.listAriaLabel"
                 >
-                  @for (option of primaryAreaOptions; track option.value) {
+                  @for (option of content.licensingForm.fields.primaryAreaOfInterest.options; track option.value) {
                     <button
                       type="button"
                       role="option"
@@ -1034,23 +1008,23 @@
               }
             </div>
             @if (submitted && validationErrors.primaryAreaOfInterest) {
-              <span class="text-xs text-[#D32F2F]"
-                >Please select area of interest</span
-              >
+              <span class="text-xs text-[#D32F2F]">{{
+                content.licensingForm.fields.primaryAreaOfInterest.error
+              }}</span>
             }
           </div>
         </div>
 
         <!-- Environment Details -->
         <div class="flex flex-col gap-2">
-          <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]"
-            >Environment details</label
-          >
+          <label class="font-['Inter'] text-[15px]  lg:text-[16px] text-[#000000]">{{
+            content.licensingForm.fields.environmentDetails.label
+          }}</label>
           <textarea
             [(ngModel)]="licensingFormModel.environmentDetails"
             name="environmentDetails"
             rows="4"
-            placeholder="Tell us a bit about your environment"
+            [placeholder]="content.licensingForm.fields.environmentDetails.placeholder"
             [class]="
               'border rounded-md px-4 py-3 text-sm bg-white outline-none resize-none transition-all placeholder:text-[#6D6D6D] placeholder:text-[16px] ' +
               (submitted && validationErrors.environmentDetails
@@ -1059,9 +1033,9 @@
             "
           ></textarea>
           @if (submitted && validationErrors.environmentDetails) {
-            <span class="text-xs text-[#D32F2F]"
-              >Environment details are required</span
-            >
+            <span class="text-xs text-[#D32F2F]">{{
+              content.licensingForm.fields.environmentDetails.error
+            }}</span>
           }
         </div>
 
@@ -1070,9 +1044,9 @@
           <div class="recaptcha-container">
             <div #recaptchaHost></div>
             @if (submitted && validationErrors.recaptcha) {
-              <span class="text-xs text-[#D32F2F]"
-                >Please complete the reCAPTCHA</span
-              >
+              <span class="text-xs text-[#D32F2F]">{{
+                content.licensingForm.fields.recaptcha.error
+              }}</span>
             }
           </div>
         }
@@ -1088,7 +1062,9 @@
           <span
             class="transition-all duration-200 group-hover:-translate-x-1"
             >{{
-              isSubmitting ? "Submitting..." : "Request My Licensing Review"
+              isSubmitting
+                ? content.licensingForm.submit.submittingText
+                : content.licensingForm.submit.text
             }}</span
           >
           <svg
@@ -1118,13 +1094,13 @@
     <p
       class="font-['Inter'] text-[#2A7EBF] text-[13px] lg:text-[18px] font-semibold uppercase tracking-[0.08em] mb-3"
     >
-      Related Content
+      {{ content.relatedBlogs.tagline }}
     </p>
     <h2
       id="related-licensing-insights-title"
       class="text-[#121212] font-['Inter'] text-[34px] sm:text-[40px] lg:text-[50px] font-normal leading-[112%] lg:leading-[120%] lg:tracking-[-0.5px] lg:text-[#000] mb-12"
     >
-      Related Insights on Microsoft Licensing
+      {{ content.relatedBlogs.title }}
     </h2>
 
     @if (relatedBlogsLoading()) {
@@ -1159,8 +1135,8 @@
       </div>
 
       <app-button-primary
-        [text]="'View all'"
-        [link]="'/blog'"
+        [text]="content.relatedBlogs.viewAll.text"
+        [link]="content.relatedBlogs.viewAll.link"
         [isTransparent]="true"
         [borderColor]="'black'"
         class="block w-full sm:w-auto"
@@ -1170,14 +1146,11 @@
 </section>
 
 <!-- CTA section -->
-
 <app-cta-section
-  [title]="'Need Help Navigating Microsoft Licensing?'"
-  [description]="
-    'Talk with Oakwood about your Microsoft 365, Azure, and CSP licensing strategy.'
-  "
-  [primaryText]="'Talk to a Licensing Specialist'"
-  [primaryLink]="'/contact-us'"
+  [title]="content.cta.title"
+  [description]="content.cta.description"
+  [primaryText]="content.cta.primaryText"
+  [primaryLink]="content.cta.primaryLink"
 />
 
 <!-- FAQ Accordion section -->
@@ -1216,7 +1189,7 @@
       <p
         class="text-[#2A7EBF] font-['Inter'] text-[14px] lg:text-[18px] font-semibold leading-[150%] uppercase text-center tracking-[0.08em] mb-4"
       >
-        {{ faqSection.label }}
+        {{ content.faq.label }}
       </p>
 
       <!-- Icon + Title row -->
@@ -1225,14 +1198,14 @@
           id="faq-title"
           class="text-[#000] font-['Inter'] text-[40px] sm:text-[40px] lg:text-[50px] font-normal leading-[112%] lg:leading-[120%] text-center lg:tracking-[-0.5px]"
         >
-          {{ faqSection.title }}
+          {{ content.faq.title }}
         </h2>
       </div>
     </div>
     <!-- Accordion items -->
     <ul class="space-y-0">
       @for (
-        item of faqItems;
+        item of content.faq.items;
         track item.title;
         let first = $first;
         let last = $last
@@ -1252,13 +1225,13 @@
         >
           <!-- Question row -->
           <div class="flex items-center gap-4 px-5 sm:px-6 py-6 sm:py-5 ">
-     <span
+            <span
               class="text-[18px] sm:text-[24px] leading-[130%] text-[#242424]  font-bold flex-1"
               [class.font-semibold]="selectedAccordionItem === item"
               [class.font-normal]="selectedAccordionItem !== item"
             >
-  {{ item.title }}
-</span>
+              {{ item.title }}
+            </span>
 
             <!-- Plus / Minus icon -->
             <span class="ml-auto flex-shrink-0">
@@ -1301,7 +1274,7 @@
               </span>
             </span>
           </div>
-      <!-- Answer -->
+          <!-- Answer -->
           @if (selectedAccordionItem === item) {
             <div
               class="px-5 sm:px-6 pb-5 text-[16px] sm:text-[15px] lg:text-[18px] leading-[160%] lg:leading-[24px] text-[#3D3D3D] font-[var(--font-segoe)] font-normal"

@@ -637,6 +637,13 @@ private structuredOfferPageContent$ = cachedForProcess(
     );
   }
 
+  /** Microsoft Licensing page content from the WordPress CMS page slug. */
+  getMicrosoftLicensingContent(): Observable<Record<string, unknown> | null> {
+    return this.getCmsPageBySlug('microsoft-licensing').pipe(
+      map((data) => data as Record<string, unknown> | null)
+    );
+  }
+
   /**
    * Service lines para sidebar/filtros (blogs, etc.). Obtiene desde CMS: home (services section) → footer (links.services).
    */
